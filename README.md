@@ -1,6 +1,6 @@
 # syllr Custom Agent Skills
 
-个人自定义 [Agent Skills](https://vercel-labs.github.io/skills/) 技能集合，适配 [skills.sh](https://skills.sh/) 生态系统。
+个人自定义 [Agent Skills](https://github.com/vercel-labs/skills) 技能集合，适配 [skills.sh](https://skills.sh/) 生态系统，基于 `npx skills` 命令管理。
 
 支持 **Claude Code**, **Cursor**, **Windsurf**, **Roo Code** 等 40+ AI 编程助手。
 
