@@ -1,0 +1,22 @@
+# Python virtual environment
+.venv/
+
+# JetBrains IDE configuration
+.idea/
+.playwright/
+.playwright-cli
+.claude/
+.obsidian/
+
+# macOS DS_Store file
+.DS_Store
+**/.DS_Store
+
+# Jekyll / GitHub Pages
+_site/
+.jekyll-cache/
+.sass-cache/
+.jekyll-metadata/
+vendor/
+.bundle/
+.firecrawl/

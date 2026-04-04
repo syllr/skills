@@ -1,4 +1,4 @@
-# syr yutao's Custom Agent Skills
+# syllr Custom Agent Skills
 
 个人自定义 [Agent Skills](https://vercel-labs.github.io/skills/) 技能集合，适配 [skills.sh](https://skills.sh/) 生态系统。
 
