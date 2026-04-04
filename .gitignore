@@ -20,3 +20,8 @@ _site/
 vendor/
 .bundle/
 .firecrawl/
+
+# Claude local files
+claude.md
+CLAUDE.md.local
+CLAUDE.md
