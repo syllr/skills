@@ -1,0 +1,727 @@
+- generic [ref=e2]:
+  - region
+  - generic [ref=e3]:
+    - link "Skip to content" [ref=e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner [ref=e6]:
+      - heading "Navigation Menu" [level=2] [ref=e7]
+      - generic [ref=e8]:
+        - link "Homepage" [ref=e10] [cursor=pointer]:
+          - /url: /
+          - img [ref=e11]
+        - generic [ref=e13]:
+          - navigation "Global" [ref=e16]:
+            - list [ref=e17]:
+              - listitem [ref=e18]:
+                - button "Platform" [ref=e20] [cursor=pointer]:
+                  - text: Platform
+                  - img [ref=e21]
+              - listitem [ref=e23]:
+                - button "Solutions" [ref=e25] [cursor=pointer]:
+                  - text: Solutions
+                  - img [ref=e26]
+              - listitem [ref=e28]:
+                - button "Resources" [ref=e30] [cursor=pointer]:
+                  - text: Resources
+                  - img [ref=e31]
+              - listitem [ref=e33]:
+                - button "Open Source" [ref=e35] [cursor=pointer]:
+                  - text: Open Source
+                  - img [ref=e36]
+              - listitem [ref=e38]:
+                - button "Enterprise" [ref=e40] [cursor=pointer]:
+                  - text: Enterprise
+                  - img [ref=e41]
+              - listitem [ref=e43]:
+                - link "Pricing" [ref=e44] [cursor=pointer]:
+                  - /url: https://github.com/pricing
+                  - generic [ref=e45]: Pricing
+          - generic [ref=e46]:
+            - button "Search or jump to…" [ref=e49] [cursor=pointer]:
+              - img [ref=e51]
+            - link "Sign in" [ref=e54] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2FShmayro%2Fsingularity-claude
+            - link "Sign up" [ref=e55] [cursor=pointer]:
+              - /url: /signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E&source=header-repo&source_repo=Shmayro%2Fsingularity-claude
+            - button "Appearance settings" [ref=e58] [cursor=pointer]:
+              - img
+  - main [ref=e62]:
+    - generic [ref=e63]:
+      - generic [ref=e64]:
+        - generic [ref=e66]:
+          - img [ref=e67]
+          - link "Shmayro" [ref=e70] [cursor=pointer]:
+            - /url: /Shmayro
+          - generic [ref=e71]: /
+          - strong [ref=e72]:
+            - link "singularity-claude" [ref=e73] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude
+          - generic [ref=e74]: Public
+        - generic [ref=e75]:
+          - list:
+            - listitem [ref=e76]:
+              - link "You must be signed in to change notification settings" [ref=e77] [cursor=pointer]:
+                - /url: /login?return_to=%2FShmayro%2Fsingularity-claude
+                - img [ref=e78]
+                - text: Notifications
+            - listitem [ref=e80]:
+              - link "Fork 1" [ref=e81] [cursor=pointer]:
+                - /url: /login?return_to=%2FShmayro%2Fsingularity-claude
+                - img [ref=e82]
+                - text: Fork
+                - generic "1" [ref=e84]
+            - listitem [ref=e85]:
+              - link "You must be signed in to star a repository" [ref=e87] [cursor=pointer]:
+                - /url: /login?return_to=%2FShmayro%2Fsingularity-claude
+                - img [ref=e88]
+                - text: Star
+                - generic "14 users starred this repository" [ref=e90]: "14"
+      - navigation "Repository" [ref=e91]:
+        - list [ref=e92]:
+          - listitem [ref=e93]:
+            - link "Code" [ref=e94] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude
+              - img [ref=e95]
+              - generic [ref=e97]: Code
+          - listitem [ref=e98]:
+            - link "Issues 3" [ref=e99] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/issues
+              - img [ref=e100]
+              - generic [ref=e103]: Issues
+              - generic "3" [ref=e104]
+          - listitem [ref=e105]:
+            - link "Pull requests" [ref=e106] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/pulls
+              - img [ref=e107]
+              - generic [ref=e109]: Pull requests
+          - listitem [ref=e110]:
+            - link "Actions" [ref=e111] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/actions
+              - img [ref=e112]
+              - generic [ref=e114]: Actions
+          - listitem [ref=e115]:
+            - link "Projects" [ref=e116] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/projects
+              - img [ref=e117]
+              - generic [ref=e119]: Projects
+          - listitem [ref=e120]:
+            - link "Security and quality" [ref=e121] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/security
+              - img [ref=e122]
+              - generic [ref=e124]: Security and quality
+          - listitem [ref=e125]:
+            - link "Insights" [ref=e126] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/pulse
+              - img [ref=e127]
+              - generic [ref=e129]: Insights
+    - generic [ref=e142]:
+      - heading "Shmayro/singularity-claude" [level=1] [ref=e144]
+      - generic [ref=e145]:
+        - generic [ref=e148]:
+          - generic [ref=e149]:
+            - generic [ref=e150]:
+              - button "main branch" [ref=e152] [cursor=pointer]:
+                - generic [ref=e153]:
+                  - generic [ref=e155]:
+                    - img [ref=e157]
+                    - generic [ref=e160]: main
+                  - generic:
+                    - img
+              - generic [ref=e161]:
+                - link "1 Branch" [ref=e162] [cursor=pointer]:
+                  - /url: /Shmayro/singularity-claude/branches
+                  - generic [ref=e163]:
+                    - generic
+                    - generic [ref=e165]
+                - link "1 Tag" [ref=e167] [cursor=pointer]:
+                  - /url: /Shmayro/singularity-claude/tags
+                  - generic [ref=e168]:
+                    - generic
+                    - generic [ref=e170]
+            - generic [ref=e172]:
+              - generic [ref=e176]:
+                - img [ref=e178]
+                - combobox "Go to file" [ref=e180]
+              - button "Code" [ref=e181] [cursor=pointer]:
+                - generic [ref=e182]:
+                  - generic:
+                    - img
+                  - generic [ref=e183]: Code
+                  - generic:
+                    - img
+          - generic [ref=e184]:
+            - generic [ref=e185]:
+              - heading "Folders and files" [level=2] [ref=e186]
+              - table "Folders and files" [ref=e187]:
+                - rowgroup:
+                  - row "Name Last commit message Last commit date":
+                    - columnheader "Name"
+                    - columnheader "Last commit message"
+                    - columnheader "Last commit date"
+                - rowgroup [ref=e188]:
+                  - 'row "Latest commit Shmayro commits by Shmayro fix: update installation instructions and package.json for npm publish success Commit 85a76b6 · Apr 1, 20264 days ago History 2 Commits" [ref=e189]':
+                    - 'cell "Latest commit Shmayro commits by Shmayro fix: update installation instructions and package.json for npm publish success Commit 85a76b6 · Apr 1, 20264 days ago History 2 Commits" [ref=e190]'
+                  - 'row ".claude-plugin, (Directory) feat: singularity-claude — self-evolving skill engine for Claude Code Mar 18, 20263 weeks ago" [ref=e216]':
+                    - cell ".claude-plugin, (Directory)" [ref=e217]
+                    - 'cell "feat: singularity-claude — self-evolving skill engine for Claude Code" [ref=e225]'
+                    - cell "Mar 18, 20263 weeks ago" [ref=e229]
+                  - 'row ".github, (Directory) feat: singularity-claude — self-evolving skill engine for Claude Code Mar 18, 20263 weeks ago" [ref=e231]':
+                    - cell ".github, (Directory)" [ref=e232]
+                    - 'cell "feat: singularity-claude — self-evolving skill engine for Claude Code" [ref=e240]'
+                    - cell "Mar 18, 20263 weeks ago" [ref=e244]
+                  - 'row "agents, (Directory) feat: singularity-claude — self-evolving skill engine for Claude Code Mar 18, 20263 weeks ago" [ref=e246]':
+                    - cell "agents, (Directory)" [ref=e247]
+                    - 'cell "feat: singularity-claude — self-evolving skill engine for Claude Code" [ref=e255]'
+                    - cell "Mar 18, 20263 weeks ago" [ref=e259]
+                  - 'row "hooks, (Directory) feat: singularity-claude — self-evolving skill engine for Claude Code Mar 18, 20263 weeks ago" [ref=e261]':
+                    - cell "hooks, (Directory)" [ref=e262]
+                    - 'cell "feat: singularity-claude — self-evolving skill engine for Claude Code" [ref=e270]'
+                    - cell "Mar 18, 20263 weeks ago" [ref=e274]
+                  - 'row "scripts, (Directory) feat: singularity-claude — self-evolving skill engine for Claude Code Mar 18, 20263 weeks ago" [ref=e276]':
+                    - cell "scripts, (Directory)" [ref=e277]
+                    - 'cell "feat: singularity-claude — self-evolving skill engine for Claude Code" [ref=e285]'
+                    - cell "Mar 18, 20263 weeks ago" [ref=e289]
+                  - 'row "skills, (Directory) feat: singularity-claude — self-evolving skill engine for Claude Code Mar 18, 20263 weeks ago" [ref=e291]':
+                    - cell "skills, (Directory)" [ref=e292]
+                    - 'cell "feat: singularity-claude — self-evolving skill engine for Claude Code" [ref=e300]'
+                    - cell "Mar 18, 20263 weeks ago" [ref=e304]
+                  - 'row ".gitattributes, (File) feat: singularity-claude — self-evolving skill engine for Claude Code Mar 18, 20263 weeks ago" [ref=e306]':
+                    - cell ".gitattributes, (File)" [ref=e307]
+                    - 'cell "feat: singularity-claude — self-evolving skill engine for Claude Code" [ref=e315]'
+                    - cell "Mar 18, 20263 weeks ago" [ref=e319]
+                  - 'row ".gitignore, (File) feat: singularity-claude — self-evolving skill engine for Claude Code Mar 18, 20263 weeks ago" [ref=e321]':
+                    - cell ".gitignore, (File)" [ref=e322]
+                    - 'cell "feat: singularity-claude — self-evolving skill engine for Claude Code" [ref=e330]'
+                    - cell "Mar 18, 20263 weeks ago" [ref=e334]
+                  - 'row "CHANGELOG.md, (File) feat: singularity-claude — self-evolving skill engine for Claude Code Mar 18, 20263 weeks ago" [ref=e336]':
+                    - cell "CHANGELOG.md, (File)" [ref=e337]
+                    - 'cell "feat: singularity-claude — self-evolving skill engine for Claude Code" [ref=e345]'
+                    - cell "Mar 18, 20263 weeks ago" [ref=e349]
+                  - 'row "LICENSE, (File) feat: singularity-claude — self-evolving skill engine for Claude Code Mar 18, 20263 weeks ago" [ref=e351]':
+                    - cell "LICENSE, (File)" [ref=e352]
+                    - 'cell "feat: singularity-claude — self-evolving skill engine for Claude Code" [ref=e360]'
+                    - cell "Mar 18, 20263 weeks ago" [ref=e364]
+                  - 'row "README.md, (File) fix: update installation instructions and package.json for npm publish Apr 1, 20264 days ago" [ref=e366]':
+                    - cell "README.md, (File)" [ref=e367]
+                    - 'cell "fix: update installation instructions and package.json for npm publish" [ref=e375]'
+                    - cell "Apr 1, 20264 days ago" [ref=e379]
+                  - 'row "package.json, (File) fix: update installation instructions and package.json for npm publish Apr 1, 20264 days ago" [ref=e381]':
+                    - cell "package.json, (File)" [ref=e382]
+                    - 'cell "fix: update installation instructions and package.json for npm publish" [ref=e390]'
+                    - cell "Apr 1, 20264 days ago" [ref=e394]
+            - generic [ref=e397]:
+              - generic [ref=e398]:
+                - heading "Repository files navigation" [level=2] [ref=e399]
+                - navigation "Repository files" [ref=e400]:
+                  - list [ref=e401]:
+                    - listitem [ref=e402]
+                    - listitem [ref=e408]
+                    - listitem [ref=e414]
+                    - listitem [ref=e420]
+                    - listitem [ref=e426]
+                - button "Outline" [ref=e432] [cursor=pointer]:
+                  - img [ref=e433]
+              - article [ref=e436]:
+                - paragraph
+                - generic [ref=e437]:
+                  - heading "singularity-claude" [level=1] [ref=e438]
+                  - 'link "Permalink: singularity-claude" [ref=e439] [cursor=pointer]':
+                    - /url: "#singularity-claude"
+                    - img [ref=e440]
+                - paragraph [ref=e442]:
+                  - strong [ref=e443]: Skills that evolve themselves.
+                  - text: A self-evolving skill engine for Claude Code — create, score, repair, and crystallize skills through autonomous recursive improvement loops.
+                - paragraph [ref=e444]:
+                  - 'link "License: MIT" [ref=e445] [cursor=pointer]':
+                    - /url: https://opensource.org/licenses/MIT
+                    - 'img "License: MIT" [ref=e446]'
+                  - link "Claude Code Plugin" [ref=e447] [cursor=pointer]:
+                    - /url: "#installation"
+                    - img "Claude Code Plugin" [ref=e448]
+                  - link "Version" [ref=e449] [cursor=pointer]:
+                    - /url: https://camo.githubusercontent.com/ffa3591806b0eac1e1249d4de1f0c0ab1adc1a7a10cab217c3b5d3070a1061fb/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d302e312e302d677265656e
+                    - img "Version" [ref=e450]
+                  - link "Status" [ref=e451] [cursor=pointer]:
+                    - /url: https://camo.githubusercontent.com/38607f258b26c40a3ad3a18a5c45902206dad7fdc57add111d06c3afbd078e5b/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f5374617475732d4578706572696d656e74616c2d6f72616e6765
+                    - img "Status" [ref=e452]
+                - paragraph
+                - separator [ref=e453]
+                - generic [ref=e454]:
+                  - heading "The Problem" [level=2] [ref=e455]
+                  - 'link "Permalink: The Problem" [ref=e456] [cursor=pointer]':
+                    - /url: "#the-problem"
+                    - img [ref=e457]
+                - paragraph [ref=e459]:
+                  - text: Claude Code skills are
+                  - strong [ref=e460]: static
+                  - text: . You write them once, and they stay exactly as they are — even when they fail, produce subpar output, or encounter new edge cases. There's no feedback loop, no way to know which skills are working well, and no mechanism to improve them over time.
+                - paragraph [ref=e461]: You end up with a growing pile of skills where some work great, some are mediocre, and some are silently broken. The only way to fix them is manual review.
+                - generic [ref=e462]:
+                  - heading "The Solution" [level=2] [ref=e463]
+                  - 'link "Permalink: The Solution" [ref=e464] [cursor=pointer]':
+                    - /url: "#the-solution"
+                    - img [ref=e465]
+                - paragraph [ref=e467]:
+                  - strong [ref=e468]: singularity-claude
+                  - text: "adds a recursive evolution loop to your skills:"
+                - region "mermaid rendered output container" [ref=e469]:
+                  - generic [ref=e1041]:
+                    - paragraph [ref=e1043]: Unable to render rich display
+                    - generic "Raw mermaid code" [ref=e1045]: "graph TD Goal[\"🎯 Goal:<br/>Set up API proxy endpoints\"] Goal --> HasSkill{Skill exists?} HasSkill -->|No| Gap[\"🔍 Gap detected:<br/>recurring pattern\"] Gap --> Create[\"⚙️ /singularity-create\\nGather requirements\\nGenerate SKILL.md\\nRegister + init scoring\"] Create --> Execute HasSkill -->|Yes| Execute[\"⚡ Execute skill\"] Execute --> Score[\"📊 /singularity-score\\nDispatch assessor agent\\nRate 5 dimensions · 0-100\"] Score --> Maturity[\"🔄 Auto-update maturity\\ndraft → tested → hardened\"] Maturity --> Low{Avg < 50\\n2+ runs?} Low -->|Yes| Repair[\"🔧 /singularity-repair\\nAnalyze telemetry\\nRewrite weak dimensions\\nBump version · re-test\"] Repair --> Execute Low -->|No| High{Avg ≥ 90 · 5+ runs\\nhardened · edge cases?} High -->|Yes| Crystal[\"💎 /singularity-crystallize\\nGit tag + lock version\"] Crystal --> Done[\"✅ Production-grade skill\\nImmutable · rollback-safe\"] High -->|No| Loop[\"🔁 Keep using + scoring\"] Loop --> Execute style Goal fill:#1d3557,color:#fff,stroke:#0d1b2a style Gap fill:#e9ecef,color:#000,stroke:#adb5bd style Create fill:#457b9d,color:#fff,stroke:#1d3557 style Execute fill:#2a9d8f,color:#fff,stroke:#1a7a6e style Score fill:#e76f51,color:#fff,stroke:#c1440e style Maturity fill:#264653,color:#fff,stroke:#1d3540 style Low fill:#fff3cd,color:#000,stroke:#ffc107 style High fill:#d4edda,color:#000,stroke:#28a745 style Repair fill:#f4a261,color:#000,stroke:#e76f51 style Crystal fill:#2d6a4f,color:#fff,stroke:#1b4332 style Done fill:#1b4332,color:#fff,stroke:#0d2818 style Loop fill:#a8dadc,color:#000,stroke:#457b9d"
+                - blockquote [ref=e487]:
+                  - paragraph [ref=e488]:
+                    - strong [ref=e489]: "Tip:"
+                    - text: Click the expand button (↔) on the diagram to see the full interactive flow.
+                - paragraph [ref=e490]: Skills are scored after every execution. Low scores trigger automatic repair. High scores lead to crystallization — a locked, battle-tested version you can trust. Every step is logged for full auditability.
+                - paragraph [ref=e491]:
+                  - strong [ref=e492]: No external dependencies.
+                  - text: No SmythOS, no OpenTelemetry collector, no Docker. Pure Claude Code.
+                - generic [ref=e493]:
+                  - heading "What's Inside" [level=2] [ref=e494]
+                  - 'link "Permalink: What''s Inside" [ref=e495] [cursor=pointer]':
+                    - /url: "#whats-inside"
+                    - img [ref=e496]
+                - generic [ref=e498]:
+                  - heading "Skills (7)" [level=3] [ref=e499]
+                  - 'link "Permalink: Skills (7)" [ref=e500] [cursor=pointer]':
+                    - /url: "#skills-7"
+                    - img [ref=e501]
+                - table [ref=e504]:
+                  - rowgroup [ref=e505]:
+                    - row "Skill Command Purpose" [ref=e506]
+                  - rowgroup [ref=e510]:
+                    - row "using-singularity (auto-loaded) Bootstrap context + capability gap detection" [ref=e511]
+                    - row "creating-skills /singularity-create Build new skills through a structured workflow" [ref=e517]
+                    - row "scoring /singularity-score Rate execution on a 5-dimension rubric (0-100)" [ref=e523]
+                    - row "repairing /singularity-repair Auto-fix failing skills by analyzing score history" [ref=e529]
+                    - row "crystallizing /singularity-crystallize Lock validated versions via git tags" [ref=e535]
+                    - row "reviewing /singularity-review Health check with trend analysis" [ref=e541]
+                    - row "dashboard /singularity-dashboard Overview of all managed skills" [ref=e547]
+                - generic [ref=e553]:
+                  - heading "Agents (2)" [level=3] [ref=e554]
+                  - 'link "Permalink: Agents (2)" [ref=e555] [cursor=pointer]':
+                    - /url: "#agents-2"
+                    - img [ref=e556]
+                - table [ref=e559]:
+                  - rowgroup [ref=e560]:
+                    - row "Agent Model Purpose" [ref=e561]
+                  - rowgroup [ref=e565]:
+                    - row "skill-assessor Haiku Fast, cheap automated scoring against the rubric" [ref=e566]
+                    - row "gap-detector Haiku Analyzes failed tasks to find missing skill capabilities" [ref=e571]
+                - generic [ref=e576]:
+                  - heading "Scripts (2)" [level=3] [ref=e577]
+                  - 'link "Permalink: Scripts (2)" [ref=e578] [cursor=pointer]':
+                    - /url: "#scripts-2"
+                    - img [ref=e579]
+                - table [ref=e582]:
+                  - rowgroup [ref=e583]:
+                    - row "Script Purpose" [ref=e584]
+                  - rowgroup [ref=e587]:
+                    - row "score-manager.sh CLI for reading/writing score JSON files (atomic writes, jq/node fallback)" [ref=e588]
+                    - row "telemetry-writer.sh CLI for structured execution logging with replay support" [ref=e592]
+                - generic [ref=e596]:
+                  - heading "Installation" [level=2] [ref=e597]
+                  - 'link "Permalink: Installation" [ref=e598] [cursor=pointer]':
+                    - /url: "#installation"
+                    - img [ref=e599]
+                - generic [ref=e601]:
+                  - heading "From the official Claude Code plugin registry" [level=3] [ref=e602]
+                  - 'link "Permalink: From the official Claude Code plugin registry" [ref=e603] [cursor=pointer]':
+                    - /url: "#from-the-official-claude-code-plugin-registry"
+                    - img [ref=e604]
+                - blockquote [ref=e606]:
+                  - paragraph [ref=e607]:
+                    - strong [ref=e608]: Requires
+                    - link "Claude Code" [ref=e609] [cursor=pointer]:
+                      - /url: https://docs.anthropic.com/en/docs/claude-code
+                    - text: CLI
+                - paragraph [ref=e610]: "Inside a Claude Code session, run:"
+                - generic [ref=e611]:
+                  - code [ref=e613]: /plugin marketplace add Shmayro/singularity-claude /plugin install singularity-claude
+                  - button "Copy" [ref=e615] [cursor=pointer]:
+                    - img [ref=e616]
+                - generic [ref=e619]:
+                  - heading "From npm" [level=3] [ref=e620]
+                  - 'link "Permalink: From npm" [ref=e621] [cursor=pointer]':
+                    - /url: "#from-npm"
+                    - img [ref=e622]
+                - generic [ref=e624]:
+                  - generic [ref=e625]: npm install -g singularity-claude
+                  - button "Copy" [ref=e627] [cursor=pointer]:
+                    - img [ref=e628]
+                - paragraph [ref=e631]: "Then inside a Claude Code session:"
+                - generic [ref=e632]:
+                  - code [ref=e634]: /plugin marketplace add $(npm root -g)/singularity-claude /plugin install singularity-claude
+                  - button "Copy" [ref=e636] [cursor=pointer]:
+                    - img [ref=e637]
+                - generic [ref=e640]:
+                  - heading "From source" [level=3] [ref=e641]
+                  - 'link "Permalink: From source" [ref=e642] [cursor=pointer]':
+                    - /url: "#from-source"
+                    - img [ref=e643]
+                - generic [ref=e645]:
+                  - generic [ref=e646]: git clone https://github.com/shmayro/singularity-claude.git cd singularity-claude
+                  - button "Copy" [ref=e648] [cursor=pointer]:
+                    - img [ref=e649]
+                - paragraph [ref=e652]: "Then inside a Claude Code session:"
+                - generic [ref=e653]:
+                  - code [ref=e655]: /plugin marketplace add . /plugin install singularity-claude
+                  - button "Copy" [ref=e657] [cursor=pointer]:
+                    - img [ref=e658]
+                - generic [ref=e661]:
+                  - heading "Quick Start" [level=2] [ref=e662]
+                  - 'link "Permalink: Quick Start" [ref=e663] [cursor=pointer]':
+                    - /url: "#quick-start"
+                    - img [ref=e664]
+                - generic [ref=e666]:
+                  - generic [ref=e667]:
+                    - generic [ref=e668]: "# 1. Start a new Claude Code session — singularity loads automatically"
+                    - generic [ref=e669]: "# 2. Create your first skill"
+                    - text: /singularity-create
+                    - generic [ref=e670]: "# 3. Use the skill, then score it"
+                    - text: /singularity-score
+                    - generic [ref=e671]: "# 4. Check the dashboard"
+                    - text: /singularity-dashboard
+                  - button "Copy" [ref=e673] [cursor=pointer]:
+                    - img [ref=e674]
+                - paragraph [ref=e677]: That's it. The evolution loop starts running from the first score.
+                - generic [ref=e678]:
+                  - heading "How It Works" [level=2] [ref=e679]
+                  - 'link "Permalink: How It Works" [ref=e680] [cursor=pointer]':
+                    - /url: "#how-it-works"
+                    - img [ref=e681]
+                - generic [ref=e683]:
+                  - heading "The Evolution Loop" [level=3] [ref=e684]
+                  - 'link "Permalink: The Evolution Loop" [ref=e685] [cursor=pointer]':
+                    - /url: "#the-evolution-loop"
+                    - img [ref=e686]
+                - paragraph [ref=e688]:
+                  - strong [ref=e689]: 1. Create
+                  - text: —
+                  - code [ref=e690]: /singularity-create
+                  - text: "walks you through building a new skill: requirements gathering, duplicate checking, SKILL.md generation, registry registration, and initial scoring."
+                - paragraph [ref=e691]:
+                  - strong [ref=e692]: 2. Score
+                  - text: — After every skill execution,
+                  - code [ref=e693]: /singularity-score
+                  - text: "dispatches a Haiku assessor agent that rates the output on 5 dimensions:"
+                - table [ref=e695]:
+                  - rowgroup [ref=e696]:
+                    - row "Dimension What It Measures" [ref=e697]
+                  - rowgroup [ref=e700]:
+                    - row "Correctness (0-20) Did it achieve the goal?" [ref=e701]
+                    - row "Completeness (0-20) Were all requirements addressed?" [ref=e705]
+                    - row "Edge Cases (0-20) Did it handle unusual inputs?" [ref=e709]
+                    - row "Efficiency (0-20) Was the approach direct and minimal?" [ref=e713]
+                    - row "Reusability (0-20) Could the output be reused?" [ref=e717]
+                - paragraph [ref=e721]:
+                  - strong [ref=e722]: 3. Repair
+                  - text: — When a skill's average drops below 50 (configurable),
+                  - code [ref=e723]: /singularity-repair
+                  - text: "kicks in: reads score history + telemetry, identifies the weakest rubric dimensions, rewrites the skill to fix them, bumps the version, and re-tests."
+                - paragraph [ref=e724]:
+                  - strong [ref=e725]: 4. Harden
+                  - text: — Each edge case encountered is recorded. Skills that handle more edge cases with higher scores progress through maturity levels.
+                - paragraph [ref=e726]:
+                  - strong [ref=e727]: 5. Crystallize
+                  - text: — Once a skill hits 90+ average over 5+ runs with edge cases handled,
+                  - code [ref=e728]: /singularity-crystallize
+                  - text: locks it with a git tag. Crystallized skills are immutable — a production-grade snapshot you can always roll back to.
+                - generic [ref=e729]:
+                  - heading "Maturity Progression" [level=3] [ref=e730]
+                  - 'link "Permalink: Maturity Progression" [ref=e731] [cursor=pointer]':
+                    - /url: "#maturity-progression"
+                    - img [ref=e732]
+                - region "mermaid rendered output container" [ref=e734]:
+                  - generic [ref=e1046]:
+                    - generic [ref=e1047]
+                    - generic "Raw mermaid code" [ref=e1051]: graph TD Draft["📝 Draft<br/><i>&lt; 3 runs</i>"] --> Tested["✅ Tested<br/><i>3+ runs, avg ≥ 60</i>"] Tested --> Hardened["🛡️ Hardened<br/><i>5+ runs, avg ≥ 80<br/>edge cases handled</i>"] Hardened --> Crystallized["🔒 Crystallized<br/><i>git-tagged, immutable</i>"] style Draft fill:#e9ecef,color:#000,stroke:#adb5bd style Tested fill:#a8dadc,color:#000,stroke:#457b9d style Hardened fill:#264653,color:#fff,stroke:#1d3540 style Crystallized fill:#2d6a4f,color:#fff,stroke:#1b4332
+                - generic [ref=e752]:
+                  - heading "Capability Gap Detection" [level=3] [ref=e753]
+                  - 'link "Permalink: Capability Gap Detection" [ref=e754] [cursor=pointer]':
+                    - /url: "#capability-gap-detection"
+                    - img [ref=e755]
+                - paragraph [ref=e757]:
+                  - text: The
+                  - code [ref=e758]: using-singularity
+                  - text: "skill (injected at every session start) teaches Claude to recognize when a new skill is needed:"
+                - list [ref=e759]:
+                  - listitem [ref=e760]:
+                    - strong [ref=e761]: Repetition
+                    - text: — Doing the same multi-step procedure across sessions
+                  - listitem [ref=e762]:
+                    - strong [ref=e763]: Failure without coverage
+                    - text: — No existing skill addresses the task
+                  - listitem [ref=e764]:
+                    - strong [ref=e765]: Generalizable pattern
+                    - text: — The procedure applies beyond the current task
+                - paragraph [ref=e766]: When a gap is detected, Claude suggests creating a new skill automatically.
+                - generic [ref=e767]:
+                  - heading "Data Storage" [level=2] [ref=e768]
+                  - 'link "Permalink: Data Storage" [ref=e769] [cursor=pointer]':
+                    - /url: "#data-storage"
+                    - img [ref=e770]
+                - paragraph [ref=e772]: All data is local. Nothing leaves your machine.
+                - generic [ref=e773]:
+                  - code [ref=e775]: "~/.claude/singularity/ ├── scores/ # Score history per skill (JSON) ├── telemetry/ # Execution logs per skill (JSON) ├── registry.json # All managed skills └── config.json # Thresholds and preferences"
+                  - button "Copy" [ref=e777] [cursor=pointer]:
+                    - img [ref=e778]
+                - generic [ref=e781]:
+                  - heading "Configuration" [level=2] [ref=e782]
+                  - 'link "Permalink: Configuration" [ref=e783] [cursor=pointer]':
+                    - /url: "#configuration"
+                    - img [ref=e784]
+                - paragraph [ref=e786]:
+                  - text: Edit
+                  - code [ref=e787]: ~/.claude/singularity/config.json
+                  - text: ":"
+                - generic [ref=e788]:
+                  - generic [ref=e789]:
+                    - text: "{ \"autoRepairThreshold\": 50, \"crystallizationThreshold\": 90, \"crystallizationMinExecutions\": 5, \"scoringMode\":"
+                    - generic [ref=e790]: "\"auto\""
+                    - text: "}"
+                  - button "Copy" [ref=e792] [cursor=pointer]:
+                    - img [ref=e793]
+                - table [ref=e797]:
+                  - rowgroup [ref=e798]:
+                    - row "Setting Default Description" [ref=e799]
+                  - rowgroup [ref=e803]:
+                    - row "autoRepairThreshold 50 Average score below this triggers repair suggestion" [ref=e804]
+                    - row "crystallizationThreshold 90 Average score above this enables crystallization" [ref=e809]
+                    - row "crystallizationMinExecutions 5 Minimum runs before crystallization is allowed" [ref=e814]
+                    - row "scoringMode \"auto\" \"auto\" (agent scores), \"manual\" (you score), \"hybrid\" (agent scores, you override)" [ref=e819]
+                - generic [ref=e828]:
+                  - heading "Integration" [level=2] [ref=e829]
+                  - 'link "Permalink: Integration" [ref=e830] [cursor=pointer]':
+                    - /url: "#integration"
+                    - img [ref=e831]
+                - list [ref=e833]:
+                  - listitem [ref=e834]:
+                    - text: Works alongside
+                    - link "superpowers" [ref=e835] [cursor=pointer]:
+                      - /url: https://github.com/obra/superpowers
+                    - text: and other Claude Code plugins
+                  - listitem [ref=e836]:
+                    - text: Skills namespaced as
+                    - code [ref=e837]: singularity-claude:*
+                    - text: — no conflicts
+                  - listitem [ref=e838]:
+                    - text: Created skills go to
+                    - code [ref=e839]: ~/.claude/skills/
+                    - text: — the standard Claude Code location, usable by any plugin
+                - generic [ref=e840]:
+                  - heading "Requirements" [level=2] [ref=e841]
+                  - 'link "Permalink: Requirements" [ref=e842] [cursor=pointer]':
+                    - /url: "#requirements"
+                    - img [ref=e843]
+                - list [ref=e845]:
+                  - listitem [ref=e846]:
+                    - link "Claude Code" [ref=e847] [cursor=pointer]:
+                      - /url: https://docs.anthropic.com/en/docs/claude-code
+                    - text: CLI
+                  - listitem [ref=e848]:
+                    - code [ref=e849]: jq
+                    - text: (recommended) or Node.js (fallback) for JSON manipulation
+                  - listitem [ref=e850]: Git (optional, for crystallization via tags)
+                - generic [ref=e851]:
+                  - heading "Inspired By" [level=2] [ref=e852]
+                  - 'link "Permalink: Inspired By" [ref=e853] [cursor=pointer]':
+                    - /url: "#inspired-by"
+                    - img [ref=e854]
+                - paragraph [ref=e856]:
+                  - link "Moltron" [ref=e857] [cursor=pointer]:
+                    - /url: https://github.com/adridder/moltron
+                  - text: — a self-evolving skill engine built on SmythOS. singularity-claude takes the same core ideas (scoring, auto-repair, crystallization, hardening) and rebuilds them natively for Claude Code with zero external dependencies.
+                - generic [ref=e858]:
+                  - heading "Contributing" [level=2] [ref=e859]
+                  - 'link "Permalink: Contributing" [ref=e860] [cursor=pointer]':
+                    - /url: "#contributing"
+                    - img [ref=e861]
+                - paragraph [ref=e863]:
+                  - text: Contributions welcome! See
+                  - link "CONTRIBUTING.md" [ref=e864] [cursor=pointer]:
+                    - /url: /Shmayro/singularity-claude/blob/main/.github/CONTRIBUTING.md
+                  - text: for guidelines.
+                - paragraph [ref=e865]:
+                  - strong [ref=e866]: "Ideas for contributions:"
+                - list [ref=e867]:
+                  - listitem [ref=e868]: New scoring rubric dimensions
+                  - listitem [ref=e869]: Additional maturity metrics
+                  - listitem [ref=e870]: Platform support (Cursor, Codex, Gemini CLI)
+                  - listitem [ref=e871]: Skill templates for common patterns
+                - generic [ref=e872]:
+                  - heading "License" [level=2] [ref=e873]
+                  - 'link "Permalink: License" [ref=e874] [cursor=pointer]':
+                    - /url: "#license"
+                    - img [ref=e875]
+                - paragraph [ref=e877]:
+                  - link "MIT" [ref=e878] [cursor=pointer]:
+                    - /url: /Shmayro/singularity-claude/blob/main/LICENSE
+                  - text: — use it however you want.
+                - separator [ref=e879]
+                - paragraph [ref=e880]:
+                  - subscript [ref=e881]: Built with Claude Code. Skills that improve themselves.
+        - generic [ref=e885]:
+          - generic [ref=e888]:
+            - heading "About" [level=2] [ref=e889]
+            - paragraph [ref=e890]: Self-evolving skill engine for Claude Code — skills that create, score, repair, and harden themselves through recursive improvement loops
+            - heading "Topics" [level=3] [ref=e891]
+            - generic [ref=e893]:
+              - link "automation" [ref=e894] [cursor=pointer]:
+                - /url: /topics/automation
+              - link "skills" [ref=e895] [cursor=pointer]:
+                - /url: /topics/skills
+              - link "developer-tools" [ref=e896] [cursor=pointer]:
+                - /url: /topics/developer-tools
+              - link "ai-agents" [ref=e897] [cursor=pointer]:
+                - /url: /topics/ai-agents
+              - link "self-improving" [ref=e898] [cursor=pointer]:
+                - /url: /topics/self-improving
+              - link "prompt-engineering" [ref=e899] [cursor=pointer]:
+                - /url: /topics/prompt-engineering
+              - link "claude-ai" [ref=e900] [cursor=pointer]:
+                - /url: /topics/claude-ai
+              - link "claude-code" [ref=e901] [cursor=pointer]:
+                - /url: /topics/claude-code
+            - heading "Resources" [level=3] [ref=e902]
+            - link "Readme" [ref=e904] [cursor=pointer]:
+              - /url: "#readme-ov-file"
+              - img [ref=e905]
+              - text: Readme
+            - heading "License" [level=3] [ref=e907]
+            - link "MIT license" [ref=e909] [cursor=pointer]:
+              - /url: "#MIT-1-ov-file"
+              - img [ref=e910]
+              - text: MIT license
+            - heading "Code of conduct" [level=3] [ref=e912]
+            - link "Code of conduct" [ref=e914] [cursor=pointer]:
+              - /url: "#coc-ov-file"
+              - img [ref=e915]
+              - text: Code of conduct
+            - heading "Contributing" [level=3] [ref=e917]
+            - link "Contributing" [ref=e919] [cursor=pointer]:
+              - /url: "#contributing-ov-file"
+              - img [ref=e920]
+              - text: Contributing
+            - heading "Security policy" [level=3] [ref=e922]
+            - link "Security policy" [ref=e924] [cursor=pointer]:
+              - /url: "#security-ov-file"
+              - img [ref=e925]
+              - text: Security policy
+            - link "Activity" [ref=e928] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/activity
+              - img [ref=e929]
+              - text: Activity
+            - heading "Stars" [level=3] [ref=e931]
+            - link "14 stars" [ref=e933] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/stargazers
+              - img [ref=e934]
+              - strong [ref=e936]: "14"
+              - text: stars
+            - heading "Watchers" [level=3] [ref=e937]
+            - link "0 watching" [ref=e939] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/watchers
+              - img [ref=e940]
+              - strong [ref=e942]: "0"
+              - text: watching
+            - heading "Forks" [level=3] [ref=e943]
+            - link "1 fork" [ref=e945] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/forks
+              - img [ref=e946]
+              - strong [ref=e948]: "1"
+              - text: fork
+            - link "Report repository" [ref=e950] [cursor=pointer]:
+              - /url: /contact/report-content?content_url=https%3A%2F%2Fgithub.com%2FShmayro%2Fsingularity-claude&report=Shmayro+%28user%29
+          - generic [ref=e952]:
+            - heading "Releases 1" [level=2] [ref=e953]:
+              - link "Releases 1" [ref=e954] [cursor=pointer]:
+                - /url: /Shmayro/singularity-claude/releases
+                - text: Releases
+                - generic "1" [ref=e955]
+            - link "v0.1.0 — Initial Release Latest Apr 1, 20264 days ago" [ref=e956] [cursor=pointer]:
+              - /url: /Shmayro/singularity-claude/releases/tag/v0.1.0
+              - img [ref=e957]
+              - generic [ref=e959]:
+                - generic [ref=e960]:
+                  - generic [ref=e961]: v0.1.0 — Initial Release
+                  - 'generic "Label: Latest" [ref=e962]': Latest
+                - generic [ref=e963]: Apr 1, 20264 days ago
+          - generic [ref=e965]:
+            - heading "Packages" [level=2] [ref=e966]:
+              - link "Packages" [ref=e967] [cursor=pointer]:
+                - /url: /users/Shmayro/packages?repo_name=singularity-claude
+            - generic [ref=e968]: No packages published
+          - generic [ref=e970]:
+            - heading "Contributors 2" [level=2] [ref=e971]:
+              - link "Contributors 2" [ref=e972] [cursor=pointer]:
+                - /url: /Shmayro/singularity-claude/graphs/contributors
+                - text: Contributors
+                - generic "2" [ref=e973]
+            - list [ref=e974]:
+              - listitem [ref=e975]:
+                - link "@Shmayro" [ref=e976] [cursor=pointer]:
+                  - /url: https://github.com/Shmayro
+                  - img "@Shmayro" [ref=e977]
+                - link "Shmayro Haroun EL ALAMI" [ref=e979] [cursor=pointer]:
+                  - /url: https://github.com/Shmayro
+                  - strong [ref=e980]: Shmayro
+                  - text: Haroun EL ALAMI
+              - listitem [ref=e981]:
+                - link "@claude" [ref=e982] [cursor=pointer]:
+                  - /url: https://github.com/claude
+                  - img "@claude" [ref=e983]
+                - link "claude Claude" [ref=e985] [cursor=pointer]:
+                  - /url: https://github.com/claude
+                  - strong [ref=e986]: claude
+                  - text: Claude
+          - generic [ref=e988]:
+            - heading "Languages" [level=2] [ref=e989]
+            - list [ref=e994]:
+              - listitem [ref=e995]:
+                - link "Shell 98.8%" [ref=e996] [cursor=pointer]:
+                  - /url: /Shmayro/singularity-claude/search?l=shell
+                  - img [ref=e997]
+                  - generic [ref=e999]: Shell
+                  - generic [ref=e1000]: 98.8%
+              - listitem [ref=e1001]:
+                - link "Batchfile 1.2%" [ref=e1002] [cursor=pointer]:
+                  - /url: /Shmayro/singularity-claude/search?l=batchfile
+                  - img [ref=e1003]
+                  - generic [ref=e1005]: Batchfile
+                  - generic [ref=e1006]: 1.2%
+  - contentinfo [ref=e1008]:
+    - heading "Footer" [level=2] [ref=e1009]
+    - generic [ref=e1010]:
+      - generic [ref=e1011]:
+        - link "GitHub Homepage" [ref=e1012] [cursor=pointer]:
+          - /url: https://github.com
+          - img [ref=e1013]
+        - generic [ref=e1015]: © 2026 GitHub, Inc.
+      - navigation "Footer" [ref=e1016]:
+        - heading "Footer navigation" [level=3] [ref=e1017]
+        - list "Footer navigation" [ref=e1018]:
+          - listitem [ref=e1019]:
+            - link "Terms" [ref=e1020] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+          - listitem [ref=e1021]:
+            - link "Privacy" [ref=e1022] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+          - listitem [ref=e1023]:
+            - link "Security" [ref=e1024] [cursor=pointer]:
+              - /url: https://github.com/security
+          - listitem [ref=e1025]:
+            - link "Status" [ref=e1026] [cursor=pointer]:
+              - /url: https://www.githubstatus.com/
+          - listitem [ref=e1027]:
+            - link "Community" [ref=e1028] [cursor=pointer]:
+              - /url: https://github.community/
+          - listitem [ref=e1029]:
+            - link "Docs" [ref=e1030] [cursor=pointer]:
+              - /url: https://docs.github.com/
+          - listitem [ref=e1031]:
+            - link "Contact" [ref=e1032] [cursor=pointer]:
+              - /url: https://support.github.com?tags=dotcom-footer
+          - listitem [ref=e1033]:
+            - button "Manage cookies" [ref=e1035] [cursor=pointer]
+          - listitem [ref=e1036]:
+            - button "Do not share my personal information" [ref=e1038] [cursor=pointer]
