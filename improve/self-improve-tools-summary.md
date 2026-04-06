@@ -150,11 +150,13 @@ cp -r agent-playbook/skills/self-improving-agent ~/.claude/skills/
 - **质量监控** — 跟踪技能性能、错误率、执行成功率
 
 **三种进化模式**:
+
 - 🔧 **FIX** — 就地修复损坏或过时的指令
 - 🚀 **DERIVED** — 从父技能创建增强或专门版本
 - ✨ **CAPTURED** — 从成功执行中提取新的可复用模式
 
 **三种触发机制**:
+
 - 📈 **后执行分析** — 每次任务后运行
 - ⚠️ **工具退化检测** — 工具成功率下降时批量进化
 - 📊 **指标监控** — 定期扫描技能健康指标
@@ -174,6 +176,7 @@ cp -r agent-playbook/skills/self-improving-agent ~/.claude/skills/
 - **实测节省**: 46% Token 减少，4.2× 收入提升
 
 **安装方式**:
+
 ```bash
 # 安装
 git clone https://github.com/HKUDS/OpenSpace.git && cd OpenSpace
@@ -187,6 +190,8 @@ openspace --model "anthropic/claude-sonnet-4-5" --query "your task"
 ```
 
 **官方文档**: https://open-space.cloud
+
+**详细分析**: [./openspace.md](./openspace.md)
 
 ---
 
@@ -271,32 +276,32 @@ Claude Code 完全遵循 Agent Skills 标准，并扩展了额外功能：
 
 ## 对比总结
 
-| 特性                  | claude-reflect-system | singularity-claude     | self-improving-agent | OpenSpace       | OpenClaw  | OpenCode |
-|---------------------|-----------------------|------------------------|----------------------|-----------------|-----------|----------|
-| **自改进方式**           | 用户纠正学习                | 自动评分 + 递归进化            | 全技能经验 + 用户反馈         | 三模式进化+三触发机制     | 网关协同执行    | 原生支持技能   |
-| **完整生命周期**          | ❌ 仅限改进现有技能            | ✅ 缺口检测→创建→固化           | ✅ 所有技能持续进化           | ✅ 发现→应用→进化完整闭环  | ✅ 作为网关配合  | ✅ 加载技能   |
+| 特性                  | claude-reflect-system | singularity-claude     | self-improving-agent | OpenSpace      | OpenClaw  | OpenCode |
+|---------------------|-----------------------|------------------------|----------------------|----------------|-----------|----------|
+| **自改进方式**           | 用户纠正学习                | 自动评分 + 递归进化            | 全技能经验 + 用户反馈         | 三模式进化+三触发机制    | 网关协同执行    | 原生支持技能   |
+| **完整生命周期**          | ❌ 仅限改进现有技能            | ✅ 缺口检测→创建→固化           | ✅ 所有技能持续进化           | ✅ 发现→应用→进化完整闭环 | ✅ 作为网关配合  | ✅ 加载技能   |
 | **成熟度模型**           | ❌ 无                   | ✅ Draft → Crystallized | ✅ 置信度跟踪              | ✅ 版本DAG+谱系跟踪   | -         | -        |
 | **量化评分**            | ❌ 置信度分级               | ✅ 5维度 0-100            | ✅ 用户评分(1-10)+置信度     | ✅ 质量监控+指标跟踪    | -         | -        |
 | **自动修复**            | 用户触发                  | 低分自动触发                 | 错误钩子触发               | ✅ 三种触发自动修复     | 需要配合      | 需要配合     |
 | **多内存架构**           | ❌ 无                   | ❌ 无                    | ✅ 语义+情景+工作           | ❌ SQLite存储     | -         | -        |
 | **云社区共享**           | ❌ 无                   | ❌ 无                    | ❌ 无                  | ✅ 技能云端共享       | ❌ 无       | ❌ 无      |
 | **Token效率**         | ❌ 无优化                 | ❌ 无优化                  | ❌ 无优化                | ✅ 46% Token节省  | ❌ 无优化     | ❌ 无优化    |
-| **遵循 Agent Skills** | ✅ Yes                 | ⚠️ 插件格式                | ✅ Yes                | ✅ Yes           | ✅ 网关+技能兼容 | ✅ 原生支持   |
-| **跨平台**             | ❌ Claude Code 仅       | ❌ Claude Code 仅        | ❌ Claude Code 仅      | ✅ 多平台           | ✅ 多平台     | ✅ 多平台    |
+| **遵循 Agent Skills** | ✅ Yes                 | ⚠️ 插件格式                | ✅ Yes                | ✅ Yes          | ✅ 网关+技能兼容 | ✅ 原生支持   |
+| **跨平台**             | ❌ Claude Code 仅       | ❌ Claude Code 仅        | ❌ Claude Code 仅      | ✅ 多平台          | ✅ 多平台     | ✅ 多平台    |
 
 ---
 
 ## 推荐选型
 
-| 场景                                        | 推荐工具                                                                    |
-|-------------------------------------------|-------------------------------------------------------------------------|
-| 你主要用 Claude Code，只需要从用户纠正中学习              | **claude-reflect-system**                                               |
-| 你想要完整的自动进化，从创建到固化完整循环                     | **singularity-claude**                                                  |
-| 你需要从所有技能经验中持续学习，支持多内存架构                  | **agent-playbook/self-improving-agent**                                 |
-| 你需要云社区技能共享，多平台支持，Token效率优化                | **OpenSpace**                                                           |
-| 你需要跨渠道（WhatsApp/Telegram）访问，本地部署          | **OpenClaw** + 上述任一技能                                                   |
-| 你使用 OpenCode 开源终端，需要自改进能力               | OpenCode 原生支持 Agent Skills，可直接安装任一上述技能                                  |
-| 需要遵循 `npx skills` 标准，自己设计新工具              | 基于本仓库设计，参考 [self-improve-tool-design.md](./self-improve-tool-design.md) |
+| 场景                               | 推荐工具                                                                    |
+|----------------------------------|-------------------------------------------------------------------------|
+| 你主要用 Claude Code，只需要从用户纠正中学习     | **claude-reflect-system**                                               |
+| 你想要完整的自动进化，从创建到固化完整循环            | **singularity-claude**                                                  |
+| 你需要从所有技能经验中持续学习，支持多内存架构          | **agent-playbook/self-improving-agent**                                 |
+| 你需要云社区技能共享，多平台支持，Token效率优化       | **OpenSpace**                                                           |
+| 你需要跨渠道（WhatsApp/Telegram）访问，本地部署 | **OpenClaw** + 上述任一技能                                                   |
+| 你使用 OpenCode 开源终端，需要自改进能力        | OpenCode 原生支持 Agent Skills，可直接安装任一上述技能                                  |
+| 需要遵循 `npx skills` 标准，自己设计新工具     | 基于本仓库设计，参考 [self-improve-tool-design.md](./self-improve-tool-design.md) |
 
 ---
 
