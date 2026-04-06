@@ -1,7 +1,7 @@
-# Claude Code 自改进工具全景：三种方案完整分析与对比
+# Claude Code 自改进工具全景：四种方案完整分析与对比
 
-> 本文整合了 `claude-reflect-system`、`singularity-claude`、`agent-playbook/self-improving-agent` 三种主流 Claude Code
-> 自改进方案的完整分析，并从多个维度进行对比。
+> 本文整合了 `claude-reflect-system`、`singularity-claude`、`agent-playbook/self-improving-agent`、`HKUDS/OpenSpace` 四种主流
+> 自改进/自进化方案的完整分析，并从多个维度进行对比。
 
 ---
 
@@ -10,11 +10,12 @@
 1. [方案一：claude-reflect-system](#方案一claude-reflect-system)
 2. [方案二：singularity-claude](#方案二singularity-claude)
 3. [方案三：agent-playbook/self-improving-agent](#方案三agent-playbookself-improving-agent)
-4. [多维度完整对比](#多维度完整对比)
-5. [架构设计对比](#架构设计对比)
-6. [工作流程对比](#工作流程对比)
-7. [适用场景推荐](#适用场景推荐)
-8. [引用与参考](#引用与参考)
+4. [方案四：HKUDS/OpenSpace](#方案四hkdwsopenspace)
+5. [多维度完整对比](#多维度完整对比)
+6. [架构设计对比](#架构设计对比)
+7. [工作流程对比](#工作流程对比)
+8. [适用场景推荐](#适用场景推荐)
+9. [引用与参考](#引用与参考)
 
 ---
 
@@ -805,6 +806,210 @@ Any Skill Run
 
 ---
 
+## 方案四：HKUDS/OpenSpace
+
+**仓库地址**: https://github.com/HKUDS/OpenSpace  
+**作者**: 香港大学数据智能实验室 (HKUDS)  
+**核心口号**: "Make Your Agents: Smarter, Low-Cost, Self-Evolving"  
+**发布时间**: 2026年3月 (最新开源)
+
+---
+
+### 项目概述
+
+**OpenSpace** 是一个完整的**自进化 Agent 引擎框架**，让任何 Agent 都能通过真实任务经验**自主积累技能、持续进化**。解决了传统静态 Agent 的**技能腐化 (Skill Decay)** 问题 —— 人工静态编写的技能无法适应工具更新和场景漂移，会随时间推移越来越差。OpenSpace 让 Agent 在任务中自动学习，实现真正的持续自主成长。
+
+OpenSpace 宣称能做到：
+- 🧬 **46% Fewer Tokens** — 进化后Token消耗减少46%
+- 💰 **$11K earned in 6 Hours** — 在GDPVal基准测试中50个任务赚取$11,484
+- 🧬 **Self-Evolving Skills** — 技能自动进化
+- 🌐 **Agents Experience Sharing** — 集体智能共享
+
+> "One Command to Evolve All Your AI Agents" — 一条命令进化你所有的 AI Agent
+
+### 核心问题
+
+传统 AI Agent 的痛点：
+- **Token浪费**：每次都从头推理，不会复用成功模式
+- **重复失败**：同样的错误不断重复，无法从失败中学习
+- **技能腐化**：工具API更新后，旧技能慢慢失效，质量越来越差
+- **知识孤岛**：一个 Agent 学到的知识，其他 Agent 无法共享
+
+### 核心解决方案
+
+OpenSpace 给你的 Agent 加上三个超能力：
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                          OpenSpace Self-Evolution                      │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  🧬 Self-Evolution        🌐 Collective Intelligence     💰 Token Efficiency  │
+│   • AUTO-FIX broken skills     • One learns → all benefit      • Stop repeating work    │
+│   • AUTO-IMPROVE patterns    • Network effects: more→faster       • 46% fewer tokens      │
+│   • AUTO-LEARN workflows    • One-click sharing                   • Real economic value    │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**OpenSpace 赋能的 Agent**:
+- 多层监控捕捉问题，自动触发修复
+- 成功工作流变成可共享的可复用技能
+- 一个 Agent 学到，所有 Agent 立即获益
+
+### 核心特色与自进化机制
+
+#### 1. 不覆盖历史的进化策略（DERIVED 模式）
+
+OpenSpace 定义了三种进化模式：
+
+| 模式 | 作用 | 适用场景 |
+|------|------|----------|
+| **FIX** | 原地修复破损或过时的指导 | 修复现有技能中的错误 |
+| **DERIVED** | 从父技能创建增强/专用版本，共存 | 通用技能适配新场景，不修改原技能，避免臃肿 |
+| **CAPTURED** | 从成功执行中提取新模式 | 发现全新技能，从零创建 |
+
+**DERIVED 模式**是最大特色：
+- 当原有通用技能适配新场景需要调整时
+- **不直接修改原技能**，保留原技能分支
+- 派生全新的专用技能分支
+- 既避免通用技能臃肿，又完整保存历史知识
+- 不同场景自动匹配对应分支
+
+**实验案例**：一个通用的文档生成兜底技能 `document-gen-fallback`，自主进化出了 **13 个专用分支**，覆盖法律文书、调查报告等不同场景，全由 Agent 自主生成，无需人工编写。
+
+#### 2. 可追溯的版本化进化管理（DAG）
+
+用**有向无环图（DAG）**存储所有技能版本，完整记录：
+- 每个技能版本的诞生场景
+- 进化原因
+- 代码差异
+- 应用率/成功率/回退率等健康数据
+
+**存储优化**：仅存储最小改动（diff）而非全量重写，节省 token 消耗。
+
+进化过程**清晰可追溯**，是 Agent 决策经验的完整档案。
+
+#### 3. 全场景进化触发防线（三层触发）
+
+设计三层触发机制保证进化无死角：
+
+| 触发层 | 触发时机 | 作用 |
+|--------|----------|------|
+| **执行后分析** | 每次任务完成后 | LLM 复盘执行记录，主动发现优化机会，触发 FIX/DERIVED/CAPTURED |
+| **工具退化检测** | 工具 API 成功率下滑时 | 自动批量触发所有依赖该工具的技能进化 |
+| **定期指标监控** | 定时扫描 | 将应用率下降/回退率升高的技能自动排入进化队列 |
+
+**无论任务成败**，都能推动 Agent 持续优化。
+
+### 实验效果 (GDPVal 基准测试)
+
+在 50 个真实专业任务基准 GDPVal 测试（基于 Qwen 3.5-Plus）：
+
+| 指标 | 结果 |
+|------|------|
+| **冷启动** | Agent 边执行任务边自主进化，最终积累出 **165 个自主生成的技能** |
+| **Token 节省** | 复用进化后的技能库重新执行，总 Token 消耗仅为冷启动阶段的 **45.9%** |
+| **文档类任务** | Token 节省达到 **56%** |
+| **收入提升** | 比 baseline 高 **4.2×** 实际收入（任务价值评估） |
+| **质量提升** | 平均质量从 40.8% → **70.8%** |
+
+### 自主进化出的 165 技能分类
+
+在 50 个冷启动任务中，OpenSpace 自主进化出 165 个技能：
+
+| 用途 | 数量 | 教会 Agent 什么 |
+|------|------|----------------|
+| **File Format I/O** | 44 | PDF 提取降级方案、DOCX 解析、Excel 合并单元格处理... 32/44 从真实失败中捕获 |
+| **Execution Recovery** | 29 | 分层 fallback：sandbox 失败 → shell → file-write-then-run | 28/29 从实际崩溃捕获 |
+| **Document Generation** | 26 | 端到端文档 pipeline。`document-gen-fallback` 从 1 个进口技能进化出 **13 个派生版本** |
+| **Quality Assurance** | 23 | 写入后验证：检查 Excel 行数、验证 PDF 页面... 质量提升的关键 |
+| **Task Orchestration** | 17 | 多文件追踪、ZIP 打包、零迭代失败检测 |
+| **Domain Workflow** | 13 | SOAP 笔记、音频处理（从 1 模板进化出 4 代）|
+| **Web & Research** | 11 | SSL/代理调试、搜索降级、JS 页面处理 |
+
+### 架构组件
+
+#### 完整框架架构
+
+```mermaid
+graph TD
+    A[User Task] --> B[Skill Registry<br>BM25 + embedding 混合检索]
+    B --> C[Grounding Agent<br>执行任务]
+    C --> D[Post-Execution Analysis]
+    D --> E{Need Evolution?}
+    E -->|Yes| F[Evolution Engine<br>FIX / DERIVED / CAPTURED]
+    F --> G[Quality Validation]
+    G --> H[Update DAG Version Store<br>SQLite + DAG]
+    H --> B
+    E -->|No| I[Done]
+```
+
+#### 三层质量监控
+
+- **技能级别**：应用率、完成率、有效率、回退率
+- **工具调用级别**：成功率、延迟、标记问题
+- **代码执行级别**：执行状态、错误模式
+
+**级联进化**：任何组件退化 → 自动触发所有上游依赖技能进化，维持系统一致性。
+
+### 安装与使用
+
+```bash
+git clone https://github.com/HKUDS/OpenSpace.git && cd OpenSpace
+pip install -e .
+openspace-mcp --help   # verify installation
+```
+
+**支持任何支持 SKILL.md 的 Agent**：Claude Code, Codex, OpenClaw, nanobot, Cursor...
+
+**作为 MCP 服务器集成到你的 Agent**：
+
+```json
+{
+  "mcpServers": {
+    "openspace": {
+      "command": "openspace-mcp",
+      "toolTimeout": 600,
+      "env": {
+        "OPENSPACE_HOST_SKILL_DIRS": "/path/to/your/agent/skills",
+        "OPENSPACE_WORKSPACE": "/path/to/OpenSpace",
+        "OPENSPACE_API_KEY": "sk-xxx (optional, for cloud)"
+      }
+    }
+  }
+}
+```
+
+复制两个引导技能到你的 skills 目录：
+```bash
+cp -r OpenSpace/openspace/host_skills/delegate-task/ /path/to/your/agent/skills/
+cp -r OpenSpace/openspace/host_skills/skill-discovery/ /path/to/your/agent/skills/
+```
+
+完成。你的 Agent 现在可以自进化了。
+
+### 优缺点分析
+
+#### 优点
+
+✅ **完整框架**：从检索到执行到进化，完整开源框架  
+✅ **不覆盖历史**：DERIVED 模式保留原技能，专业分支共存  
+✅ **DAG 版本管理**：完整可追溯的进化历史，diff 存储节省空间  
+✅ **三层触发**：进化无死角，无论成败都能推动进化  
+✅ **集体智能**：云端技能社区，一人学会所有人受益  
+✅ **实验验证**：真实任务上 4.2× 收入提升，46% token 节省，数据说话  
+✅ **MCP 集成**：标准 MCP 协议，任何支持技能的 Agent 都能集成  
+
+#### 局限性
+
+- 需要 Python 环境运行（MCP 服务器）
+- 完整功能需要云端社区支持（本地也可用）
+- 框架相对重量级（适合完整 Agent 系统，不适合简单场景）
+- 2026 年 3 月刚开源，生态还在成长
+
+---
+
 ## 多维度完整对比
 
 ### 基础信息对比
@@ -854,6 +1059,7 @@ Any Skill Run
 | **claude-reflect-system** | 三级置信度：HIGH/MEDIUM/LOW     |
 | **singularity-claude**    | 五个维度，每个 0-20，总分 0-100     |
 | **self-improving-agent**  | 0.0-1.0 连续置信度 + 用户评分 1-10 |
+| **OpenSpace**             | 应用率/成功率/回退率 多维度健康统计 + 版本 DAG |
 
 ### 成熟度模型
 
@@ -862,6 +1068,7 @@ Any Skill Run
 | **claude-reflect-system** | ❌ 无，直接永久保存                                   |
 | **singularity-claude**    | Draft → Tested → Hardened → Crystallized（四级） |
 | **self-improving-agent**  | 通过置信度隐式实现，置信度越高越可靠                           |
+| **OpenSpace**             | FIX → DERIVED → CAPTURED 三种模式 + DAG 完整版本谱系                                   |
 
 ### 数据存储结构
 
@@ -893,6 +1100,17 @@ self-improving-agent/
     ├── pre-tool.sh
     ├── post-bash.sh
     └── session-end.sh
+
+# OpenSpace
+OpenSpace/
+├── .openspace/
+│   ├── openspace.db              # SQLite 存储技能 DAG + 指标
+│   └── embedding-cache/          # 技能嵌入缓存
+├── openspace/
+│   ├── skill_engine/             # 自进化技能引擎
+│   ├── grounding/               # 执行层
+│   └── cloud/                   # 云端社区客户端
+└── logs/                        # 执行日志
 ```
 
 ---
@@ -927,6 +1145,18 @@ self-improving-agent/
 3. 如果修改了技能 → 触发 create-pr 询问提交
 ```
 
+**OpenSpace**:
+
+```
+用户任务 → 技能检索 → 执行 → 执行后分析
+   ↓
+需要进化 → 自动判断 FIX/DERIVED/CAPTURED → 验证更新 → DAG 存储
+   ↓
+工具退化检测 → 批量触发进化
+   ↓
+定期扫描健康指标 → 进化低性能技能
+```
+
 ### 自修正流程对比
 
 | 方案                        | 触发条件             | 修复方式           |
@@ -934,6 +1164,7 @@ self-improving-agent/
 | **claude-reflect-system** | 用户输入 `/reflect`  | 用户纠正后手动提取      |
 | **singularity-claude**    | 平均分低于阈值          | 自动分析修复         |
 | **self-improving-agent**  | Bash 错误 / 钩子捕捉错误 | 分析错误上下文 → 更新技能 |
+| **OpenSpace**             | 执行后分析 + 工具退化检测 + 定期监控 | 三层触发，FIX/DERIVED 自动修复 |
 
 ### 缺口检测能力
 
@@ -942,6 +1173,7 @@ self-improving-agent/
 | **claude-reflect-system** | ❌ 无                         |
 | **singularity-claude**    | ✅ 自动检测重复任务/无覆盖失败，建议创建       |
 | **self-improving-agent**  | ⚠️ 通过经验重复度隐式检测，重复 3+ 次抽象为模式 |
+| **OpenSpace**             | ✅✅ 三层防线：执行后分析 + 工具退化 + 定期扫描 |
 
 ### 用户参与度
 
@@ -950,39 +1182,42 @@ self-improving-agent/
 | **claude-reflect-system** | 必须用户纠正，用户审批变更 |
 | **singularity-claude**    | 可全自动，用户可选评分   |
 | **self-improving-agent**  | 每次更新后收集评分反馈   |
+| **OpenSpace**             | 可全自动，用户可确认进化   |
 
 ---
 
 ## 功能特性对比表
 
-| 特性         | claude-reflect-system | singularity-claude | agent-playbook/self-improving-agent |
-|------------|-----------------------|--------------------|-------------------------------------|
-| **从用户纠正学习  | ✅                     | ✅ (可选)             | ✅                                   |
-| **自动从错误中学习 | ❌                     | ✅                  | ✅ (钩子触发)                            |
-| **自动创建新技能  | ❌                     | ✅                  | ❌ (仅改进现有)                           |
-| **能力缺口检测   | ❌                     | ✅                  | 隐式                                  |
-| **跨技能知识迁移  | ❌                     | ✅                  | ✅ 模式可应用到多技能                         |
-| **量化评分/置信度 | 三级置信度                 | 5维度 0-100          | 0.0-1.0 置信度 + 用户评分                  |
-| **成熟度分级    | ❌                     | ✅ 四级               | ❌ (置信度替代                            |
-| **自动修复     | ❌                     | ✅ 低分触发             | ✅ 错误触发                              |
-| **Git 集成   | ✅ 每次提交                | ✅ 固化打标签            | ✅ 改进后创建 PR                          |
-| **安全回滚     | ✅                     | ✅                  | ✅ 通过 Git PR                         |
-| **多内存架构    | ❌                     | ❌                  | ✅                                   |
-| **可追溯来源    | ✅                     | ✅                  | ✅ 进化/修正标记                           |
-| **人在回路     | ✅                     | 可选                 | ✅                                   |
-| **钩子集成     | ✅                     | ❌                  | ✅                                   |
-| **零外部依赖    | ❌ (需要 PyYAML)         | ❌ (需要 Haiku)       | ✅                                   |
+| 特性         | claude-reflect-system | singularity-claude | agent-playbook/self-improving-agent | OpenSpace |
+|------------|-----------------------|--------------------|-------------------------------------|----------|
+| **从用户纠正学习  | ✅                     | ✅ (可选)             | ✅                                   | ✅ |
+| **自动从错误中学习 | ❌                     | ✅                  | ✅ (钩子触发)                            | ✅✅ 三层触发 |
+| **自动创建新技能  | ❌                     | ✅                  | ❌ (仅改进现有)                           | ✅ CAPTURED 模式 |
+| **能力缺口检测   | ❌                     | ✅                  | 隐式                                  | ✅ 三层检测 |
+| **跨技能知识迁移  | ❌                     | ✅                  | ✅ 模式可应用到多技能                         | ✅ 云端共享 + DAG |
+| **量化评分/置信度 | 三级置信度                 | 5维度 0-100          | 0.0-1.0 置信度 + 用户评分                  | 成功率/应用率/回退率 多维度 |
+| **成熟度分级    | ❌                     | ✅ 四级               | ❌ (置信度替代)                            | ✅ DAG 版本谱系 + 三种进化模式 |
+| **自动修复     | ❌                     | ✅ 低分触发             | ✅ 错误触发                              | ✅ 自动级联修复 |
+| **Git 集成   | ✅ 每次提交                | ✅ 固化打标签            | ✅ 改进后创建 PR                          | ✅ DAG diff 存储 |
+| **安全回滚     | ✅                     | ✅                  | ✅ 通过 Git PR                         | ✅ DAG 任意版本回滚 |
+| **多内存架构    | ❌                     | ❌                  | ✅ 语义+情景+工作分离                          | ✅ SQLite + DAG |
+| **可追溯来源    | ✅                     | ✅                  | ✅ 进化/修正标记                           | ✅ 完整 diff + 谱系 |
+| **人在回路     | ✅                     | 可选                 | ✅                                   | ✅ 确认门限可配置 |
+| **钩子集成     | ✅                     | ❌                  | ✅                                   | ✅ MCP 集成 |
+| **云端技能共享 | ❌                     | ❌                  | ❌                                   | ✅ open-space.cloud 社区 |
+| **零外部依赖    | ❌ (需要 PyYAML)         | ❌ (需要 Haiku)       | ✅                                   | ❌ 需要 Python |
 
 ---
 
 ## 优缺点对比总结
 
-| 方面      | claude-reflect-system   | singularity-claude | self-improving-agent |
-|---------|-------------------------|--------------------|----------------------|
-| **优点**  | 简单直接，开箱即用，永久记忆          | 完整自进化循环，量化评分       | 普适全体系，多内存架构，基于研究     |
-| **缺点**  | 只能改进现有技能，无法创建，只能从用户纠正学习 | 需要 Haiku，实验性       | 需要配置 hooks           |
-| **代码量** | ~2000 行                 | 插件实现               | 轻量架构，Markdown + 钩子   |
-| **依赖**  | Python + PyYAML         | Claude Code 插件     | 零依赖                  |
+| 方面      | claude-reflect-system   | singularity-claude | self-improving-agent | OpenSpace |
+|---------|-------------------------|--------------------|----------------------|----------|
+| **优点**  | 简单直接，开箱即用，永久记忆          | 完整自进化循环，量化评分       | 普适全体系，多内存架构，基于研究     | 完整框架，DAG版本管理，云端共享，实验验证 |
+| **缺点**  | 只能改进现有技能，无法创建，只能从用户纠正学习 | 需要 Haiku，实验性       | 需要配置 hooks           | 需要Python环境，相对重量级 |
+| **代码量** | ~2000 行                 | 插件实现               | 轻量架构，Markdown + 钩子   | 完整Python项目 ~几千行 |
+| **依赖**  | Python + PyYAML         | Claude Code 插件     | 零依赖                  | Python + MCP |
+| **架构** | 插件 | 插件 | agent-playbook 技能 | 独立框架 / MCP 服务器 |
 
 ---
 
@@ -996,9 +1231,13 @@ self-improving-agent/
   │   ├─→ ✅ 推荐：claude-reflect-system
   │   └─→ 为什么：简单直接，纠正一次永久记住
   │
-  ├─→ 你想要从 从零开始自动创建并进化技能？
+  ├─→ 你想要从零开始自动创建并进化技能？
   │   ├─→ ✅ 推荐：singularity-claude
   │   └─→ 为什么：完整缺口检测→创建→评分→修复→固化循环
+  │
+  ├─→ 你需要完整的独立自进化框架，支持技能共享？
+  │   ├─→ ✅ 推荐：OpenSpace
+  │   └─→ 为什么：香港大学最新开源，完整 MCP 框架，DAG 版本管理，云端社区
   │
   └─→ 你已经在用 agent-playbook 技能体系？
       ├─→ ✅ 推荐：self-improving-agent
@@ -1011,22 +1250,25 @@ self-improving-agent/
 |----------------------------------|---------------------------|--------------------------|
 | 个人使用，只需要记住工具偏好和代码风格              | **claude-reflect-system** | 最简单，最直接，开箱即用             |
 | 需要自动创建新技能并让它们自我进化                | **singularity-claude**    | 完整递归进化循环，真正的自进化引擎        |
+| 需要完整独立框架，团队协作共享技能                | **OpenSpace**             | 香港大学最新开源，DAG 版本管理，云端社区，实验数据验证 |
 | 已经在使用 agent-playbook，需要从所有技能经验学习 | **self-improving-agent**  | 原生集成，多内存架构，持续进化整个体系      |
-| 团队协作，需要沉淀最佳实践                    | **self-improving-agent**  | 模式沉淀，可共享，通过 PR 评审        |
-| 需要从零开始搭建技能库                      | **singularity-claude**    | 自动检测缺口，自动创建技能            |
+| 团队协作，需要沉淀最佳实践                    |  **OpenSpace** / **self-improving-agent**  | OpenSpace 支持云端共享；self-improving-agent 模式沉淀可通过 PR 评审 |
+| 需要从零开始搭建技能库                      | **singularity-claude** / **OpenSpace** | 都支持自动检测缺口，自动创建技能            |
 | 最小依赖，纯 Claude Code 原生            | **self-improving-agent**  | 零外部依赖，纯 Markdown + hooks |
+| 需要 token 节省，已经积累了很多技能              | **OpenSpace**             | GDPVal 实测 token 节省 46%，真实任务收入提升 4.2× |
 
 ### 复杂度对比
 
 - **最低复杂度**: claude-reflect-system → 安装就能用
 - **中等复杂度**: self-improving-agent → 需要配置几个 hooks
-- **最高复杂度**: singularity-claude → 需要理解进化循环，但功能最强大
+- **较高复杂度**: singularity-claude → 需要理解进化循环
+- **最高复杂度**: OpenSpace → 需要 Python 环境和 MCP 配置，但功能最完整
 
 ---
 
 ## 总结
 
-三种方案代表了三种不同的自改进哲学：
+四种方案代表了四种不同的自改进/自进化哲学：
 
 1. **claude-reflect-system**：**极简主义** —— 聚焦一个问题（解决 "AI 重复犯相同错误"，解决方案优雅且有效
 
@@ -1034,8 +1276,13 @@ self-improving-agent/
 
 3. **self-improving-agent**：**体系集成** —— 在现有的多技能体系中，让整个体系从每一次交互中学习，持续进化所有技能
 
-三者并不互斥，可以结合使用：singularity-claude 创建进化单个技能，self-improving-agent 在整个体系层面沉淀跨技能模式，claude-reflect-system
-处理简单的个人偏好。
+4. **OpenSpace**：**框架级** —— 完整的独立自进化引擎框架，支持版本 DAG，云端技能共享，经过真实任务基准测试验证
+
+四者并不互斥，可以结合使用：
+- OpenSpace 作为底层框架提供完整的自进化能力
+- singularity-claude 处理从缺口检测到固化的完整单技能生命周期
+- self-improving-agent 在 agent-playbook 体系层面沉淀跨技能模式
+- claude-reflect-system 处理简单的个人偏好
 
 ---
 
@@ -1065,6 +1312,15 @@ Retrieved: 2026-04-05
 Repository: syllr/agent-playbook
 Path: skills/self-improving-agent
 URL: https://github.com/syllr/agent-playbook
+License: MIT
+Retrieved: 2026-04-05
+```
+
+### OpenSpace
+
+```
+Repository: HKUDS/OpenSpace
+URL: https://github.com/HKUDS/OpenSpace
 License: MIT
 Retrieved: 2026-04-05
 ```
