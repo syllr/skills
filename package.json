@@ -1,0 +1,19 @@
+{
+  "name": "skills",
+  "version": "1.0.0",
+  "description": "个人自定义 [Agent Skills](https://github.com/vercel-labs/skills) 技能集合，适配 [skills.sh](https://skills.sh/) 生态系统，基于 `npx skills` 命令管理。",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "skills": "^1.4.9"
+  }
+}

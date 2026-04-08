@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "testtoghtml": {
+      "source": "/Users/yutao/ainote/skills",
+      "sourceType": "local",
+      "computedHash": "cb9e3ff7610a9094e6d2e43f254fc05bfd802263ed77d428babff4b0922f60b4"
+    }
+  }
+}
