@@ -34,3 +34,8 @@ skills-lock.json
 # 归档/构建产物
 *.zip
 node_modules/
+
+# OMO 运行状态目录（只保留 rules/ 配置入库，其余为运行时信息）
+.omo/*
+!.omo/rules/
+!.omo/rules/**
