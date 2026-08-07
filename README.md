@@ -42,6 +42,26 @@ npx skills add syllr/skills -s '*' -a opencode -y
 
 安装后位于 `~/.config/opencode/skills/`（全局）或 `<项目>/.opencode/skills/`（项目级），重启 opencode 生效。
 
+## 更新
+
+当仓库里的 skill 有改动后，用 `npx skills` 更新本机已安装的版本：
+
+```bash
+# 更新所有已安装技能（自动检测全局/项目作用域）
+npx skills update
+
+# 只更新全局技能
+npx skills update -g
+
+# 只更新当前项目的技能
+npx skills update -p
+
+# 跳过确认，直接更新
+npx skills update -g -y
+```
+
+> `update`（别名 `upgrade`）会从 GitHub 仓库拉取最新版本并覆盖本机已安装的 skill。若本机技能是手动复制而非 `npx skills add` 安装的，`update` 可能无法识别，需重新执行 `add` 命令覆盖安装。
+
 ## 可用技能
 
 | 技能                                   | 描述                                                                                                                        |
