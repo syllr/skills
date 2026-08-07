@@ -26,19 +26,29 @@ description: 用 D2（d2lang.com）声明式文本画架构图/流程图/时序�
 
 ---
 
-## 2. 工作流（6 步）
+## 2. 工作流（7 步）
 
 > **CRITICAL — BLOCKING（阻塞性要求）: 画任何图之前，第一步 MUST 使用 Read 工具读取 [`references/layouts.md`](references/layouts.md)（布局引擎总览）与第 7 章选型速查，根据图类型与复杂度选定布局引擎（dagre/ELK/TALA）。未读取并确定引擎前，禁止写 `.d2` 文件或调用渲染命令。**
 > 选型速查：通用小图 → **dagre**（默认）；节点多/容器嵌套/边密 → **ELK**；架构图/需手动锁位 → **TALA**；看板/仪表盘 → `grid-columns` 强制布局。
 
+> **渲染后不要打开浏览器预览，不要执行 `open` 命令**。渲染完成只需报告文件路径与结果。**除非用户明确要求"打开看看"**，否则一律不打开。
+
+> **平台限定**：本 skill 的 PNG 转换自检依赖 **macOS 自带 `sips` 命令**，仅支持 Mac。非 macOS 环境跳过 PNG 转换自检，降级为 Read `.d2` 源码核对 + `d2 validate` 校验，并在报告注明"未做 PNG 自检（仅支持 macOS）"。
+
 0. **选引擎（强制）**：Read [references/layouts.md](references/layouts.md) → 确定布局引擎（默认 dagre）
 1. 确认需求：图类型、输出格式（默认 SVG）
-2. 写 `.d2` 文件（建议放 `docs/diagrams/` 或项目约定目录），按需在文件头设 `vars: { d2-config: { layout-engine: <engine> } }`
+2. 写 `.d2` 文件——**位置不固定，放在当前项目内即可，由用户指定或按项目约定**（如 `docs/diagrams/`、项目根目录等），按需在文件头设 `vars: { d2-config: { layout-engine: <engine> } }`
 3. 格式化自检：`d2 fmt --check <file>.d2`（未格式化则 `d2 fmt <file>.d2`）
 4. 校验：`d2 validate <file>.d2`（失败则修到通过）
-5. 渲染：`d2 <file>.d2 <file>.svg`，`open <file>.svg` 看效果
+5. 渲染：`d2 <file>.d2 <file>.svg`——**SVG 必须输出到与 `.d2` 相同的目录**（`docs/diagrams/foo.d2` → `docs/diagrams/foo.svg`；`.d2` 在项目根 → SVG 也在项目根）。**不执行 `open`，不打开浏览器**。⚠️ 多板图（layers/scenarios/steps）输出为目录结构（`foo/layers/xxx.svg`、`foo/scenarios/yyy.svg`…），属 d2 固有行为——每张 SVG 都要单独自检
+6. **PNG 识图自检（强制，macOS）**：
+   a. 转换：`mkdir -p "$TMPDIR/d2png"` 然后执行 `sips -s format png "<file>.svg" --out "$TMPDIR/d2png/$(basename "<file>")-$(date +%Y%m%d%H%M%S).png"`——**输出到 macOS 每用户私有临时目录 `$TMPDIR/d2png/`**（避免 `/tmp` 共享目录的符号链接与跨用户可读问题），**文件名必须带时间戳且用 `$(basename ...)` 取裸文件名**（`<file>` 可能含目录路径，如 `docs/diagrams/foo`，basename 后才是 `foo`），避免重复渲染时旧 PNG 被覆盖/误读。用 macOS 自带 `sips` 转 PNG，**不需要 d2 装 Chromium**
+   b. 识别：用系统可用的**识图工具**（如 `MiniMax_understand_image`）查看该 PNG，按 [references/diagram-review.md](references/diagram-review.md) 清单逐项审查（A 结构：方向流/层级/连线标签/节点顺序/容器层级；B 内容：图与源码一致/箭头语义/信息完整；C 识图工具局限、D 使用注意参见清单）
+   c. 发现问题 → 修改 `.d2` → 重跑第 3-6 步（fmt → validate → 渲染 → PNG 自检），**最多 3 轮**；第 3 轮后仍有问题则如实报告剩余问题
+   d. 多板图：对每张 SVG 分别执行 a-b；**非 macOS、sips 不可用、或识图工具不可用时**，降级为 Read `.d2` 源码核对 + `d2 validate` 校验，并在报告注明"未做 PNG 自检（原因）"
+7. 报告：文件路径 + 渲染结果（exit 0 / SVG 大小）+ 自检结论
 
-完成标准：渲染命令 exit 0 且 SVG 文件生成。
+完成标准：渲染命令 exit 0 且 SVG 生成在与 `.d2` 相同目录（多板图为目录结构，见第 5 步）；PNG 识图自检通过（或 3 轮后如实报告剩余问题；非 macOS/工具不可用降级后注明）。
 
 ---
 
@@ -273,7 +283,7 @@ d2 --font=mono in.d2 out.svg  # 等宽字体
 d2 fmt <file>.d2             # 格式化
 d2 fmt --check <file>.d2     # 检查格式（不改）
 d2 validate <file>.d2        # 校验
-d2 --watch <file>.d2 <out>     # 热重载预览（-w flag，非子命令）
+d2 --watch --browser=0 <file>.d2 <out>  # 热重载预览（-w flag；--browser=0 不弹浏览器，仅用户要求时用）
 d2 <in> <out>                # 渲染
 d2 --layout=dagre in.d2 out.svg     # dagre（默认）
 d2 --layout=elk in.d2 out.svg       # elk（紧凑）
@@ -287,28 +297,28 @@ d2 version                    # 版本
 
 > 下表对应文件均在 `references/` 目录（本 SKILL.md 同目录下），内容已内联全部代码示例，可直接复制使用。原始出处为 d2lang.com/tour/。
 
-| Tour 章节       | 关键内容                                                               | 本地文件                                                   |
-| --------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Introduction    | Hello World 示例、第一个 .d2、运行 `d2 input.d2 output.svg` 开浏览器看 | [references/intro.md](references/intro.md)                 |
-| Hello World     | 第一个示例：`x -> y: hello world`                                      | [references/hello-world.md](references/hello-world.md)     |
-| Shapes          | 节点形状语法（3.2 节完整列表）、1:1 比例形状                           | [references/shapes.md](references/shapes.md)               |
-| Connections     | 边类型（无向/有向/标签/样式/箭头）、引用连接                           | [references/connections.md](references/connections.md)     |
-| Containers      | 容器语法（嵌套/命名空间/父引用）                                       | [references/containers.md](references/containers.md)       |
-| SQL Tables      | `sql_table` ER 图、外键连接                                            | [references/sql-tables.md](references/sql-tables.md)       |
-| Layouts         | 布局引擎总览 + 方向                                                    | [references/layouts.md](references/layouts.md)             |
-| Dagre           | 默认布局引擎：特点/局限                                                | [references/dagre.md](references/dagre.md)                 |
-| ELK             | 布局引擎：特点/局限                                                    | [references/elk.md](references/elk.md)                     |
-| TALA            | 架构图专用引擎：特点/局限                                              | [references/tala.md](references/tala.md)                   |
-| Positions       | 位置控制：`near` 锚点 / `top` / `left`                                 | [references/positions.md](references/positions.md)         |
-| Grid            | 网格布局：`grid-columns` / `grid-rows`                                 | [references/grid-diagrams.md](references/grid-diagrams.md) |
-| Composition     | layers/scenarios/steps 多板                                            | [references/composition.md](references/composition.md)     |
-| Imports         | 多文件模块化、globs 批量样式                                           | [references/imports.md](references/imports.md)             |
-| Customization   | 主题、字体、3D、阴影                                                   | [references/themes.md](references/themes.md)               |
-| Exports         | 3.8 节完整导出                                                         | [references/exports.md](references/exports.md)             |
-| CLI manual      | `d2` 全部子命令与参数                                                  | [references/man.md](references/man.md)                     |
-| Cheat Sheet     | 一页速查 PDF（预览图页）                                               | [references/cheat-sheet.md](references/cheat-sheet.md)     |
-| FAQ             | 常见问题（动画/LSP/CI/字体等）                                         | [references/faq.md](references/faq.md)                     |
-| Troubleshooting | 故障排查                                                               | [references/troubleshoot.md](references/troubleshoot.md)   |
+| Tour 章节       | 关键内容                                                             | 本地文件                                                   |
+| --------------- | -------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Introduction    | Hello World 示例、第一个 .d2、运行 `d2 input.d2 output.svg` 渲染出图 | [references/intro.md](references/intro.md)                 |
+| Hello World     | 第一个示例：`x -> y: hello world`                                    | [references/hello-world.md](references/hello-world.md)     |
+| Shapes          | 节点形状语法（3.2 节完整列表）、1:1 比例形状                         | [references/shapes.md](references/shapes.md)               |
+| Connections     | 边类型（无向/有向/标签/样式/箭头）、引用连接                         | [references/connections.md](references/connections.md)     |
+| Containers      | 容器语法（嵌套/命名空间/父引用）                                     | [references/containers.md](references/containers.md)       |
+| SQL Tables      | `sql_table` ER 图、外键连接                                          | [references/sql-tables.md](references/sql-tables.md)       |
+| Layouts         | 布局引擎总览 + 方向                                                  | [references/layouts.md](references/layouts.md)             |
+| Dagre           | 默认布局引擎：特点/局限                                              | [references/dagre.md](references/dagre.md)                 |
+| ELK             | 布局引擎：特点/局限                                                  | [references/elk.md](references/elk.md)                     |
+| TALA            | 架构图专用引擎：特点/局限                                            | [references/tala.md](references/tala.md)                   |
+| Positions       | 位置控制：`near` 锚点 / `top` / `left`                               | [references/positions.md](references/positions.md)         |
+| Grid            | 网格布局：`grid-columns` / `grid-rows`                               | [references/grid-diagrams.md](references/grid-diagrams.md) |
+| Composition     | layers/scenarios/steps 多板                                          | [references/composition.md](references/composition.md)     |
+| Imports         | 多文件模块化、globs 批量样式                                         | [references/imports.md](references/imports.md)             |
+| Customization   | 主题、字体、3D、阴影                                                 | [references/themes.md](references/themes.md)               |
+| Exports         | 3.8 节完整导出                                                       | [references/exports.md](references/exports.md)             |
+| CLI manual      | `d2` 全部子命令与参数                                                | [references/man.md](references/man.md)                     |
+| Cheat Sheet     | 一页速查 PDF（预览图页）                                             | [references/cheat-sheet.md](references/cheat-sheet.md)     |
+| FAQ             | 常见问题（动画/LSP/CI/字体等）                                       | [references/faq.md](references/faq.md)                     |
+| Troubleshooting | 故障排查                                                             | [references/troubleshoot.md](references/troubleshoot.md)   |
 
 ### 3.11 关键 Tour 例句（推荐记住）
 
@@ -489,8 +499,8 @@ d2 <file>.d2 <file>.png       # 需 Playwright
 d2 <file>.d2 <file>.pdf       # 需 Playwright
 d2 <file>.d2 <file>.pptx
 
-# 实时预览（浏览器开 SVG，改 .d2 自动刷新）
-d2 --watch <file>.d2 <file>.svg
+# 实时预览（会拉起浏览器；可用 --browser=0 关闭浏览器弹窗。仅用户明确要求时使用；默认不用）
+d2 --watch --browser=0 <file>.d2 <file>.svg
 
 # 主题（0=Default 100=Neutral 200=Flagship 300=Shirley，`d2 themes` 查看全部）
 d2 --theme 200 <file>.d2 <file>.svg
@@ -504,7 +514,7 @@ d2 --layout=elk <file>.d2 <file>.svg
 d2 --animate-interval=1000 <file>.d2 <file>.svg
 ```
 
-完成标准：`d2 <file>.d2 <file>.svg` exit 0 且 SVG 文件生成。
+完成标准：`d2 <file>.d2 <file>.svg` exit 0 且 SVG 生成在与 `.d2` 相同目录；完整流程见 §2 工作流（含 PNG 识图自检与 3 轮上限）。
 
 ---
 
