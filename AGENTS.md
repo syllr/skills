@@ -17,7 +17,6 @@ skills/
 └── skill-creator/   # 创建新 skill 的 skill：SKILL.md + references/ + assets/templates/
 improve/             # 研究笔记（非 skill，勿动）
 test/                # 测试文件（非 skill，勿动）
-CLAUDE.md            # Claude Code 开发指南（skill 格式基础规范）
 README.md            # 面向用户的安装/技能表
 ```
 
@@ -29,7 +28,7 @@ README.md            # 面向用户的安装/技能表
 | 新 skill 的模板与格式规范 | `skills/skill-creator/references/`      | 含 path-resolution / skill-md-format / directory-structure / script-language-guide |
 | 官方文档本地化范例        | `skills/d2/references/`                 | 20 个官方文档页转换后的 Markdown                                                   |
 | 创建新 skill              | `npx skills init skills/<name>`         | 或读 skill-creator 流程                                                            |
-| 本地测试安装              | `npx skills add . --all -a claude-code` | 见 CLAUDE.md                                                                       |
+| 本地测试安装              | `npx skills add . --all -a claude-code` | 见 README.md                                                                       |
 
 ## SKILL 引用规范（本仓库核心约定）
 
@@ -110,6 +109,6 @@ npx skills check
 
 ## NOTES
 
-- 本仓库同时被 CLAUDE.md 约束（skill 格式基础规范），AGENTS.md 侧重引用规范与新增约定，两者互补；改 skill 前两者都读
+- 项目约定统一由 AGENTS.md 承担；skill 格式基础规范见 [skill-md-format.md](skills/skill-creator/references/skill-md-format.md)，改 skill 前先读
 - `references/` 的官方资料可通过 `references/README.md` 的更新命令重新拉取（上游分支为 `master`）
 - 仓库未设置 CI；格式校验靠 `npx skills` 与人工 review
