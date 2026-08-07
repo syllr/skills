@@ -27,9 +27,7 @@ npx skills add syllr/skills --all -g -a claude-code -y
 
 ## 可用技能
 
-| 技能                               | 描述                                                                  |
-| ---------------------------------- | --------------------------------------------------------------------- |
-| [testtoghtml](skills/testtoghtml/) | 一键上传 HTML 文件到远程服务器（`/home/dev/tmp`），基于 paramiko SFTP |
+（暂无，待添加）
 
 ## 创建新技能
 
