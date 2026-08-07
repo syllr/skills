@@ -25,3 +25,12 @@ vendor/
 claude.md
 CLAUDE.md.local
 CLAUDE.md
+
+# Skills CLI 安装产物（消费端，不该提交）
+.agents/
+.skill-lock.json
+skills-lock.json
+
+# 归档/构建产物
+*.zip
+node_modules/

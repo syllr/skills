@@ -2,6 +2,8 @@
 
 个人自定义 [Agent Skills](https://github.com/vercel-labs/skills) 技能集合，适配 [skills.sh](https://skills.sh/) 生态系统，基于 `npx skills` 命令管理。
 
+[![skills.sh](https://skills.sh/b/syllr/skills)](https://skills.sh/syllr/skills)
+
 支持 **Claude Code**, **Cursor**, **Windsurf**, **Roo Code** 等 40+ AI 编程助手。
 
 ## 安装
@@ -25,9 +27,9 @@ npx skills add syllr/skills --all -g -a claude-code -y
 
 ## 可用技能
 
-| 技能 | 描述 |
-|------|------|
-| 待添加 | 待添加 |
+| 技能                               | 描述                                                                  |
+| ---------------------------------- | --------------------------------------------------------------------- |
+| [testtoghtml](skills/testtoghtml/) | 一键上传 HTML 文件到远程服务器（`/home/dev/tmp`），基于 paramiko SFTP |
 
 ## 创建新技能
 
