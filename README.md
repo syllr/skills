@@ -25,6 +25,21 @@ npx skills add syllr/skills --skill <skill-name>
 npx skills add syllr/skills --all -g -a claude-code -y
 ```
 
+### opencode
+
+```bash
+# 全局安装全部技能（所有项目生效）
+npx skills add syllr/skills --all -a opencode -g -y
+
+# 只安装指定技能
+npx skills add syllr/skills --skill <skill-name> -a opencode -g -y
+
+# 只安装到当前项目
+npx skills add syllr/skills --all -a opencode -y
+```
+
+安装后位于 `~/.config/opencode/skills/`（全局）或 `<项目>/.opencode/skills/`（项目级），重启 opencode 生效。
+
 ## 可用技能
 
 | 技能                                   | 描述                                                                                                                        |
