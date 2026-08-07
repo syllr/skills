@@ -27,15 +27,17 @@ npx skills add syllr/skills --all -g -a claude-code -y
 
 ### opencode
 
+> ⚠️ 安装全部技能请用 `-s '*'` 而非 `--all`：`--all` 会强制安装到所有 agent（忽略 `-a opencode`），产生无关的失败提示。
+
 ```bash
 # 全局安装全部技能（所有项目生效）
-npx skills add syllr/skills --all -a opencode -g -y
+npx skills add syllr/skills -s '*' -a opencode -g -y
 
 # 只安装指定技能
 npx skills add syllr/skills --skill <skill-name> -a opencode -g -y
 
 # 只安装到当前项目
-npx skills add syllr/skills --all -a opencode -y
+npx skills add syllr/skills -s '*' -a opencode -y
 ```
 
 安装后位于 `~/.config/opencode/skills/`（全局）或 `<项目>/.opencode/skills/`（项目级），重启 opencode 生效。
