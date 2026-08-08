@@ -387,6 +387,8 @@ backend.api -> data.postgres
 backend.worker -> data.redis
 ```
 
+> 注：本模板用**模块级箭头**表达精确调用关系；画粗粒度**层间关系**（层容器→层容器）的模板见 [7.7 节](#77-分层架构图的层间关系)。
+
 ### 4.3 条件分支（IF）
 
 ```d2
@@ -466,6 +468,7 @@ kanban: {
 8. **imports 路径**：相对路径以当前 .d2 文件所在目录为基准
 9. **size 估计**：复杂图（>15 节点）记得用 elk 布局
 10. **缩略图嵌入**：`shape: image; icon: <url>` 的 url 必须 HTTPS 且公开可访问
+11. **跳层箭头破坏分层**：分层架构图中禁止跳层箭头（`上层 -> 下层` 直接连线）——布局引擎会破坏层级的纵向堆叠（容器被并排/错位重排，箭头横穿或擦碰中间层边界）。用**相邻层传递**（`上->中->下`）或节点 label 注明，见 [7.7 节](#77-分层架构图的层间关系)
 
 ---
 
@@ -485,6 +488,8 @@ d2 "<file>.d2" "<file>.svg"
 > 渲染后按 [§2 工作流](#2-工作流8-步) 执行 PNG 识图自检（macOS）。其他导出（PNG/PDF/PPTX/GIF）、主题、动画、布局引擎参数见 [3.8 节](#38-完整导出选项tour-exports) / [3.9 节](#39-cli-完整子命令) / [7.1 节](#71-布局引擎选择)。
 >
 > ⚠️ **ASCII 输出中 CJK 字符间被插入对齐空格**（如"应用"渲染为"应 用"），用 grep 精确匹配中文会失配——核对 ASCII 内容用全文阅读（`cat`），勿用 grep。
+>
+> **重复节点检测（SVG）**：跨容器引用出错会静默产生重复节点（见 [陷阱 3](#5-常见陷阱llm-易错点)）。SVG 中中文**不**插空格，可精确 grep 计数：`grep -o "编排核心" file.svg | wc -l`——正常图每容器应恰好 1 次。
 
 完成标准：`d2 "<file>.d2" "<file>.svg"` exit 0 且 SVG 生成在与 `.d2` 相同目录；完整流程见 §2 工作流（含 ASCII 确认、PNG 识图自检与 3 轮上限）。
 
@@ -566,6 +571,80 @@ TALA 专属：`near: <对象ID>` 靠近指定形状；`top` / `left` 直接锁�
 - 看板/仪表盘 → `grid-columns` 强制布局
 - **边太长/交错** → 改用 `direction: right`、加 `grid-columns` 强制布局、或拆子图
 - 详细官方文档见 [references/layouts.md](references/layouts.md) / [references/dagre.md](references/dagre.md) / [references/elk.md](references/elk.md) / [references/tala.md](references/tala.md) / [references/positions.md](references/positions.md) / [references/grid-diagrams.md](references/grid-diagrams.md)
+
+### 7.7 分层架构图的层间关系
+
+画**分层架构图**（3+ 层纵向堆叠：上层/中层/下层）时，层间箭头的表达有硬性规则，违反会导致布局错乱或节点重复。
+
+**R1 只画相邻层间箭头，禁止跳层**：
+
+- 跳层箭头（`上层 -> 下层` 直接连线）会让布局引擎**无法维持层级的纵向堆叠**——容器被并排/错位重排，箭头横穿或擦碰中间层边界（实测 dagre/ELK 均如此），层间边界不再清晰。
+- 若上下层确有直接调用：用相邻层传递表达（`上->中->下` 隐含"上用到下"），或在节点 label 里注明，不画跳层线。
+
+**R2 层间箭头 = 容器级，不落到具体模块**（场景偏好，见下方二分）：
+
+```d2
+上层 -> 中层: "调用"    # ✅ 容器级：表达"这一整层调用中层"
+上层.模块X -> 中层.模块Y  # ❌ 模块级：层间关系图里太细节
+```
+
+| 场景                                        | 箭头粒度                    | 示例                                                             |
+| ------------------------------------------- | --------------------------- | ---------------------------------------------------------------- |
+| 层间调用关系（架构总览/汇报，粗粒度）       | **容器级**（层容器→层容器） | `system.上层 -> system.中层`                                     |
+| 模块间精确依赖（API 设计/代码分析，细粒度） | **模块级**（节点→节点）     | `frontend.web -> backend.api`（见 [4.2 节](#42-分层架构带容器)） |
+
+**R3 跨容器引用必须用完整路径**（详见 [陷阱 3](#5-常见陷阱llm-易错点)）：`system.上层 -> system.中层`（容器对容器）或 `大容器.子容器.节点`（模块对模块）；写裸容器名（`上层 -> 中层`）会静默产生重复节点。
+
+**分层架构图模板**（3 层示例，实测可用）：
+
+```d2
+vars: {
+  d2-config: {
+    layout-engine: elk        # dagre 也可；elk 更稳
+  }
+}
+direction: down
+
+system: "系统名" {
+  style.fill: "#fafafa"
+  style.stroke: "#666666"
+  style.stroke-width: 2
+  style.border-radius: 16
+  grid-rows: 1                # 强制纵向堆叠（不加会错位重排）
+  grid-columns: 1
+  grid-gap: 80                # 加大层间距，给箭头留空间
+
+  上层: "上层（定位）" {
+    style.fill: "#eef4fc"
+    style.stroke: "#6c8ebf"
+    grid-columns: 3
+    grid-gap: 30
+    模块A: "模块 A"; 模块B: "模块 B"; 模块C: "模块 C"
+  }
+
+  中层: "中层（定位）" {
+    style.fill: "#fff8e1"
+    style.stroke: "#d6b656"
+    grid-columns: 2
+    grid-gap: 30
+    模块D: "模块 D"; 模块E: "模块 E"
+  }
+
+  下层: "下层（定位）" {
+    style.fill: "#f5f5f5"
+    style.stroke: "#999999"
+    grid-columns: 3
+    grid-gap: 30
+    模块F: "模块 F"; 模块G: "模块 G"; 中间件: "中间件"
+  }
+}
+
+# 相邻层间容器级箭头（不跳层、不落到模块）
+system.上层 -> system.中层: "调用" { style.stroke: "#6c8ebf" }
+system.中层 -> system.下层: "依赖" { style.stroke: "#999999" }
+```
+
+**速查**：① 层间箭头只画相邻层 ② 层间箭头容器级（粗粒度）；模块级仅用于精确依赖 ③ 跨容器引用完整路径 ④ 纵向分层用 `grid-rows:1; grid-columns:1` 强制堆叠 ⑤ 层间距 `grid-gap ≥ 80` ⑥ 跳层依赖用相邻层传递或 label 注明。
 
 ---
 
