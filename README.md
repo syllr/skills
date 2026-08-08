@@ -64,12 +64,12 @@ npx skills update -g -y
 
 ## 可用技能
 
-| 技能                                   | 描述                                                                                                                        |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| [d2](skills/d2/)                       | 用 D2（d2lang.com）声明式文本画架构图/流程图/时序图/ER 图/状态机，CLI 渲染 SVG/PNG/PDF/PPTX，含语法速查与实战模板           |
-| [remote-shell](skills/remote-shell/)   | 通过 SSH 在远程服务器上执行命令，优先使用 remote-shell CLI 并支持降级回退                                                   |
-| [score-prompt](skills/score-prompt/)   | 对任意 LLM prompt / 文档跑 5 维度质量评分（Clarity/Conciseness/Actionability/Consistency/Minimal-slop）并迭代修复至目标分数 |
-| [skill-creator](skills/skill-creator/) | 创建新的 OpenCode Skill，含目录结构、格式规范、路径解析与脚本模板                                                           |
+| 技能                                   | 描述                                                                                                                                                                                    |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [d2](skills/d2/)                       | 用 D2（d2lang.com）声明式文本画架构图/流程图/时序图/ER 图，CLI 渲染 SVG/PNG/PDF/PPTX，含语法速查与实战模板；画图前先以 ASCII 架构图与用户确认（状态机需手动搭建，0.7.1 不支持内置类型） |
+| [remote-shell](skills/remote-shell/)   | 通过 SSH 在远程服务器上执行命令，优先使用 remote-shell CLI 并支持降级回退                                                                                                               |
+| [score-prompt](skills/score-prompt/)   | 对任意 LLM prompt / 文档跑 5 维度质量评分（Clarity/Conciseness/Actionability/Consistency/Minimal-slop）并迭代修复至目标分数                                                             |
+| [skill-creator](skills/skill-creator/) | 创建新的 OpenCode Skill，含目录结构、格式规范、路径解析与脚本模板                                                                                                                       |
 
 ## 创建新技能
 
