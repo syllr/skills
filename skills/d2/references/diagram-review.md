@@ -23,7 +23,7 @@
 d2 "<file>.d2" "<file>.svg"
 
 # 2. 用 sips 把 SVG 转成 PNG（$TMPDIR/d2png/ 每用户私有目录 + 裸文件名带时间戳）
-#    ⚠️ 执行前校验 <file> 文件名不含 shell 元字符（$、反引号、;、&& 等），防止命令替换注入
+#    ⚠️ 执行前白名单校验 <file> 文件名：仅允许 [A-Za-z0-9._/-]，含其余字符（$、反引号、\、"、;、空格等）先重命名再执行，防注入
 mkdir -p "$TMPDIR/d2png"
 sips -s format png "<file>.svg" --out "$TMPDIR/d2png/$(basename "<file>")-$(date +%Y%m%d%H%M%S).png"
 
