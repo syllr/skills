@@ -39,10 +39,13 @@ description: 用 D2（d2lang.com）声明式文本画架构图/流程图/时序�
 
 1. **确认需求 + 选引擎（强制，阻塞性 #1）**：先与用户对齐图类型、输出格式（默认 SVG），按 [7.6 节选型速查](#76-选型速查) 选定布局引擎（默认 dagre）
 2. **ASCII 架构确认（强制，阻塞性 #2）**：在对话中以 `text` 代码块直接输出 ASCII 架构图（AI 手绘，节点/容器/连接/方向），等待用户明确确认后才进入下一步；用户提出修改则更新 ASCII 图重新确认（详见 [2.1 节](#21-ascii-架构确认画图前必做)）
-3. 写 `.d2` 文件——**位置不固定，放在当前项目内即可，由用户指定或按项目约定**（如 `docs/diagrams/`、项目根目录等），按需在文件头设 `vars: { d2-config: { layout-engine: <engine> } }`
-4. 格式化自检：`d2 fmt --check <file>.d2`（未格式化则 `d2 fmt <file>.d2`）
-5. 校验：`d2 validate <file>.d2`（失败则修到通过）
-6. 渲染：`d2 "<file>.d2" "<file>.svg"`——**SVG 必须输出到与 `.d2` 相同的目录**（`docs/diagrams/foo.d2` → `docs/diagrams/foo.svg`；`.d2` 在项目根 → SVG 也在项目根）。**不执行 `open`，不打开浏览器**。⚠️ 多板图（layers/scenarios/steps）输出为目录结构（`foo/layers/xxx.svg`、`foo/scenarios/yyy.svg`…），属 d2 固有行为——每张 SVG 都要单独自检
+3. 写 `.d2` 代码（**两种载体任选**）：
+   - **A. 独立 `.d2` 文件**：位置不固定，放在当前项目内即可，由用户指定或按项目约定（如 `docs/diagrams/`、项目根目录等），按需在文件头设 `vars: { d2-config: { layout-engine: <engine> } }`
+   - **B. Markdown 内嵌 d2（推荐用于文档/蓝图）**：在 `.md`/`.blueprint.md` 文档中直接写 ` ```d2 ` 代码块（如 `FIG02-layered-architecture.blueprint.md` 蓝图模式）。渲染时提取代码块内容写临时 `.d2` → 渲染 SVG → SVG 放项目约定目录，Markdown 中引用。代码块首行可写 `# 图标准元信息` 注释（图名/视角/用途/状态编码）供维护者理解
+   - 选 B 时：先确认文档中是否已有 ```d2 代码块；有则只改代码块内容，无则插入新代码块（建议带 `# 图标准元信息` 头注释）
+4. 格式化自检：`d2 fmt --check <file>.d2`（未格式化则 `d2 fmt <file>.d2`；**Markdown 内嵌模式**：提取到临时 `.d2` 后对临时文件执行）
+5. 校验：`d2 validate <file>.d2`（失败则修到通过；**Markdown 内嵌模式**：对临时 `.d2` 校验）
+6. 渲染：`d2 "<file>.d2" "<file>.svg"`——**SVG 必须输出到与 `.d2` 相同的目录**（`docs/diagrams/foo.d2` → `docs/diagrams/foo.svg`；`.d2` 在项目根 → SVG 也在项目根；**Markdown 内嵌模式**：SVG 输出到项目约定图目录，如 `docs/diagrams/`，并把 `![](...)` 图片引用或说明补回 Markdown）。**不执行 `open`，不打开浏览器**。⚠️ 多板图（layers/scenarios/steps）输出为目录结构（`foo/layers/xxx.svg`、`foo/scenarios/yyy.svg`…），属 d2 固有行为——每张 SVG 都要单独自检
 7. **PNG 识图自检（强制，macOS 可用时）**：
    a. 转换：`mkdir -p "$TMPDIR/d2png"` 然后执行 `sips -s format png "<file>.svg" --out "$TMPDIR/d2png/$(basename "<file>")-$(date +%Y%m%d%H%M%S).png"`——**输出到 macOS 每用户私有临时目录 `$TMPDIR/d2png/`**（避免 `/tmp` 共享目录的符号链接与跨用户可读问题），**文件名必须带时间戳且用 `$(basename ...)` 取裸文件名**（`<file>` 可能含目录路径，如 `docs/diagrams/foo`，basename 后才是 `foo`），避免重复渲染时旧 PNG 被覆盖/误读。**⚠️ 安全**：执行前用**白名单校验** `<file>` 文件名——仅允许 `[A-Za-z0-9._/-]`（字母/数字/点/下划线/斜杠/连字符），含其余字符（`$`、反引号、`\`、`"`、`;`、空格等）一律先重命名再执行，防止双引号包裹下的命令替换/转义逃逸注入。用 macOS 自带 `sips` 转 PNG，**不需要 d2 装 Chromium**
    b. 识别：用系统可用的**识图工具**（如 `MiniMax_understand_image`）查看该 PNG，按 [references/diagram-review.md](references/diagram-review.md) 清单逐项审查（A 结构：方向流/层级/连线标签/节点顺序/容器层级；B 内容：图与源码一致/箭头语义/信息完整/**与已确认 ASCII 架构一致**；C 识图工具局限、D 使用注意参见清单）
@@ -50,7 +53,7 @@ description: 用 D2（d2lang.com）声明式文本画架构图/流程图/时序�
    d. 多板图：对每张 SVG 分别执行 a-b；**非 macOS、sips 不可用、或识图工具不可用时**，降级为 Read `.d2` 源码核对 + `d2 validate` 校验，并在报告注明"未做 PNG 自检（原因）"。**自检完成后可清理 `$TMPDIR/d2png/` 下的历史 PNG**（含敏感架构信息，且会累积占用空间）
 8. 报告：文件路径 + 渲染结果（exit 0 / SVG 大小）+ 自检结论（含与已确认 ASCII 架构一致性结论）
 
-完成标准：渲染命令 exit 0 且 SVG 生成在与 `.d2` 相同目录（多板图为目录结构，见第 6 步）；PNG 识图自检通过（或 3 轮后如实报告剩余问题；非 macOS/工具不可用降级后注明）；渲染结果与第 2 步已确认的 ASCII 架构一致。
+完成标准：渲染命令 exit 0 且 SVG 生成在与 `.d2` 相同目录（多板图为目录结构，见第 6 步；**Markdown 内嵌模式**：SVG 已在约定图目录生成且 Markdown 引用已补）；PNG 识图自检通过（或 3 轮后如实报告剩余问题；非 macOS/工具不可用降级后注明）；渲染结果与第 2 步已确认的 ASCII 架构一致。
 
 ### 2.1 ASCII 架构确认（画图前必做）
 
@@ -469,6 +472,7 @@ kanban: {
 9. **size 估计**：复杂图（>15 节点）记得用 elk 布局
 10. **缩略图嵌入**：`shape: image; icon: <url>` 的 url 必须 HTTPS 且公开可访问
 11. **跳层箭头破坏分层**：分层架构图中禁止跳层箭头（`上层 -> 下层` 直接连线）——布局引擎会破坏层级的纵向堆叠（容器被并排/错位重排，箭头横穿或擦碰中间层边界）。用**相邻层传递**（`上->中->下`）或节点 label 注明，见 [7.7 节](#77-分层架构图的层间关系)
+12. **禁止 emoji**：节点/容器/边标签中**不要使用 emoji**（如 `🏠 首页`、`✅ 已实现`）——D2 渲染虽支持（实测 SVG 正常显示），但 emoji 渲染依赖系统字体/平台，在无 emoji 字体的环境（CI、无头服务器、部分浏览器）会显示为豆腐块乱码；且团队规范通常禁用。用**纯文字/符号**替代：状态用 `[已实现]`/`[开发中]`/`[规划]` 或颜色区分，图标用文字描述
 
 ---
 
@@ -645,6 +649,21 @@ system.中层 -> system.下层: "依赖" { style.stroke: "#999999" }
 ```
 
 **速查**：① 层间箭头只画相邻层 ② 层间箭头容器级（粗粒度）；模块级仅用于精确依赖 ③ 跨容器引用完整路径 ④ 纵向分层用 `grid-rows:1; grid-columns:1` 强制堆叠 ⑤ 层间距 `grid-gap ≥ 80` ⑥ 跳层依赖用相邻层传递或 label 注明。
+
+**各层宽度一致性**（实测验证）：
+
+分层图各层宽度由内容自动决定——**子容器嵌套层的宽度会累加**（如中层含 3 个并排子容器时远宽于平铺的上下层），视觉上"中宽上下窄"很难看。两个解法：
+
+- **解法 A（推荐）：ELK + 各层显式 `width` 统一**。给每层容器设相同 `width`（如 `width: 800`），实测 ELK 下三层 rect 宽度完全一致（800/800/800）。注意 **dagre 不支持容器 `width`**（报错 "does not support dimensions set on containers"），必须用 ELK。
+- **解法 B：层间同构**。让各层子节点数/结构一致（都平铺或都嵌套同数子容器），自然等宽；但内容差异大时难以保证。
+
+```d2
+vars: { d2-config: { layout-engine: elk } }   # width 统一宽度需 ELK（dagre 不支持容器 width）
+direction: down
+front: "上层" { width: 800; grid-columns: 3; x1: "模块1"; x2: "模块2"; x3: "模块3" }
+middle: "中层" { width: 800; grid-columns: 3; c1: { a1: "A1" }; c2: { b1: "B1" } }
+base: "下层" { width: 800; grid-columns: 3; y1: "模块1"; y2: "模块2"; y3: "模块3" }
+```
 
 ---
 
