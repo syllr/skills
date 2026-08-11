@@ -48,7 +48,7 @@ description: 用 D2（d2lang.com）声明式文本画架构图/流程图/时序�
    b. 渲染检查：`d2 "<临时文件>" "<临时文件>.svg"` 临时渲染，用 `sips` 转 PNG（`mkdir -p "$TMPDIR/d2png"` + `sips -s format png "<临时文件>.svg" --out "$TMPDIR/d2png/$(basename "<临时文件>")-$(date +%Y%m%d%H%M%S).png"`，白名单见顶部约束）
    c. 识别：用系统可用的**识图工具**（如 `MiniMax_understand_image`）查看该 PNG，按 [references/diagram-review.md](references/diagram-review.md) 清单逐项审查（A 结构：方向流/层级/连线标签/节点顺序/容器层级；B 内容：图与源码一致/箭头语义/信息完整/**与已确认 ASCII 架构一致**；C 识图工具局限、D 使用注意参见清单）
    d. 发现问题 → 修改 Markdown 代码块内容（或调整引擎重选）→ 重新提取重跑 4a-4c，**最多 3 轮**；第 3 轮后仍有问题则如实报告剩余问题。**回环规则**：若问题源于 ASCII 架构本身需要调整（用户补充需求或早期方案遗漏），回到第 2 步重新确认；若只是 d2 代码写错或引擎选错，直接在第 1/3-4 步内修复
-   e. 多板图（layers/scenarios/steps）：对每张 SVG 分别执行 b-c；**非 macOS、sips 不可用、或识图工具不可用时**，降级为 Read 代码块源码核对 + `d2 validate` 校验，并在报告注明"未做 PNG 自检（原因）"。**自检完成后清理 `$TMPDIR/d2png/` 与 `$TMPDIR/d2md/` 下的临时文件**
+   e. **非 macOS、sips 不可用、或识图工具不可用时**，降级为 Read 代码块源码核对 + `d2 validate` 校验，并在报告注明"未做 PNG 自检（原因）"。**自检完成后清理 `$TMPDIR/d2png/` 与 `$TMPDIR/d2md/` 下的临时文件**。⚠️ **多板图（layers/scenarios/steps）禁止使用**——渲染引擎不支持，需拆成多张独立图（见 [3.6 节](#36-多板layers--scenarios--steps不支持禁用)）
 5. 报告：目标文档路径 + 代码块位置（章节）+ 自检结论（含与已确认 ASCII 架构一致性结论）
 
 完成标准：目标文档中 ` ```d2 ` 代码块已写入/更新；PNG 识图自检通过（或 3 轮后如实报告剩余问题；非 macOS/工具不可用降级后注明）；渲染结果与第 2 步已确认的 ASCII 架构一致。
@@ -257,30 +257,44 @@ dashboard: {
 # 也可仅指定 grid-columns，不指定行数（自动换行）
 ```
 
-### 3.6 多板：layers / scenarios / steps（Tour / Composition）
+### 3.6 多板（layers / scenarios / steps）——**不支持，禁用**
+
+> **❌ 多板图禁止使用**：d2 的 `layers` / `scenarios` / `steps` 多板语法在**项目 Markdown 渲染引擎中无法渲染**（报错 `multiboard output cannot be written to stdout`），且多板图输出为目录结构，与"Markdown 内嵌 d2"的渲染方式不兼容。**不要使用多板图**——需要多板/多场景/分步展示时，**拆成多张独立图**（每张图一个 d2 代码块），分别画在同一文档的不同章节即可。
 
 ```d2
+# ❌ 不要这样写（多板图，渲染引擎不支持）
 direction: right
-layers: {                    # 并列展示
+layers: {
   frontend: { web; mobile }
   backend: { api; db }
 }
-
-scenarios: {                 # 场景对比（同一图不同情况）
+scenarios: {
   happy: { user -> api: "GET" }
   error: { user -> api: "500" { style.stroke: red } }
 }
-
-steps: {                     # 逐步演进（可加 --animate-interval 动画）
+steps: {
   step1: { a; b }
   step2: { a -> b }
   step3: { a -> b; b -> c }
 }
 ```
 
-> ⚠️ **多板图渲染限制**：多板图（layers/scenarios/steps）**不能输出到 stdout**（`d2 --stdout-format ascii multi.d2 -` 会报 `multiboard output cannot be written to stdout`），必须输出到文件/目录（如 `d2 multi.d2 multi.svg` → 生成 `multi/layers/xxx.svg`、`multi/scenarios/xxx.svg` 目录结构，每张 SVG 单独自检）。
+```d2
+# ✅ 改为拆成多张独立图（每张图一个 d2 代码块，放在同一文档不同章节）
+# 图 1：前端层
+direction: right
+frontend: { web: "Web"; mobile: "Mobile" }
+backend: { api: "API"; db: "DB" }
+frontend.web -> backend.api
 
-**动画导出**：`d2 --animate-interval=1000 x.d2 x.svg`（steps 板自动循环切换；详见 [3.8 节](#38-完整导出选项tour--exports)）
+# 图 2：正常场景
+user -> api: "GET"
+
+# 图 3：错误场景
+user -> api: "500" { style.stroke: red }
+```
+
+> **动画导出不可用**：`--animate-interval` 动画依赖 steps 多板（已禁用），故本 skill 不涉及动画导出。
 
 ### 3.7 变量与 globs
 
@@ -306,8 +320,8 @@ d2 in.d2 out.svg              # 默认 SVG
 d2 in.d2 out.png              # 需 Playwright
 d2 in.d2 out.pdf              # 需 Playwright
 d2 in.d2 out.pptx             # PowerPoint（每 board 一页）
-d2 in.d2 out.gif              # 需 Playwright + --animate-interval（0.7.1 实测 GIF 依赖 Playwright，与 ffmpeg 无关）
-d2 --animate-interval=1000 in.d2 out.svg  # steps 板动画
+d2 in.d2 out.gif              # 需 Playwright + --animate-interval（0.7.1 实测 GIF 依赖 Playwright，与 ffmpeg 无关；❌ 动画依赖多板，本 skill 禁用）
+d2 --animate-interval=1000 in.d2 out.svg  # ❌ 动画依赖 steps 多板，本 skill 禁用（见 3.6）
 d2 --ascii-mode standard in.d2 out.txt  # ASCII 输出（standard/extended；.txt 扩展名自动推断 ASCII 格式）
 d2 --stdout-format ascii in.d2 -       # ⚠️ stdout 输出需显式指定，否则默认 svg（--ascii-mode 单独用不改变输出格式）
 d2 --bundle=true in.d2 out.svg  # 嵌入字体/依赖到单文件
@@ -352,7 +366,7 @@ d2 version                    # 版本
 | TALA            | 架构图专用引擎：特点/局限                                            | [references/tala.md](references/tala.md)                   |
 | Positions       | 位置控制：`near` 锚点 / `top` / `left`                               | [references/positions.md](references/positions.md)         |
 | Grid            | 网格布局：`grid-columns` / `grid-rows`                               | [references/grid-diagrams.md](references/grid-diagrams.md) |
-| Composition     | layers/scenarios/steps 多板                                          | [references/composition.md](references/composition.md)     |
+| Composition     | layers/scenarios/steps 多板（❌ 本 skill 禁用，见 3.6）              | [references/composition.md](references/composition.md)     |
 | Imports         | 多文件模块化、globs 批量样式                                         | [references/imports.md](references/imports.md)             |
 | Customization   | 主题、字体、3D、阴影                                                 | [references/themes.md](references/themes.md)               |
 | Exports         | 3.8 节完整导出                                                       | [references/exports.md](references/exports.md)             |
@@ -722,3 +736,7 @@ base: "下层" { width: 800; grid-columns: 3; y1: "模块1"; y2: "模块2"; y3: 
 ## 8. 导出格式速查
 
 详见 [3.8 节完整导出选项](#38-完整导出选项tour--exports) 表格。
+
+```
+
+```
