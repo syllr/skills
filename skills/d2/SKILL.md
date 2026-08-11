@@ -259,40 +259,13 @@ dashboard: {
 
 ### 3.6 多板（layers / scenarios / steps）——**不支持，禁用**
 
-> **❌ 多板图禁止使用**：d2 的 `layers` / `scenarios` / `steps` 多板语法在**项目 Markdown 渲染引擎中无法渲染**（报错 `multiboard output cannot be written to stdout`），且多板图输出为目录结构，与"Markdown 内嵌 d2"的渲染方式不兼容。**不要使用多板图**——需要多板/多场景/分步展示时，**拆成多张独立图**（每张图一个 d2 代码块），分别画在同一文档的不同章节即可。
-
-```d2
-# ❌ 不要这样写（多板图，渲染引擎不支持）
-direction: right
-layers: {
-  frontend: { web; mobile }
-  backend: { api; db }
-}
-scenarios: {
-  happy: { user -> api: "GET" }
-  error: { user -> api: "500" { style.stroke: red } }
-}
-steps: {
-  step1: { a; b }
-  step2: { a -> b }
-  step3: { a -> b; b -> c }
-}
-```
-
-```d2
-# ✅ 改为拆成多张独立图（每张图一个 d2 代码块，放在同一文档不同章节）
-# 图 1：前端层
-direction: right
-frontend: { web: "Web"; mobile: "Mobile" }
-backend: { api: "API"; db: "DB" }
-frontend.web -> backend.api
-
-# 图 2：正常场景
-user -> api: "GET"
-
-# 图 3：错误场景
-user -> api: "500" { style.stroke: red }
-```
+> **❌ 多板图禁止使用**：d2 的 `layers` / `scenarios` / `steps` 多板语法在**项目 Markdown 渲染引擎中无法渲染**（报错 `multiboard output cannot be written to stdout`），且多板图输出为目录结构，与"Markdown 内嵌 d2"的渲染方式不兼容。
+>
+> **使用规则**：
+>
+> 1. **文档中任何 d2 代码块都不得包含 `layers` / `scenarios` / `steps`**（包括"反例"代码块——渲染引擎会渲染文档里所有 d2 代码块，反例同样报错）。
+> 2. 需要多板/多场景/分步展示时，**拆成多张独立图**：每张图一个 ` ```d2 ` 代码块，分别放在同一文档的不同章节/不同位置。
+> 3. **一个 d2 代码块只画一张图**（不要在一个代码块里堆多个场景）。
 
 > **动画导出不可用**：`--animate-interval` 动画依赖 steps 多板（已禁用），故本 skill 不涉及动画导出。
 
