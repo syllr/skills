@@ -29,7 +29,7 @@ description: 用 D2（d2lang.com）声明式文本画架构图/流程图/时序�
 
 ## 2. 工作流（6 步）
 
-> **CRITICAL — BLOCKING（阻塞性要求 #1，对应步骤 1）**: 画任何图之前，必须先确认需求（图类型、复杂度），用 Read 工具读取 [`references/layouts.md`](references/layouts.md) 与 [7.6 节选型速查](#76-选型速查) 选定布局引擎（dagre/ELK/TALA）。未确认需求与引擎前，禁止写 d2 代码。
+> **CRITICAL — BLOCKING（阻塞性要求 #1，对应步骤 1）**: 画任何图之前，必须先确认需求（图类型、复杂度），用 Read 工具读取 [`references/layouts.md`](references/layouts.md) 与 [7.6 节选型速查](#76-选型速查) 选定布局引擎（dagre/ELK；❌ TALA 为付费引擎，禁用）。未确认需求与引擎前，禁止写 d2 代码。
 
 > **CRITICAL — BLOCKING（阻塞性要求 #2，对应步骤 2）**: 用户以自然语言描述需求后，写 d2 代码块之前，MUST 先在对话中以 ASCII 架构图向用户展示图的大体架构（节点/容器/层级/连接/方向），等待用户明确确认。用户未确认前，禁止写 d2 代码。（ASCII 图要求与确认协议见 [2.1 节](#21-ascii-架构确认画图前必做)）
 
@@ -192,7 +192,7 @@ u: { shape: step }            # 步骤
 vars: { d2-config: { layout-engine: elk } }   # 本示例含容器尺寸，需 ELK（dagre 不支持容器 width/height）
 node: "标题" {
   # 尺寸（节点属性，不是 style 关键字——写在 style 块里会编译报错）
-  # ⚠️ 容器节点（有子属性）设置尺寸仅 ELK/TALA 支持，dagre 会报错；叶子节点无此限制
+  # ⚠️ 容器节点（有子属性）设置尺寸仅 ELK 支持（TALA 付费禁用），dagre 会报错；叶子节点无此限制
   width: 200                 # 节点宽
   height: 80                 # 节点高
   min-width: 150
@@ -315,7 +315,6 @@ d2 --watch --browser=0 <file>.d2 <out>  # 热重载预览（-w flag；--browser=
 d2 <in> <out>                # 渲染
 d2 --layout=dagre in.d2 out.svg     # dagre（默认）
 d2 --layout=elk in.d2 out.svg       # elk（紧凑）
-d2 --layout=tala in.d2 out.svg      # tala（架构图专用，需独立二进制）
 d2 --theme=100 in.d2 out.svg        # 主题（0=Neutral Default 1=Neutral Grey 3=Flagship Terrastruct 100=Vanilla Nitro Cola 102=Shirley Temple 200=Dark Mauve 300=Terminal）
 d2 --help                     # 详细帮助
 d2 version                    # 版本
@@ -336,7 +335,7 @@ d2 version                    # 版本
 | Layouts         | 布局引擎总览 + 方向                                                  | [references/layouts.md](references/layouts.md)             |
 | Dagre           | 默认布局引擎：特点/局限                                              | [references/dagre.md](references/dagre.md)                 |
 | ELK             | 布局引擎：特点/局限                                                  | [references/elk.md](references/elk.md)                     |
-| TALA            | 架构图专用引擎：特点/局限                                            | [references/tala.md](references/tala.md)                   |
+| TALA            | 架构图专用引擎（❌ 付费禁用）                                        | [references/tala.md](references/tala.md)                   |
 | Positions       | 位置控制：`near` 锚点 / `top` / `left`                               | [references/positions.md](references/positions.md)         |
 | Grid            | 网格布局：`grid-columns` / `grid-rows`                               | [references/grid-diagrams.md](references/grid-diagrams.md) |
 | Composition     | layers/scenarios/steps 多板（❌ 本 skill 禁用，见 3.6）              | [references/composition.md](references/composition.md)     |
@@ -541,26 +540,26 @@ d2 "<file>.d2" "<file>.svg"
 
 ### 7.1 布局引擎选择
 
-| 引擎              | 排版风格                               | 何时用                                     | 设置                                                                                     |
-| ----------------- | -------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| **dagre**（默认） | 分层/层级布局（Graphviz DOT 算法）     | 节点 ≤ 15、边 ≤ 25、通用                   | `d2 in.d2 out.svg`                                                                       |
-| **ELK**           | 层级布局（正交布线，交叉最少）         | 节点多/边密/端口连接/容器嵌套——布局更紧凑  | `d2 --layout=elk in.d2 out.svg` 或在文件内 `vars: { d2-config: { layout-engine: elk } }` |
-| **TALA**          | 通用正交布局（非层级也可），架构图专用 | 架构图/需手动锁位/非层级图（需独立二进制） | 单独安装 `install.sh --tala`，文件内 `vars: { d2-config: { layout-engine: tala } }`      |
+| 引擎              | 排版风格                              | 何时用                                    | 设置                                                                                     |
+| ----------------- | ------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **dagre**（默认） | 分层/层级布局（Graphviz DOT 算法）    | 节点 ≤ 15、边 ≤ 25、通用                  | `d2 in.d2 out.svg`                                                                       |
+| **ELK**           | 层级布局（正交布线，交叉最少）        | 节点多/边密/端口连接/容器嵌套——布局更紧凑 | `d2 --layout=elk in.d2 out.svg` 或在文件内 `vars: { d2-config: { layout-engine: elk } }` |
+| ~~**TALA**~~      | ~~通用正交布局~~（❌ 付费引擎，禁用） | ~~架构图/需手动锁位~~                     | ~~单独安装~~（见 [7.3 节](#73-方向direction) 禁用说明）                                  |
 
 **经验**：模块架构图（容器分层）显著 elk > dagre。查看可用引擎：`d2 layout`。
 
 ### 7.2 各引擎能力差异（决定排版能力上限）
 
-| 能力                             | dagre        | ELK | TALA     |
-| -------------------------------- | ------------ | --- | -------- |
-| `direction` 全局方向             | ✓            | ✓   | ✓        |
-| `direction` 每容器独立方向       | ✗            | ✗   | ✓        |
-| `near: 锚点`（top-left 等 8 点） | ✓            | ✓   | ✓        |
-| `near: <对象ID>`（靠近某形状）   | ✗            | ✗   | ✓        |
-| `top` / `left` 锁定坐标          | ✗            | ✗   | ✓        |
-| 容器宽高 `width`/`height`        | ✗            | ✓   | 即将支持 |
-| 对称性优先                       | ✗            | ✗   | ✓        |
-| 容器→子容器连线                  | ✗（需 shim） | ✓   | ✓        |
+| 能力                             | dagre        | ELK | TALA（❌ 禁用，仅供对比） |
+| -------------------------------- | ------------ | --- | ------------------------- |
+| `direction` 全局方向             | ✓            | ✓   | ✓                         |
+| `direction` 每容器独立方向       | ✗            | ✗   | ✓                         |
+| `near: 锚点`（top-left 等 8 点） | ✓            | ✓   | ✓                         |
+| `near: <对象ID>`（靠近某形状）   | ✗            | ✗   | ✓                         |
+| `top` / `left` 锁定坐标          | ✗            | ✗   | ✓                         |
+| 容器宽高 `width`/`height`        | ✗            | ✓   | 即将支持                  |
+| 对称性优先                       | ✗            | ✗   | ✓                         |
+| 容器→子容器连线                  | ✗（需 shim） | ✓   | ✓                         |
 
 ### 7.3 方向（direction）
 
@@ -568,18 +567,9 @@ d2 "<file>.d2" "<file>.svg"
 direction: up                  # 全局流向：up / down（默认）/ right / left（一次只能取一个值）
 ```
 
-**每容器独立方向（仅 TALA，可选能力）**：TALA 支持在容器内单独设置 `direction`。TALA 是**独立付费引擎**（商用需许可，免费版有水印），需单独安装（`brew install terrastruct/tap/tala` 或官网下载），并确保渲染环境 PATH 含插件目录（`d2plugin-tala`，通常 `/usr/local/bin`）。命令行验证：`d2 layout` 应列出 tala。
+**❌ TALA 引擎禁用**：TALA 是 Terrastruct 的**闭源付费引擎**（商用需许可，免费版出图带水印），本 skill **不使用、不推荐**。所有示例默认用 dagre/ELK（免费开源）。若文档中出现 `layout-engine: tala` 一律改为 dagre/ELK，且**不要**在代码块中使用 `vars: { d2-config: { layout-engine: tala } }`。
 
-```d2
-vars: { d2-config: { layout-engine: tala } }   # 启用 TALA 布局引擎
-direction: down
-b: {
-  direction: right   # 容器内单独流向（仅 TALA 支持）
-  1 -> 2 -> 3
-}
-```
-
-> 若渲染环境报 `"tala" is not bundled`：说明渲染引擎进程的 PATH 不含 `d2plugin-tala` 所在目录（GUI 应用常见），在启动该引擎的 shell/launchd 环境补上 `/usr/local/bin` 即可。本 skill 其余示例默认用 dagre/ELK，不依赖 TALA。
+> 说明：`direction` 的"每容器独立方向"是 TALA 独有能力，因 TALA 禁用，该能力不可用（dagre/ELK 仅支持全局方向）。若已安装 TALA，可执行 `brew uninstall terrastruct/tap/tala` 移除。
 
 ### 7.4 位置控制（near / top / left）
 
@@ -599,7 +589,7 @@ server: DB {
 }
 ```
 
-TALA 专属：`near: <对象ID>` 靠近指定形状；`top` / `left` 直接锁定坐标（引擎只移动周围对象）。
+~~TALA 专属~~（❌ TALA 禁用，以下能力不可用）：`near: <对象ID>` 靠近指定形状；`top` / `left` 直接锁定坐标（引擎只移动周围对象）。
 
 ### 7.5 网格布局
 
@@ -611,10 +601,10 @@ TALA 专属：`near: <对象ID>` 靠近指定形状；`top` / `left` 直接锁�
 
 - 通用小图 → **dagre**（默认零配置）
 - 复杂/容器多/边密 → **ELK**（布线整齐、交叉最少）
-- 架构图/要手动摆位 → **TALA**（`top`/`left`/`near` 对象、对称性）
+- 架构图/要手动摆位 → ~~**TALA**~~（❌ 付费引擎，禁用）
 - 看板/仪表盘 → `grid-columns` 强制布局
 - **边太长/交错** → 改用 `direction: right`、加 `grid-columns` 强制布局、或拆子图
-- 详细官方文档见 [references/layouts.md](references/layouts.md) / [references/dagre.md](references/dagre.md) / [references/elk.md](references/elk.md) / [references/tala.md](references/tala.md) / [references/positions.md](references/positions.md) / [references/grid-diagrams.md](references/grid-diagrams.md)
+- 详细官方文档见 [references/layouts.md](references/layouts.md) / [references/dagre.md](references/dagre.md) / [references/elk.md](references/elk.md) / [references/positions.md](references/positions.md) / [references/grid-diagrams.md](references/grid-diagrams.md)
 
 ### 7.7 分层架构图的层间关系
 
