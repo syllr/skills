@@ -171,7 +171,6 @@ o: { shape: class }           # 类（节点级；class_diagram 整图类型 0.7
 p: { shape: image; icon: https://icons.terrastruct.com/aws/Compute/Amazon-EC2.svg }  # 图标
 q: { shape: text }            # 纯文本节点
 r: { shape: callout }         # 标注气泡
-t: { shape: timeline }        # 时间线（⚠️ 0.7.1 实测 unknown shape，使用前需验证）
 u: { shape: step }            # 步骤
 ```
 
@@ -367,7 +366,62 @@ d2 version                    # 版本
 
 ## 4. 实战模板（可直接复制改用）
 
-### 4.1 简单 A→B 关系图
+### 4.1 综合语法演示（覆盖全部主要功能，一次看懂）
+
+> 一个文件覆盖 d2 的主要语法：方向 / 变量 / 节点 / 形状 / 容器嵌套 / 边类型 / 边标签与样式 / 跨容器边 / 节点样式 / 网格布局。后续 4.2-4.7 是各场景的独立实用模板（不重复本节语法）。
+
+```d2
+direction: down                # ① 全局方向：down/right/left/up
+
+# ② 变量
+vars: { env: "prod" }
+api: "API-({vars.env})"
+
+# ③ 节点：标识符 / 带标签 / 后置 label / 形状
+server                         # 简单标识符
+server2: "带中文标签"           # 标识符: label
+server2.label: "后置 label"     # 后置 label
+db: "数据库" { shape: cylinder } # 形状：圆柱（数据库）
+dec: "决策" { shape: diamond }   # 形状：菱形（决策）
+
+# ④ 容器（嵌套 + 命名空间）
+frontend: {
+  web: "Web"
+  mobile: "Mobile"
+  ui: { btn: "按钮" }           # 嵌套容器
+}
+
+# ⑤ 边：有向 / 无向 / 双向 / 带标签 / 带样式
+a -> b                          # 有向
+c -- d                          # 无向
+e <-> f                         # 双向
+user -> frontend: "HTTPS"       # 边标签
+user -> frontend: "HTTP" { style.stroke: red }  # 边样式
+
+# ⑥ 跨容器边（完整路径，见陷阱 3）
+frontend.web -> backend: "REST"
+
+# ⑦ 节点样式
+styled: "带样式" {
+  style: {
+    fill: "#dae8fc"
+    stroke: "#6c8ebf"
+    stroke-width: 2
+    border-radius: 10
+    font-color: "#003366"
+    bold: true
+  }
+}
+
+# ⑧ 网格布局
+dashboard: {
+  grid-columns: 3
+  grid-gap: 20
+  m1: "模块1"; m2: "模块2"; m3: "模块3"
+}
+```
+
+### 4.2 简单 A→B 关系图
 
 ```d2
 direction: right
@@ -376,7 +430,7 @@ frontend -> backend: "REST"
 backend -> database: "SQL"
 ```
 
-### 4.2 分层架构（带容器）
+### 4.3 分层架构（带容器）
 
 ```d2
 direction: down
@@ -390,7 +444,7 @@ backend.worker -> data.redis
 
 > 注：本模板用**模块级箭头**表达精确调用关系；画粗粒度**层间关系**（层容器→层容器）的模板见 [7.7 节](#77-分层架构图的层间关系)。
 
-### 4.3 条件分支（IF）
+### 4.4 条件分支（IF）
 
 ```d2
 direction: right
@@ -406,7 +460,7 @@ if_yes -> end
 if_no -> end
 ```
 
-### 4.4 序列图
+### 4.5 序列图
 
 ```d2
 shape: sequence_diagram
@@ -418,7 +472,7 @@ auth_api -> frontend: "JWT token"
 frontend -> user: "登录成功"
 ```
 
-### 4.5 ER 图
+### 4.6 ER 图
 
 ```d2
 users: {
@@ -436,7 +490,7 @@ orders: {
 users.id -> orders.user_id
 ```
 
-### 4.6 看板/仪表盘（grid 强制布局）
+### 4.7 看板/仪表盘（grid 强制布局）
 
 ```d2
 kanban: {
@@ -593,7 +647,7 @@ system.上层.模块X -> system.中层.模块Y  # ❌ 模块级：层间关系�
 | 场景                                        | 箭头粒度                    | 示例                                                             |
 | ------------------------------------------- | --------------------------- | ---------------------------------------------------------------- |
 | 层间调用关系（架构总览/汇报，粗粒度）       | **容器级**（层容器→层容器） | `system.上层 -> system.中层`                                     |
-| 模块间精确依赖（API 设计/代码分析，细粒度） | **模块级**（节点→节点）     | `frontend.web -> backend.api`（见 [4.2 节](#42-分层架构带容器)） |
+| 模块间精确依赖（API 设计/代码分析，细粒度） | **模块级**（节点→节点）     | `frontend.web -> backend.api`（见 [4.3 节](#43-分层架构带容器)） |
 
 **R3 跨容器引用必须用完整路径**（详见 [陷阱 3](#5-常见陷阱llm-易错点)）：`system.上层 -> system.中层`（容器对容器）或 `大容器.子容器.节点`（模块对模块）；写裸容器名（`上层 -> 中层`）会静默产生重复节点。
 
