@@ -568,16 +568,18 @@ d2 "<file>.d2" "<file>.svg"
 direction: up                  # 全局流向：up / down（默认）/ right / left（一次只能取一个值）
 ```
 
-每容器独立方向（仅 TALA，需单独安装 `install.sh --tala`；未安装时编译报 `"tala" is not bundled` 属预期）：
+**每容器独立方向（仅 TALA，可选能力）**：TALA 支持在容器内单独设置 `direction`。TALA 是**独立付费引擎**（商用需许可，免费版有水印），需单独安装（`brew install terrastruct/tap/tala` 或官网下载），并确保渲染环境 PATH 含插件目录（`d2plugin-tala`，通常 `/usr/local/bin`）。命令行验证：`d2 layout` 应列出 tala。
 
 ```d2
-vars: { d2-config: { layout-engine: tala } }
+vars: { d2-config: { layout-engine: tala } }   # 启用 TALA 布局引擎
 direction: down
 b: {
-  direction: right   # 容器内单独流向
+  direction: right   # 容器内单独流向（仅 TALA 支持）
   1 -> 2 -> 3
 }
 ```
+
+> 若渲染环境报 `"tala" is not bundled`：说明渲染引擎进程的 PATH 不含 `d2plugin-tala` 所在目录（GUI 应用常见），在启动该引擎的 shell/launchd 环境补上 `/usr/local/bin` 即可。本 skill 其余示例默认用 dagre/ELK，不依赖 TALA。
 
 ### 7.4 位置控制（near / top / left）
 
