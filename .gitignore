@@ -5,8 +5,12 @@
 .idea/
 .playwright/
 .playwright-cli
+.playwright-mcp/
 .claude/
 .obsidian/
+
+# 测试/调试残留产物
+*.png
 
 # macOS DS_Store file
 .DS_Store
