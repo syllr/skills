@@ -723,25 +723,3 @@ base: "下层" { width: 800; grid-columns: 3; y1: "模块1"; y2: "模块2"; y3: 
 ## 8. 导出格式速查
 
 详见 [3.8 节完整导出选项](#38-完整导出选项tour--exports) 表格。
-
----
-
-## 9. 安装位置（opencode/Claude Code skill）
-
-| 范围               | 路径                                                                      | 加载时机                                          |
-| ------------------ | ------------------------------------------------------------------------- | ------------------------------------------------- |
-| 项目级（仅本项目） | `.opencode/skills/d2/SKILL.md` 或 `<项目>/skills/d2/SKILL.md`             | opencode 在该目录启动时加载                       |
-| 用户级（所有项目） | `~/.config/opencode/skills/d2/SKILL.md` 或 `~/.agents/skills/d2/SKILL.md` | opencode 任何目录启动时加载（自动对所有项目生效） |
-
-**本 skill 文件通用**（含 CLI/语法/模板）——可直接放项目级或用户级。
-
----
-
-## 附录：参考链接
-
-- 官方 Tour（完整文档已本地化到 [references/](references/)，联网对照用）：https://d2lang.com/tour/intro/
-- Cheat Sheet（PDF 下载页）：https://d2lang.com/tour/cheat-sheet/
-- CLI manual：`d2 --help` / `man d2` / https://d2lang.com/tour/man/（本地见 [references/man.md](references/man.md)）
-- 官方示例：https://github.com/d2lang/d2/tree/master/docs/examples
-- Icons 库：https://icons.terrastruct.com/（AWS/K8s/GCP/Azure 路径前缀）
-- 官方 Play 调试：https://play.d2lang.com

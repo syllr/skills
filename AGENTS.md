@@ -62,7 +62,7 @@ scripts/render.py --template assets/templates/report.xml
 
 ### 长文档拆分原则（渐进式披露）
 
-- `SKILL.md` 保持精简（<500 行，**例外：`d2/SKILL.md` 为系统级综合技能，697 行属已知例外**），放核心工作流与速查
+- `SKILL.md` 保持精简（<500 行，**例外：`d2/SKILL.md` 为系统级综合技能，725 行属已知例外**），放核心工作流与速查
 - 详细参考放 `references/`，SKILL.md 内用 Markdown 链接按需指向
 - references 文件可本地化官方资料（爬取后内联代码块、去除 Docusaurus 组件残留），使 skill 离线可用
 
