@@ -27,7 +27,7 @@
 | `troubleshoot.md`  | 故障排查                      | /tour/troubleshoot/  |
 | `cheat-sheet.md`   | 速查表（PDF 预览页）          | /tour/cheat-sheet/   |
 
-> `diagram-review.md` 为**本项目自研**的 PNG 识图自检审查清单（非官方文档），用于渲染后条理性审查（macOS：sips 转 PNG + 识图工具），详见 [SKILL.md 工作流第 7 步](../SKILL.md)。
+> `diagram-review.md` 为**本项目自研**的 PNG 识图自检审查清单（非官方文档），用于渲染后条理性审查（macOS：sips 转 PNG + 识图工具），详见 [SKILL.md 工作流第 4 步](../SKILL.md)。
 
 ## 处理说明
 
