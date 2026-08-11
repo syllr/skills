@@ -39,16 +39,19 @@ description: 用 D2（d2lang.com）声明式文本画架构图/流程图/时序�
 
 > **⚠️ 全局命令安全（适用于自检相关的 shell 命令）**：执行命令前，先对 `<file>` 路径做**白名单校验**——仅允许 `[A-Za-z0-9._/-]`（字母/数字/点/下划线/斜杠/连字符），含其余字符（`$`、反引号、`\`、`"`、`;`、空格等）一律先重命名再执行，防止双引号包裹下的命令替换/转义逃逸注入。自检临时文件名（`$TMPDIR/d2md/d2-<时间戳>.d2`）自动满足白名单。
 
-0. **定位目标文档（起点，阻塞性）**：用户调用本 skill 并指定在**哪个 Markdown 文件**里画什么图（如"在 `docs/architecture.md` 里画一个分层架构图"）。用 Read 读取目标文档，确认：① 文件是否存在、可编辑；② 文档中是否已有 ` ```d2 ` 代码块（有 → 定位到该代码块待修改；无 → 确定插入位置）；③ 文档结构（章节组织、是否有蓝图/`# 图标准元信息` 约定）。**未确认目标文档前，禁止写 d2 代码**
-1. **确认需求 + 选引擎（强制，阻塞性 #1）**：与用户对齐图类型、复杂度（几层/几个模块/什么关系），按 [7.6 节选型速查](#76-选型速查) 选定布局引擎（默认 dagre）；确定代码块在文档中的插入位置（哪个章节/蓝图）
+0. **定位目标文档（起点，阻塞性）**：用户调用本 skill 并指定在**哪个 Markdown 文件**里画什么图（如"在 `docs/architecture.md` 里画一个分层架构图"）。用 Read 读取目标文档，确认：① 文件是否存在、可编辑；② 文档中是否已有 ` ```d2 ` 代码块（有 → 定位到该代码块待修改；无 → 待步骤 1 确定插入位置）；③ 文档结构（章节组织、是否蓝图类文档）。**未确认目标文档前，禁止写 d2 代码**
+1. **确认需求 + 选引擎（强制，阻塞性 #1）**：与用户对齐图类型、复杂度（几层/几个模块/什么关系），按 [7.6 节选型速查](#76-选型速查) 选定布局引擎（默认 dagre）；**确定插入位置**（文档哪个章节/是否新建代码块）
 2. **ASCII 架构确认（强制，阻塞性 #2）**：在对话中以 `text` 代码块直接输出 ASCII 架构图（AI 手绘，节点/容器/连接/方向），等待用户明确确认后才进入下一步；用户提出修改则更新 ASCII 图重新确认（详见 [2.1 节](#21-ascii-架构确认画图前必做)）
 3. **在目标文档写/改 ` ```d2 ` 代码块（唯一方式，不建独立 `.d2` 文件）**：在步骤 0/1 确定的插入位置，写入或修改 ` ```d2 ` 代码块。代码块首行可写 `# 图标准元信息` 注释（图名/视角/用途/状态编码），并可在代码块内设 `vars: { d2-config: { layout-engine: <engine> } }`。**写完后渲染由 Markdown 引擎自动完成，AI 不做任何输出/渲染动作**
 4. **自检（强制，macOS 可用时）**：
    a. 语法校验：提取代码块内容到临时文件 `$TMPDIR/d2md/d2-<时间戳>.d2`，执行 `d2 validate <临时文件>`（失败则修代码块内容到通过）
-   b. 渲染检查：`d2 "<临时文件>" "<临时文件>.svg"` 临时渲染，用 `sips` 转 PNG（`mkdir -p "$TMPDIR/d2png"` + `sips -s format png "<临时文件>.svg" --out "$TMPDIR/d2png/$(basename "<临时文件>")-$(date +%Y%m%d%H%M%S).png"`，白名单见顶部约束）
+   b. 渲染检查：临时渲染 + `sips` 转 PNG 自检（`mkdir -p "$TMPDIR/d2png"`；`sips -s format png "<临时文件>.svg" --out "$TMPDIR/d2png/<裸文件名>-<时间戳>.png"`；文件名白名单见顶部约束）
    c. 识别：用系统可用的**识图工具**（如 `MiniMax_understand_image`）查看该 PNG，按 [references/diagram-review.md](references/diagram-review.md) 清单逐项审查（A 结构：方向流/层级/连线标签/节点顺序/容器层级；B 内容：图与源码一致/箭头语义/信息完整/**与已确认 ASCII 架构一致**；C 识图工具局限、D 使用注意参见清单）
-   d. 发现问题 → 修改 Markdown 代码块内容（或调整引擎重选）→ 重新提取重跑 4a-4c，**最多 3 轮**；第 3 轮后仍有问题则如实报告剩余问题。**回环规则**：若问题源于 ASCII 架构本身需要调整（用户补充需求或早期方案遗漏），回到第 2 步重新确认；若只是 d2 代码写错或引擎选错，直接在第 1/3-4 步内修复
-   e. **非 macOS、sips 不可用、或识图工具不可用时**，降级为 Read 代码块源码核对 + `d2 validate` 校验，并在报告注明"未做 PNG 自检（原因）"。**自检完成后清理 `$TMPDIR/d2png/` 与 `$TMPDIR/d2md/` 下的临时文件**。⚠️ **多板图（layers/scenarios/steps）禁止使用**——渲染引擎不支持，需拆成多张独立图（见 [3.6 节](#36-多板layers--scenarios--steps不支持禁用)）
+   d. 发现问题 → 修改 Markdown 代码块内容（或调整引擎重选）→ 重新提取重跑 4a-4c，**最多 3 轮**；第 3 轮后仍有问题则如实报告剩余问题
+   e. **非 macOS、sips 不可用、或识图工具不可用时**，降级为 Read 代码块源码核对 + `d2 validate` 校验，并在报告注明"未做 PNG 自检（原因）"。**自检完成后清理 `$TMPDIR/d2png/` 与 `$TMPDIR/d2md/` 下的临时文件**
+
+   **回环规则**：问题源于 ASCII 架构本身需调整（用户补充需求/早期方案遗漏）→ 回到第 2 步重新确认；只是 d2 代码写错或引擎选错 → 在第 1/3-4 步内修复
+
 5. 报告：目标文档路径 + 代码块位置（章节）+ 自检结论（含与已确认 ASCII 架构一致性结论）
 
 完成标准：目标文档中 ` ```d2 ` 代码块已写入/更新；PNG 识图自检通过（或 3 轮后如实报告剩余问题；非 macOS/工具不可用降级后注明）；渲染结果与第 2 步已确认的 ASCII 架构一致。
@@ -513,26 +516,13 @@ kanban: {
 
 ---
 
-## 6. 验证命令
+## 6. 自检与验证技巧
 
-```bash
-# 语法检查（输出未格式化文件列表）
-d2 fmt --check <file>.d2
+> 自检流程见 [§2 工作流](#2-工作流6-步) 第 4 步（提取代码块 → 临时文件 → validate → 临时渲染 → PNG 识图）。CLI 命令速查见 [3.9 节](#39-cli-完整子命令)，导出/主题/布局参数见 [3.8 节](#38-完整导出选项tour--exports) / [7.1 节](#71-布局引擎选择)。
 
-# 校验（错误指出行号）
-d2 validate <file>.d2
-
-# 渲染（与 .d2 同目录；路径含空格时引号保护）
-d2 "<file>.d2" "<file>.svg"
-```
-
-> 渲染由项目 Markdown 引擎自动完成；AI 仅在自检时按 [§2 工作流](#2-工作流6-步) 第 4 步执行临时渲染 + PNG 识图自检（macOS）。语法速查见 [3.9 节](#39-cli-完整子命令)，导出/主题/布局参数见 [3.8 节](#38-完整导出选项tour--exports) / [7.1 节](#71-布局引擎选择)。
->
 > ⚠️ **ASCII 输出中 CJK 字符间被插入对齐空格**（如"应用"渲染为"应 用"），用 grep 精确匹配中文会失配——核对 ASCII 内容用全文阅读（`cat`），勿用 grep。
->
-> **重复节点检测（SVG）**：跨容器引用出错会静默产生重复节点（见 [陷阱 3](#5-常见陷阱llm-易错点)）。SVG 中中文**不**插空格，可精确 grep 计数：`grep -Fo "编排核心" file.svg | wc -l`——正常图每容器应恰好 1 次。**⚠️ 安全**：容器名先做与 sips 同款白名单校验（仅 `[A-Za-z0-9._/-]`），且必须加 `-F`（固定字符串）防正则/命令注入。
 
-完成标准：`d2 "<临时文件>" "<临时文件>.svg"` exit 0 且 SVG 已在约定图目录生成、Markdown 引用已补；完整流程见 §2 工作流（Markdown 内嵌 d2、ASCII 确认、PNG 识图自检与 3 轮上限）。
+> **重复节点检测（SVG）**：跨容器引用出错会静默产生重复节点（见 [陷阱 3](#5-常见陷阱llm-易错点)）。SVG 中中文**不**插空格，可精确 grep 计数：`grep -Fo "编排核心" file.svg | wc -l`——正常图每容器应恰好 1 次。**⚠️ 安全**：容器名先做白名单校验（仅 `[A-Za-z0-9._/-]`，见 [§2 全局命令安全](#2-工作流6-步)），且必须加 `-F`（固定字符串）防正则/命令注入。
 
 ---
 
@@ -567,9 +557,7 @@ d2 "<file>.d2" "<file>.svg"
 direction: up                  # 全局流向：up / down（默认）/ right / left（一次只能取一个值）
 ```
 
-**❌ TALA 引擎禁用**：TALA 是 Terrastruct 的**闭源付费引擎**（商用需许可，免费版出图带水印），本 skill **不使用、不推荐**。所有示例默认用 dagre/ELK（免费开源）。若文档中出现 `layout-engine: tala` 一律改为 dagre/ELK，且**不要**在代码块中使用 `vars: { d2-config: { layout-engine: tala } }`。
-
-> 说明：`direction` 的"每容器独立方向"是 TALA 独有能力，因 TALA 禁用，该能力不可用（dagre/ELK 仅支持全局方向）。若已安装 TALA，可执行 `brew uninstall terrastruct/tap/tala` 移除。
+**❌ TALA 引擎禁用**：TALA 是 Terrastruct 的**闭源付费引擎**（商用需许可，免费版出图带水印），本 skill **不使用、不推荐**。所有示例默认用 dagre/ELK（免费开源）；文档中出现 `layout-engine: tala` 一律改为 dagre/ELK。`direction` 的"每容器独立方向"是 TALA 独有能力，因禁用不可用（dagre/ELK 仅支持全局方向）。
 
 ### 7.4 位置控制（near / top / left）
 
@@ -589,8 +577,6 @@ server: DB {
 }
 ```
 
-~~TALA 专属~~（❌ TALA 禁用，以下能力不可用）：`near: <对象ID>` 靠近指定形状；`top` / `left` 直接锁定坐标（引擎只移动周围对象）。
-
 ### 7.5 网格布局
 
 详见 [3.5 节网格布局](#35-网格布局tour--hello-world-进阶) 与 [references/grid-diagrams.md](references/grid-diagrams.md)。
@@ -601,10 +587,9 @@ server: DB {
 
 - 通用小图 → **dagre**（默认零配置）
 - 复杂/容器多/边密 → **ELK**（布线整齐、交叉最少）
-- 架构图/要手动摆位 → ~~**TALA**~~（❌ 付费引擎，禁用）
 - 看板/仪表盘 → `grid-columns` 强制布局
 - **边太长/交错** → 改用 `direction: right`、加 `grid-columns` 强制布局、或拆子图
-- 详细官方文档见 [references/layouts.md](references/layouts.md) / [references/dagre.md](references/dagre.md) / [references/elk.md](references/elk.md) / [references/positions.md](references/positions.md) / [references/grid-diagrams.md](references/grid-diagrams.md)
+- 引擎能力详情见 [7.1 节](#71-布局引擎选择)；官方文档见 [references/layouts.md](references/layouts.md) / [references/dagre.md](references/dagre.md) / [references/elk.md](references/elk.md) / [references/positions.md](references/positions.md) / [references/grid-diagrams.md](references/grid-diagrams.md)
 
 ### 7.7 分层架构图的层间关系
 
@@ -612,7 +597,7 @@ server: DB {
 
 **R1 只画相邻层间箭头，禁止跳层**：
 
-- 跳层箭头（`上层 -> 下层` 直接连线）会让布局引擎**无法维持层级的纵向堆叠**——容器被并排/错位重排，箭头横穿或擦碰中间层边界（实测 dagre/ELK 均如此；**注意**：模板的 `grid-rows:1; grid-columns:1` 强制布局可免疫容器错位，但跳层线仍会横穿中层，故无论是否有 grid 都不应跳层）。
+- 跳层箭头（`上层 -> 下层` 直接连线）会让布局引擎**无法维持层级的纵向堆叠**——容器被并排/错位重排，箭头横穿或擦碰中间层边界（实测 dagre/ELK 均如此；**注意**：下文模板的 `grid-rows:1; grid-columns:1` 强制布局可免疫容器错位，但跳层线仍会横穿中层，故无论是否有 grid 都不应跳层）。
 - 若上下层确有直接调用：用相邻层传递表达（`上->中->下` 隐含"上用到下"），或在节点 label 里注明，不画跳层线。
 
 **R2 层间箭头 = 容器级，不落到具体模块**（场景偏好，见下方二分）：
@@ -680,12 +665,12 @@ system.中层 -> system.下层: "依赖" { style.stroke: "#999999" }
 
 **速查**：① 层间箭头只画相邻层 ② 层间箭头容器级（粗粒度）；模块级仅用于精确依赖 ③ 跨容器引用完整路径 ④ 纵向分层用 `grid-rows:1; grid-columns:1` 强制堆叠 ⑤ 层间距 `grid-gap ≥ 80` ⑥ 跳层依赖用相邻层传递或 label 注明。
 
-**各层宽度一致性**（实测验证）：
+### 7.8 各层宽度一致性（实测验证）
 
 分层图各层宽度由内容自动决定——**子容器嵌套层的宽度会累加**（如中层含 3 个并排子容器时远宽于平铺的上下层），视觉上"中宽上下窄"很难看。两个解法：
 
 - **解法 A（推荐）：ELK + 各层显式 `width` 统一**。给每层容器设相同 `width`（如 `width: 800`），实测 ELK 下三层 rect 宽度完全一致（800/800/800）。注意 **dagre 不支持容器 `width`**（报错 "does not support dimensions set on containers"），必须用 ELK。
-  > 💡 **关于"ELK 不支持 grid"的说法**：部分文档/模板（如 PROJECT-SPEC 蓝图注释）写"grid-columns 网格布局依赖 dagre，ELK 不支持 grid"——此为**过时信息**，实测 d2 0.7.1 ELK 完全支持 `grid-columns`/`grid-rows`/`grid-gap`（本 skill 7.7 模板即 ELK+grid）。如遇该注释可直接忽略，按本 skill 选型。
+  > 💡 若遇"ELK 不支持 grid"的说法（部分文档/模板注释）：为**过时信息**，实测 d2 0.7.1 ELK 完全支持 `grid-columns`/`grid-rows`/`grid-gap`，可直接忽略。
 - **解法 B：层间同构**。让各层子节点数/结构一致（都平铺或都嵌套同数子容器），自然等宽；但内容差异大时难以保证。
 
 ```d2
@@ -694,14 +679,4 @@ direction: down
 front: "上层" { width: 800; grid-columns: 3; x1: "模块1"; x2: "模块2"; x3: "模块3" }
 middle: "中层" { width: 800; grid-columns: 3; c1: { a1: "A1" }; c2: { b1: "B1" } }
 base: "下层" { width: 800; grid-columns: 3; y1: "模块1"; y2: "模块2"; y3: "模块3" }
-```
-
----
-
-## 8. 导出格式速查
-
-详见 [3.8 节完整导出选项](#38-完整导出选项tour--exports) 表格。
-
-```
-
 ```
