@@ -189,6 +189,7 @@ u: { shape: step }            # 步骤
 ### 3.4 样式完整属性（Tour / Customization）
 
 ```d2
+vars: { d2-config: { layout-engine: elk } }   # 本示例含容器尺寸，需 ELK（dagre 不支持容器 width/height）
 node: "标题" {
   # 尺寸（节点属性，不是 style 关键字——写在 style 块里会编译报错）
   # ⚠️ 容器节点（有子属性）设置尺寸仅 ELK/TALA 支持，dagre 会报错；叶子节点无此限制
@@ -221,16 +222,12 @@ node: "标题" {
   }
 }
 
-# 边样式
-edge: {
-  style: {
-    stroke: red
-    stroke-width: 2
-    stroke-dash: 5
-    target-arrowhead: { shape: triangle }   # 箭头：triangle/arrow/diamond/circle/box/cf-one/cf-one-required/cf-many/cf-many-required/cross
-    source-arrowhead: { shape: none }
-    target-arrowhead.label: "MSG"           # 箭头标签
-  }
+# 边样式（写在边定义块内；⚠️ arrowhead 是边级属性，不在 style 块里——style 里写会报 invalid style keyword）
+a -> b: "边" {
+  style: { stroke: red; stroke-width: 2; stroke-dash: 5 }
+  target-arrowhead: { shape: triangle }   # 目标箭头：triangle/arrow/diamond/circle/box/cf-one/cf-one-required/cf-many/cf-many-required/cross
+  source-arrowhead: { shape: none }       # 源箭头
+  target-arrowhead.label: "MSG"           # 箭头标签
 }
 
 # 容器样式
@@ -280,6 +277,8 @@ steps: {                     # 逐步演进（可加 --animate-interval 动画�
   step3: { a -> b; b -> c }
 }
 ```
+
+> ⚠️ **多板图渲染限制**：多板图（layers/scenarios/steps）**不能输出到 stdout**（`d2 --stdout-format ascii multi.d2 -` 会报 `multiboard output cannot be written to stdout`），必须输出到文件/目录（如 `d2 multi.d2 multi.svg` → 生成 `multi/layers/xxx.svg`、`multi/scenarios/xxx.svg` 目录结构，每张 SVG 单独自检）。
 
 **动画导出**：`d2 --animate-interval=1000 x.d2 x.svg`（steps 板自动循环切换；详见 [3.8 节](#38-完整导出选项tour--exports)）
 
@@ -579,10 +578,10 @@ d2 "<file>.d2" "<file>.svg"
 ### 7.3 方向（direction）
 
 ```d2
-direction: up | down | right | left   # 全局流向（默认 down）
+direction: up                  # 全局流向：up / down（默认）/ right / left（一次只能取一个值）
 ```
 
-每容器独立方向（仅 TALA）：
+每容器独立方向（仅 TALA，需单独安装 `install.sh --tala`；未安装时编译报 `"tala" is not bundled` 属预期）：
 
 ```d2
 vars: { d2-config: { layout-engine: tala } }
