@@ -1,33 +1,18 @@
-# D2 官方文档本地参考
+# C4 Container Diagram skill 文档参考
 
-本目录是从 [d2lang.com/tour/](https://d2lang.com/tour/) 官方文档爬取并本地化的参考资料，原始来源为 [d2lang/d2-docs](https://github.com/d2lang/d2-docs) 仓库 `docs/tour/` 目录（默认分支 `master`）。
+本目录是从 [d2lang.com/tour/](https://d2lang.com/tour/) 官方文档爬取并本地化的参考资料（skill 用 D2 画 [C4 Container Diagram](https://c4model.com/diagrams/container)——C4 model 第 2 层图），原始来源为 [d2lang/d2-docs](https://github.com/d2lang/d2-docs) 仓库 `docs/tour/` 目录（默认分支 `master`）。
 
-## 内容
+## 保留内容（画 C4 Container Diagram 必需）
 
-| 文件               | 内容                          | 对应官方页面         |
-| ------------------ | ----------------------------- | -------------------- |
-| `intro.md`         | D2 是什么、CLI watch 模式     | /tour/intro/         |
-| `hello-world.md`   | 第一个示例                    | /tour/hello-world/   |
-| `shapes.md`        | 节点形状语法、1:1 比例形状    | /tour/shapes/        |
-| `connections.md`   | 连接语法、箭头、引用连接      | /tour/connections/   |
-| `containers.md`    | 容器嵌套、标签、父引用        | /tour/containers/    |
-| `sql-tables.md`    | ER 图（sql_table）、外键连接  | /tour/sql-tables/    |
-| `layouts.md`       | 布局引擎总览与方向            | /tour/layouts/       |
-| `dagre.md`         | dagre 布局引擎（默认）        | /tour/dagre/         |
-| `elk.md`           | ELK 布局引擎                  | /tour/elk/           |
-| `tala.md`          | TALA 布局引擎（架构图专用）   | /tour/tala/          |
-| `positions.md`     | 位置控制（near / top / left） | /tour/positions/     |
-| `grid-diagrams.md` | 网格布局（grid-columns 等）   | /tour/grid-diagrams/ |
-| `composition.md`   | 多板组合                      | /tour/composition/   |
-| `imports.md`       | 导入语法                      | /tour/imports/       |
-| `themes.md`        | 主题定制                      | /tour/themes/        |
-| `exports.md`       | 导出格式                      | /tour/exports/       |
-| `man.md`           | CLI 手册                      | /tour/man/           |
-| `faq.md`           | 常见问题                      | /tour/faq/           |
-| `troubleshoot.md`  | 故障排查                      | /tour/troubleshoot/  |
-| `cheat-sheet.md`   | 速查表（PDF 预览页）          | /tour/cheat-sheet/   |
+经过精简，仅保留画架构图实际用得到的 D2 语法参考（其余 17 个文件已删除——如 sequence_diagram/sql_table/ER 图/tala 付费引擎/CLI 完整手册等与 C4 Container 画图无关）：
 
-> `diagram-review.md` 为**本项目自研**的 PNG 识图自检审查清单（非官方文档），用于渲染后条理性审查（macOS：sips 转 PNG + 识图工具），详见 [SKILL.md 工作流第 4 步](../SKILL.md)。
+| 文件                | 内容                                              | 对应官方页面         | C4 画图用途                                         |
+| ------------------- | ------------------------------------------------- | -------------------- | --------------------------------------------------- |
+| `containers.md`     | 容器嵌套、标签、父引用                            | /tour/containers/    | **核心**——多层大容器嵌套语法                        |
+| `connections.md`    | 连接语法（有向/无向/标签/引用）                   | /tour/connections/   | **核心**——容器间通信关系                            |
+| `grid-diagrams.md`  | 网格布局（grid-columns/rows/gap）                 | /tour/grid-diagrams/ | **核心**——"千层蛋糕"纵向堆叠 + 等宽分布             |
+| `elk.md`            | ELK 布局引擎                                      | /tour/elk/           | **核心**——默认推荐引擎（含 grid + 容器 width 支持） |
+| `diagram-review.md` | **本项目自研** PNG 识图自检审查清单（非官方文档） | —                    | 自检核心——macOS sips 转 PNG 后用识图工具审查        |
 
 ## 处理说明
 
@@ -39,11 +24,11 @@
 
 ## 更新方式
 
-如需更新到最新版：
+如需更新到最新版（仅保留的 5 个文件）：
 
 ```bash
 # 分支为 master
-for f in intro hello-world shapes connections containers sql-tables layouts dagre elk tala positions grid-diagrams composition imports themes exports man faq troubleshoot cheat-sheet; do
+for f in containers connections grid-diagrams elk; do
   curl -fsSL "https://raw.githubusercontent.com/d2lang/d2-docs/master/docs/tour/$f.md" -o "$f.md"
 done
 # 随后用转换脚本（见仓库 skill 开发流程）内联代码引用

@@ -6,13 +6,13 @@ description: 用 D2（d2lang.com）画 C4 Container Diagram（c4model.com 标准
 # C4 Container Diagram 技能（系统级 · 专用 · D2 实现）
 
 > 本 skill 专门画 **C4 model Container Diagram**（[c4model.com](https://c4model.com/diagrams/container) 标准第 2 层图——展示系统级容器划分与通信关系）。**D2 是实现方式**（[d2lang.com](https://d2lang.com)），本 skill 帮你用 D2 声明式语法画"千层蛋糕"式的多层大容器纵向堆叠 + 子模块等宽均匀分布的架构图。
-> 完整 D2 官方文档已本地化到 [references/](references/) 目录（见 [§9 References Tour 关键章节摘要](#9-references-tour-关键章节摘要)），画架构图常用语法在 [§5 实测模板](#51-顶部居中标签-标准-3-层架构图完整可用已实测) 和 [references/grid-diagrams.md](references/grid-diagrams.md) 等章节。
+> 完整 D2 官方文档已本地化到 [references/](references/) 目录（见 [§9 References 关键章节摘要](#9-references-关键章节摘要精简版)），画架构图常用语法在 [§5.1 顶部居中标签模板](#51-顶部居中标签标准-3-层架构图完整可用已实测) 和 [references/grid-diagrams.md](references/grid-diagrams.md) 等章节。
 
 ---
 
 ## 1. 何时用本 skill 画 C4 Container Diagram
 
-| 想画什么                                          | 本 skill 是否适合                      |
+| 想画什么                                  | 本 skill 是否适合                         |
 | ----------------------------------------- | ----------------------------------------- |
 | 技术架构图（多层大容器纵向堆叠）          | ✓ **强项**                                |
 | 产品架构图（应用/业务/基础服务/数据四层） | ✓ **强项**                                |
@@ -32,13 +32,13 @@ description: 用 D2（d2lang.com）画 C4 Container Diagram（c4model.com 标准
 
 > **CRITICAL — BLOCKING（阻塞性要求 #2，对应步骤 2）**: 写 d2 代码块前，MUST 先在对话中以 ASCII 架构图向用户展示图的大体结构（层数 + 每层模块 + 层间连线）。用户未确认前，禁止写 d2 代码。（ASCII 图要素见 [3 节](#3-ascii-架构确认画图前必做)）
 
-> **渲染方式**：d2 代码块由项目 Markdown 渲染引擎自动渲染（内嵌 ```d2 即渲染）。AI **不手动渲染 SVG/PNG 到文件**——所有图产物在 Markdown 代码块中。**仅在自检时临时渲染做验证**（见 [7 节](#7-自检与-png-渲染macos)）。
+> **渲染方式**：d2 代码块由项目 Markdown 渲染引擎自动渲染（内嵌 ```d2 即渲染）。AI **不手动渲染 SVG/PNG 到文件**——所有图产物在 Markdown 代码块中。**仅在自检时临时渲染做验证**（见 [7 节](#-7-自检与-png-渲染macos)）。
 
 1. **定位目标 Markdown 文档（起点，阻塞性）**：用户调用本 skill 时通常会说"在 `docs/architecture.md` 里画一张产品架构图"。用 Read 读取目标文档，确认：① 文件存在可编辑；② 文档中是否已有 ` ```d2 ` 代码块（有 → 定位到该代码块；无 → 确定插入位置）；③ 文档结构（章节组织、蓝图风格）。**未确认目标文档前，禁止写 d2 代码**
 2. **对齐架构图参数（强制，阻塞性 #1）**：与用户确认：① **几层**（通常 3~6 层）；② **每层模块名**（用户会列出每个产品/服务/能力名）；③ **标签样式**（顶部居中 = 主流 / 左侧竖排 = 类架构师风格）；④ **颜色偏好**（蓝/紫/绿/橙/灰五大层系默认即可，或用户指定）；⑤ **是否需要层间箭头**（默认靠堆叠隐含依赖，需显式调用关系才加箭头）
 3. **ASCII 架构确认（强制，阻塞性 #2）**：在对话中以 `text` 代码块直接输出 ASCII 架构图（层数 + 每层模块 + 层间连线 + 标签位置），等用户明确确认。用户提出修改则更新 ASCII 图再次确认。（见 [3 节](#3-ascii-架构确认画图前必做)）
 4. **在目标文档写/改 ` ```d2 ` 代码块**：在步骤 1 确定的插入位置，写入或修改 ` ```d2 ` 代码块。代码块首行可写 `# 图标准元信息` 注释（图名/视角/用途/状态编码），代码块内 `vars: { d2-config: { layout-engine: elk } }`（默认 elk）。**写完后渲染由 Markdown 引擎自动完成，AI 不做任何输出/渲染动作**
-5. **自检（macOS 推荐）**：提取代码块 → 临时 .d2 → `d2 validate` + `d2 render` → `sips` 转 PNG → 识图工具审查结构/对齐/颜色/标签完整。详见 [7 节](#7-自检与-png-渲染macos)。
+5. **自检（macOS 推荐）**：提取代码块 → 临时 .d2 → `d2 validate` + `d2 render` → `sips` 转 PNG → 识图工具审查结构/对齐/颜色/标签完整。详见 [7 节](#-7-自检与-png-渲染macos)。
 
 完成标准：目标 Markdown 文档中 ` ```d2 ` 代码块已写入/更新；自检（PNG 识图或源码核对）通过；渲染结果与第 3 步确认的 ASCII 架构一致。
 
@@ -346,7 +346,7 @@ classes: {
 
 ### 5.3 层间调用关系（精确模块级）
 
-> 适用：API 设计/数据流分析，需要表达具体模块的调用关系（不仅是层间粒度）。
+> ⚠️ 本模板展示**组件级**精确调用关系（容器内子模块级），属于 C4 Component Diagram 范畴，超出 C4 Container Diagram 主流程。**C4 Container Diagram 通常不需要此粒度**——容器级通信即可表达系统架构。仅当需要 API 设计/数据流分析时才用本模板。
 
 ```d2
 vars: { d2-config: { layout-engine: elk } }
@@ -447,11 +447,11 @@ system.层1.app -> system.层2.backend: "调用"
 
 ### 6.5 ❌ 多板图（layers/scenarios/steps）禁用
 
-d2 的 `layers` / `scenarios` / `steps` 多板语法**在 Markdown 渲染引擎中无法渲染**（报 `multiboard output cannot be written to stdout`）。**架构图不要用多板**——拆成多张独立 ` ```d2 ` 代码块放在同一文档不同章节。
+**多板语法无法在 Markdown 渲染引擎中输出**（报 `multiboard output cannot be written to stdout`）。拆成多张独立 ` ```d2 ` 代码块放在同一文档不同章节。
 
 ### 6.6 ❌ TALA 引擎禁用
 
-TALA 是 Terrastruct 的**闭源付费引擎**（商用需许可，免费版出图带水印），本 skill **不使用、不推荐**。所有示例默认 elk（dagre 仅做"dagre 也可"标注）。文档中出现 `layout-engine: tala` 一律改为 `elk`。
+TALA 是**闭源付费引擎**（商用需许可，免费版出图有水印），本 skill 不使用。所有示例默认 `elk`；文档中出现 `layout-engine: tala` 一律改为 `elk`。
 
 ### 6.7 容器 `width` 与 `label` 长度的关系
 
@@ -463,11 +463,7 @@ TALA 是 Terrastruct 的**闭源付费引擎**（商用需许可，免费版出�
 
 中文字符在 ELK/dagre 下按 2 列宽处理，ASCII 输出时字符间会被插入对齐空格（如"应用"渲染为"应 用"），影响 grep 与对齐。**自检用 cat 全文阅读，不要 grep 中文字面**。
 
----
-
-## 7. 自检与 PNG 渲染（macOS）
-
-> 自检流程：提取代码块 → 临时 .d2 → `d2 validate` + `d2 render` → `sips` 转 PNG → 识图工具审查结构/对齐/颜色/标签完整。
+> ⚠️ **CJK 字体 2 列宽**：中文字符在 ELK/dagre 下按 2 列宽处理，ASCII 输出时字符间会被插入对齐空格（如"应用"渲染为"应 用"），影响 grep 与对齐。**自检用 cat 全文阅读，不要 grep 中文字面**。
 
 ```bash
 # 提取代码块到临时文件（白名单见 §2 全局命令安全）
@@ -499,7 +495,7 @@ sips -s format png "$SVG" --out "$TMPDIR/d2png/$(basename "$SVG" .svg)-$(date +%
 
 ---
 
-## 8. CLI 速查（仅架构图相关）
+## 8. CLI 速查（自检用，仅 SVG）
 
 ```bash
 # === 渲染（自检用） ===
@@ -520,23 +516,17 @@ d2 --theme=200 in.d2 out.svg
 
 ---
 
-## 9. References Tour 关键章节摘要
+## 9. References 关键章节摘要（精简版）
 
-> 下表对应文件均在 `references/` 目录（本 SKILL.md 同目录下），内容已本地化。画架构图最常用：`grid-diagrams.md`、`layouts.md`、`containers.md`、`themes.md`。
+> 下表对应文件均在 `references/` 目录（本 SKILL.md 同目录下）。本 skill 精简后只保留画 C4 Container Diagram 必需的 5 个 D2 参考文件（其余通用文档已删），C4 Container 画图最常用：`grid-diagrams.md`、`containers.md`、`connections.md`。
 
-| Tour 章节       | 关键内容                                                              | 本地文件                                                   |
-| --------------- | --------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Introduction    | Hello World、Hello d2、运行 `d2 input.d2 output.svg` 出图             | [references/intro.md](references/intro.md)                 |
-| Shapes          | 节点形状语法（架构图主要用 rectangle/cylinder/stored_data）           | [references/shapes.md](references/shapes.md)               |
-| Connections     | 边类型（无向/有向/标签/样式/箭头）、引用连接                          | [references/connections.md](references/connections.md)     |
-| Containers      | 容器语法（嵌套/命名空间/父引用）——**架构图核心**                      | [references/containers.md](references/containers.md)       |
-| Layouts         | 布局引擎总览 + 方向                                                   | [references/layouts.md](references/layouts.md)             |
-| Dagre           | 默认布局引擎（不支持容器 width）                                      | [references/dagre.md](references/dagre.md)                 |
-| ELK             | 布局引擎（**架构图推荐**）——支持容器 width/grid                       | [references/elk.md](references/elk.md)                     |
-| ~~TALA~~        | ~~架构图专用引擎~~（❌ 付费禁用）                                     | [references/tala.md](references/tala.md)                   |
-| Positions       | 位置控制：`near` 锚点 / `top` / `left`                                | [references/positions.md](references/positions.md)         |
-| Grid            | **网格布局（架构图核心）**：`grid-columns` / `grid-rows` / `grid-gap` | [references/grid-diagrams.md](references/grid-diagrams.md) |
-| Customization   | 主题、字体、3D、阴影（架构图主要用主题 + 描边）                       | [references/themes.md](references/themes.md)               |
-| ~~Composition~~ | ~~layers/scenarios/steps 多板~~（❌ 禁用，架构图不用）                | [references/composition.md](references/composition.md)     |
-| CLI manual      | d2 全部子命令与参数                                                   | [references/man.md](references/man.md)                     |
-| Troubleshooting | 故障排查                                                              | [references/troubleshoot.md](references/troubleshoot.md)   |
+| Tour 章节   | 关键内容                                                              | 本地文件                                                   |
+| ----------- | --------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Connections | 边类型（无向/有向/标签/引用连接）                                     | [references/connections.md](references/connections.md)     |
+| Containers  | 容器语法（嵌套/命名空间/父引用）——**架构图核心**                      | [references/containers.md](references/containers.md)       |
+| ELK         | 布局引擎（**架构图推荐**）——支持容器 width/grid                       | [references/elk.md](references/elk.md)                     |
+| Grid        | **网格布局（架构图核心）**：`grid-columns` / `grid-rows` / `grid-gap` | [references/grid-diagrams.md](references/grid-diagrams.md) |
+
+> `diagram-review.md` 为**本项目自研**的 PNG 识图自检审查清单（非官方文档），用于渲染后条理性审查（macOS：sips 转 PNG + 识图工具），详见 [§7 自检与 PNG 渲染](#-7-自检与-png-渲染macos)。
+>
+> 其他 D2 功能（多板图/序列图/ER 图/ASCII 输出/动画/CLI 完整手册等）已删除——本 skill **只画 C4 Container Diagram**，C4 Container 画图不需要这些。
