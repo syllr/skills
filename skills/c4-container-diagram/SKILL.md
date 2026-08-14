@@ -1,18 +1,18 @@
 ---
-name: d2
-description: 用 D2（d2lang.com）声明式文本画架构图——多层大容器纵向堆叠、层内子模块等宽均匀分布、配色按层编码、分层关系与依赖流向。Markdown 内嵌 d2 代码块渲染（不渲染到独立 SVG）。当用户要画技术架构图、产品架构图、业务能力分层图、系统架构图时使用。⚠️ 关键规则：外层容器 `grid-rows:1; grid-columns:1` 强制纵向堆叠；每层显式 `width` 统一宽度；子模块 `width` 必须固定（否则列宽由内容决定导致模块数量少的层右侧大片留白）。⚠️ 多板图（layers/scenarios/steps）禁用——拆成多张独立图。
+name: c4-container-diagram
+description: 用 D2（d2lang.com）画 C4 Container Diagram（c4model.com 标准第 2 层 Container 图）——展示系统级容器划分（应用/服务/数据存储）、容器间通信关系、多层大容器纵向堆叠。Markdown 内嵌 d2 代码块渲染（不渲染到独立 SVG）。当用户要画 C4 Container Diagram / 软件系统容器架构图 / 产品技术架构图（多层容器嵌套）时使用。⚠️ 关键规则：外层容器 `grid-rows:1; grid-columns:1` 强制纵向堆叠；每层显式 `width` 统一宽度；子模块 `width` 必须固定（否则列宽由内容决定导致模块数量少的层右侧大片留白）。⚠️ 多板图（layers/scenarios/steps）禁用——拆成多张独立图。
 ---
 
-# D2 架构图技能（系统级 · 专用）
+# C4 Container Diagram 技能（系统级 · 专用 · D2 实现）
 
-> D2（Declarative Diagramming）= 文本转图的声明式语言。本 skill **专门画架构图**（国内常称"技术架构图""产品架构图"——多层大容器纵向堆叠、子模块等宽均匀分布的"千层蛋糕"）。
+> 本 skill 专门画 **C4 model Container Diagram**（[c4model.com](https://c4model.com/diagrams/container) 标准第 2 层图——展示系统级容器划分与通信关系）。**D2 是实现方式**（[d2lang.com](https://d2lang.com)），本 skill 帮你用 D2 声明式语法画"千层蛋糕"式的多层大容器纵向堆叠 + 子模块等宽均匀分布的架构图。
 > 完整 D2 官方文档已本地化到 [references/](references/) 目录（见 [§9 References Tour 关键章节摘要](#9-references-tour-关键章节摘要)），画架构图常用语法在 [§5 实测模板](#51-顶部居中标签-标准-3-层架构图完整可用已实测) 和 [references/grid-diagrams.md](references/grid-diagrams.md) 等章节。
 
 ---
 
-## 1. 何时用 D2 画架构图
+## 1. 何时用本 skill 画 C4 Container Diagram
 
-| 想画什么                                  | D2 是否适合                               |
+| 想画什么                                          | 本 skill 是否适合                      |
 | ----------------------------------------- | ----------------------------------------- |
 | 技术架构图（多层大容器纵向堆叠）          | ✓ **强项**                                |
 | 产品架构图（应用/业务/基础服务/数据四层） | ✓ **强项**                                |

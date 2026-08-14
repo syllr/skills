@@ -11,7 +11,7 @@
 
 ```
 skills/
-├── d2/              # 画图 skill：SKILL.md + references/（20 官方文档 + diagram-review 自研 + README 清单）
+├── c4-container-diagram/ # 画 C4 Container Diagram skill：D2 实现 + references/（20 官方文档 + diagram-review 自研 + README 清单）
 ├── remote-shell/    # SSH 远程执行 skill（单 SKILL.md）
 ├── score-prompt/    # prompt 质量评分 skill（单 SKILL.md）
 └── skill-creator/   # 创建新 skill 的 skill：SKILL.md + references/（含 guide.md）+ assets/templates/
@@ -22,13 +22,13 @@ README.md            # 面向用户的安装/技能表
 
 ## WHERE TO LOOK
 
-| 任务                      | 位置                                  | 说明                                                                                       |
-| ------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------ |
-| 查看全部 skill            | `skills/`                             | 每个子目录一个 skill                                                                       |
-| 新 skill 的模板与格式规范 | `skills/skill-creator/references/`    | 含 guide / path-resolution / skill-md-format / directory-structure / script-language-guide |
-| 官方文档本地化范例        | `skills/d2/references/`               | 20 个官方文档页 + 自研 diagram-review.md + README 清单（共 22 个 .md）                     |
-| 创建新 skill              | `npx skills init skills/<name>`       | 或读 skill-creator 流程                                                                    |
-| 本地测试安装              | `npx skills add . -s '*' -a opencode` | 见 README.md（⚠️ 用 `-s '*'` 而非 `--all`：`--all` 会忽略 `-a` 装到所有 agent）            |
+| 任务                      | 位置                                      | 说明                                                                                       |
+| ------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 查看全部 skill            | `skills/`                                 | 每个子目录一个 skill                                                                       |
+| 新 skill 的模板与格式规范 | `skills/skill-creator/references/`        | 含 guide / path-resolution / skill-md-format / directory-structure / script-language-guide |
+| 官方文档本地化范例        | `skills/c4-container-diagram/references/` | 20 个官方文档页 + 自研 diagram-review.md + README 清单（共 22 个 .md）                     |
+| 创建新 skill              | `npx skills init skills/<name>`           | 或读 skill-creator 流程                                                                    |
+| 本地测试安装              | `npx skills add . -s '*' -a opencode`     | 见 README.md（⚠️ 用 `-s '*'` 而非 `--all`：`--all` 会忽略 `-a` 装到所有 agent）            |
 
 ## SKILL 引用规范（本仓库核心约定）
 
@@ -62,7 +62,7 @@ scripts/render.py --template assets/templates/report.xml
 
 ### 长文档拆分原则（渐进式披露）
 
-- `SKILL.md` 保持精简（<500 行，**例外：`d2/SKILL.md` 为系统级综合技能，682 行属已知例外**），放核心工作流与速查
+- `SKILL.md` 保持精简（<500 行，**例外：`c4-container-diagram/SKILL.md` 为系统级综合技能，542 行属已知例外**），放核心工作流与速查
 - 详细参考放 `references/`，SKILL.md 内用 Markdown 链接按需指向
 - references 文件可本地化官方资料（爬取后内联代码块、去除 Docusaurus 组件残留），使 skill 离线可用
 
