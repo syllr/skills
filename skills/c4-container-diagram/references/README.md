@@ -33,3 +33,5 @@ for f in containers connections grid-diagrams elk; do
 done
 # 随后用转换脚本（见仓库 skill 开发流程）内联代码引用
 ```
+
+> ⚠️ **`grid-diagrams.md` 尾部有本项目自研的 `grid-column-span` 禁用说明**（见 SKILL.md §6.15）——上述 `curl` 覆盖后该段会丢失，更新后需重新追加。

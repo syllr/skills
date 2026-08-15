@@ -222,15 +222,15 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 
 ### 4.2 颜色编码惯例（5 大层系）
 
-| 层类型           | 推荐色系   | 浅色填充 fill         | 描边色 stroke         |
-| ---------------- | ---------- | --------------------- | --------------------- |
-| 用户/入口/展现层 | **蓝色系** | `#eff6ff`             | `#3b82f6` / `#6c8ebf` |
-| 业务/应用层      | **紫色系** | `#fdf4ff` / `#f5f3ff` | `#a855f7` / `#8b5cf6` |
-| 服务/中台层      | **青色系** | `#ecfeff` / `#f0fdf4` | `#22d3ee` / `#4ade80` |
-| 数据层           | **橙色系** | `#fff7ed`             | `#fb923c`             |
-| 基础设施/支撑层  | **灰色系** | `#f1f5f9` / `#f8fafc` | `#64748b`             |
+| 层类型           | 推荐色系   | 中浅色填充 fill（对比度铁律） | 描边色 stroke（加深） |
+| ---------------- | ---------- | ----------------------------- | --------------------- |
+| 用户/入口/展现层 | **蓝色系** | `#dbeafe`                     | `#2563eb`             |
+| 业务/应用层      | **紫色系** | `#ede9fe`                     | `#7c3aed`             |
+| 服务/中台层      | **青色系** | `#cffafe`                     | `#0e7490`             |
+| 数据层           | **橙色系** | `#ffedd5`                     | `#c2410c`             |
+| 基础设施/支撑层  | **灰色系** | `#e2e8f0`                     | `#475569`             |
 
-**规则**：每层一种主色；同层同色、不同层不同色；整图不超过 5 种主色。
+**规则**：每层一种主色；同层同色、不同层不同色；整图不超过 5 种主色。**上表 fill 已按对比度铁律换成中浅色**（比旧版 `#eff6ff` 深一档），配合下方铁律。
 
 **⚠️ 对比度铁律（用户反馈"太淡看不清"的根因）**：
 
@@ -267,7 +267,7 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 > 参考图按"色相代表什么"分三种模式，画图前先定用哪种，再套 §4.2 色系或自定义：
 
 1. **按层配色**（默认，最常见）：色相 = 层级（§4.2 蓝/紫/灰），同层内子模块同色。适用：分层清晰的系统图。
-2. **按功能域配色**（图2 支付全景、图5 矩阵图）：色相 = 功能域，**同一层内可多色**。参考马卡龙色表：入口/前端=淡蓝 `#eff6ff`、核心业务=淡黄 `#fefce8`、通道/产品=淡绿 `#f0fdf4`、资金/财务=淡橙 `#fff7ed`、基础系统=浅灰 `#f8fafc`、监控/运维=淡紫 `#faf5ff`。
+2. **按功能域配色**（图2 支付全景、图5 矩阵图）：色相 = 功能域，**同一层内可多色**。参考马卡龙色表（**已按对比度铁律加深一档**）：入口/前端=淡蓝 `#dbeafe`、核心业务=淡黄 `#fef9c3`、通道/产品=淡绿 `#dcfce7`、资金/财务=淡橙 `#ffedd5`、基础系统=浅灰 `#e2e8f0`、监控/运维=淡紫 `#ede9fe`。**子模块文字一律 `font-color: "#1e293b"`**。
 3. **单色系**（图4/图6 全绿）：整图一色相，靠**深浅/描边**区分层级——容器浅绿填充、层标签深绿实心。适用：希望视觉统一的系统图。
 
 **实心填充 + 白字**（图1 商务蓝紫风格）：子模块深色实心 + 白字，突出功能单元：
@@ -340,8 +340,8 @@ vars: {
   入口层: {
     label: "① 入口层（前台 · 用户触点）"
     width: 1000            # ← 关键：固定宽度保证各层等宽
-    style.fill: "#eff6ff"  # 蓝（用户/入口层惯例色）
-    style.stroke: "#6c8ebf"
+    style.fill: "#dbeafe"  # 蓝（用户/入口层惯例色）
+    style.stroke: "#2563eb"
     style.stroke-width: 2
     style.border-radius: 12
     grid-columns: 3        # ← 关键：子模块数 = grid-columns 才能填满宽度
@@ -357,8 +357,8 @@ vars: {
   业务能力层: {
     label: "② 业务能力层（中台 · 能力复用）"
     width: 1000
-    style.fill: "#f5f3ff"  # 紫（业务层惯例色）
-    style.stroke: "#8b5cf6"
+    style.fill: "#ede9fe"  # 紫（业务层惯例色）
+    style.stroke: "#7c3aed"
     style.stroke-width: 2
     style.border-radius: 12
     grid-columns: 4        # 4 个能力子域
@@ -372,8 +372,8 @@ vars: {
   基础支撑层: {
     label: "③ 基础支撑层（后台 · 底座）"
     width: 1000
-    style.fill: "#f8fafc"  # 灰（支撑层惯例色，可改 stroke-dash: 3 虚线化）
-    style.stroke: "#64748b"
+    style.fill: "#e2e8f0"  # 灰（支撑层惯例色，可改 stroke-dash: 3 虚线化）
+    style.stroke: "#475569"
     style.stroke-width: 2
     style.border-radius: 12
     grid-columns: 3
@@ -390,30 +390,34 @@ vars: {
 # === ④ 子模块通用样式（classes 定义） ===
 classes: {
   module: {              # 基础模块样式
-    style: { border-radius: 6; stroke: "#1e293b"; stroke-width: 1 }
+    style: { border-radius: 6; fill: "#dbeafe"; stroke: "#1e40af"; font-color: "#1e293b"; stroke-width: 1 }
   }
   purpleCard: {           # 紫色卡（内容创作）
     width: 235
-    style.fill: "#fdf4ff"
-    style.stroke: "#c084fc"
+    style.fill: "#ede9fe"
+    style.stroke: "#7c3aed"
+    style.font-color: "#312e81"
     style.border-radius: 8
   }
   cyanCard: {             # 青色卡（内容加工）
     width: 235
-    style.fill: "#ecfeff"
-    style.stroke: "#22d3ee"
+    style.fill: "#cffafe"
+    style.stroke: "#0e7490"
+    style.font-color: "#164e63"
     style.border-radius: 8
   }
   orangeCard: {           # 橙色卡（账户商业化）
     width: 235
-    style.fill: "#fff7ed"
-    style.stroke: "#fb923c"
+    style.fill: "#ffedd5"
+    style.stroke: "#c2410c"
+    style.font-color: "#7c2d12"
     style.border-radius: 8
   }
   greenCard: {            # 绿色卡（作品沉淀）
     width: 235
-    style.fill: "#f0fdf4"
-    style.stroke: "#4ade80"
+    style.fill: "#dcfce7"
+    style.stroke: "#15803d"
+    style.font-color: "#14532d"
     style.border-radius: 8
   }
 }
@@ -423,7 +427,7 @@ classes: {
 # 整体架构.业务能力层 -> 整体架构.基础支撑层: RPC 调用 { style.stroke: "#8b5cf6" }
 ```
 
-**实测验证**：上述模板在本机 D2 v0.7.1 + ELK 渲染，三层纵向堆叠、宽度一致、子模块等宽均匀分布。
+**实测验证**：上述模板在本机 D2 v0.8.1 + ELK 渲染，三层纵向堆叠、宽度一致、子模块等宽均匀分布。
 
 ### 5.2 左侧竖排标签 — 类架构师风格
 
@@ -498,11 +502,11 @@ vars: { d2-config: { layout-engine: elk } }
 }
 
 classes: {
-  module: { style: { border-radius: 6; stroke: "#1e293b"; stroke-width: 1 } }
-  purpleCard: { width: 235; style.fill: "#fdf4ff"; style.stroke: "#c084fc"; style.border-radius: 8 }
-  cyanCard: { width: 235; style.fill: "#ecfeff"; style.stroke: "#22d3ee"; style.border-radius: 8 }
-  orangeCard: { width: 235; style.fill: "#fff7ed"; style.stroke: "#fb923c"; style.border-radius: 8 }
-  greenCard: { width: 235; style.fill: "#f0fdf4"; style.stroke: "#4ade80"; style.border-radius: 8 }
+  module: { style: { border-radius: 6; fill: "#dbeafe"; stroke: "#1e40af"; font-color: "#1e293b"; stroke-width: 1 } }
+  purpleCard: { width: 235; style.fill: "#ede9fe"; style.stroke: "#7c3aed"; style.font-color: "#312e81"; style.border-radius: 8 }
+  cyanCard: { width: 235; style.fill: "#cffafe"; style.stroke: "#0e7490"; style.font-color: "#164e63"; style.border-radius: 8 }
+  orangeCard: { width: 235; style.fill: "#ffedd5"; style.stroke: "#c2410c"; style.font-color: "#7c2d12"; style.border-radius: 8 }
+  greenCard: { width: 235; style.fill: "#dcfce7"; style.stroke: "#15803d"; style.font-color: "#14532d"; style.border-radius: 8 }
 }
 ```
 
@@ -605,7 +609,7 @@ ELK/dagre **不会自动纵向堆叠无连接的独立子容器**——实测会
 
 ### 6.2 子模块 `width` 必须固定（否则右侧大片留白）
 
-**实测陷阱**（本机 D2 v0.7.1 + ELK 验证）：grid 列宽**默认由该列内容宽度决定，不会自动均分容器宽度**。
+**实测陷阱**（本机 D2 v0.8.1 + ELK 验证）：grid 列宽**默认由该列内容宽度决定，不会自动均分容器宽度**。
 
 - ❌ 不设 width：3 个模块层 = 4 个模块层宽度不同 → 视觉参差；2 个模块层右侧留白 60%
 - ✅ 设 width: 160：所有模块完全等宽 160×60，等距 8px gap 均匀分布
@@ -806,7 +810,7 @@ grid **同一列的单元格等宽、同一行的等高**（取该列/行最大�
 - 或**调整子元素数量**为偶数（2 或 4 个），消除奇数
 - **禁止 `grid-column-span`**（渲染徽章 + 直角矩形，违反 §4.8 铁律）
 
-**同理**：`grid-columns: N` 且子元素数不被 N 整除时（如 3 列 4 元素），ELK 的换行行为见 §6.10——先写 `grid-rows` 则行主导，否则列主导。设计时尽量让子元素数 = N 的倍数，避免奇数布局。
+**同理**：`grid-columns: N` 且子元素数不被 N 整除时（如 3 列 4 元素），换行行为见 §6.10。**"第 3 个放右列跨行"是列主导（先写 `grid-columns`）的结果**——行主导（先写 `grid-rows`）时末行元素靠左、不会跨行拉伸。设计时尽量让子元素数 = N 的倍数，避免残缺布局。
 
 ---
 
@@ -823,7 +827,7 @@ grid **同一列的单元格等宽、同一行的等高**（取该列/行最大�
    - 多列容器（grid-columns:N, N≥2）：`子width = (父宽−24−(N−1)×gap)/N`（设计宽度，§6.9/§6.13），**整组自动居中**；超界判断用 `Σ子宽+(N−1)×gap ≤ 父宽−4`
    - 单列容器（grid-columns:1）：`子width = 父宽−120` → **左右各留 60 等宽**（嵌套在多列 grid 内的单列容器固定靠左，必须用此公式才等宽）
    - 每一层嵌套都要算（A→B→C→D 每层），**不能只算最外层**。
-3. **按 §4.8 给每个节点挂圆角 class**（border-radius）——**含最外层 wrapper 容器**（`文档架构: { ... }` 这个整体容器，用 `border-radius: 16`）。实测坑：漏外层容器 → verify 报"1 个图形无圆角"，靠坐标+label 定位（见 §7.1）。
+3. **按 §4.8 给每个节点挂圆角 class**（border-radius）——**含最外层 wrapper 容器**（如 `整体架构: { ... }` 这个整体容器，用 `border-radius: 16`）。实测坑：漏外层容器 → verify 报"1 个图形无圆角"，靠坐标+label 定位（见 §7.1）。
 4. **检查 label 长度**：子容器 width 是否放得下最长的 label？放不下 → §6.14 trade-off（缩文本/改布局/扩父容器，**禁止接受超界**）。
 
 **生成后（渲染完，按顺序）**：
@@ -867,8 +871,9 @@ python3 scripts/verify-svg.py <渲染出的.svg>
 **圆角判断**（§4.8 铁律）：
 
 ```python
-# 除画布背景(面积最大, rx=0 正常)外、且非箭头文字标签背景(h<40) 的所有 rect 都应有 rx
-# 任一图形节点 rx 缺失或 =0 → 违反 §4.8, FAIL
+# 排除项: 画布背景(面积最大, rx=0 正常) + 箭头文字标签背景(h<40) + grid-column-span 徽章
+# (span 徽章 = 小直角矩形 + 中心数字文本, 见 §6.15)
+# 其余图形节点 rx 缺失或 =0 → 违反 §4.8, FAIL
 ```
 
 **判断结论**：直接给用户 PASS/FAIL + 数值。超界/不等宽/无圆角 → 对照 §6.13 公式重算 width，再渲染重跑脚本。**脚本是权威，识图（7.3）只做辅助**。
