@@ -543,3 +543,15 @@ kubernetes.system.frontend node.clusterip\nservice 2.class: clust
 kubernetes.system.frontend node.deployment 2.class: deploy
 kubernetes.system.frontend node.deployment 2.flask pod*.class: flaskpod
 ```
+
+---
+
+## ⚠️ grid-column-span 禁用（本项目实测，D2 v0.8.1）
+
+**D2 支持 `grid-column-span: N` 让元素跨 N 列**，但本项目实测发现：
+
+- span 元素会渲染一个**蓝色描边白底、文字为跨列数（如「2」）的徽章**（源码 `<rect stroke="#0D32B2">` + `<text>2</text>`），多余装饰
+- 徽章是**直角矩形**（无 rx）→ 违反 §4.8 圆角铁律，verify-svg.py 会报无圆角（脚本已把 span 徽章排除出检查，但视觉仍丑）
+- span 元素高度被拉伸填满分区，与相邻分区高度不一致
+
+**结论：本 skill 禁用 `grid-column-span`**（见 SKILL.md §6.15）。奇数子元素场景接受 ELK 默认右列跨行行为，或调整子元素数量为偶数。
