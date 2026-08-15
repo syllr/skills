@@ -280,7 +280,7 @@ h1: { label: "红包雨交互"; style.fill: "#3b5bdb"; style.font-color: "#fffff
 | 圆形/椭圆        | `shape: circle` / `shape: oval`   | ❌ **不用**（改圆角矩形） |
 | 队列             | `shape: queue`                    | 消息队列/缓冲             |
 
-写法：`节点名: { shape: cylinder }` 或 `节点名.shape: cylinder`。以上已实测 validate 通过（注意：`shape: database` 不存在，数据库用 `shape: cylinder`）。圆角矩形的圆角值：大容器 8~~16，子模块 4~~8（见 §4.5）。
+写法：`节点名: { shape: cylinder }` 或 `节点名.shape: cylinder`。以上已实测 validate 通过（注意：`shape: database` 不存在，数据库用 `shape: cylinder`）。圆角矩形的圆角值：大容器 8~12，子模块 4~8（见 §4.5）。
 
 ### 4.8 圆角矩形全局落实（每一个图形都必须圆角）
 
@@ -298,7 +298,7 @@ classes: {
 
 **规则**：
 
-1. **每个子模块节点**必须挂一个含 `border-radius` 的 class（如 `class: mod`、`class: white`、`class: blue`），或显式写 `style.border-radius: 6~8`。
+1. **每个子模块节点**必须挂一个含 `border-radius` 的 class（如 `class: mod`、`class: white`、`class: blue`），或显式写 `style.border-radius: 4~8`。
 2. **每个容器/分区/层**显式写 `style.border-radius: 8~12`（容器比子模块圆角略大）。
 3. **检查**：渲染后数 SVG 里 `rx` 属性的 rect 数量——应等于全部图形数量，无直角矩形（`rx` 缺失 = 漏设）。
 
