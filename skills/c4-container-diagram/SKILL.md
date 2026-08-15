@@ -234,7 +234,7 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 
 **⚠️ 对比度铁律（用户反馈"太淡看不清"的根因）**：
 
-1. **文字必须深色**：所有子模块文字显式设 `style.font-color: "#1e293b"`（深蓝黑）——**不要依赖 D2 主题默认色**（theme 0 的默认文字偏浅，在浅色底上对比度不足）。深色填充的子模块（如蓝色块）文字用白 `#ffffff`。
+1. **文字必须深色**：所有子模块文字显式设 `style.font-color`——浅底用 `"#1e293b"`（深蓝黑）或对应色相深色档（如 `#312e81` 深紫），深底用白 `"#ffffff"`。**不要依赖 D2 主题默认色**。
 2. **背景不能太浅**：浅色填充（`#eff6ff` 等）在白色画布上几乎隐形。**子模块填充用中浅色**（如 `#dbeafe`/`#ede9fe`，比 `#eff6ff` 深一档），或**用深色实心填充 + 白字**（见 §4.6）。
 3. **边框加深**：层/分区描边用深一档（如 `#2563eb` 而非 `#6c8ebf`），让层次边界清晰。
 4. **验证**：渲染后对照——背景白、子模块底中浅色、文字深色（≥4.5:1 对比度）。任何"浅底浅字"组合都是不合格的。
@@ -267,7 +267,7 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 > 参考图按"色相代表什么"分三种模式，画图前先定用哪种，再套 §4.2 色系或自定义：
 
 1. **按层配色**（默认，最常见）：色相 = 层级（§4.2 蓝/紫/灰），同层内子模块同色。适用：分层清晰的系统图。
-2. **按功能域配色**（图2 支付全景、图5 矩阵图）：色相 = 功能域，**同一层内可多色**。参考马卡龙色表（**已按对比度铁律加深一档**）：入口/前端=淡蓝 `#dbeafe`、核心业务=淡黄 `#fef9c3`、通道/产品=淡绿 `#dcfce7`、资金/财务=淡橙 `#ffedd5`、基础系统=浅灰 `#e2e8f0`、监控/运维=淡紫 `#ede9fe`。**子模块文字一律 `font-color: "#1e293b"`**。
+2. **按功能域配色**（图2 支付全景、图5 矩阵图）：色相 = 功能域，**同一层内可多色**。参考马卡龙色表（**已按对比度铁律加深一档**）：入口/前端=淡蓝 `#dbeafe`、核心业务=淡黄 `#fef9c3`、通道/产品=淡绿 `#dcfce7`、资金/财务=淡橙 `#ffedd5`、基础系统=浅灰 `#e2e8f0`、监控/运维=淡紫 `#ede9fe`。**子模块文字用深色（`#1e293b` 或对应色相深色档）**。
 3. **单色系**（图4/图6 全绿）：整图一色相，靠**深浅/描边**区分层级——容器浅绿填充、层标签深绿实心。适用：希望视觉统一的系统图。
 
 **实心填充 + 白字**（图1 商务蓝紫风格）：子模块深色实心 + 白字，突出功能单元：
@@ -423,8 +423,8 @@ classes: {
 }
 
 # === ⑤ 可选：层间箭头（不需要显式调用关系时省略，靠堆叠隐含） ===
-# 整体架构.入口层 -> 整体架构.业务能力层: HTTP 调用 { style.stroke: "#6c8ebf" }
-# 整体架构.业务能力层 -> 整体架构.基础支撑层: RPC 调用 { style.stroke: "#8b5cf6" }
+# 整体架构.入口层 -> 整体架构.业务能力层: HTTP 调用 { style.stroke: "#2563eb" }
+# 整体架构.业务能力层 -> 整体架构.基础支撑层: RPC 调用 { style.stroke: "#7c3aed" }
 ```
 
 **实测验证**：上述模板在本机 D2 v0.8.1 + ELK 渲染，三层纵向堆叠、宽度一致、子模块等宽均匀分布。
@@ -460,8 +460,8 @@ vars: { d2-config: { layout-engine: elk } }
       grid-rows: 1
       grid-columns: 3
       grid-gap: 12
-      style.fill: "#eff6ff"
-      style.stroke: "#6c8ebf"
+      style.fill: "#dbeafe"
+      style.stroke: "#2563eb"
       style.stroke-width: 2
       style.border-radius: 12
       h1: { width: 200; height: 60; class: module }
@@ -489,8 +489,8 @@ vars: { d2-config: { layout-engine: elk } }
       grid-rows: 1
       grid-columns: 4
       grid-gap: 12
-      style.fill: "#f5f3ff"
-      style.stroke: "#8b5cf6"
+      style.fill: "#ede9fe"
+      style.stroke: "#7c3aed"
       style.stroke-width: 2
       style.border-radius: 12
       内容创作: { width: 235; height: 220; class: purpleCard }
@@ -529,12 +529,12 @@ vars: { d2-config: { layout-engine: elk } }
 
   左主体: {                 # 主体：内部各层纵向堆叠（复用 §5.1 结构）
     grid-rows: 1; grid-columns: 1; grid-gap: 24
-    入口层: { width: 800; grid-columns: 3; grid-gap: 12; style.fill: "#eff6ff"; style.stroke: "#6c8ebf"; style.border-radius: 12
+    入口层: { width: 800; grid-columns: 3; grid-gap: 12; style.fill: "#dbeafe"; style.stroke: "#2563eb"; style.border-radius: 12
       h1: { width: 250; height: 60; class: module }
       h2: { width: 250; height: 60; class: module }
       h3: { width: 250; height: 60; class: module }
     }
-    业务层: { width: 800; grid-columns: 3; grid-gap: 12; style.fill: "#f5f3ff"; style.stroke: "#8b5cf6"; style.border-radius: 12
+    业务层: { width: 800; grid-columns: 3; grid-gap: 12; style.fill: "#ede9fe"; style.stroke: "#7c3aed"; style.border-radius: 12
       b1: { width: 250; height: 60; class: module }
       b2: { width: 250; height: 60; class: module }
       b3: { width: 250; height: 60; class: module }
@@ -544,7 +544,7 @@ vars: { d2-config: { layout-engine: elk } }
   右侧贯穿竖条: {            # ← 贯穿栏：独立顶层容器，高度由外层 grid 与主体现高（勿设 height，会被覆盖）
     width: 300               # ← ≥ 最宽 label + 120（"日志记录"4 字≈160 → 300 安全，见 6.13）
     grid-columns: 1           # ← 关键：只定义列（一维）+ 不写 grid-gap → 子容器垂直均匀分布（见 6.13）
-    style.fill: "#f0fdf4"; style.stroke: "#22c55e"; style.border-radius: 12
+    style.fill: "#dcfce7"; style.stroke: "#15803d"; style.border-radius: 12
     # 子容器 width = 竖条 width − 120（水平居中对称，铁律 2）；height 按 6.13 公式：主体高 600 → (600−120−2×40)/3 ≈ 133
     r1: { label: "日志记录"; width: 180; height: 133; class: module }
     r2: { label: "消息系统"; width: 180; height: 133; class: module }
@@ -566,7 +566,7 @@ vars: { d2-config: { layout-engine: elk } }
 ```d2
 服务层: {
   width: 800; grid-columns: 3; grid-gap: 12   # ← 先分 3 个分区
-  style.fill: "#f8fafc"; style.stroke: "#64748b"; style.border-radius: 12
+  style.fill: "#e2e8f0"; style.stroke: "#475569"; style.border-radius: 12
 
   通信组件: { grid-columns: 1; grid-gap: 8   # 分区 1：内部嵌套
     c1: { width: 200; height: 50; class: module }
@@ -794,7 +794,7 @@ grid **同一列的单元格等宽、同一行的等高**（取该列/行最大�
 
 **判断优先级**：先尝试缩短文本（改动小、不破坏整体比例）；文本不可再短时，再扩父容器。两个方向都在生成前用 ASCII 或渲染结果向用户确认，不要自作主张。
 
-### 6.15 grid 奇数子元素 + `grid-column-span` 禁用
+### 6.15 子元素数非 grid-columns 整数倍 + `grid-column-span` 禁用
 
 **坑（实测 D2 v0.8.1）**：`grid-columns: 2` 但只有 **3 个子元素**时，ELK 默认把第 3 个放**右列跨行**（高度拉伸为两行总高），视觉上右列一个竖条、左列两个——不够均匀。
 
