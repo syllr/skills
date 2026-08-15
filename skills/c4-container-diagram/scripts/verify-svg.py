@@ -40,8 +40,8 @@ def parse_rects(path):
 
 def check_overlap(c, k, tol):
     """检查子容器 k 是否超父容器 c 边界"""
-    cx, cy, cw, ch, _ = c
-    kx, ky, kw, kh, _ = k
+    cx, cy, cw, ch, _, _ = c
+    kx, ky, kw, kh, _, _ = k
     over = {
         '左超': cx - kx,
         '右超': (kx + kw) - (cx + cw),
