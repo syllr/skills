@@ -1,6 +1,6 @@
 ---
 name: c4-container-diagram
-description: 用 D2（d2lang.com）画 C4 Container Diagram（c4model.com 标准第 2 层 Container 图）——展示系统级容器划分（应用/服务/数据存储）、容器间通信关系、多层大容器纵向堆叠。Markdown 内嵌 d2 代码块渲染（不渲染到独立 SVG）。当用户要画 C4 Container Diagram / 软件系统容器架构图 / 产品技术架构图（多层容器嵌套）时使用。⚠️ 关键规则：外层容器 `grid-rows:1; grid-columns:1` 强制纵向堆叠；每层显式 `width` 统一宽度；子模块 `width` 必须固定（否则列宽由内容决定导致模块数量少的层右侧大片留白）。⚠️ 多板图（layers/scenarios/steps）禁用——拆成多张独立图。
+description: 用 D2（d2lang.com）画 C4 Container Diagram（c4model.com 标准第 2 层 Container 图）——展示系统级容器划分（应用/服务/数据存储）、容器间通信关系、多层大容器嵌套。Markdown 内嵌 d2 代码块渲染。当用户要画 C4 Container Diagram / 软件系统容器架构图 / 产品技术架构图（多层容器嵌套）时使用。⚠️ 铁律：每一层嵌套（A→B→C→D）都必须为子容器显式算 `width`（公式见 §6.13），仅在最外层算 width 不够——上层中间层又会出现"贴左偏左"。⚠️ 多板图（layers/scenarios/steps）禁用。
 ---
 
 # C4 Container Diagram 技能（系统级 · 专用 · D2 实现）
@@ -87,11 +87,31 @@ description: 用 D2（d2lang.com）画 C4 Container Diagram（c4model.com 标准
 **自检的定位**：自检（§7）是**验证**（确认语法写对了），不是**修复手段**（发现错了再改）。如果自检发现问题，说明上面的规则没遵守——回头改写法，而不是临时打补丁。
 
 **生成流程（每次画图都走这个顺序）**：
-
 1. 对齐结构（§2 工作流步骤 1-3）
 2. **按 §6.13 公式算出所有子容器 width/height**（每个容器、每个分区、每个子模块）
 3. 按 §4.8 给每个节点挂圆角 class
 4. 写代码 → 渲染 → 自检验证（应该一次通过）
+
+### 1.6 Padding 动态计算原则（不能重合 + 四边等宽）
+
+> **每个子容器在父容器内都必须有合理 Padding**：左右留白相等（左右居中），上下留白相等（垂直居中），且 Padding **大小由父容器整体尺寸动态计算**——不能写死，不能让子容器"贴左/贴右/贴顶/贴底"或"撑满父容器"。
+
+**三条铁律**：
+
+1. **左右 Padding 等宽**（= 6.13 公式的 `width` 居中）：子容器 `width = (父宽 − 内边距 − (N−1)×gap) / N`。
+2. **上下 Padding 等宽**（动态计算）：父容器有 label 时顶部留 ~36，底部留 ~14；无 label 时上下等大（如各 14）。子容器 `height = (父高 − 顶部label − 底部pad − (N−1)×gap) / N`，**显式 height，不撑满**。
+3. **不能重合、不超界**：子容器任何角都不能超出父容器（铁律 1）。
+
+**通用 Padding 公式**（每个有 label 的层容器）：
+```
+顶部 padding = label 高度 + 留白 ≈ 36
+底部 padding = 14
+左/右 padding = 12
+子容器 width  = 父宽 − 24 − (N−1)×gap
+子容器 height = (父高 − 36 − 14 − (N−1)×gap) / N
+```
+
+**D2/ELK 限制**：grid 强制列等高（内容少列下方留白不可避免，但**不应让子容器撑满**填空）；grid 一列默认靠顶部，要 height 显式算。
 
 ---
 
