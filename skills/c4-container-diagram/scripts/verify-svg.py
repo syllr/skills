@@ -32,7 +32,9 @@ def parse_rects(path):
         m = re.search(r'stroke-width:([\d.]+)', style)
         if m:
             sw = float(m.group(1))
-        rects.append((x, y, w, h, sw))
+        # rx = 圆角半径 (无 rx 或 rx=0 → 直角矩形, 违反 §4.8 铁律)
+        rx = rect.get('rx', None)
+        rects.append((x, y, w, h, sw, rx))
     return rects
 
 
@@ -70,8 +72,18 @@ def main():
     print(f'=== {path} 验收 ===')
     print(f'容器数: {len(containers)}')
 
+    # 圆角检查: 除画布背景(面积最大, rx=0 正常)外、且非箭头文字标签背景(h<40) 的所有 rect 都应有 rx
+    # (箭头边文字标签背景是 D2 固有行为, 非图形节点, 排除)
+    bg_area = outer[2] * outer[3]
+    no_rx = [r for r in rects if r[2] * r[3] < bg_area - 1 and r[3] >= 40 and
+             (r[5] is None or float(r[5]) == 0)]
+    if no_rx:
+        print(f'  [圆角] {len(no_rx)} 个图形无圆角(rx) — 违反 §4.8 铁律')
+    else:
+        print(f'  [圆角] 全部图形有圆角 ✓')
+
     for c in containers:
-        cx, cy, cw, ch, csw = c
+        cx, cy, cw, ch, csw, _ = c
         tol = csw / 2 + 0.5
         # 直接子容器: 完全在父内, 不被其他子容器包含
         cands = [k for k in rects if k is not c and k[0] >= cx - 1 and
