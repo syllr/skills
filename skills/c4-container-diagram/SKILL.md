@@ -106,15 +106,7 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 2. **上下 Padding**（仅单列竖条适用）：按 §6.13 竖条公式（上下内边距 ≈120 含标题区）。普通多行/多列容器不做垂直居中（§1.3 铁律 2）。
 3. **不能重合、不超界**：子容器任何角都不能超出父容器（铁律 1）。
 
-**通用 Padding 公式**（每个有 label 的层容器）：
-
-```
-顶部 padding = label 高度 + 留白 ≈ 36
-底部 padding = 14
-左/右 padding = 12
-子容器 width  = (父宽 − 24 − (N−1)×gap) / N
-子容器 height = (父高 − 36 − 14 − (N−1)×gap) / N
-```
+**Padding 公式**（统一见 §6.13）：竖条/标签列的上下 Padding 与 height 公式见 [§6.13](#613-尺寸计算规则父容器与子容器核心约束)；普通多行/多列容器**不做垂直居中**（§1.3 铁律 2），无需 height 公式，只需 width 按 §6.13 计算。
 
 **D2/ELK 限制**：grid 强制列等高（内容少列下方留白不可避免，但**不应让子容器撑满**填空）；grid 一列默认靠顶部，要 height 显式算。
 
@@ -446,6 +438,7 @@ vars: { d2-config: { layout-engine: elk } }
   grid-columns: 1
   grid-gap: 24
   style.font-color: "#1e293b"
+  style.border-radius: 16
 
   入口层: {
     width: 1200
@@ -537,10 +530,12 @@ vars: { d2-config: { layout-engine: elk } }
   grid-rows: 1
   grid-gap: 16
   style.font-color: "#1e293b"
+  style.border-radius: 16
 
   左主体: {                 # 主体：内部各层纵向堆叠（复用 §5.1 结构）
     grid-rows: 1; grid-columns: 1; grid-gap: 24
     style.font-color: "#1e293b"
+    style.border-radius: 12
     入口层: { width: 800; grid-columns: 3; grid-gap: 12; style.fill: "#dbeafe"; style.font-color: "#1e293b"; style.stroke: "#2563eb"; style.border-radius: 12
       h1: { width: 250; height: 60; class: module }
       h2: { width: 250; height: 60; class: module }
