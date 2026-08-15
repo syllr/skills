@@ -1,30 +1,32 @@
 ---
 name: c4-container-diagram
-description: 用 D2（d2lang.com）画 C4 model 的 Container Diagram（c4model.com 标准第 2 层图）——展示**单个软件系统**由哪些容器（应用/服务/数据存储/消息队列等）组成、容器间通信关系，以及多层大容器纵向嵌套。本 skill **只画 Container Diagram 这一种图**：多层大容器纵向堆叠、每层子容器等宽均匀分布、左右居中对称、全圆角矩形。Markdown 内嵌 ```d2 代码块渲染。当用户要画 C4 Container Diagram / 系统容器图 / 容器架构图 / 分层架构图（多层容器嵌套）时使用。**不在此范围**：C4 其他层（System Context/Component/Code）、流程图、时序图、ER 图、UML 图——请用其他 skill。⚠️ 铁律：每一层嵌套（A→B→C→D）都必须为子容器显式算 width（公式见 §6.13）。⚠️ 多板图（layers/scenarios/steps）禁用。
+description: 用 D2（d2lang.com）画**容器式分层图**——多层大容器纵向嵌套、每层内含若干子容器、子容器等宽均匀分布、左右居中对称、全圆角矩形的图。典型形态包括：C4 model Container Diagram（c4model.com 标准第 2 层图）、技术架构图、产品架构图、业务能力分层图、微服务架构图等——**凡是"大容器套小容器、分层堆叠"的图都适用**，不限于技术架构。展示系统/产品/业务的容器划分（应用、服务、数据存储、业务模块等）与容器间通信关系。Markdown 内嵌 ```d2 代码块渲染。当用户要画容器图 / 分层架构图 / 容器架构图 / 多层嵌套图 / C4 Container Diagram 时使用。**不在此范围**：流程图、时序图、ER 图、UML 类图、C4 的 Component/Code 层（组件级调用）——请用其他 skill。⚠️ 铁律：每一层嵌套（A→B→C→D）都必须为子容器显式算 width（公式见 §6.13）。⚠️ 多板图（layers/scenarios/steps）禁用。
 ---
 
-# C4 Container Diagram 技能（系统级 · 专用 · D2 实现）
+# 容器式分层图技能（C4 Container 实现 · D2）
 
-> 本 skill 专门画 **C4 model Container Diagram**（[c4model.com](https://c4model.com/diagrams/container) 标准第 2 层图——展示系统级容器划分与通信关系）。**D2 是实现方式**（[d2lang.com](https://d2lang.com)），本 skill 帮你用 D2 声明式语法画"千层蛋糕"式的多层大容器纵向堆叠 + 子模块等宽均匀分布的架构图。
-> 完整 D2 官方文档已本地化到 [references/](references/) 目录（见 [§9 References 关键章节摘要](#9-references-关键章节摘要精简版)），画架构图常用语法在 [§5.1 顶部居中标签模板](#51-顶部居中标签--标准-3-层架构图完整可用已实测) 和 [references/grid-diagrams.md](references/grid-diagrams.md) 等章节。
+> 本 skill 画**容器式分层图**——"大容器套小容器、多层纵向嵌套、每层子容器等宽分布"这类图的统称。最典型的形态是 **C4 model Container Diagram**（[c4model.com](https://c4model.com/diagrams/container) 标准第 2 层图，展示系统/产品/业务的容器划分与通信关系），但**不限于此**：技术架构图、产品架构图、业务能力分层图、微服务架构图等凡符合"容器分层"形态的图都适用。**D2 是实现方式**（[d2lang.com](https://d2lang.com)），本 skill 用 D2 声明式语法画"千层蛋糕"式的多层大容器纵向堆叠 + 子模块等宽均匀分布的图。
+> 完整 D2 官方文档已本地化到 [references/](references/) 目录（见 [§9 References 关键章节摘要](#9-references-关键章节摘要精简版)），画容器图常用语法在 [§5.1 顶部居中标签模板](#51-顶部居中标签--标准-3-层架构图完整可用已实测) 和 [references/grid-diagrams.md](references/grid-diagrams.md) 等章节。
 
 ---
 
 ## 1. 画什么：C4 Container Diagram（先对齐目标）
 
-### 1.1 定义：什么是 C4 Container Diagram
+### 1.1 定义：什么是容器式分层图（含 C4 Container）
 
-**C4 model**（c4model.com）第 2 层图，展示**一个软件系统由哪些容器组成**。C4 官方定义（调研自 c4model.com）：
+**本 skill 画的是"容器式分层图"**——大容器套小容器、多层纵向嵌套、每层子容器等宽分布的图。最典型的形态是 **C4 model Container Diagram**（c4model.com 标准第 2 层图），但适用范围更广：
 
-> "A **container** represents an application or data store... The container diagram shows the high-level technology choices and how the containers communicate with one another."
+- **C4 model Container Diagram**：展示**一个软件系统由哪些容器组成**（C4 官方定义："A container represents an application or data store... The container diagram shows the high-level technology choices and how the containers communicate with one another."）。
+- **技术架构图 / 产品架构图 / 业务能力分层图 / 微服务架构图**等：只要符合"多层大容器纵向嵌套 + 子容器分布"的形态，都适用本 skill。
 
-即：
+**不在此范围**（请用其他 skill）：流程图、时序图、ER 图、UML 类图、C4 的 Component 层（组件级调用）。
 
-- **容器（Container）** = 一个可独立部署/运行的单元（Web 应用、移动 App、微服务、数据库、消息队列、文件存储等），**不是 Docker 容器**。
-- **容器图** = 把系统放大，展示"由哪些容器组成 + 容器间如何通信"。
-- 受众：开发/运维/架构等技术人员。
+关键概念：
 
-### 1.2 C4 容器图的 9 大特点（= 我们的要求清单）
+- **容器（Container）** = 图中的一个可独立划分的单元（应用、服务、数据存储、业务模块等），**不是 Docker 容器**。
+- **容器式分层图** = 把系统/产品/业务放大，展示"由哪些容器组成 + 容器间如何通信"。
+
+### 1.2 容器式分层图的 9 大特点（= 我们的要求清单）
 
 > 这是本 skill 的**要求总纲**——最终画出的图必须满足以下所有特点。每个特点的 D2 实现语法见 [§1.4 特点→语法映射表](#14-特点→语法映射表)，验收方法见 [§7](#7-自检与验收svg-脚本)。**生成前对照本节定目标，生成后自检对照本节**。
 
@@ -205,7 +207,7 @@ description: 用 D2（d2lang.com）画 C4 model 的 Container Diagram（c4model.
 
 ### 4.1 典型分层惯例
 
-> 下表是 **C4 Container Diagram 在不同业务场景下的容器分层方式**——每一种都是把"单个软件系统"的容器（应用/服务/数据存储）按职责域纵向堆叠。**本 skill 始终只画 Container 层**，不画其他层级。
+> 下表是**容器式分层图在不同业务场景下的典型分层方式**——每一种都是把系统的容器（应用/服务/数据存储/业务模块）按职责域纵向堆叠。本 skill 只画"容器分层"这一形态，不画组件级调用/流程图等。
 
 | 场景       | 推荐分层（自上而下）                                                               |
 | ---------- | ---------------------------------------------------------------------------------- |
@@ -498,7 +500,7 @@ classes: {
 
 ### 5.3 层间调用关系（超范围，不提供模板）
 
-> ❌ **本 skill 只画 C4 Container Diagram，不画组件级（Component 级）调用关系。** 若需要展示"容器内子模块之间的精确调用"（API 设计/数据流分析粒度），那是 C4 Component Diagram 的职责——请用其他 skill。容器级通信（Container 之间）用 §6.3 的 `a -> b: "标签"` 表达即可。
+> ❌ **本 skill 只画"容器式分层图"（容器级），不画组件级（Component 级）调用关系。** 若需要展示"容器内子模块之间的精确调用"（API 设计/数据流分析粒度），那是 C4 Component Diagram 的职责——请用其他 skill。容器间通信用 §6.3 的 `a -> b: "标签"` 表达即可。
 
 ---
 
@@ -918,4 +920,4 @@ d2 --theme=200 in.d2 out.svg
 
 > `diagram-review.md` 为**本项目自研**的渲染后条理性审查清单（非官方文档），用于 `verify-svg.py` 脚本校验之外的辅助检查（配色/形状/文字），详见 [§7 自检](#7-自检与验收svg-脚本)。
 >
-> 其他 D2 功能（多板图/序列图/ER 图/ASCII 输出/动画/CLI 完整手册等）已删除——本 skill **只画 C4 Container Diagram**，C4 Container 画图不需要这些。
+> 其他 D2 功能（多板图/序列图/ER 图/ASCII 输出/动画/CLI 完整手册等）已删除——本 skill 只画"容器式分层图"，画这类图不需要这些。
