@@ -103,7 +103,7 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 **三条铁律**：
 
 1. **左右 Padding 等宽**（水平居中，硬性铁律）：子容器 `width` 按 §6.13 公式计算。
-2. **上下 Padding**（仅单列竖条适用）：父容器有 label 时顶部留 ~36、底部留 ~14。子容器 `height = (父高 − 顶部label − 底部pad − (N−1)×gap) / N`。普通多行/多列容器不做垂直居中（§1.3 铁律 2）。
+2. **上下 Padding**（仅单列竖条适用）：按 §6.13 竖条公式（上下内边距 ≈120 含标题区）。普通多行/多列容器不做垂直居中（§1.3 铁律 2）。
 3. **不能重合、不超界**：子容器任何角都不能超出父容器（铁律 1）。
 
 **通用 Padding 公式**（每个有 label 的层容器）：
@@ -235,7 +235,7 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 **⚠️ 对比度铁律（用户反馈"太淡看不清"的根因）**：
 
 1. **文字必须深色**：所有子模块文字显式设 `style.font-color`——浅底用 `"#1e293b"`（深蓝黑）或对应色相深色档（如 `#312e81` 深紫），深底用白 `"#ffffff"`。**不要依赖 D2 主题默认色**。
-2. **容器标题（label）也要显式 font-color**：D2 默认把**层容器/分区的标题**渲成浅蓝紫（如 `#C5CAE9`），在浅色底上几乎隐形——**每个层容器/分区显式设 `style.font-color: "#1e293b"`**（实测坑：子模块文字已深色但容器标题仍是淡色）。
+2. **容器标题（label）也要显式 font-color**：D2 默认把**层容器/分区的标题**渲成浅蓝紫（如 `#C5CAE9`），在浅色底上几乎隐形——**每个层容器/分区显式设 `style.font-color`（浅底用 `#1e293b` 或对应色相深色档，深底用白 `#ffffff`）**（实测坑：子模块文字已深色但容器标题仍是淡色）。
 3. **背景不能太浅**：浅色填充（`#eff6ff` 等）在白色画布上几乎隐形。**子模块填充用中浅色**（如 `#dbeafe`/`#ede9fe`，比 `#eff6ff` 深一档，即 50 色阶→100 色阶），或**用深色实心填充 + 白字**（见 §4.6）。
 4. **边框加深**：层/分区描边用深一档（如 `#2563eb` 而非 `#6c8ebf`），让层次边界清晰。
 5. **验证**：渲染后对照——背景白、子模块底中浅色、**所有文字（含容器标题）深色**（≥4.5:1 对比度）。任何"浅底浅字"组合都是不合格的。
@@ -445,11 +445,13 @@ vars: { d2-config: { layout-engine: elk } }
   grid-rows: 1
   grid-columns: 1
   grid-gap: 24
+  style.font-color: "#1e293b"
 
   入口层: {
     width: 1200
     grid-columns: 2          # 左标签 + 右内容
     grid-gap: 12
+    style.font-color: "#1e293b"
 
     入口层_标签: {
       width: 140
@@ -480,6 +482,7 @@ vars: { d2-config: { layout-engine: elk } }
     width: 1200
     grid-columns: 2
     grid-gap: 12
+    style.font-color: "#1e293b"
 
     业务能力层_标签: {
       width: 140
@@ -533,9 +536,11 @@ vars: { d2-config: { layout-engine: elk } }
   grid-columns: 2          # ← 分两栏：左主体 + 右贯穿栏（3 栏则为左右双竖条）
   grid-rows: 1
   grid-gap: 16
+  style.font-color: "#1e293b"
 
   左主体: {                 # 主体：内部各层纵向堆叠（复用 §5.1 结构）
     grid-rows: 1; grid-columns: 1; grid-gap: 24
+    style.font-color: "#1e293b"
     入口层: { width: 800; grid-columns: 3; grid-gap: 12; style.fill: "#dbeafe"; style.font-color: "#1e293b"; style.stroke: "#2563eb"; style.border-radius: 12
       h1: { width: 250; height: 60; class: module }
       h2: { width: 250; height: 60; class: module }
@@ -575,15 +580,15 @@ vars: { d2-config: { layout-engine: elk } }
   width: 800; grid-columns: 3; grid-gap: 12   # ← 先分 3 个分区
   style.fill: "#e2e8f0"; style.font-color: "#1e293b"; style.stroke: "#475569"; style.border-radius: 12
 
-  通信组件: { grid-columns: 1; grid-gap: 8   # 分区 1：内部嵌套
+  通信组件: { grid-columns: 1; grid-gap: 8; style.font-color: "#1e293b"   # 分区 1：内部嵌套
     c1: { width: 200; height: 50; class: module }
     c2: { width: 200; height: 50; class: module }
   }
-  核心服务总线: { grid-columns: 1; grid-gap: 8  # 分区 2
+  核心服务总线: { grid-columns: 1; grid-gap: 8; style.font-color: "#1e293b"  # 分区 2
     s1: { width: 200; height: 50; class: module }
     s2: { width: 200; height: 50; class: module }
   }
-  配置监控: { grid-columns: 1; grid-gap: 8      # 分区 3
+  配置监控: { grid-columns: 1; grid-gap: 8; style.font-color: "#1e293b"      # 分区 3
     m1: { width: 200; height: 50; class: module }
     m2: { width: 200; height: 50; class: module }
   }
@@ -948,7 +953,7 @@ d2 --theme=200 in.d2 out.svg
 
 ## 9. References 关键章节摘要（精简版）
 
-> 下表对应文件均在 `references/` 目录（本 SKILL.md 同目录下）。本 skill 精简后只保留画 C4 Container Diagram 必需的 5 个 D2 参考文件（其余通用文档已删），C4 Container 画图最常用：`grid-diagrams.md`、`containers.md`、`connections.md`。
+> 下表对应文件均在 `references/` 目录（本 SKILL.md 同目录下）。本 skill 精简后只保留画 C4 Container Diagram 必需的 4 个 D2 参考文件（其余通用文档已删），C4 Container 画图最常用：`grid-diagrams.md`、`containers.md`、`connections.md`。
 
 | Tour 章节   | 关键内容                                                              | 本地文件                                                   |
 | ----------- | --------------------------------------------------------------------- | ---------------------------------------------------------- |
