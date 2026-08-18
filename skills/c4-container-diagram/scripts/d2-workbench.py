@@ -143,11 +143,17 @@ def cmd_sync(args):
     if n >= len(blocks):
         err(f"{args.md} 只有 {len(blocks)} 个 d2 块，图序号 {args.index} 越界")
 
-    # 1. 替换第 N 个代码块内容（保持 ```d2 ... ``` 结构）
-    old_block = blocks[n]
-    content = content.replace(
-        "```d2\n" + old_block + "```", "```d2\n" + new_d2 + "```", 1
-    )
+    # 1. 精确替换第 N 个代码块（用 span 定位，不用 replace count=1——避免
+    #    两个块内容相同时替换错位置；也不会新增块，从机制上防"多张图"）
+    before = len(blocks)
+    matches = list(D2_BLOCK_RE.finditer(content))
+    m = matches[n]
+    content = content[: m.start()] + "```d2\n" + new_d2 + "```" + content[m.end() :]
+
+    # 块数一致性断言：修改不应增删代码块（防止误把"修改"做成"追加"）
+    after = len(list(D2_BLOCK_RE.finditer(content)))
+    if after != before:
+        err(f"同步后 d2 块数 {after} ≠ 替换前 {before}——修改不应增删代码块，已中止回写")
 
     # 2. 重新定位替换后的第 N 个块，删除其后的旧 fallback
     blocks2 = list(D2_BLOCK_RE.finditer(content))
