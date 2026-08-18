@@ -106,11 +106,11 @@ def render_and_verify(d2_path, out_stem, want_png=True):
 
 
 def block_names(blocks):
-    """提取每个 d2 块的第一行注释（图名标识，§2 步骤 4 规范：`# 中文名 English`）"""
+    """提取每个 d2 块的首行注释（图名标识，§2 步骤 4：`# 图名`）；首行非注释 = 无名"""
     names = []
     for b in blocks:
         first = b.strip().split("\n", 1)[0].strip() if b.strip() else ""
-        names.append(first)
+        names.append(first if first.startswith("#") else "")
     return names
 
 
@@ -163,6 +163,11 @@ def cmd_extract(args):
     open(d2_path, "w", encoding="utf-8").write(d2_code)
     name_note = f"（{names[n]}）" if names[n] else ""
     print(f"已提取第 {n + 1} 个 d2 块{name_note} → {d2_path}")
+    if not names[n]:
+        print(
+            f"  ⚠️ 该块无图名（首行无注释）——建议先补 `# 图名` 再改，"
+            f"便于后续语义定位（§2.1 分诊）"
+        )
     print(
         f"改图工作流: 编辑 {d2_path} → python3 scripts/d2-workbench.py render {d2_path} → "
         f"python3 scripts/d2-workbench.py sync {args.md} {d2_path} {n + 1}"
@@ -184,6 +189,11 @@ def cmd_sync(args):
     names = block_names(blocks)
     n = resolve_index(args, blocks, names)
     name_note = f"（{names[n]}）" if names[n] else ""
+    if not names[n]:
+        print(
+            f"  ⚠️ 目标块无图名（首行无注释）——建议先补 `# 图名` 再改，"
+            f"便于后续语义定位（§2.1 分诊）"
+        )
 
     # 1. 精确替换第 N 个代码块（用 span 定位，不用 replace count=1——避免
     #    两个块内容相同时替换错位置；也不会新增块，从机制上防"多张图"）
