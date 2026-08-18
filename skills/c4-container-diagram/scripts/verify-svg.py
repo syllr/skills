@@ -7,7 +7,7 @@
 
 判断规则:
 - 超界: 子容器任一 4 边超出父容器边界 > 容差(stroke-width/2 + 0.5)
-- 等宽: 单列容器(grid-columns:1 靠左 x=父x+60) 子容器 左距==右距
+- 等宽: 单列容器(竖条, grid-columns:1, 不设 width 由 ELK 自动包裹) 内所有直接子容器 x 相同 → 左右距相等
 - 圆角: 图形节点(排除画布背景/箭头文字标签/span徽章) 都应有 rx
 
 已知排除项:
@@ -181,17 +181,22 @@ def main():
                 print(
                     f"  [超界] 父(x={cx:.0f}~{cx + cw:.0f},y={cy:.0f}) 子(x={k[0]:.0f}~{k[0] + k[2]:.0f},w={k[2]:.0f}){loc} {details}px"
                 )
-            # 单列容器等宽检查: 子 x ≈ 父x+60 (左内边距)
-            if abs(k[0] - (cx + 60)) < 15:
-                left = k[0] - cx
-                right = (cx + cw) - (k[0] + k[2])
-                if abs(left - right) < 3:
-                    eq_pass += 1
-                else:
-                    eq_fail += 1
-                    print(
-                        f"  [不等宽] 单列容器 父w={cw:.0f} 子w={k[2]:.0f} 左距={left:.0f} 右距={right:.0f} (应设 子width=父宽-120)"
-                    )
+            # 单列容器等宽检查: 仅当父容器所有 direct 子容器 x 坐标相同（真正单列竖排）
+            # 多列容器的第 1 列也是 x≈父x+60，不能据此判定单列（否则误报"不等宽"）
+            xs = {k[0] for k in direct}
+            if len(xs) == 1 and abs(list(xs)[0] - (cx + 60)) < 15:
+                for k in direct:
+                    if k[2] < 5 or k[3] < 5:
+                        continue
+                    left = k[0] - cx
+                    right = (cx + cw) - (k[0] + k[2])
+                    if abs(left - right) < 3:
+                        eq_pass += 1
+                    else:
+                        eq_fail += 1
+                        print(
+                            f"  [不等宽] 单列容器 父w={cw:.0f} 子w={k[2]:.0f} 左距={left:.0f} 右距={right:.0f} (竖条应不设 width 让 ELK 自动包裹, 见 §6.13 B)"
+                        )
 
     print(f"---")
     print(f"超界: {over_cnt}")
