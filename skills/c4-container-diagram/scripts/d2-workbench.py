@@ -105,12 +105,39 @@ def render_and_verify(d2_path, out_stem, want_png=True):
     return r.returncode == 0 and ok
 
 
-def cmd_extract(args):
-    blocks, _ = extract_blocks(args.md)
-    n = (args.index or 1) - 1
-    if n >= len(blocks):
-        err(f"{args.md} 只有 {len(blocks)} 个 d2 块，图序号 {args.index} 越界")
-    d2_code = blocks[n]
+def block_names(blocks):
+    """提取每个 d2 块的第一行注释（图名标识，§2 步骤 4 规范：`# 中文名 English`）"""
+    names = []
+    for b in blocks:
+        first = b.strip().split("\n", 1)[0].strip() if b.strip() else ""
+        names.append(first)
+    return names
+
+
+def resolve_index(args, blocks, names):
+    """定位目标块序号：--name 语义匹配 > index 显式 > 列出图名让用户选"""
+    if getattr(args, "name", None):
+        q = args.name.lower()
+        hits = [i for i, n in enumerate(names) if q in n.lower()]
+        listing = "\n  ".join(f"{i + 1}: {names[i]}" for i, n in enumerate(names) if n)
+        if not hits:
+            err(
+                f"图名 '{args.name}' 与文档所有块注释都匹配不上，文档里有：\n  {listing}"
+            )
+        if len(hits) > 1:
+            multi = "\n  ".join(f"{i + 1}: {names[i]}" for i in hits)
+            err(f"图名 '{args.name}' 匹配到多个块：\n  {multi}\n请用序号精确指定")
+        return hits[0]
+    if args.index:
+        if args.index > len(blocks):
+            err(f"只有 {len(blocks)} 个 d2 块，图序号 {args.index} 越界")
+        return args.index - 1
+    if getattr(args, "mode", "") == "extract":
+        listing = "\n  ".join(f"{i + 1}: {names[i]}" for i, n in enumerate(names) if n)
+        err(
+            f"请指定图序号（extract <md> N）或用 --name 图名匹配。文档 d2 块：\n  {listing}"
+        )
+    return 0  # sync 无 index/name 默认第 1 块
     out_dir = args.out or "."
     os.makedirs(out_dir, exist_ok=True)
     stem = os.path.join(
@@ -118,12 +145,27 @@ def cmd_extract(args):
         f"{os.path.splitext(os.path.basename(args.md))[0]}-fig{args.index or 1}",
     )
     d2_path = stem + ".d2"
+
+
+def cmd_extract(args):
+    blocks, _ = extract_blocks(args.md)
+    names = block_names(blocks)
+    n = resolve_index(args, blocks, names)
+    d2_code = blocks[n]
+    out_dir = args.out or "."
+    os.makedirs(out_dir, exist_ok=True)
+    stem = os.path.join(
+        out_dir,
+        f"{os.path.splitext(os.path.basename(args.md))[0]}-fig{n + 1}",
+    )
+    d2_path = stem + ".d2"
     # 直接文件写入，不经 shell → 保持 \\n 字面量
     open(d2_path, "w", encoding="utf-8").write(d2_code)
-    print(f"已提取第 {args.index or 1} 个 d2 块 → {d2_path}")
+    name_note = f"（{names[n]}）" if names[n] else ""
+    print(f"已提取第 {n + 1} 个 d2 块{name_note} → {d2_path}")
     print(
         f"改图工作流: 编辑 {d2_path} → python3 scripts/d2-workbench.py render {d2_path} → "
-        f"python3 scripts/d2-workbench.py sync {args.md} {d2_path} {args.index or 1}"
+        f"python3 scripts/d2-workbench.py sync {args.md} {d2_path} {n + 1}"
     )
     if render_and_verify(d2_path, stem):
         print("✅ 提取 + 校验通过，可以开始修改")
@@ -139,9 +181,9 @@ def cmd_sync(args):
         err(f"{args.file} 不存在")
     new_d2 = open(args.file, encoding="utf-8").read().rstrip("\n")
     blocks, content = extract_blocks(args.md)
-    n = (args.index or 1) - 1
-    if n >= len(blocks):
-        err(f"{args.md} 只有 {len(blocks)} 个 d2 块，图序号 {args.index} 越界")
+    names = block_names(blocks)
+    n = resolve_index(args, blocks, names)
+    name_note = f"（{names[n]}）" if names[n] else ""
 
     # 1. 精确替换第 N 个代码块（用 span 定位，不用 replace count=1——避免
     #    两个块内容相同时替换错位置；也不会新增块，从机制上防"多张图"）
@@ -183,7 +225,7 @@ def cmd_sync(args):
 
     open(args.md, "w", encoding="utf-8").write(content)
     print(
-        f"✅ 已同步回 {args.md}（第 {args.index or 1} 个 d2 块 + fallback 已更新，仅 1 份）"
+        f"✅ 已同步回 {args.md}（第 {n + 1} 个 d2 块{name_note} + fallback 已更新，仅 1 份）"
     )
     print(f"   fallback 数量: {content.count('D2 渲染 Fallback SVG')}")
 
@@ -194,7 +236,8 @@ def main():
 
     pe = sub.add_parser("extract", help="从 Markdown 提取 d2 块到工作区（含渲染+校验）")
     pe.add_argument("md")
-    pe.add_argument("index", nargs="?", type=int, help="图序号（默认 1）")
+    pe.add_argument("index", nargs="?", type=int, help="图序号（默认需指定）")
+    pe.add_argument("--name", help="按图名语义匹配（首行注释，中英任一）")
     pe.add_argument("--out", default=".", help="工作区目录（默认当前目录）")
 
     pr = sub.add_parser("render", help="渲染工作区 .d2 → .svg/.png + 校验（改图迭代）")
@@ -206,6 +249,7 @@ def main():
     ps.add_argument("md")
     ps.add_argument("file")
     ps.add_argument("index", nargs="?", type=int, help="图序号（默认 1）")
+    ps.add_argument("--name", help="按图名语义匹配（首行注释，中英任一）")
 
     args = p.parse_args()
     if args.mode == "extract":

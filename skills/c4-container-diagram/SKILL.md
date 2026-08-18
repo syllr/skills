@@ -139,10 +139,10 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 **Fallback（仅信息不足时才问用户）**：
 
 - 无法定位：用户没给文档路径/找不到任何 d2 块，也说不清意图 → 问"目标文档/图在哪？"
-- 多块未指定：文档有多个 d2 块，用户说改图但没说第几张 → 问"改第几张（图序号）？"
+- 多块匹配不上：文档有多个 d2 块，用户说的图名与所有块首行注释都匹配不上 → 列出各块图名让用户选（"文档里有：① 系统架构图 System Architecture ② 部署架构图 Deployment... 改哪个？"）
 - 完全无位置：只说"画一张图"没给任何文档线索 → 问"画在哪？"
 
-**信息收集**：分诊前 Read 目标文档确认：① 文件存在；② 该位置 d2 块数量；③ 用户指定了哪个图。**未完成分诊（三选一明确）前，禁止写 d2 代码**。
+**信息收集（定位靠图名，不靠序号）**：Read 目标文档，提取所有 ```d2 块的**第一行注释（图名）**，与用户提到的图名做**语义匹配**（如"系统架构图"↔ `# 系统架构图 System Architecture`；中英文任一对上即命中）。**未完成分诊（三选一明确）前，禁止写 d2 代码**。
 
 > **CRITICAL — BLOCKING（阻塞性要求 #1，对应步骤 1）**: 画架构图前，必须先与用户对齐**几层 / 每层哪些模块 / 标签样式**（顶部居中 vs 左侧竖排）。未对齐前，禁止写 d2 代码。
 
@@ -153,7 +153,7 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 1. **定位目标 Markdown 文档（分诊信息已收集，此处确认插入/修改位置）**：用户调用本 skill 时通常会说"在 `docs/architecture.md` 里画一张 C4 Container Diagram"。在分诊（§2.1）基础上，确认插入位置（新建）或目标代码块（修改）。**未确认目标文档前，禁止写 d2 代码**
 2. **对齐架构图参数（强制，阻塞性 #1）**：与用户确认：① **几层**（通常 3~6 层）；② **每层模块名**（用户会列出每个产品/服务/能力名——**必须用真实业务 label，禁止用占位符**如 e1/e2/c1/c2，占位符只出现在 skill 模板示例中）；③ **标签样式**（顶部居中 = 主流 / 左侧竖排 = 类架构师风格）；④ **颜色偏好**（蓝/紫/绿/橙/灰五大层系默认即可，或用户指定）；⑤ **是否需要层间箭头**（默认靠堆叠隐含依赖；要箭头时**只连层容器之间**，父级到父级，见 §6.3）
 3. **ASCII 架构确认（强制，阻塞性 #2）**：在对话中以 `text` 代码块直接输出 ASCII 架构图（层数 + 每层模块 + 层间连线 + 标签位置），等用户明确确认。用户提出修改则更新 ASCII 图再次确认。（见 [3 节](#3-ascii-架构确认画图前必做)）
-4. **在目标文档写/改 ` ```d2 ` 代码块**：在步骤 1 确定的插入位置，写入或修改 ` ```d2 ` 代码块。代码块首行可写 `# 图标准元信息` 注释（图名/视角/用途/状态编码），代码块内 `vars: { d2-config: { layout-engine: elk } }`（默认 elk）。**写完后渲染由 Markdown 引擎自动完成，AI 不做任何输出/渲染动作**
+4. **在目标文档写/改 ` ```d2 ` 代码块**：在步骤 1 确定的插入位置，写入或修改 ` ```d2 ` 代码块。**首行必须写图名注释（`# 中文图名 English Name`）——这是图的标识，后续定位/修改靠它语义匹配（§2.1），禁止省略**；第二行起 `vars: { d2-config: { layout-engine: elk } }`（默认 elk），可继续写视角/用途等元信息注释。**写完后渲染由 Markdown 引擎自动完成，AI 不做任何输出/渲染动作**
 5. **自检**：新建图用 [7.2 节](#72-验收执行一条命令提取--渲染--脚本校验) 手动流程（提取 → 临时 .d2 → `d2 validate` + `d2 render` → `python3 scripts/verify-svg.py`）；**已有图修改一律用 [§2.2 工作台](#22-修改模式对已有图做调整不等于重画) 一条命令**（extract → render → sync，自动校验 viewBox/超界/等宽/圆角）。
 
 完成标准：目标 Markdown 文档中 ` ```d2 ` 代码块已写入/更新；`verify-svg.py` 脚本校验通过；渲染结果与第 3 步确认的 ASCII 架构一致。
@@ -165,14 +165,17 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 **推荐工作流（工作台脚本，一条命令闭环）**：
 
 ```bash
-# 1. 提取：md 第 N 个 d2 块 → 工作区 .d2/.svg/.png + 校验（含 viewBox/超界/等宽/圆角）
-python3 scripts/d2-workbench.py extract docs.md 1 --out .
+# 1. 提取：按图名语义匹配（首行注释）或图序号 → 工作区 .d2/.svg/.png + 校验
+#    （不带参数会列出文档所有 d2 块图名）
+python3 scripts/d2-workbench.py extract docs.md --name "系统架构图"
+python3 scripts/d2-workbench.py extract docs.md 1 --out .     # 或按序号
 
 # 2. 改图迭代：编辑工作区 .d2（改 label/加容器/调宽度）→ 渲染+校验
 python3 scripts/d2-workbench.py render docs-fig1.d2
 
-# 3. 回写：工作区 .d2 同步回 md（替换代码块 + 重新生成 base64 fallback，只留 1 份）
-python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 1
+# 3. 回写：工作区 .d2 同步回 md（替换原代码块 + 重新生成 base64 fallback，只留 1 份）
+python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 --name "系统架构图"
+python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 1   # 或按序号
 ```
 
 **局部修改规则（只动改的部分）**：
@@ -1078,12 +1081,12 @@ python3 scripts/verify-svg.py <渲染出的.svg>
 **推荐（一条命令闭环，杜绝转义事故，改图首选）**——[§2.2 工作台脚本](#22-修改模式对已有图做调整不等于重画)：
 
 ```bash
-# 从 md 提取第 N 个 d2 块 → 工作区 .d2/.svg/.png + 自动校验（viewBox/超界/等宽/圆角）
-python3 scripts/d2-workbench.py extract docs.md 1 --out .
+# 从 md 提取 d2 块（--name 按图名语义匹配，不带参数列出所有图名）→ 工作区 .d2/.svg/.png + 自动校验
+python3 scripts/d2-workbench.py extract docs.md --name "系统架构图"
 # 改图迭代：编辑工作区 .d2 后
 python3 scripts/d2-workbench.py render docs-fig1.d2
-# 回写 md（代码块 + base64 fallback 只留 1 份）
-python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 1
+# 回写 md（替换原代码块 + base64 fallback 只留 1 份，块数断言防多张图）
+python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 --name "系统架构图"
 ```
 
 **手动替代流程**（工作台不可用/单次验证时）：
