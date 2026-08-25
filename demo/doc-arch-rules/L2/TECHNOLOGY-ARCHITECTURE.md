@@ -1,38 +1,57 @@
 ---
-title: TECHNOLOGY-ARCHITECTURE — 技术架构
-doc_type: template
-layer: L2
 description: L2 架构层 文档 TECHNOLOGY-ARCHITECTURE 的更新规范——修改 docs/L2/TECHNOLOGY-ARCHITECTURE.md 时触发，按模板 generation 元数据生成或更新该文档
 globs:
   - "docs/L2/TECHNOLOGY-ARCHITECTURE.md"
-# 生成提示词（元信息 · 仅模板持有，实例不含本块）
-generation:
-  tools:
-    - D2 容器图（§1 技术分层图，图规范见宪法）
-  related: # 关联模板与联动修改
-    APPLICATION-ARCHITECTURE: 应用清单 SSOT 在它 §2.2，技术架构按应用描述
-    PRODUCT: 功能清单 SSOT 在它 §2，技术架构不重列功能
-    DOMAIN-MODEL: 存储设计在它 §5，技术选型需与其一致
-    DEPLOYMENT: 技术栈影响部署，选型变化需同步部署方式
-    TEST-PLAN: UT 清单在它 §5.1，写法在本 §6（引用不复制）
-  # 需要用户决策的才问（无歧义则不问）
-  ask_user:
-    - 关键技术选型（框架/数据库/AI 供应商）有分歧时 → 问用户拍板
-  flow: # 生成流程
-    - 扫描（自主）：读应用架构 + 领域存储 + 目标文档
-    - 已有 TECHNOLOGY-ARCHITECTURE → 参考旧文档有效信息，但结构按本模板重建
-    - 按模板生成：§1 技术分层图 → §2 前端选型 → §3 后端选型 + 存储选型 → §4 基础设施 → §5 非功能约束
-  notes: # 生成注意点（怎么生成）
-    - 按应用描述技术栈（应用清单见 APPLICATION-ARCHITECTURE §2.2，引用不重列）
-    - 不复制功能清单/能力归属/状态（产品规格 是 SSOT）
-    - 每个选型给备选 + 弃用原因（Google Design Doc 惯例）
-    - §3.1 存储选型明细含容量/性能预期；表/集合级结构在 DOMAIN-MODEL §5
-  checks: # 生成后反向 check
-    - "技术分层图只画技术组件，无功能模块清单"
-    - "应用清单引用 APPLICATION-ARCHITECTURE，未重列"
-    - "每个选型都有备选 + 弃用原因"
-    - "存储选型与 DOMAIN-MODEL §5 数据设计不冲突"
 ---
+
+# TECHNOLOGY-ARCHITECTURE 文档更新规范（L2 架构层）
+
+## 触发条件
+
+当以下任一情况发生时，本规则必须生效：
+
+- 编辑、新增或重建 `docs/L2/TECHNOLOGY-ARCHITECTURE.md`
+- 关联文档变化需联动更新：
+  - APPLICATION-ARCHITECTURE（应用清单 SSOT 在它 §2.2，技术架构按应用描述）
+  - PRODUCT（功能清单 SSOT 在它 §2，技术架构不重列功能）
+  - DOMAIN-MODEL（存储设计在它 §5，技术选型需与其一致）
+  - DEPLOYMENT（技术栈影响部署，选型变化需同步部署方式）
+  - TEST-PLAN（UT 清单在它 §5.1，写法在本 §6（引用不复制））
+- 用户要求"生成/更新 TECHNOLOGY-ARCHITECTURE"
+
+## 执行流程
+
+1. **工具**：D2 容器图（§1 技术分层图，图规范见宪法）
+2. **问用户**（仅当有歧义）：关键技术选型（框架/数据库/AI 供应商）有分歧时 → 问用户拍板
+3. **生成流程**：
+   - 扫描（自主）：读应用架构 + 领域存储 + 目标文档
+   - 已有 TECHNOLOGY-ARCHITECTURE → 参考旧文档有效信息，但结构按本模板重建
+   - 按模板生成：§1 技术分层图 → §2 前端选型 → §3 后端选型 + 存储选型 → §4 基础设施 → §5 非功能约束
+4. **联动同步**：修改目标文档后，先读关联文档判断影响，受影响的一并同步修改，完成后校验关联一致性
+
+## 硬性要求
+
+- 按应用描述技术栈（应用清单见 APPLICATION-ARCHITECTURE §2.2，引用不重列）
+- 不复制功能清单/能力归属/状态（产品规格 是 SSOT）
+- 每个选型给备选 + 弃用原因（Google Design Doc 惯例）
+- §3.1 存储选型明细含容量/性能预期；表/集合级结构在 DOMAIN-MODEL §5
+- **联动**：更新时按 related 同步关联文档（见触发条件）；跨层引用单向向下，下层不链回上层
+- **图规范**：按 CONSTITUTION §3.2 用 D2 / Mermaid / ASCII
+
+## 完成判定
+
+以下全部通过才算完成：
+
+- 技术分层图只画技术组件，无功能模块清单
+- 应用清单引用 APPLICATION-ARCHITECTURE，未重列
+- 每个选型都有备选 + 弃用原因
+- 存储选型与 DOMAIN-MODEL §5 数据设计不冲突
+
+---
+
+## 模板（生成/更新文档的结构基准）
+
+以下为 `docs/L2/TECHNOLOGY-ARCHITECTURE.md` 的模板正文（不含 YAML frontmatter，生成/更新时以此结构为准，按 `> 【指引】` 填写，实例不含 `> 【指引】` 说明）：
 
 # TECHNOLOGY-ARCHITECTURE — 技术架构
 

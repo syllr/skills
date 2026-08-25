@@ -1,46 +1,73 @@
 ---
-title: USER-STORY — 用户故事
-doc_type: template
-layer: L1
 description: L1 产品层 文档 USER-STORY 的更新规范——修改 docs/L1/USER-STORY.md 时触发，按模板 generation 元数据生成或更新该文档
 globs:
   - "docs/L1/USER-STORY.md"
-# 生成提示词（元信息 · 仅模板持有，实例不含本块）
-generation:
-  tools:
-    - Mermaid classDiagram（§1.2 角色关系图）
-    - Mermaid sequenceDiagram（§4 用户旅程，图规范见 CONSTITUTION §3.2）
-  related: # 关联模板与联动修改
-    PRODUCT: 功能状态 SSOT 在它 §2.1，新故事需联动补能力
-    DOMAIN-MODEL(Action): 故事关联 Action，新故事需联动建 Action
-    TEST-PLAN: 测试场景来源，新故事需联动补流程测试用例
-    CONSTITUTION: 图规范在它 §3.2
-  # 需要用户决策的才问（无歧义则不问）
-  ask_user:
-    - 角色划分（项目有哪些角色）有歧义时 → 问用户确认
-    - 故事优先级/范围有争议时 → 问用户
-  flow: # 生成流程
-    - 扫描（自主）：读 PRODUCT + DOMAIN-MODEL + 需求 + 目标文档
-    - 已有 USER-STORY → 参考旧文档有效信息，但结构按本模板重建
-    - 按模板生成：§1 角色定义 → §2 故事清单（覆盖 PRODUCT 全部能力，无编号列）→ §3 故事详情（与 §2 一一对应：每清单故事一节，含 Connextra + Given-When-Then AC + 关联）→ §4.1 每角色总旅程 → §4.2 单故事时序图（与 §2/§3 一一对应：每故事一张时序图，脑图有 N 个故事，时序图就有 N 个小节）
-  notes: # 生成注意点（怎么生成）
-    - 用户故事是需求源头，先画旅程（§4）再从痛点派生故事（§3）
-    - 角色定义（§1）是组织单位：每个角色一张总旅程图 + 一批故事
-    - 故事用 Connextra 三段式（As a… I want… So that…）+ 验收标准（Given-When-Then）
-    - AC 用 Given/When/Then 英文术语引导（Given <前置>，When <动作>，Then <结果>），不用"给定/当/那么"中文翻译
-    - 内容条目不加顺序编号（无 US-N/场景 N/AC-N/验收点 N）——增删不引发重编号，引用时描述内容
-    - 功能状态在 PRODUCT §2.1（SSOT），此处不重复
-    - 只写意图 + 边界，不写实现细节
-    - 故事 AC（业务验收）在此定义（SSOT）；技术验收/测试用例在 TEST-PLAN，引用不复制
-  checks: # 生成后反向 check
-    - "§2 故事清单行数 == §3 故事详情小节数 == §4.2 时序图小节数（三处一一对应，漏一个 = 覆盖不完整）"
-    - "每个角色都有总旅程图（§4.1）"
-    - "每个故事都有验收标准（Given-When-Then，用 Given/When/Then 英文术语引导，不用给定/当/那么）"
-    - "故事与 PRODUCT 能力、DOMAIN-MODEL Action 一一对应"
-    - "角色定义覆盖产品全部用户角色"
-    - "内容条目无顺序编号（无 US-N/场景 N/AC-N/验收点 N）"
-    - "§4 硬性要求：三角色 + 完整链路（每张时序图必须有 用户/角色 + UI + 系统 三泳道，且每触点画完整 用户→UI→系统→UI→用户 闭环，详见 §4 角色语义约定的硬性要求段）"
 ---
+
+# USER-STORY 文档更新规范（L1 产品层）
+
+## 触发条件
+
+当以下任一情况发生时，本规则必须生效：
+
+- 编辑、新增或重建 `docs/L1/USER-STORY.md`
+- 关联文档变化需联动更新（来自 generation.related）：
+  - `PRODUCT`（功能状态 SSOT 在它 §2.1，新故事需联动补能力）
+  - `DOMAIN-MODEL(Action)`（故事关联 Action，新故事需联动建 Action）
+  - `TEST-PLAN`（测试场景来源，新故事需联动补流程测试用例）
+  - `CONSTITUTION`（图规范在它 §3.2）
+- 用户要求"生成/更新 USER-STORY"
+
+## 执行流程
+
+1. **工具**：
+   - Mermaid classDiagram（§1.2 角色关系图）
+   - Mermaid sequenceDiagram（§4 用户旅程，图规范见 CONSTITUTION §3.2）
+2. **扫描**（自主，不问用户）：
+   - 读 PRODUCT §2（能力图，若已有）：功能清单
+   - 读 DOMAIN-MODEL §3（Action 列表，若已有）：聚合操作
+   - 读产品需求/PRD（若有）：背景与目标
+   - 扫描目标文档：USER-STORY 是否已存在
+3. **问用户**（仅当有歧义）：
+   - 角色划分（项目有哪些角色）有歧义时 → 问用户确认
+   - 故事优先级/范围有争议时 → 问用户
+4. **生成流程**：
+   - 扫描（自主）：读 PRODUCT + DOMAIN-MODEL + 需求 + 目标文档
+   - 已有 USER-STORY → 参考旧文档有效信息，但结构按本模板重建
+   - 按模板生成：§1 角色定义 → §2 故事清单（覆盖 PRODUCT 全部能力，无编号列）→ §3 故事详情（与 §2 一一对应：每清单故事一节，含 Connextra + Given-When-Then AC + 关联）→ §4.1 每角色总旅程 → §4.2 单故事时序图（与 §2/§3 一一对应：每故事一张时序图，脑图有 N 个故事，时序图就有 N 个小节）
+
+## 硬性要求
+
+- 用户故事是需求源头，先画旅程（§4）再从痛点派生故事（§3）
+- 角色定义（§1）是组织单位：每个角色一张总旅程图 + 一批故事
+- 故事用 Connextra 三段式（As a… I want… So that…）+ 验收标准（Given-When-Then）
+- AC 用 Given/When/Then 英文术语引导（Given <前置>，When <动作>，Then <结果>），不用"给定/当/那么"中文翻译
+- 内容条目不加顺序编号（无 US-N/场景 N/AC-N/验收点 N）——增删不引发重编号，引用时描述内容
+- 功能状态在 PRODUCT §2.1（SSOT），此处不重复
+- 只写意图 + 边界，不写实现细节
+- 故事 AC（业务验收）在此定义（SSOT）；技术验收/测试用例在 TEST-PLAN，引用不复制
+- **联动**：更新时按 related 同步关联文档（见触发条件）；跨层引用单向向下，下层不链回上层
+- **不用 emoji**（S8，grep 校验）
+- **图规范**：按 generation.tools 与 CONSTITUTION §3.2 用 D2 / Mermaid / ASCII
+
+## 完成判定
+
+以下全部通过才算完成（generation.checks 逐条）：
+
+- §2 故事清单行数 == §3 故事详情小节数 == §4.2 时序图小节数（三处一一对应，漏一个 = 覆盖不完整）
+- 每个角色都有总旅程图（§4.1）
+- 每个故事都有验收标准（Given-When-Then，用 Given/When/Then 英文术语引导，不用给定/当/那么）
+- 故事与 PRODUCT 能力、DOMAIN-MODEL Action 一一对应
+- 角色定义覆盖产品全部用户角色
+- 内容条目无顺序编号（无 US-N/场景 N/AC-N/验收点 N）
+- §4 硬性要求：三角色 + 完整链路（每张时序图必须有 用户/角色 + UI + 系统 三泳道，且每触点画完整 用户→UI→系统→UI→用户 闭环，详见 §4 角色语义约定的硬性要求段）
+- S8：文档不含 emoji（grep 检查通过，详见 CONSTITUTION S8 依据）
+
+---
+
+## 模板（生成/更新文档的结构基准）
+
+以下为 `docs/L1/USER-STORY.md` 的模板正文（不含 YAML frontmatter，生成/更新时以此结构为准，按 `> 【指引】` 填写，实例不含 `> 【指引】` 说明）：
 
 # USER-STORY — 用户故事
 
@@ -48,7 +75,6 @@ generation:
 > 【模板使用指引】复制为 `docs/L1/USER-STORY.md`，按各章节指引填写。
 > 【原则】① 用户故事是**需求的源头**：先有故事，才能提炼产品规格（PRODUCT）与聚合操作（DOMAIN-MODEL §3 Action）；② 用户故事回答三个问题：**谁（Who）想要、想要什么（What）、为什么想要（Why）**——即 Connextra 三段式 `As a… I want… So that…`；③ 与具体技术栈/框架无关；④ 用户旅程（交互时序）是故事的**上文**——先画旅程，再从痛点派生故事（本模板 §4）。
 
----
 
 ## 1. 角色定义（先说清"谁"）
 
@@ -104,7 +130,6 @@ classDiagram
 >
 > 【填写指引】替换为项目自己的角色与关系：① 每个角色一个 `class`（职责写入成员区）；② 关系箭头标注类型（使用/依赖/管理/引导/审核…），关联用 `-->`、依赖用 `..>`、聚合用 `o--`；③ 复杂关系图用 `direction LR` 横排、简单用 `TD` 竖排。
 
----
 
 ## 2. 用户故事清单
 
@@ -118,7 +143,6 @@ classDiagram
 | 内容创作者 | 把已发布的文案转成配音         | 能力：**配音变音**；Action：`文案转语音`（DOMAIN-MODEL §3）               |
 | 内容创作者 | 查看历史作品并复用             | 能力：**我的作品**；Action：`查询作品列表`、`复用作品`（DOMAIN-MODEL §3） |
 
----
 
 ## 3. 用户故事详情
 
@@ -147,7 +171,6 @@ classDiagram
 - 验收（业务 AC）：本故事验收标准在此定义（SSOT）；技术验收在 TEST-PLAN（引用 `docs/L4/TEST-PLAN.md`）
 - 业务规则：每日免费次数限制；生成内容需 AIGC 标识（见合规文档）
 
----
 
 ## 4. 用户旅程（必选）
 

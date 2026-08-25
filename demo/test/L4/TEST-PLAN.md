@@ -1,50 +1,76 @@
 ---
-title: TEST-PLAN — 测试计划
-doc_type: template
-layer: L4
 description: L4 交付层 文档 TEST-PLAN 的更新规范——修改 docs/L4/TEST-PLAN.md 时触发，按模板 generation 元数据生成或更新该文档
 globs:
   - "docs/L4/TEST-PLAN.md"
-# 生成提示词（元信息 · 仅模板持有，实例不含本块）
-generation:
-  tools:
-    - Markdown 表格（RTM 追溯表 / UT 清单）
-    - Gherkin Feature（流程测试，Given-When-Then 中文）
-    - Mermaid flowchart（测试流程，如适用）
-  related: # 关联模板与联动修改（= 改本文档前必读的文档）
-    USER-STORY: 需求场景来源——改测试前必读其故事场景
-    DOMAIN-MODEL: 聚合操作 + 状态机（§3.6），领域变化需联动测试
-    TECHNOLOGY-ARCHITECTURE: UT 规范来源，技术栈变化需同步测试工具
-  # 需要用户决策的才问（无歧义则不问）
-  ask_user:
-    - 测试范围/优先级有争议时 → 问用户
-    - 流程测试用例的选择（哪些用户旅程需要自动化）→ 问用户
-  flow: # 生成流程
-    - 扫描（自主）：读用户故事 + PRODUCT + DOMAIN-MODEL + 技术架构 + 目标文档
-    - 已有 TEST-PLAN → 参考旧文档有效信息，但结构按本模板重建
-    - 按模板生成：§1 概述（含 RTM）→ §2 测试策略 → §3 环境 → §4 出入口标准 → §5 用例集（UT 清单/E2E/流程）→ §6 风险 → §7 交付物
-  notes: # 生成注意点（怎么生成）
-    - 依赖链：用户故事（需求场景）→ PRODUCT/DOMAIN-MODEL（功能/事件）→ TEST-PLAN（测试计划）
-    - 测试分三类：E2E/集成（测 API/契约/状态机，代码方式）、流程（用户旅程级，Gherkin + 浏览器自动化 + 截图视觉）、UT（单元清单，写法看技术架构）
-    - UT 分工：TEST-PLAN §5.1 只列「要测哪些单元」，框架/覆盖率/命名在技术架构（引用不复制）
-    - 流程测试可 AI 执行：Gherkin 声明式 → Playwright → toHaveScreenshot() 视觉断言 → Trace 回放
-    - 用例编号：E2E-<模块>-<序号> / FLOW-<模块>-<序号> / UT-<模块>-<序号>（用例标识，非内容条目编号）
-    - 用例与 PRODUCT/DOMAIN-MODEL/用户故事追溯（RTM），引用不复制验收内容
-  checks: # 生成后反向 check
-    - "RTM 覆盖全部用户故事场景（无遗漏）"
-    - "E2E 用例覆盖 PRODUCT/DOMAIN-MODEL 关键接口/状态机；流程用例覆盖用户旅程主路径"
-    - "UT 清单与 DOMAIN-MODEL 聚合对应，写法引用技术架构（未在本文档定义框架/覆盖率）"
-    - "流程测试用 Gherkin 中文（Given/When/Then），含至少 1 个视觉断言（截图）"
-    - "用例引用 PRODUCT/DOMAIN-MODEL/用户故事，未重复定义验收"
 ---
+
+# TEST-PLAN 文档更新规范（L4 交付层）
+
+## 触发条件
+
+当以下任一情况发生时，本规则必须生效：
+
+- 编辑、新增或重建 `docs/L4/TEST-PLAN.md`
+- 关联文档变化需联动更新（来自 generation.related，= 改本文档前必读的文档）：
+  - `USER-STORY`（需求场景来源——改测试前必读其故事场景）
+  - `DOMAIN-MODEL`（聚合操作 + 状态机（§3.6），领域变化需联动测试）
+  - `TECHNOLOGY-ARCHITECTURE`（UT 规范来源，技术栈变化需同步测试工具）
+- 用户要求"生成/更新 TEST-PLAN"
+
+## 执行流程
+
+1. **工具**：
+   - Markdown 表格（RTM 追溯表 / UT 清单）
+   - Gherkin Feature（流程测试，Given-When-Then 中文）
+   - Mermaid flowchart（测试流程，如适用）
+2. **扫描**（自主，不问用户）：
+   - 读 用户故事：需求场景（测试范围来源）
+   - 读 PRODUCT + DOMAIN-MODEL：产品能力（测什么）+ 聚合操作与领域事件
+   - 读 技术架构：UT 规范（框架/覆盖率/命名，UT 写法来源）
+   - 扫描目标文档：TEST-PLAN 是否已存在
+3. **问用户**（仅当有歧义）：
+   - 测试范围/优先级有争议时 → 问用户
+   - 流程测试用例的选择（哪些用户旅程需要自动化）→ 问用户
+4. **生成流程**：
+   - 扫描（自主）：读用户故事 + PRODUCT + DOMAIN-MODEL + 技术架构 + 目标文档
+   - 已有 TEST-PLAN → 参考旧文档有效信息，但结构按本模板重建
+   - 按模板生成：§1 概述（含 RTM）→ §2 测试策略 → §3 环境 → §4 出入口标准 → §5 用例集（UT 清单/E2E/流程）→ §6 风险 → §7 交付物
+
+## 硬性要求
+
+- 依赖链：用户故事（需求场景）→ PRODUCT/DOMAIN-MODEL（功能/事件）→ TEST-PLAN（测试计划）
+- 测试分三类：E2E/集成（测 API/契约/状态机，代码方式）、流程（用户旅程级，Gherkin + 浏览器自动化 + 截图视觉）、UT（单元清单，写法看技术架构）
+- UT 分工：TEST-PLAN §5.1 只列「要测哪些单元」，框架/覆盖率/命名在技术架构（引用不复制）
+- 流程测试可 AI 执行：Gherkin 声明式 → Playwright → toHaveScreenshot() 视觉断言 → Trace 回放
+- 用例编号：E2E-<模块>-<序号> / FLOW-<模块>-<序号> / UT-<模块>-<序号>（用例标识，非内容条目编号）
+- 用例与 PRODUCT/DOMAIN-MODEL/用户故事追溯（RTM），引用不复制验收内容
+- **联动**：更新时按 related 同步关联文档（见触发条件）；跨层引用单向向下，下层不链回上层
+- **不用 emoji**（S8，grep 校验）
+- **图规范**：按 generation.tools 与 CONSTITUTION §3.2 用 D2 / Mermaid / ASCII
+
+## 完成判定
+
+以下全部通过才算完成（generation.checks 逐条）：
+
+- RTM 覆盖全部用户故事场景（无遗漏）
+- E2E 用例覆盖 PRODUCT/DOMAIN-MODEL 关键接口/状态机；流程用例覆盖用户旅程主路径
+- UT 清单与 DOMAIN-MODEL 聚合对应，写法引用技术架构（未在本文档定义框架/覆盖率）
+- 流程测试用 Gherkin 中文（Given/When/Then），含至少 1 个视觉断言（截图）
+- 用例引用 PRODUCT/DOMAIN-MODEL/用户故事，未重复定义验收
+- S8：文档不含 emoji（grep 检查通过，详见 CONSTITUTION S8 依据）
+
+---
+
+## 模板（生成/更新文档的结构基准）
+
+以下为 `docs/L4/TEST-PLAN.md` 的模板正文（不含 YAML frontmatter，生成/更新时以此结构为准，按 `> 【指引】` 填写，实例不含 `> 【指引】` 说明）：
 
 # TEST-PLAN — 测试计划
 
 > 本文档是「<项目名>」的 **TEST-PLAN（测试计划模板）**——L4 交付层的测试文档。
 > 【模板使用指引】复制为 `docs/L4/TEST-PLAN.md`，按各章节指引填写。
-> 【原则】① **测试视角**：测试分类/策略/用例/报告——回答"怎么验证质量"；② **依赖链**：用户故事（需求场景）→ PRODUCT/DOMAIN-MODEL（功能/事件）→ TEST-PLAN（测试计划，从用户故事取场景）；③ **测试分三类**：E2E/集成（API 契约）、流程（用户旅程级 + 截图视觉）、UT（单元清单，写法看技术架构）；④ 用例与 PRODUCT/DOMAIN-MODEL/用户故事追溯（引用不复制）无元信息表、无变更记录。
+> 【原则】① **测试视角**：测试分类/策略/用例/报告——回答"怎么验证质量"；② **依赖链**：用户故事（需求场景）→ PRODUCT/DOMAIN-MODEL（功能/事件）→ TEST-PLAN（测试计划，从用户故事取场景）；③ **测试分三类**：E2E/集成（API 契约）、流程（用户旅程级 + 截图视觉）、UT（单元清单，写法看技术架构）；④ 用例与 PRODUCT/DOMAIN-MODEL/用户故事追溯（引用不复制）；⑤ **不用 emoji**、无元信息表、无变更记录。
 
----
 
 ## 1. 概述
 
@@ -71,7 +97,6 @@ generation:
 
 - <测试相关术语>（项目级术语见 common 术语表）
 
----
 
 ## 2. 测试策略
 
@@ -105,7 +130,6 @@ generation:
 
 - <不测项>：<原因>
 
----
 
 ## 3. 测试环境
 
@@ -123,7 +147,6 @@ generation:
 
 - <环境间数据隔离策略>
 
----
 
 ## 4. 入口 / 出口标准
 
@@ -135,7 +158,6 @@ generation:
 
 - <如：通过率 ≥95%、P0 缺陷 = 0、覆盖率达标>
 
----
 
 ## 5. 测试用例集
 
@@ -183,7 +205,6 @@ generation:
 
 > 【填写指引】① 每个用户故事主路径一个场景；② Then 断言页面**可观测输出**（元素/文本/URL/截图），不断言数据库；③ 需要视觉验证的场景加「并且 页面截图与基准一致（toHaveScreenshot）」；④ 参数化场景用「场景大纲 + 例子」表。
 
----
 
 ## 6. 风险与缓解
 
@@ -192,7 +213,6 @@ generation:
 | <测试技术风险>  | <影响> | <缓解措施> |
 | <环境/数据风险> |        |            |
 
----
 
 ## 7. 交付物与报告
 

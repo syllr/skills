@@ -7,14 +7,14 @@ globs:
   - "docs/L3/INTEGRATION.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
-  # 自主扫描（AI 读源，不问用户）
-  scan:
-    - 读 TECHNOLOGY-ARCHITECTURE §4：基础设施与外部依赖（外部集成 SSOT，技术栈来源）
-    - 读 APPLICATION-ARCHITECTURE §2.2：应用划分（确认集成调用方的归属应用）
-    - 读 DOMAIN-MODEL §3：聚合设计（聚合操作对接的外部接口来源）
-    - 读 DOMAIN-MODEL §5.1：数据全景与设计原则（外部数据源/外部数据资产分类与存储形态）
-    - 读 DOMAIN-MODEL §7：层间模型翻译（integration 层的 ACL Adapter 翻译器标准）
-    - 扫描目标文档：INTEGRATION 是否已存在
+  tools:
+    - Markdown 表格（供应商/鉴权/接口/错误码）
+  related: # 关联模板与联动修改
+    TECHNOLOGY-ARCHITECTURE: 外部依赖 SSOT 在它 §4，选型变化需同步集成；infra 拓扑（DB/OSS/缓存）见它 §3.1 而非本表
+    APPLICATION-ARCHITECTURE: 应用清单 SSOT 在它 §2.2，集成调用方归属应用需与之一致
+    DOMAIN-MODEL: 外部数据源与外部接口契约在它 §3（聚合操作）+ §5.1（外部数据资产）+ §7（ACL Adapter），集成需与领域模型对齐
+    API: 互补（Inbound vs Outbound），外部服务变化需同步本系统接口
+    DEPLOYMENT: 外部服务密钥/回调需同步部署配置
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - 外部服务选择有争议时（如选哪个 AI 供应商）→ 问用户
@@ -22,11 +22,6 @@ generation:
     - 扫描（自主）：读 TECHNOLOGY §4 外部依赖（技术外部集成）+ APPLICATION §2.2 应用归属（确认调用方所在应用）+ DOMAIN-MODEL §3 聚合操作（领域触发的外部接口）+ DOMAIN-MODEL §5.1 外部数据源（领域视角的外部数据资产）+ DOMAIN-MODEL §7 ACL Adapter（integration 层翻译标准）+ 目标文档
     - 已有 INTEGRATION → 参考旧文档有效信息，但结构按本模板重建
     - 按模板生成：§1 外部集成总览 → §2 每服务详情（接入/鉴权/接口/失败处理）
-  reentrant: # 可重入（全量/增量）
-    - 全量重生成：收到"生成 INTEGRATION" → 从模板 + 扫描依赖完整重建
-    - 增量修改：已有且符合模板 → 只更新变化外部服务，保留未变
-  tools:
-    - Markdown 表格（供应商/鉴权/接口/错误码）
   notes: # 生成注意点（怎么生成）
     - 只写外部集成契约（Outbound）：本系统调用的第三方服务（微信/支付/AI 供应商等）
     - 与 API（Inbound）互补：API 管"我提供什么"，INTEGRATION 管"我调用什么"
@@ -43,20 +38,13 @@ generation:
     - "与 API（Inbound）方向不混淆"
     - "数据库/对象存储/缓存未误列为外部集成（infra ≠ integration）"
     - "内容条目无顺序编号（外部服务按服务名标识，不用 EXT-N）"
-    - "S8：文档不含 emoji（grep 检查通过，详见 CONSTITUTION S8 依据）"
-  related: # 关联模板与联动修改
-    TECHNOLOGY-ARCHITECTURE: 外部依赖 SSOT 在它 §4，选型变化需同步集成；infra 拓扑（DB/OSS/缓存）见它 §3.1 而非本表
-    APPLICATION-ARCHITECTURE: 应用清单 SSOT 在它 §2.2，集成调用方归属应用需与之一致
-    DOMAIN-MODEL: 外部数据源与外部接口契约在它 §3（聚合操作）+ §5.1（外部数据资产）+ §7（ACL Adapter），集成需与领域模型对齐
-    API: 互补（Inbound vs Outbound），外部服务变化需同步本系统接口
-    DEPLOYMENT: 外部服务密钥/回调需同步部署配置
 ---
 
 # INTEGRATION — 外部集成（Outbound）
 
 > 本文档是「<项目名>」的 **INTEGRATION（外部集成模板）**——L3 契约层的被调用接口文档。
 > 【模板使用指引】复制为 `docs/L3/INTEGRATION.md`，按各章节指引填写。
-> 【原则】① **外部集成契约（Outbound）**：本系统被调用的第三方接口——微信/支付/AI 供应商（L3 技术契约）；② 与 API（Inbound）互补：API 管"我提供什么"，INTEGRATION 管"我调用什么"；③ 图规范见宪法；④ **不用 emoji**、无元信息表、无变更记录。
+> 【原则】① **外部集成契约（Outbound）**：本系统被调用的第三方接口——微信/支付/AI 供应商（L3 技术契约）；② 与 API（Inbound）互补：API 管"我提供什么"，INTEGRATION 管"我调用什么"；③ 图规范见宪法无元信息表、无变更记录。
 
 ---
 

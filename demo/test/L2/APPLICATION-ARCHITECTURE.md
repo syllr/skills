@@ -1,47 +1,72 @@
 ---
-title: APPLICATION-ARCHITECTURE — 应用架构
-doc_type: template
-layer: L2
 description: L2 架构层 文档 APPLICATION-ARCHITECTURE 的更新规范——修改 docs/L2/APPLICATION-ARCHITECTURE.md 时触发，按模板 generation 元数据生成或更新该文档
 globs:
   - "docs/L2/APPLICATION-ARCHITECTURE.md"
-# 生成提示词（元信息 · 仅模板持有，实例不含本块）
-generation:
-  tools:
-    - Mermaid flowchart（§2.1 C4 Context 图，图规范见宪法）
-    - D2 容器图（§2.2 应用划分图，图规范见宪法）
-  related: # 关联模板与联动修改
-    PRODUCT: 能力清单 SSOT 在它 §2，能力增删需同步 §3.2 映射
-    TECHNOLOGY-ARCHITECTURE: 应用清单 SSOT 在 §2.2，技术架构按应用描述需引用
-    DOMAIN-MODEL: 领域聚合归属领域，能力增删需同步领域建模
-    DEPLOYMENT: 部署单元来自应用划分，应用增减需同步部署
-  # 需要用户决策的才问（无歧义则不问）
-  ask_user:
-    - 应用划分（几个应用/前端后端边界）有争议时 → 问用户确认
-  flow: # 生成流程
-    - 扫描（自主）：读能力图 + 领域模型 + 目标文档
-    - 已有 APPLICATION-ARCHITECTURE → 参考旧文档有效信息，但结构按本模板重建
-    - 按模板生成：§1 系统概述 → §2.1 Context 图 → §2.2 应用划分图 → §3 模块划分（3.1 应用内模块 + 3.2 能力→领域/聚合映射）
-  notes: # 生成注意点（怎么生成）
-    - §2.2 应用划分：应用是主体（前端/API），存储/外部服务是依赖（不是应用，不并列）
-    - §3 模块划分：应用内模块按知识域划分（不按能力）；能力→领域/聚合映射 N:M（能力 SSOT 在 PRODUCT §2.1，领域/聚合 SSOT 在 DOMAIN-MODEL §3，SSOT 引用不复制）
-    - 不写实现细节（类/接口/表结构在代码）
-    - 图规范见宪法（Context 用 flowchart，应用划分用 D2）
-  checks: # 生成后反向 check
-    - "应用划分图只含应用 + 依赖，无存储/外部服务并列成应用"
-    - "§3.1 应用内模块按知识域划分（非能力 1:1 别名）"
-    - "§3.2 能力→领域/聚合映射引用产品规格+领域模型（不重复能力/聚合清单）"
-    - "Context 图标注为 C4 Context 图"
-    - "应用划分图标注为 C4 容器图"
 ---
+
+# APPLICATION-ARCHITECTURE 文档更新规范（L2 架构层）
+
+## 触发条件
+
+当以下任一情况发生时，本规则必须生效：
+
+- 编辑、新增或重建 `docs/L2/APPLICATION-ARCHITECTURE.md`
+- 关联文档变化需联动更新（来自 generation.related）：
+  - `PRODUCT`（能力清单 SSOT 在它 §2，能力增删需同步 §3.2 映射）
+  - `TECHNOLOGY-ARCHITECTURE`（应用清单 SSOT 在 §2.2，技术架构按应用描述需引用）
+  - `DOMAIN-MODEL`（领域聚合归属领域，能力增删需同步领域建模）
+  - `DEPLOYMENT`（部署单元来自应用划分，应用增减需同步部署）
+- 用户要求"生成/更新 APPLICATION-ARCHITECTURE"
+
+## 执行流程
+
+1. **工具**：
+   - Mermaid flowchart（§2.1 C4 Context 图，图规范见宪法）
+   - D2 容器图（§2.2 应用划分图，图规范见宪法）
+2. **扫描**（自主，不问用户）：
+   - 读 产品规格 能力图：业务能力清单（能力 → 领域/聚合映射来源）
+   - 读 DOMAIN-MODEL（若已有）：领域/聚合清单（领域映射参考）
+   - 扫描目标文档：APPLICATION-ARCHITECTURE 是否已存在
+3. **问用户**（仅当有歧义）：
+   - 应用划分（几个应用/前端后端边界）有争议时 → 问用户确认
+4. **生成流程**：
+   - 扫描（自主）：读能力图 + 领域模型 + 目标文档
+   - 已有 APPLICATION-ARCHITECTURE → 参考旧文档有效信息，但结构按本模板重建
+   - 按模板生成：§1 系统概述 → §2.1 Context 图 → §2.2 应用划分图 → §3 模块划分（3.1 应用内模块 + 3.2 能力→领域/聚合映射）
+
+## 硬性要求
+
+- §2.2 应用划分：应用是主体（前端/API），存储/外部服务是依赖（不是应用，不并列）
+- §3 模块划分：应用内模块按知识域划分（不按能力）；能力→领域/聚合映射 N:M（能力 SSOT 在 PRODUCT §2.1，领域/聚合 SSOT 在 DOMAIN-MODEL §3，SSOT 引用不复制）
+- 不写实现细节（类/接口/表结构在代码）
+- 图规范见宪法（Context 用 flowchart，应用划分用 D2）
+- **联动**：更新时按 related 同步关联文档（见触发条件）；跨层引用单向向下，下层不链回上层
+- **不用 emoji**（S8，grep 校验）
+- **图规范**：按 generation.tools 与 CONSTITUTION §3.2 用 D2 / Mermaid / ASCII
+
+## 完成判定
+
+以下全部通过才算完成（generation.checks 逐条）：
+
+- 应用划分图只含应用 + 依赖，无存储/外部服务并列成应用
+- §3.1 应用内模块按知识域划分（非能力 1:1 别名）
+- §3.2 能力→领域/聚合映射引用产品规格+领域模型（不重复能力/聚合清单）
+- Context 图标注为 C4 Context 图
+- 应用划分图标注为 C4 容器图
+- S8：文档不含 emoji（grep 检查通过，详见 CONSTITUTION S8 依据）
+
+---
+
+## 模板（生成/更新文档的结构基准）
+
+以下为 `docs/L2/APPLICATION-ARCHITECTURE.md` 的模板正文（不含 YAML frontmatter，生成/更新时以此结构为准，按 `> 【指引】` 填写，实例不含 `> 【指引】` 说明）：
 
 # APPLICATION-ARCHITECTURE — 应用架构
 
 > 本文档是「<项目名>」的 **APPLICATION-ARCHITECTURE（应用架构模板）**——L2 架构层的应用架构文档。
 > 【模板使用指引】复制为 `docs/L2/APPLICATION-ARCHITECTURE.md`，按各章节指引填写。
-> 【原则】① **应用架构视角**（TOGAF）：系统分几个应用、应用依赖什么——回答"系统怎么组织"；② 不写实现细节（类/接口/表结构在代码）；③ 与具体技术栈/框架无关；④ 图用 **Mermaid**（Context）+ **D2 容器图**（应用划分）无元信息表、无变更记录。
+> 【原则】① **应用架构视角**（TOGAF）：系统分几个应用、应用依赖什么——回答"系统怎么组织"；② 不写实现细节（类/接口/表结构在代码）；③ 与具体技术栈/框架无关；④ 图用 **Mermaid**（Context）+ **D2 容器图**（应用划分）；⑤ **不用 emoji**、无元信息表、无变更记录。
 
----
 
 ## 1. 系统概述
 
@@ -49,7 +74,6 @@ generation:
 
 <一句话系统概述>
 
----
 
 ## 2. 架构图（C4）
 
@@ -181,7 +205,6 @@ classes: {
 
 > 【填写指引】替换为系统实际应用；**应用是主体（容器 + [应用]），存储/外部服务是依赖（容器 + [依赖]）**。应用内部再展开一层（api 接入层 / service+domain 业务层 / infra+integration 支撑层，分层规范见宪法 §3.3）。
 
----
 
 ## 3. 模块划分（应用内部模块 + 能力映射）
 
