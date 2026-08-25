@@ -1,7 +1,7 @@
 ---
-description: L2 架构层 文档 APPLICATION-ARCHITECTURE 的更新规范——修改 docs/L2/APPLICATION-ARCHITECTURE.md 时触发，按模板 frontmatter 的 generation 元数据（scan/ask_user/flow/checks/related）生成或更新该文档；模板全文（含 generation 元数据与 Markdown 正文）见本 rule 下方。
+description: L2 架构层 文档 APPLICATION-ARCHITECTURE 的更新规范——修改 docs/L2/APPLICATION-ARCHITECTURE.md 时触发，按模板 generation 元数据生成或更新该文档
 globs:
-  - "docs/**/APPLICATION-ARCHITECTURE.md"
+  - "docs/L2/APPLICATION-ARCHITECTURE.md"
 ---
 
 # APPLICATION-ARCHITECTURE 文档更新规范（L2 架构层）
@@ -51,6 +51,9 @@ globs:
 title: APPLICATION-ARCHITECTURE — 应用架构
 doc_type: template
 layer: L2
+description: L2 架构层 文档 APPLICATION-ARCHITECTURE 的更新规范——修改 docs/L2/APPLICATION-ARCHITECTURE.md 时触发，按模板 generation 元数据生成或更新该文档
+globs:
+  - "docs/L2/APPLICATION-ARCHITECTURE.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 自主扫描（AI 读源，不问用户）
@@ -266,8 +269,8 @@ classes: {
 
 > 回答"每个业务能力由哪些领域/聚合承载"——**能力清单 SSOT（`PRODUCT.md §2.1`，引用不复制）；领域/聚合 SSOT（`DOMAIN-MODEL.md §3`）**，本节只做「能力 → 领域/聚合」映射（N:M）。**表格为 SSOT。**
 
-| 能力 | 承载领域 / 聚合 | 说明 |
-| ---- | --------------- | ---- |
-| <能力> | <业务域> / <聚合> | <驱动/支撑/产出> |
-| （补充） |  |  |
+| 能力     | 承载领域 / 聚合   | 说明             |
+| -------- | ----------------- | ---------------- |
+| <能力>   | <业务域> / <聚合> | <驱动/支撑/产出> |
+| （补充） |                   |                  |
 ```

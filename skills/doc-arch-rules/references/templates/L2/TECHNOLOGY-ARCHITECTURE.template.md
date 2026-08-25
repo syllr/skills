@@ -2,6 +2,9 @@
 title: TECHNOLOGY-ARCHITECTURE — 技术架构
 doc_type: template
 layer: L2
+description: L2 架构层 文档 TECHNOLOGY-ARCHITECTURE 的更新规范——修改 docs/L2/TECHNOLOGY-ARCHITECTURE.md 时触发，按模板 generation 元数据生成或更新该文档
+globs:
+  - "docs/L2/TECHNOLOGY-ARCHITECTURE.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 自主扫描（AI 读源，不问用户）

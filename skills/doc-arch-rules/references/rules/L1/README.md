@@ -1,5 +1,5 @@
 ---
-description: L1 产品层 文档 README 的更新规范——修改 README.md 时触发，按模板 frontmatter 的 generation 元数据（scan/ask_user/flow/checks/related）生成或更新该文档；模板全文（含 generation 元数据与 Markdown 正文）见本 rule 下方。
+description: L1 产品层 文档 README 的更新规范——修改 README.md 时触发，按模板 generation 元数据生成或更新该文档
 globs:
   - "README.md"
 ---
@@ -51,6 +51,9 @@ globs:
 title: README — 项目入口
 doc_type: template
 layer: L1
+description: L1 产品层 文档 README 的更新规范——修改 README.md 时触发，按模板 generation 元数据生成或更新该文档
+globs:
+  - "README.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 自主判断（AI 扫描，不问用户）：当前项目路径 = 工作目录；是否已有 README = 扫描根目录
@@ -133,18 +136,18 @@ generation:
 
 ### L0 决策
 
-| 我想了解      | 看哪份文档                                      |
-| ------------- | ----------------------------------------------- |
+| 我想了解      | 看哪份文档                                                   |
+| ------------- | ------------------------------------------------------------ |
 | 项目宪法/规范 | `AGENTS.md`（宪法唯一真源在 `.omo/demo/L0/CONSTITUTION.md`） |
 
 ### L1 产品
 
-| 我想了解     | 看哪份文档                   |
-| ------------ | ---------------------------- |
+| 我想了解      | 看哪份文档                   |
+| ------------- | ---------------------------- |
 | 项目入口/索引 | 本文件（README）             |
-| 产品规格全景 | `docs/L1/PRODUCT.md`         |
-| 用户故事     | `docs/L1/USER-STORY.md`      |
-| UI/交互      | `docs/L1/USER-STORY.md` §4.2 |
+| 产品规格全景  | `docs/L1/PRODUCT.md`         |
+| 用户故事      | `docs/L1/USER-STORY.md`      |
+| UI/交互       | `docs/L1/USER-STORY.md` §4.2 |
 
 ### L2 架构
 

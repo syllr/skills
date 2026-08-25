@@ -2,6 +2,9 @@
 title: INTEGRATION — 外部集成（Outbound）
 doc_type: template
 layer: L3
+description: L3 契约层 文档 INTEGRATION 的更新规范——修改 docs/L3/INTEGRATION.md 时触发，按模板 generation 元数据生成或更新该文档
+globs:
+  - "docs/L3/INTEGRATION.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 自主扫描（AI 读源，不问用户）

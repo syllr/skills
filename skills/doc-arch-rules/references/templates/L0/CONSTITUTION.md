@@ -2,6 +2,8 @@
 title: CONSTITUTION — 项目宪法
 doc_type: constitution
 layer: L0
+description: 项目宪法（L0 决策层 · 全局加载）——宪法是跨任务/跨 Agent 的全局约束，任何编码会话开始前必须加载。本 rule 内容即项目宪法全文（唯一真源 SSOT），任何文档/代码改动都必须遵守宪法条款。
+alwaysApply: true
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 宪法是唯一真源，不生成实例。任何编码会话前必须加载本文件（SSOT）

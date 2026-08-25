@@ -2,6 +2,9 @@
 title: USER-STORY — 用户故事
 doc_type: template
 layer: L1
+description: L1 产品层 文档 USER-STORY 的更新规范——修改 docs/L1/USER-STORY.md 时触发，按模板 generation 元数据生成或更新该文档
+globs:
+  - "docs/L1/USER-STORY.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 自主扫描（AI 读源，不问用户）
@@ -287,8 +290,8 @@ sequenceDiagram
 > | APPLICATION 用什么技术栈             | `TECHNOLOGY-ARCHITECTURE §1-5`                                             |
 > | APPLICATION 内部组件/容器            | `APPLICATION-ARCHITECTURE §2.2`（C4 Container）+ `TECHNOLOGY-ARCHITECTURE` |
 > | 系统调哪些外部三方（微信/AI 供应商） | `INTEGRATION`                                                              |
-> | 数据怎么存                           | `DOMAIN-MODEL §5 数据设计`                                                |
-> | 状态机/业务规则                      | `DOMAIN-MODEL §3`                                                        |
+> | 数据怎么存                           | `DOMAIN-MODEL §5 数据设计`                                                 |
+> | 状态机/业务规则                      | `DOMAIN-MODEL §3`                                                          |
 >
 > **示例**：下方 4.2.1 是「AI 撰写」完整示范——**每个故事小节 =「涉及 UI」+「交互时序图」一体**。其他故事按需挑选语法，不必照抄全部结构。
 

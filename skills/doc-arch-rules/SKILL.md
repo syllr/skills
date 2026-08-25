@@ -5,8 +5,8 @@ description: >
   两种文件模式：无 .template 后缀的文件（如 CONSTITUTION）本身即全局 Rule（内容 = 文件全文，alwaysApply 全局注入）；
   有 .template 后缀的文件是模板，rule = 生成指引（按模板 frontmatter 的 generation 元数据 scan/ask_user/flow/checks/related 执行）+ 模板全文拷贝。
   当用户要在项目里落地这套文档规范、生成文档 rule、维护文档模板、或要求"文档修改时按模板规范更新"时使用。
-  模板与 rule 由 scripts/generate-rules.py 脚本驱动生成。
-allowed-tools: Read Write Edit Grep Bash(python3:*)
+  模板与 rule 由 scripts/generate-rules.mjs 脚本驱动生成（Node 零依赖）。
+allowed-tools: Read Write Edit Grep Bash(node:*)
 ---
 
 # doc-arch-rules — 文档架构规范与 omo rule 生成
@@ -18,12 +18,12 @@ allowed-tools: Read Write Edit Grep Bash(python3:*)
 
 **核心区分——按文件后缀分两种模式**：
 
-| 文件类型 | 是什么 | rule 内容 | 触发方式 |
-| --- | --- | --- | --- |
-| **无 `.template` 后缀**（如 `templates/L0/CONSTITUTION.md`） | 本身就是全局 Rule，**不生成文档** | **文件全文**（rule = 该文件内容） | `alwaysApply: true`（全局注入） |
-| **有 `.template` 后缀**（如 `templates/L1/README.template.md`） | 模板，**用它生成某个文档** | 生成指引（按模板 frontmatter `generation` 元数据执行）+ **模板全文拷贝** | `alwaysApply`（common 层）或 `globs`（L1-L4 匹配文档路径） |
+| 文件类型                                                        | 是什么                            | rule 内容                                                                | 触发方式                                                   |
+| --------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| **无 `.template` 后缀**（如 `templates/L0/CONSTITUTION.md`）    | 本身就是全局 Rule，**不生成文档** | **文件全文**（rule = 该文件内容）                                        | `alwaysApply: true`（全局注入）                            |
+| **有 `.template` 后缀**（如 `templates/L1/README.template.md`） | 模板，**用它生成某个文档**        | 生成指引（按模板 frontmatter `generation` 元数据执行）+ **模板全文拷贝** | `alwaysApply`（common 层）或 `globs`（L1-L4 匹配文档路径） |
 
-**生成机制**：rule 由 `scripts/generate-rules.py` 脚本从 `references/templates/` 遍历生成（按文件名后缀自动分两类），模板更新后重跑脚本即可。
+**生成机制**：rule 由 `scripts/generate-rules.mjs` 脚本从 `references/templates/` 遍历生成（按文件名后缀自动分两类），模板更新后重跑脚本即可。
 
 ## 何时使用
 
@@ -36,22 +36,22 @@ allowed-tools: Read Write Edit Grep Bash(python3:*)
 
 源文件位于 `references/templates/`（按层分目录）：**1 个全局 Rule 源（CONSTITUTION，无后缀）+ 13 个模板（.template 后缀）**。
 
-| 层 | 文件 | 类型 | rule 输出 | 触发方式 |
-| --- | --- | --- | --- | --- |
-| L0 | [CONSTITUTION](references/templates/L0/CONSTITUTION.md)（无后缀） | 全局 Rule 源 | rules/L0/CONSTITUTION.md | alwaysApply |
-| L1 | [README](references/templates/L1/README.template.md) | 模板 | rules/L1/README.md | globs（根 README.md） |
-| L1 | [PRODUCT](references/templates/L1/PRODUCT.template.md) | 模板 | rules/L1/PRODUCT.md | globs |
-| L1 | [USER-STORY](references/templates/L1/USER-STORY.template.md) | 模板 | rules/L1/USER-STORY.md | globs |
-| L2 | [APPLICATION-ARCHITECTURE](references/templates/L2/APPLICATION-ARCHITECTURE.template.md) | 模板 | rules/L2/APPLICATION-ARCHITECTURE.md | globs |
-| L2 | [DOMAIN-MODEL](references/templates/L2/DOMAIN-MODEL.template.md) | 模板 | rules/L2/DOMAIN-MODEL.md | globs |
-| L2 | [TECHNOLOGY-ARCHITECTURE](references/templates/L2/TECHNOLOGY-ARCHITECTURE.template.md) | 模板 | rules/L2/TECHNOLOGY-ARCHITECTURE.md | globs |
-| L3 | [API](references/templates/L3/API.template.md) | 模板 | rules/L3/API.md | globs |
-| L3 | [INTEGRATION](references/templates/L3/INTEGRATION.template.md) | 模板 | rules/L3/INTEGRATION.md | globs |
-| L4 | [DEPLOYMENT](references/templates/L4/DEPLOYMENT.template.md) | 模板 | rules/L4/DEPLOYMENT.md | globs |
-| L4 | [TEST-PLAN](references/templates/L4/TEST-PLAN.template.md) | 模板 | rules/L4/TEST-PLAN.md | globs |
-| common | [CODE-GUIDE](references/templates/common/CODE-GUIDE.template.md) | 模板 | rules/common/CODE-GUIDE.md | alwaysApply |
-| common | [GLOSSARY](references/templates/common/GLOSSARY.template.md) | 模板 | rules/common/GLOSSARY.md | alwaysApply |
-| common | [STRUCTURE](references/templates/common/STRUCTURE.template.md) | 模板 | rules/common/STRUCTURE.md | alwaysApply |
+| 层     | 文件                                                                                     | 类型         | rule 输出                            | 触发方式              |
+| ------ | ---------------------------------------------------------------------------------------- | ------------ | ------------------------------------ | --------------------- |
+| L0     | [CONSTITUTION](references/templates/L0/CONSTITUTION.md)（无后缀）                        | 全局 Rule 源 | rules/L0/CONSTITUTION.md             | alwaysApply           |
+| L1     | [README](references/templates/L1/README.template.md)                                     | 模板         | rules/L1/README.md                   | globs（根 README.md） |
+| L1     | [PRODUCT](references/templates/L1/PRODUCT.template.md)                                   | 模板         | rules/L1/PRODUCT.md                  | globs                 |
+| L1     | [USER-STORY](references/templates/L1/USER-STORY.template.md)                             | 模板         | rules/L1/USER-STORY.md               | globs                 |
+| L2     | [APPLICATION-ARCHITECTURE](references/templates/L2/APPLICATION-ARCHITECTURE.template.md) | 模板         | rules/L2/APPLICATION-ARCHITECTURE.md | globs                 |
+| L2     | [DOMAIN-MODEL](references/templates/L2/DOMAIN-MODEL.template.md)                         | 模板         | rules/L2/DOMAIN-MODEL.md             | globs                 |
+| L2     | [TECHNOLOGY-ARCHITECTURE](references/templates/L2/TECHNOLOGY-ARCHITECTURE.template.md)   | 模板         | rules/L2/TECHNOLOGY-ARCHITECTURE.md  | globs                 |
+| L3     | [API](references/templates/L3/API.template.md)                                           | 模板         | rules/L3/API.md                      | globs                 |
+| L3     | [INTEGRATION](references/templates/L3/INTEGRATION.template.md)                           | 模板         | rules/L3/INTEGRATION.md              | globs                 |
+| L4     | [DEPLOYMENT](references/templates/L4/DEPLOYMENT.template.md)                             | 模板         | rules/L4/DEPLOYMENT.md               | globs                 |
+| L4     | [TEST-PLAN](references/templates/L4/TEST-PLAN.template.md)                               | 模板         | rules/L4/TEST-PLAN.md                | globs                 |
+| common | [CODE-GUIDE](references/templates/common/CODE-GUIDE.template.md)                         | 模板         | rules/common/CODE-GUIDE.md           | alwaysApply           |
+| common | [GLOSSARY](references/templates/common/GLOSSARY.template.md)                             | 模板         | rules/common/GLOSSARY.md             | alwaysApply           |
+| common | [STRUCTURE](references/templates/common/STRUCTURE.template.md)                           | 模板         | rules/common/STRUCTURE.md            | alwaysApply           |
 
 > **DATA-ARCHITECTURE 已合并**进 DOMAIN-MODEL（§5 数据设计），脚本跳过，不生成 rule。
 > **CONSTITUTION 无模板**：宪法是唯一真源（SSOT），不生成 docs/ 副本——rule 内容即宪法全文（`alwaysApply`），生成到目标项目时替换 `<项目名>` 占位符。
@@ -62,11 +62,12 @@ allowed-tools: Read Write Edit Grep Bash(python3:*)
 rule 由脚本从模板自动生成，**不手工维护**：
 
 ```bash
-python3 scripts/generate-rules.py            # 重新生成全部 rule（覆盖 references/rules/）
-python3 scripts/generate-rules.py --check    # 只校验不写入（模板与 rule 一致性）
+node scripts/generate-rules.mjs            # 重新生成全部 rule（覆盖 references/rules/）
+node scripts/generate-rules.mjs --check    # 只校验不写入（模板与 rule 一致性）
 ```
 
 脚本逻辑（按文件名后缀自动分两类）：
+
 1. 遍历 `references/templates/**/*.md`
 2. **无 `.template` 后缀** → 全局 rule：`description + alwaysApply: true` + 文件全文
 3. **有 `.template` 后缀** → 模板 rule：`description + globs/alwaysApply` + 生成指引（scan/ask_user/flow/checks/related）+ **模板全文完整拷贝**（frontmatter generation 元数据 + Markdown 正文）
@@ -112,10 +113,10 @@ python3 scripts/generate-rules.py --check    # 只校验不写入（模板与 ru
 - **模板缺失**：若用户要的文档不在清单（如 DATA-ARCHITECTURE），说明该模板已合并或不存在，不臆造；CONSTITUTION 无模板属正常（全局 rule 即宪法全文）。
 - **rule 未触发**：检查 `.omo/rules/<DOC>.md` 的 globs 是否匹配实际文档路径；确认 `.omo/` 目录存在。
 - **文档与模板冲突**：以模板结构为准重建（全量）或按 `reentrant` 增量更新，保留用户定制内容。
-- **模板更新后 rule 未同步**：重跑 `python3 scripts/generate-rules.py` 重新生成。
+- **模板更新后 rule 未同步**：重跑 `node scripts/generate-rules.mjs` 重新生成。
 
 ## 维护
 
-- **模板更新**：修改 `references/templates/` 下文件后，重跑 `scripts/generate-rules.py` 重新生成 rule（rule 是模板的派生物，不手工改）。
+- **模板更新**：修改 `references/templates/` 下文件后，重跑 `scripts/generate-rules.mjs` 重新生成 rule（rule 是模板的派生物，不手工改）。
 - **新增文档类型**：在 `references/templates/<层>/` 加文件（无后缀=全局 rule；.template 后缀=模板），重跑脚本自动生成对应 rule，更新本文件清单表。
-- **脚本维护**：`scripts/generate-rules.py` 中的 `LAYER_ZH`/`ALWAYS_APPLY_LAYERS`/`SPECIAL_TARGETS`/`SKIP_FILES` 是配置项，新增层/特殊路径时调整。
+- **脚本维护**：rule 的 frontmatter（`description`/`alwaysApply`/`globs`）**从模板 frontmatter 直接抄写**（omo parser-yaml 语义），模板缺 `description` 或 `alwaysApply`/`globs` 时脚本报错退出（不兜底）。脚本配置（`LAYER_ZH`/`SPECIAL_TARGETS`/`SKIP_FILES`）在 `scripts/generate-rules.mjs` 顶部，新增层/特殊路径时调整。脚本为 **Node 零依赖**（手写 YAML 解析，复刻 omo parser-yaml.ts，不引入 npm 包）。

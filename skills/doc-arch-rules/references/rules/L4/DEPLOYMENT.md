@@ -1,7 +1,7 @@
 ---
-description: L4 交付层 文档 DEPLOYMENT 的更新规范——修改 docs/L4/DEPLOYMENT.md 时触发，按模板 frontmatter 的 generation 元数据（scan/ask_user/flow/checks/related）生成或更新该文档；模板全文（含 generation 元数据与 Markdown 正文）见本 rule 下方。
+description: L4 交付层 文档 DEPLOYMENT 的更新规范——修改 docs/L4/DEPLOYMENT.md 时触发，按模板 generation 元数据生成或更新该文档
 globs:
-  - "docs/**/DEPLOYMENT.md"
+  - "docs/L4/DEPLOYMENT.md"
 ---
 
 # DEPLOYMENT 文档更新规范（L4 交付层）
@@ -51,6 +51,9 @@ globs:
 title: DEPLOYMENT — 部署与发布
 doc_type: template
 layer: L4
+description: L4 交付层 文档 DEPLOYMENT 的更新规范——修改 docs/L4/DEPLOYMENT.md 时触发，按模板 generation 元数据生成或更新该文档
+globs:
+  - "docs/L4/DEPLOYMENT.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 自主扫描（AI 读源，不问用户）

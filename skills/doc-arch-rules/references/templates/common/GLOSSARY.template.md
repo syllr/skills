@@ -2,6 +2,8 @@
 title: GLOSSARY — 术语表
 doc_type: template
 layer: common
+description: common 贯穿层 文档 GLOSSARY 的全局规范——术语表全局约束，始终加载
+alwaysApply: true
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 自主扫描（AI 读源，不问用户）

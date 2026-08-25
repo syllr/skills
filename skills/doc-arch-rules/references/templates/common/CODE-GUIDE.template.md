@@ -2,6 +2,8 @@
 title: CODE-GUIDE — 代码规范
 doc_type: template
 layer: common
+description: common 贯穿层 文档 CODE-GUIDE 的全局规范——代码指南，全局加载，任何代码改动都需遵守
+alwaysApply: true
 generation:
   scan:
     - 扫描宪法 §2.1 模块设计（D 系列）与 §2.3 领域建模

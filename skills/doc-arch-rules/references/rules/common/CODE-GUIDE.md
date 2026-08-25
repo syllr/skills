@@ -1,5 +1,5 @@
 ---
-description: common 贯穿层 文档 CODE-GUIDE 的更新规范——修改 docs/common/CODE-GUIDE.md 时触发，按模板 frontmatter 的 generation 元数据（scan/ask_user/flow/checks/related）生成或更新该文档；模板全文（含 generation 元数据与 Markdown 正文）见本 rule 下方。
+description: common 贯穿层 文档 CODE-GUIDE 的全局规范——代码指南，全局加载，任何代码改动都需遵守
 alwaysApply: true
 ---
 
@@ -50,6 +50,8 @@ alwaysApply: true
 title: CODE-GUIDE — 代码规范
 doc_type: template
 layer: common
+description: common 贯穿层 文档 CODE-GUIDE 的全局规范——代码指南，全局加载，任何代码改动都需遵守
+alwaysApply: true
 generation:
   scan:
     - 扫描宪法 §2.1 模块设计（D 系列）与 §2.3 领域建模

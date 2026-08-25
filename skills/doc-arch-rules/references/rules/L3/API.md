@@ -1,7 +1,7 @@
 ---
-description: L3 契约层 文档 API 的更新规范——修改 docs/L3/API.md 时触发，按模板 frontmatter 的 generation 元数据（scan/ask_user/flow/checks/related）生成或更新该文档；模板全文（含 generation 元数据与 Markdown 正文）见本 rule 下方。
+description: L3 契约层 文档 API 的更新规范——修改 docs/L3/API.md 时触发，按模板 generation 元数据生成或更新该文档
 globs:
-  - "docs/**/API.md"
+  - "docs/L3/API.md"
 ---
 
 # API 文档更新规范（L3 契约层）
@@ -51,6 +51,9 @@ globs:
 title: API — 接口契约说明书（Inbound）
 doc_type: template
 layer: L3
+description: L3 契约层 文档 API 的更新规范——修改 docs/L3/API.md 时触发，按模板 generation 元数据生成或更新该文档
+globs:
+  - "docs/L3/API.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 自主扫描（AI 读源，不问用户）
@@ -129,13 +132,13 @@ generation:
 
 > 【指引】`openapi.yaml` 按端点与组件拆分多文件，`openapi.yaml` 顶层只承载元信息与 `$ref` 引用。
 
-| 文件 | 作用 |
-| ---- | ---- |
-| `docs/L3/openapi/openapi.yaml` | 主契约（paths 引用拆分文件） |
-| `paths/*.yaml` | 端点定义（按域 user/quota/recharge/tool/work） |
-| `components/schemas/*.yaml` | 类型定义 |
-| `components/responses/*.yaml` | 错误响应 |
-| `components/securitySchemes/*.yaml` | 鉴权方案 |
+| 文件                                | 作用                                           |
+| ----------------------------------- | ---------------------------------------------- |
+| `docs/L3/openapi/openapi.yaml`      | 主契约（paths 引用拆分文件）                   |
+| `paths/*.yaml`                      | 端点定义（按域 user/quota/recharge/tool/work） |
+| `components/schemas/*.yaml`         | 类型定义                                       |
+| `components/responses/*.yaml`       | 错误响应                                       |
+| `components/securitySchemes/*.yaml` | 鉴权方案                                       |
 
 ## 2. 从 yaml 生成代码
 
@@ -228,7 +231,7 @@ npx openapi-typescript docs/L3/openapi/openapi.yaml -o src/api/openapi.d.ts
 **用法**：
 
 ```typescript
-import type { paths, components } from './api/openapi';
+import type { paths, components } from "./api/openapi";
 ```
 
 ### 2.5 Node 服务端 stub（openapi-generator）
@@ -252,24 +255,24 @@ openapi-generator-cli generate \
 
 > 【指引】5 步流水线在 PR 阶段阻断契约漂移；第 4/5 步失败必须修改 PR，不得 `--no-verify` 跳过。
 
-| 步骤 | 工具 | 作用 | 失败动作 |
-| ---- | ---- | ---- | -------- |
-| 1 lint | `npx @redocly/cli lint` | 语法规范 | exit 1 |
-| 2 spectral | `npx @stoplight/spectral-cli lint` | 团队规则 | exit 1 |
-| 3 bundle | `npx @redocly/cli bundle` | 合并多文件 | - |
-| 4 breaking | `oasdiff breaking --fail-on ERR` | 防破坏变更 | exit 1 |
-| 5 codegen drift | `openapi-typescript` + `git diff --exit-code` | 类型同步 | exit 1 |
+| 步骤            | 工具                                          | 作用       | 失败动作 |
+| --------------- | --------------------------------------------- | ---------- | -------- |
+| 1 lint          | `npx @redocly/cli lint`                       | 语法规范   | exit 1   |
+| 2 spectral      | `npx @stoplight/spectral-cli lint`            | 团队规则   | exit 1   |
+| 3 bundle        | `npx @redocly/cli bundle`                     | 合并多文件 | -        |
+| 4 breaking      | `oasdiff breaking --fail-on ERR`              | 防破坏变更 | exit 1   |
+| 5 codegen drift | `openapi-typescript` + `git diff --exit-code` | 类型同步   | exit 1   |
 
 ## 5. 协议支持表
 
 > 【指引】本系统对外接口按协议维度拆分契约文件。默认启用 HTTP/REST（OpenAPI 3.1），其他协议占位待启用时各自维护 IDL/规范文件。
 
-| 协议 | 规范文件 | Schema 形态 | 工具链 | 状态 |
-| ---- | -------- | ----------- | ------ | ---- |
-| HTTP/REST | `docs/L3/openapi/openapi.yaml` | OpenAPI 3.1 | openapi-generator / Redoc / Spectral | 默认，已启用 |
-| gRPC | 待建 `.proto` | protobuf IDL | protoc / buf | 占位 |
-| WebSocket | 待建 | 自定义 | - | 占位 |
-| 私有协议 | 待建 | 自定义 | - | 占位 |
+| 协议      | 规范文件                       | Schema 形态  | 工具链                               | 状态         |
+| --------- | ------------------------------ | ------------ | ------------------------------------ | ------------ |
+| HTTP/REST | `docs/L3/openapi/openapi.yaml` | OpenAPI 3.1  | openapi-generator / Redoc / Spectral | 默认，已启用 |
+| gRPC      | 待建 `.proto`                  | protobuf IDL | protoc / buf                         | 占位         |
+| WebSocket | 待建                           | 自定义       | -                                    | 占位         |
+| 私有协议  | 待建                           | 自定义       | -                                    | 占位         |
 
 > 状态变更：协议启用/下线时同步更新本表；启用协议需独立维护对应规范文件作为该协议契约 SSOT，API.md 只索引不复制。
 ```

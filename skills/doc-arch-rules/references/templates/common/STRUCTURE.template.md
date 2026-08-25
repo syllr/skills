@@ -2,6 +2,8 @@
 title: STRUCTURE — 项目目录结构
 doc_type: template
 layer: common
+description: common 贯穿层 文档 STRUCTURE 的全局规范——目录结构 SSOT，全局加载
+alwaysApply: true
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 自主扫描（AI 读源，不问用户）

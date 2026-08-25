@@ -1,5 +1,5 @@
 ---
-description: common 贯穿层 文档 GLOSSARY 的更新规范——修改 docs/common/GLOSSARY.md 时触发，按模板 frontmatter 的 generation 元数据（scan/ask_user/flow/checks/related）生成或更新该文档；模板全文（含 generation 元数据与 Markdown 正文）见本 rule 下方。
+description: common 贯穿层 文档 GLOSSARY 的全局规范——术语表全局约束，始终加载
 alwaysApply: true
 ---
 
@@ -50,6 +50,8 @@ alwaysApply: true
 title: GLOSSARY — 术语表
 doc_type: template
 layer: common
+description: common 贯穿层 文档 GLOSSARY 的全局规范——术语表全局约束，始终加载
+alwaysApply: true
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   # 自主扫描（AI 读源，不问用户）
