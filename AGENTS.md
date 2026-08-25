@@ -12,6 +12,7 @@
 ```
 skills/
 ├── c4-container-diagram/ # 画 C4 Container Diagram skill：D2 实现 + references/（20 官方文档 + diagram-review 自研 + README 清单）
+├── doc-arch-rules/   # 文档架构规范 + omo rule 生成：references/（13 文档模板 + 14 rule 模板[CONSTITUTION rule 即宪法] + README 清单）
 ├── remote-shell/    # SSH 远程执行 skill（单 SKILL.md）
 ├── score-prompt/    # prompt 质量评分 skill（单 SKILL.md）
 └── skill-creator/   # 创建新 skill 的 skill：SKILL.md + references/（含 guide.md）+ assets/templates/
@@ -27,6 +28,7 @@ README.md            # 面向用户的安装/技能表
 | 查看全部 skill            | `skills/`                                 | 每个子目录一个 skill                                                                       |
 | 新 skill 的模板与格式规范 | `skills/skill-creator/references/`        | 含 guide / path-resolution / skill-md-format / directory-structure / script-language-guide |
 | 官方文档本地化范例        | `skills/c4-container-diagram/references/` | 20 个官方文档页 + 自研 diagram-review.md + README 清单（共 22 个 .md）                     |
+| 文档架构模板 + omo rule 生成 | `skills/doc-arch-rules/references/`    | 13 个文档模板（templates/ 按 L1-L4+common 分层，CONSTITUTION 无模板）+ 14 个 rule 生成模板（rules/，CONSTITUTION rule 即宪法全文）+ README 清单 |
 | 创建新 skill              | `npx skills init skills/<name>`           | 或读 skill-creator 流程                                                                    |
 | 本地测试安装              | `npx skills add . -s '*' -a opencode`     | 见 README.md（⚠️ 用 `-s '*'` 而非 `--all`：`--all` 会忽略 `-a` 装到所有 agent）            |
 
