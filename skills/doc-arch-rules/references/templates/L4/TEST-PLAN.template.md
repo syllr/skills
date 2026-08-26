@@ -10,14 +10,15 @@ generation:
   tools:
     - Markdown 表格（RTM 追溯表 / UT 清单）
     - Gherkin Feature（流程测试，Given-When-Then 中文）
-    - Mermaid flowchart（测试流程，如适用）
+    - Mermaid flowchart（测试流程含分支/并行时补充）
   related: # 关联模板与联动修改（= 改本文档前必读的文档）
-    USER-STORY: 需求场景来源——改测试前必读其故事场景
-    DOMAIN-MODEL: 聚合操作 + 状态机（§3.6），领域变化需联动测试
-    TECHNOLOGY-ARCHITECTURE: UT 规范来源，技术栈变化需同步测试工具
+    PRODUCT: docs/L1/PRODUCT.md——能力分层与状态 SSOT（§2），能力增删需联动用例
+    USER-STORY: docs/L1/USER-STORY.md——需求场景来源，改测试前必读其故事场景
+    DOMAIN-MODEL: docs/L2/DOMAIN-MODEL.md——聚合操作 + 状态机（§3.2 聚合状态机（SSOT）），领域变化需联动测试
+    TECHNOLOGY-ARCHITECTURE: docs/L2/TECHNOLOGY-ARCHITECTURE.md——UT 规范来源，技术栈变化需同步测试工具
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
-    - 测试范围/优先级有争议时 → 问用户
+    - RTM 存在未映射场景或 PRODUCT 与 DOMAIN-MODEL 冲突时 → 问用户
     - 流程测试用例的选择（哪些用户旅程需要自动化）→ 问用户
   flow: # 生成流程
     - 扫描（自主）：读用户故事 + PRODUCT + DOMAIN-MODEL + 技术架构 + 目标文档
@@ -25,7 +26,7 @@ generation:
     - 按模板生成：§1 概述（含 RTM）→ §2 测试策略 → §3 环境 → §4 出入口标准 → §5 用例集（UT 清单/E2E/流程）→ §6 风险 → §7 交付物
   notes: # 生成注意点（怎么生成）
     - 依赖链：用户故事（需求场景）→ PRODUCT/DOMAIN-MODEL（功能/事件）→ TEST-PLAN（测试计划）
-    - 测试分三类：E2E/集成（测 API/契约/状态机，代码方式）、流程（用户旅程级，Gherkin + 浏览器自动化 + 截图视觉）、UT（单元清单，写法看技术架构）
+    - 测试分三类：E2E/集成（测 API/契约/状态机，代码方式）、流程（用户旅程级，Gherkin + 浏览器自动化 + 截图视觉）、UT（单元清单，写法见 TECHNOLOGY-ARCHITECTURE §6）
     - UT 分工：TEST-PLAN §5.1 只列「要测哪些单元」，框架/覆盖率/命名在技术架构（引用不复制）
     - 流程测试可 AI 执行：Gherkin 声明式 → Playwright → toHaveScreenshot() 视觉断言 → Trace 回放
     - 用例编号：E2E-<模块>-<序号> / FLOW-<模块>-<序号> / UT-<模块>-<序号>（用例标识，非内容条目编号）
@@ -42,7 +43,7 @@ generation:
 
 > 本文档是「<项目名>」的 **TEST-PLAN（测试计划模板）**——L4 交付层的测试文档。
 > 【模板使用指引】复制为 `docs/L4/TEST-PLAN.md`，按各章节指引填写。
-> 【原则】① **测试视角**：测试分类/策略/用例/报告——回答"怎么验证质量"；② **依赖链**：用户故事（需求场景）→ PRODUCT/DOMAIN-MODEL（功能/事件）→ TEST-PLAN（测试计划，从用户故事取场景）；③ **测试分三类**：E2E/集成（API 契约）、流程（用户旅程级 + 截图视觉）、UT（单元清单，写法看技术架构）；④ 用例与 PRODUCT/DOMAIN-MODEL/用户故事追溯（引用不复制）无元信息表、无变更记录。
+> 【原则】① **测试视角**：测试分类/策略/用例/报告——回答"怎么验证质量"；② **依赖链**：用户故事（需求场景）→ PRODUCT/DOMAIN-MODEL（功能/事件）→ TEST-PLAN（测试计划，从用户故事取场景）；③ **测试分三类**：E2E/集成（API 契约）、流程（用户旅程级 + 截图视觉）、UT（单元清单，写法看技术架构）；④ 用例与 PRODUCT/DOMAIN-MODEL/用户故事追溯（引用不复制）；⑤ 无元信息表、无变更记录。
 
 ---
 
@@ -85,6 +86,8 @@ generation:
 | E2E/集成   | API 契约/状态机/数据流转         | 代码测试（接口调用）              | 20%          |
 | 流程       | 用户旅程级（打开页面→点击→验证） | Gherkin + 浏览器自动化 + 截图视觉 | 10%          |
 
+> 比例可按技术架构调整，此处为默认值。
+
 ### 2.2 自动化与手动分工
 
 - <哪些自动化（E2E/流程）、哪些手动（探索式/边界）>
@@ -96,8 +99,7 @@ generation:
 | 分类     | 工具                                |
 | -------- | ----------------------------------- |
 | E2E/集成 | <如 pytest/httpx、vitest/supertest> |
-| 流程     | <如 Playwright + Gherkin>           |
-| 视觉断言 | <如 Playwright toHaveScreenshot>    |
+| 流程（含视觉断言） | <如 Playwright + Gherkin（含 toHaveScreenshot）> |
 
 ### 2.4 不测什么
 
@@ -141,16 +143,16 @@ generation:
 
 ### 5.1 单元测试（UT）覆盖清单
 
-> 【指引】只列**要测哪些单元**（模块/函数 + 覆盖目标 + 关联 Action/Event）。**写法（框架/覆盖率门槛/命名）见技术架构**（SSOT，此处引用不复制）。
+> 【指引】只列**要测哪些单元**（模块/函数 + 覆盖目标 + 关联 Action/Event）。**写法见 TECHNOLOGY-ARCHITECTURE §6**（框架/覆盖率门槛/命名在技术架构，SSOT，此处引用不复制）。
 
 | 单元 ID          | 模块   | 函数/类 | 覆盖目标   | 关联 Action/Event |
 | ---------------- | ------ | ------- | ---------- | ----------------- |
 | UT-<模块>-<序号> | <模块> | <函数>  | <覆盖分支> | `<聚合名>`        |
 | （补充）         |        |         |            |                   |
 
-> UT 编写规范见技术架构（框架/覆盖率/命名）。
+> UT 编写规范见 TECHNOLOGY-ARCHITECTURE §6。
 
-### 5.2 E2E / 集成测试用例
+### 5.2 E2E/集成测试用例
 
 > 【指引】API 契约/状态机/数据流转测试。用代码方式测（接口调用 + 断言）。每条：目的/入口/断言。可引用具体测试文件（代码仓库），此处只列清单。
 
@@ -162,6 +164,7 @@ generation:
 ### 5.3 流程测试用例（Gherkin）
 
 > 【指引】**用户旅程级测试**（像真实用户一样打开页面→点击→输入→验证）。用 Gherkin 中文（Given/When/Then）写成**可执行规范**——AI/自动化工具可据此执行（Playwright 浏览器自动化 + `toHaveScreenshot()` 截图视觉断言 + Trace 回放取证）。每条流程用例对应一个用户故事场景（RTM）。
+> **文件落盘**：`tests/features/<模块>.feature`（每个流程用例一个 `.feature` 文件，与用例 ID 对应）。
 
 ```gherkin
 # language: zh-CN

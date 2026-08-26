@@ -6,27 +6,33 @@ description: common 贯穿层 文档 CODE-GUIDE 的更新规范——修改 docs
 globs:
   - "docs/common/CODE-GUIDE.md"
 generation:
+  tools:
+    - Markdown 表格（命名/方法签名/注释/坏味道检查对照表）
+  scan: # 生成前自主扫描（不依赖用户）
+    - 扫描宪法 §2.1（D 系列原则，SSOT）
+    - 扫描现有 CODE-GUIDE（有效信息保留，结构按本模板重建）
+    - 扫描项目 eslint/sonar 配置（实际启用的规则，坏味道检查需与之对齐）
   related:
     CONSTITUTION: 原则 SSOT 在宪法 §2.1
     GLOSSARY: 术语一致
+  ask_user:
+    - 命名风格有争议时（如某类命名规则取舍）→ 问用户（阈值冲突/既有约定冲突时问用户）
   flow:
     - 扫描（自主）：读宪法 + 目标文档
-    - 已有 CODE-GUIDE → 参考旧文档有效信息，但结构按本模板重建
-    - 按模板生成：§1 原则 → §2 命名 → §3 方法签名 → §4 注释 → §5 坏味道检查
+    - 已有 CODE-GUIDE → 参考旧文档有效信息，但结构按本模板重建（无现有 CODE-GUIDE 则跳过第二步）
+    - 按模板生成：§1 原则 → §2 命名 → §3 方法签名 → §4 注释 → §5 坏味道检查（§6 待澄清按需生成，无则删）
   notes:
-    - 横切层：贯穿所有上下文的代码风格，不是某一个上下文的规范
-    - 原则在宪法（Clean Code），手段在本文件
+    - common 横切层：贯穿所有上下文的代码风格，原则在宪法，手段在本文件
   checks:
     - "命名/方法签名/注释均有好 vs 坏对比"
-    - "坏味道检查工具已列（lint/SonarQube）"
-    - "与宪法 §2.1 D 系列一致"
+    - "坏味道检查工具已列且含阈值"
+    - "与宪法 §2.1 D1-D9 逐条对齐"
 ---
 
 # CODE-GUIDE — 代码规范
 
 > 本文档是「<项目名>」的 **CODE-GUIDE（代码规范模板）**——common 横切层的代码风格规范。
 > 【模板使用指引】复制为 `docs/common/CODE-GUIDE.md`，按各章节指引填写。
-> 【原则】① 原则在宪法（Clean Code）；② 手段在本文件（命名/方法签名/注释/lint）；③ 横切所有上下文
 
 ---
 
@@ -51,7 +57,7 @@ generation:
 
 **纪律**：
 
-- 不用 `Manager`/`Processor`/`Info`/`Util` 等万能名
+- 不用 `Manager`/`Processor`/`Info`/`Util` 等万能名，改用职责名：`Manager → Coordinator/Registry`、`Processor → Handler/Service`、`Info → Details/Summary`、`Util → 具体工具类名`
 - 不加 `I` 前缀（Java/TS）
 
 ---
@@ -91,19 +97,20 @@ reserve(cmd: ReserveQuotaCommand): Promise<Reservation>;
 
 ## 5. 坏味道检查（自动化）
 
-> 【指引】通过工具自动检查宪法 D/S/M 的规范。
+> 【指引】通过工具自动检查宪法 D1-D9（宪法§2.1）的规范。
 
-| 工具                       | 检查什么                 | 对应宪法 |
-| -------------------------- | ------------------------ | -------- |
-| **ESLint**（JS/TS）        | 命名、复杂度、参数个数   | D1-D9    |
-| **Checkstyle/PMD**（Java） | 命名、方法长度、圈复杂度 | D1-D9    |
-| **SonarQube**              | 坏味道、重复、耦合       | 全量     |
-| **oasdiff/spectral**       | OpenAPI 破坏性变更       | 契约     |
+| 工具                       | 检查什么（含阈值）                     | 对应宪法 |
+| -------------------------- | -------------------------------------- | -------- |
+| **ESLint**（JS/TS）        | 命名、圈复杂度≤10、参数≤3、方法行≤30   | D1,D5,D6 |
+| **Checkstyle/PMD**（Java） | 命名、方法长度≤30、圈复杂度≤10、参数≤3 | D1-D9    |
+| **SonarQube**              | 重复率、耦合                           | 全量     |
 
-**CI 集成**：PR 阶段跑 lint + SonarQube + 契约测试，红则阻断合并。
+**CI 集成**：PR 阶段跑 lint + SonarQube，红则阻断合并。
 
 ---
 
 ## 6. 待澄清
+
+> 【指引】有待澄清保留 checklist，无则删除本节。
 
 - [ ] <问题>
