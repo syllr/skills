@@ -15,24 +15,31 @@ generation:
     TECHNOLOGY-ARCHITECTURE: 应用清单 SSOT 在 §2.2，技术架构按应用描述需引用
     DOMAIN-MODEL: 领域聚合归属领域，能力增删需同步领域建模
     DEPLOYMENT: 部署单元来自应用划分，应用增减需同步部署
+    DEEP-DIVES: L2 根为索引，deep-dives 为详情，S2 SSOT（声明见正文【与 deep-dives 分工】）
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - 应用划分（几个应用/前端后端边界）有争议时 → 问用户确认
+    - 是否需单列 deep-dives 有争议时 → 问用户
   flow: # 生成流程
     - 扫描（自主）：读能力图 + 领域模型 + 目标文档
     - 已有 APPLICATION-ARCHITECTURE → 参考旧文档有效信息，但结构按本模板重建
     - 按模板生成：§1 系统概述 → §2.1 Context 图 → §2.2 应用划分图 → §3 模块划分（3.1 应用内模块 + 3.2 能力→领域/聚合映射）
+    - 检查是否命中 deep-dives 收敛标准（满足 4 项中 ≥2 项即瘦身，定义见宪法 §3.1：①单节>80行 ②含>1张图 ③含>1张映射表 ④需 File:Line>3），命中则瘦身为索引并链到 deep-dives
   notes: # 生成注意点（怎么生成）
     - §2.2 应用划分：应用是主体（前端/API），存储/外部服务是依赖（不是应用，不并列）
     - §3 模块划分：应用内模块按知识域划分（不按能力）；能力→领域/聚合映射 N:M（能力 SSOT 在 PRODUCT §2.1，领域/聚合 SSOT 在 DOMAIN-MODEL §3，SSOT 引用不复制）
     - 不写实现细节（类/接口/表结构在代码）
     - 图规范见宪法（Context 用 flowchart，应用划分用 D2）
+    - 瘦身约束：本模板生成的文档仅保留 1 张总览图 + 1 张参数/映射总览表作索引，详情链到 deep-dives/，引用不复制；File:Line 链代码；与 SPEC:5 env 双向引用不复制
   checks: # 生成后反向 check
-    - "应用划分图只含应用 + 依赖，无存储/外部服务并列成应用"
-    - "§3.1 应用内模块按知识域划分（非能力 1:1 别名）"
-    - "§3.2 能力→领域/聚合映射引用产品规格+领域模型（不重复能力/聚合清单）"
-    - "Context 图标注为 C4 Context 图"
-    - "应用划分图标注为 C4 容器图"
+    - [ ] 应用划分图只含应用 + 依赖，无存储/外部服务并列成应用
+    - [ ] §3.1 应用内模块按知识域划分（非能力 1:1 别名）
+    - [ ] §3.2 能力→领域/聚合映射引用产品规格+领域模型（不重复能力/聚合清单）
+    - [ ] Context 图标注为 C4 Context 图
+    - [ ] 应用划分图标注为 C4 容器图
+    - [ ] 各节有且仅有一处 详见 deep-dives/... 链路
+    - [ ] 行数 ~300 而非 ~500
+    - [ ] 与 deep-dives/INDEX 可检索一致
 ---
 
 # APPLICATION-ARCHITECTURE — 应用架构
@@ -40,6 +47,7 @@ generation:
 > 本文档是「<项目名>」的 **APPLICATION-ARCHITECTURE（应用架构模板）**——L2 架构层的应用架构文档。
 > 【模板使用指引】复制为 `docs/L2/APPLICATION-ARCHITECTURE.md`，按各章节指引填写。
 > 【原则】① **应用架构视角**（TOGAF）：系统分几个应用、应用依赖什么——回答"系统怎么组织"；② 不写实现细节（类/接口/表结构在代码）；③ 与具体技术栈/框架无关；④ 图用 **Mermaid**（Context）+ **D2 容器图**（应用划分）无元信息表、无变更记录。
+> 【与 deep-dives 分工】本 L2 根文档为**索引**，详情在 `deep-dives/<name>.md`（S2 SSOT）——同一信息只在一处维护，其余详见 `deep-dives/<name>.md#锚点`，引用不复制。
 
 ---
 
@@ -59,15 +67,15 @@ generation:
 
 ```mermaid
 flowchart TB
-    U(["用户<br/>Person · 内容创作者 / 普通用户"])
-    W["微信开放平台<br/>External System<br/>小程序宿主 + 登录鉴权 + 支付"]
-    S["多功能小程序<br/>Software System<br/>视频提取 / 文案提取 / AI 撰写 / 配音 / 去水印"]
-    A["第三方 AI 服务<br/>External System<br/>大模型：生成 / 提取 / 配音"]
+    U(["用户<br/>Person · <用户角色>"])
+    W["<外部系统><br/>External System<br/><外部系统职责：宿主 / 登录鉴权 / 支付>"]
+    S["<系统名><br/>Software System<br/><系统核心职责>"]
+    A["<外部系统 2><br/>External System<br/><外部服务职责：生成 / 提取 / 配音>"]
 
-    U -->|"打开微信、进入小程序"| W
-    W -->|"加载运行小程序"| S
-    S -->|"登录鉴权 / 支付回调"| W
-    S -->|"调用生成 / 提取 / 配音"| A
+    U -->|"<使用方式>"| W
+    W -->|"<加载 / 接入方式>"| S
+    S -->|"<交互 1：登录鉴权 / 支付回调>"| W
+    S -->|"<调用外部服务>"| A
 
     classDef person fill:#08427b,stroke:#052e56,color:#fff
     classDef system fill:#1168bd,stroke:#0b4884,color:#fff
@@ -105,7 +113,7 @@ vars: {
   style.border-radius: 16
 
   前端层: {
-    label: "小程序前端 [应用]"
+    label: "<前端应用> [应用]"
     width: 1000
     style.fill: "#dbeafe"
     style.font-color: "#1e293b"
@@ -113,11 +121,11 @@ vars: {
     style.stroke-width: 2
     style.border-radius: 12
     grid-columns: 1
-    f1: { label: "承载页面与交互"; width: 880; height: 60; class: mod }
+    f1: { label: "<页面模块>"; width: 880; height: 60; class: mod }
   }
 
   后端层: {
-    label: "后端 API [应用]"
+    label: "<后端API> [应用]"
     width: 1000
     style.fill: "#ede9fe"
     style.font-color: "#1e293b"
@@ -126,8 +134,8 @@ vars: {
     style.border-radius: 12
     grid-columns: 2
     grid-gap: 12
-    b1: { label: "接入层 api\n对外接口/鉴权/网关"; width: 482; height: 80; class: mod }
-    b2: { label: "业务层 service+domain\n各上下文应用服务与领域模型"; width: 482; height: 80; class: mod }
+    b1: { label: "<接入层>\n<对外接口/鉴权/网关>"; width: 482; height: 80; class: mod }
+    b2: { label: "<业务层>\n<各上下文应用服务与领域模型>"; width: 482; height: 80; class: mod }
   }
 
   依赖层: {
@@ -150,9 +158,9 @@ vars: {
       style.border-radius: 8
       grid-columns: 3
       grid-gap: 12
-      e1: { label: "对象存储"; width: 144; height: 50; class: mod }
-      e2: { label: "第三方 AI 服务"; width: 144; height: 50; class: mod }
-      e3: { label: "微信平台"; width: 144; height: 50; class: mod }
+      e1: { label: "<对象存储>"; width: 144; height: 50; class: mod }
+      e2: { label: "<第三方服务>"; width: 144; height: 50; class: mod }
+      e3: { label: "<外部平台>"; width: 144; height: 50; class: mod }
     }
     存储依赖: {
       label: "存储依赖"
@@ -162,7 +170,7 @@ vars: {
       style.stroke: "#64748b"
       style.border-radius: 8
       grid-columns: 1
-      db: { label: "数据库"; shape: cylinder; width: 362; height: 60; class: mod }
+      db: { label: "<数据库>"; shape: cylinder; width: 362; height: 60; class: mod }
     }
   }
 }
@@ -180,6 +188,8 @@ classes: {
 ```
 
 > 【填写指引】替换为系统实际应用；**应用是主体（容器 + [应用]），存储/外部服务是依赖（容器 + [依赖]）**。应用内部再展开一层（api 接入层 / service+domain 业务层 / infra+integration 支撑层，分层规范见宪法 §3.3）。
+>
+> 【详见】应用内部展开详情详见 `deep-dives/<name>.md`。
 
 ---
 
@@ -206,6 +216,8 @@ classes: {
 
 > 后端示例（按宪法 §3.3 固定分层）：`api`（接口/网关/鉴权）、`service`（各上下文应用服务：AI任务 / 算力 / 作品）、`domain`（各上下文聚合/实体）、`infra`（数据访问/缓存）、`integration`（外部对接：微信/支付/AI）。
 > 前端示例：工具页模块、作品页模块、用户中心模块。
+>
+> 【详见】模块（如 converter）仅名字级，模块内部细节详见 `deep-dives/<name>.md`。
 
 ### 3.2 能力 → 领域/聚合 映射（能力由哪些领域/聚合承载）
 
