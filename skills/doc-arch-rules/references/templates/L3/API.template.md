@@ -24,13 +24,13 @@ generation:
     - 项目技术栈未探测到（项目尚无代码/配置文件）→ 列出语言选项（Go / Java-Spring / Python-FastAPI / Node-Express / TypeScript）让用户选，生成说明书只写选定语言的 CLI
     - 项目技术栈已探测到 → 不问，说明书只写该语言的 CLI（不写其他语言）
   flow: # 生成流程
-    - 扫描（自主）：读 openapi.yaml + paths/* + components/* + DOMAIN-MODEL §3.1-§3.5（13 Actions）+ §4 + APPLICATION-ARCHITECTURE §3.2 能力→聚合 bipartite + PRODUCT §2.1 + 目标文档
+    - 扫描（自主）：读 openapi.yaml + paths/* + components/* + DOMAIN-MODEL §3.1-§3.5（全部 Actions，见 DOMAIN-MODEL §3）+ §4 + APPLICATION-ARCHITECTURE §3.2 能力→聚合 bipartite + PRODUCT §2.1 + 目标文档
     - 确定目标语言：探测项目技术栈（package.json/go.mod/pom.xml 等）→ 探测到则用该语言；探测不到则按 ask_user 让用户选（Go/Java-Spring/Python-FastAPI/Node-Express/TypeScript）
     - 定位文档模式：openapi.yaml 是契约 SSOT；API.md 是说明书（不重复接口清单/字段），承载「如何使用 yaml 生成目标语言代码 + 维护规范 + CI 防漂移」
     - openapi.yaml 已存在 → 说明书按本模板生成；API.md 不出现接口清单表/Action 映射表/能力映射表/字段表，字段一律以引用指向 openapi.yaml
     - openapi.yaml 不存在 → 先按 DOMAIN-MODEL + APPLICATION-ARCHITECTURE 推导接口清单与字段契约，落 openapi.yaml（机器可读 SSOT），再生成 API.md 说明书
     - 已有 API → 参考旧文档有效信息，但结构按本模板重建为说明书模式；删除原接口清单/接口详情章节；迁移为契约文件结构 + 目标语言生成命令 + CI pipeline + 协议支持表
-    - 二部图校验：每个接口向上追溯到 APPLICATION-ARCHITECTURE §3.2 中至少一个能力；该能力承载的聚合至少含一个 §3 Action 与接口语义对应（双向对齐）
+    - 二部图校验：a) 每个接口向上追溯到 APPLICATION-ARCHITECTURE §3.2 中至少一个能力；b) 该能力承载的聚合至少含一个 §3 Action 与接口语义对应（双向对齐）
     - 按模板生成：§1 契约文件结构 → §2 目标语言生成命令（仅写探测/选定语言的 CLI，不写其他语言）→ §3 维护规范 → §4 CI 防漂移 pipeline → §5 协议支持表
   notes: # 生成注意点（怎么生成）
     - OpenAPI 3.1 为契约 SSOT，API.md 是「openapi.yaml 使用说明书」不是「接口清单文档」
@@ -45,7 +45,7 @@ generation:
   checks: # 生成后反向 check
     - "协议支持表含默认 HTTP/REST（指向 openapi.yaml）+ 其他协议占位（gRPC/WebSocket/私有协议）"
     - "接口契约与 openapi.yaml 一致（无字段漂移：API.md 引用与 openapi.yaml 节点逐项对得上）"
-    - "接口覆盖 DOMAIN-MODEL §3.1-§3.5 全部 13 项 Action（1 Action 可对应 1+ 接口，无遗漏）"
+    - "接口覆盖 DOMAIN-MODEL §3.1-§3.5 全部 Actions（见 DOMAIN-MODEL §3；1 Action 可对应 1+ 接口，无遗漏）"
     - "接口与 APPLICATION-ARCHITECTURE §3.2 能力→聚合 bipartite 对齐（每个接口可追溯到至少一个能力，能力承载的聚合含对应 Action）"
     - "接口来源能力在 PRODUCT §2.1 能力清单存在且功能状态已确认"
     - "字段级契约不与 DOMAIN-MODEL §3/§4 业务语义冲突"
@@ -60,30 +60,28 @@ generation:
 
 > 本文档是「<项目名>」的 **API（接口契约说明书）**——L3 契约层的 `openapi.yaml` 使用说明书。
 > 【模板使用指引】复制为 `docs/L3/API.md`，按各章节指引填写。
-> 【原则】① **说明书定位**：本文档不重复接口字段/校验/错误码——这些一律查 `docs/L3/openapi/openapi.yaml`（OpenAPI 3.1 SSOT）；② **本文档用途**：说明如何从 yaml 生成各语言 API 代码、如何维护契约、如何 CI 防漂移；③ 图规范见宪法无元信息表、无变更记录。
+> 【原则】**说明书定位**：本文档不重复接口字段/校验/错误码——生成/维护规则详见 `generation.notes`，字段一律查 `docs/L3/openapi/openapi.yaml`（OpenAPI 3.1 SSOT）。
 > 【契约 SSOT】默认协议 HTTP/REST，机器可读契约 SSOT 落在 `docs/L3/openapi/openapi.yaml`（OpenAPI 3.1）；接口字段/校验/错误码一律查 yaml，本文档只承载生成命令 + 维护规范 + CI 防线 + 协议支持表。
 
 ## 1. 契约文件结构
 
 > 【指引】`openapi.yaml` 按端点与组件拆分多文件，`openapi.yaml` 顶层只承载元信息与 `$ref` 引用。
 
-| 文件                                | 作用                                           |
-| ----------------------------------- | ---------------------------------------------- |
-| `docs/L3/openapi/openapi.yaml`      | 主契约（paths 引用拆分文件）                   |
-| `paths/*.yaml`                      | 端点定义（按域 user/quota/recharge/tool/work） |
-| `components/schemas/*.yaml`         | 类型定义                                       |
-| `components/responses/*.yaml`       | 错误响应                                       |
-| `components/securitySchemes/*.yaml` | 鉴权方案                                       |
+| 文件                                | 作用                                    |
+| ----------------------------------- | --------------------------------------- |
+| `docs/L3/openapi/openapi.yaml`      | 主契约（paths 引用拆分文件）            |
+| `paths/<domain>.yaml`               | 端点定义（按聚合域拆分，如 user/order） |
+| `components/schemas/*.yaml`         | 类型定义                                |
+| `components/responses/*.yaml`       | 错误响应                                |
+| `components/securitySchemes/*.yaml` | 鉴权方案                                |
 
 ## 2. 从 yaml 生成代码
 
 > 【指引】**目标语言确定**：探测项目技术栈（package.json/go.mod/pom.xml 等）→ 探测到用该语言；探测不到则问用户选（Go/Java-Spring/Python-FastAPI/Node-Express/TypeScript）。**生成时只保留选定语言小节，删除其他语言小节**（实例文档只写最终语言的 CLI）。命令以仓库根为 cwd；命令调整（路径/输出文件名/包名）后须同步更新本节。
 
-### 2.x <目标语言>（按探测/选定结果，保留对应小节，删除其余）
-
 > 【指引】以下为各语言 CLI 参考（模板持有，生成时选用一种后删除其他）：
 
-### Go（推荐 oapi-codegen）
+### 2.1 Go（推荐 oapi-codegen）
 
 **安装**：
 
@@ -112,7 +110,7 @@ generate:
 
 **产物**：ServerInterface + StrictHandler + Go structs + 客户端。
 
-### Java/Spring（openapi-generator）
+### 2.2 Java-Spring（openapi-generator）
 
 **安装**：
 
@@ -137,6 +135,7 @@ openapi-generator-cli generate \
 
 ```bash
 pip install datamodel-code-generator
+pip install fastapi-code-generator
 ```
 
 **模型生成**：
@@ -147,6 +146,12 @@ datamodel-codegen \
   --input-file-type openapi \
   --output-model-type pydantic_v2.BaseModel \
   -o models.py
+```
+
+**骨架生成**：
+
+```bash
+fastapi-codegen --input docs/L3/openapi/openapi.yaml --output ./app
 ```
 
 ### 2.4 TypeScript（推荐 openapi-typescript 类型 + openapi-fetch）
@@ -171,6 +176,8 @@ import type { paths, components } from "./api/openapi";
 
 ### 2.5 Node 服务端 stub（openapi-generator）
 
+**安装**：同 §2.2（openapi-generator-cli）或 npm 全局。
+
 ```bash
 openapi-generator-cli generate \
   -i docs/L3/openapi/openapi.yaml \
@@ -190,23 +197,23 @@ openapi-generator-cli generate \
 
 > 【指引】5 步流水线在 PR 阶段阻断契约漂移；第 4/5 步失败必须修改 PR，不得 `--no-verify` 跳过。
 
-| 步骤            | 工具                                          | 作用       | 失败动作 |
-| --------------- | --------------------------------------------- | ---------- | -------- |
-| 1 lint          | `npx @redocly/cli lint`                       | 语法规范   | exit 1   |
-| 2 spectral      | `npx @stoplight/spectral-cli lint`            | 团队规则   | exit 1   |
-| 3 bundle        | `npx @redocly/cli bundle`                     | 合并多文件 | -        |
-| 4 breaking      | `oasdiff breaking --fail-on ERR`              | 防破坏变更 | exit 1   |
-| 5 codegen drift | `openapi-typescript` + `git diff --exit-code` | 类型同步   | exit 1   |
+| 步骤            | 工具                                                                                                                    | 作用       | 失败动作  |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | --------- |
+| 1 lint          | `npx @redocly/cli lint`                                                                                                 | 语法规范   | exit 1    |
+| 2 spectral      | `npx @stoplight/spectral-cli lint`                                                                                      | 团队规则   | exit 1    |
+| 3 bundle        | `npx @redocly/cli bundle`                                                                                               | 合并多文件 | warn-only |
+| 4 breaking      | `oasdiff breaking --fail-on ERR`                                                                                        | 防破坏变更 | exit 1    |
+| 5 codegen drift | `npx openapi-typescript docs/L3/openapi/openapi.yaml -o src/api/openapi.d.ts && git diff --exit-code -- gen/api.gen.go` | 类型同步   | exit 1    |
+
+> 注：第 5 步 `-o src/api/openapi.d.ts` 与 `-- gen/api.gen.go` 均须与 §2 各语言 `cfg.yaml` 的 `output` 一致；第 3 步 bundle 允许失败（仅打包）。
 
 ## 5. 协议支持表
 
 > 【指引】本系统对外接口按协议维度拆分契约文件。默认启用 HTTP/REST（OpenAPI 3.1），其他协议占位待启用时各自维护 IDL/规范文件。
 
-| 协议      | 规范文件                       | Schema 形态  | 工具链                               | 状态         |
-| --------- | ------------------------------ | ------------ | ------------------------------------ | ------------ |
-| HTTP/REST | `docs/L3/openapi/openapi.yaml` | OpenAPI 3.1  | openapi-generator / Redoc / Spectral | 默认，已启用 |
-| gRPC      | 待建 `.proto`                  | protobuf IDL | protoc / buf                         | 占位         |
-| WebSocket | 待建                           | 自定义       | -                                    | 占位         |
-| 私有协议  | 待建                           | 自定义       | -                                    | 占位         |
+| 协议      | 规范文件                       | Schema 形态     | 工具链                               | 状态         |
+| --------- | ------------------------------ | --------------- | ------------------------------------ | ------------ |
+| HTTP/REST | `docs/L3/openapi/openapi.yaml` | OpenAPI 3.1     | openapi-generator / Redoc / Spectral | 默认，已启用 |
+| 其他协议  | 各自 `.proto`/IDL，启用时增行  | protobuf/自定义 | protoc / buf / 自定义                | 占位         |
 
 > 状态变更：协议启用/下线时同步更新本表；启用协议需独立维护对应规范文件作为该协议契约 SSOT，API.md 只索引不复制。
