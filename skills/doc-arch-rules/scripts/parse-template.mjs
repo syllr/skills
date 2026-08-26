@@ -40,6 +40,7 @@ const LAYER_ZH = {
   constitution: "宪法",
   L1: "L1 产品层",
   L2: "L2 架构层",
+  "L2/deep-dives": "L2 架构层",
   L3: "L3 契约层",
   L4: "L4 交付层",
   common: "common 贯穿层",
@@ -400,8 +401,11 @@ function extractTarget(docName, layer, body) {
 function parseTemplateFile(tmplPath) {
   const fullText = fs.readFileSync(tmplPath, "utf-8");
   const filename = path.basename(tmplPath);
-  const isRoot = path.dirname(tmplPath) === TEMPLATES_DIR;
-  const layer = isRoot ? "constitution" : path.basename(path.dirname(tmplPath));
+  const relDir = path.relative(TEMPLATES_DIR, path.dirname(tmplPath));
+  const isRoot = relDir === "" || relDir === ".";
+  // 嵌套目录（如 L2/deep-dives）取首段为层，非根时 file 保留完整相对路径
+  const layer = isRoot ? "constitution" : relDir.split(path.sep)[0];
+  const fileRel = isRoot ? filename : path.join(relDir, filename);
   const isTemplate = filename.endsWith(".template.md");
   const docName = isTemplate
     ? filename.slice(0, -".template.md".length)
@@ -417,14 +421,16 @@ function parseTemplateFile(tmplPath) {
   validateOmo(omo, layer, docName);
 
   const generation = fmText !== null ? parseGeneration(fmText) : {};
+  // 优先用 globs 推导 target（支持 deep-dives/*.md 通配），仅 README 特例需判断是否在根
+  const targetFromGlobs = omo.globs.length > 0 ? omo.globs[0] : null;
   const target = isTemplate
-    ? extractTarget(docName, layer, fullText)
+    ? targetFromGlobs || extractTarget(docName, layer, fullText)
     : docName === "CONSTITUTION"
       ? "CONSTITUTION.md"
       : `docs/${layer}/${docName}.md`;
 
   return {
-    file: isRoot ? filename : `${layer}/${filename}`,
+    file: fileRel,
     layer,
     doc: docName,
     layerZh: LAYER_ZH[layer] ?? layer,
