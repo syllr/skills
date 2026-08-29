@@ -1,5 +1,5 @@
 ---
-name: gitee-review-comments
+name: gitee-comments
 description: >
   管理 Gitee 仓库的提交（commit）评审评论：程序化记录评审意见、列出未解决待办清单、回复评论线程、
   解决/删除评论。用于评审文档或代码时在 Gitee 服务端留痕，AI 与团队成员共用一套机制。
