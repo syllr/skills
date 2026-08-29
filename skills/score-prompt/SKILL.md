@@ -5,7 +5,7 @@ license: MIT
 metadata:
   author: openspec-omo-bridge
   version: "1.0"
-  supportedAgents: ["opencode"]
+  supportedAgents: '["opencode"]'
 ---
 
 # 1. 输入解析
