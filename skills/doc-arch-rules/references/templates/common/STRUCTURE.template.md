@@ -103,26 +103,26 @@ generation:
 ├── backend/                     # 后端代码（按 DDD 整理，固定 6 个二级目录）
 │   ├── controller/              # api 接入层（承接 API 契约，由 api.md schema 生成）
 │   │   └── user/                # 按领域/模块分组（三级）
-│   │       └── UserController.java
+│   │       └── <X>Controller.java
 │   ├── service/                 # 领域层（Domain，业务核心）
 │   │   └── user/                # 按领域/模块分组（三级）
-│   │       └── UserService.java
+│   │       └── <X>Service.java
 │   ├── infra/                   # 基础支撑层（基础设施、通用支撑）
 │   │   └── db/                  # 按支撑类型分组（三级）
-│   │       └── DbConfig.java
+│   │       └── <Z>Config.java
 │   ├── integration/             # 接入层（对接外部系统/三方）
 │   │   └── payment/             # 按外部系统分组（三级）
-│   │       └── PaymentClient.java
+│   │       └── <Y>Client.java
 │   ├── reference/               # 引用参考（只读，修改前必须询问用户）
 │   │   └── legacy/              # 按参考来源分组（三级）
 │   │       └── LegacyNote.md
 │   └── test/                    # 测试（各类测试）
 │       └── service/             # 按被测对象分组（三级）
-│           └── UserServiceTest.java
+│           └── <X>ServiceTest.java
 ├── frontend/                    # 前端代码（结构见 APPLICATION-ARCHITECTURE）
 │   └── pages/                   # 按页面/路由分组（三级）
 │       └── user/
-│           └── UserPage.tsx
+│           └── <X>Page.tsx
 └── reference/                   # 根级引用参考（只读，修改前必须询问用户）
     └── <参考项目文档/代码>
 ```
@@ -139,8 +139,8 @@ generation:
 | ---------------------- | -------------------------------- | ------------------------------------------------------------------ | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
 | `backend/controller/`  | api 接入层，承接 API 契约        | 接收请求、参数校验、调用 service、组装响应；不承载业务逻辑         | Controller/Handler/路由                    | 由 L3/API.md 的 openapi.yaml schema 生成对应 api 代码，与契约对齐                                           |
 | `backend/service/`     | 领域层（Domain），业务核心       | 承载业务规则、领域逻辑、事务边界；被 controller 调用               | Service/领域服务/用例                      | 业务核心，不依赖具体框架细节                                                                                |
-| `backend/infra/`       | 基础支撑层（基础设施、通用支撑） | 数据库/缓存/消息等基础设施、通用工具、配置                         | DbConfig/Redis/通用工具类                  | 支撑性代码，不承载业务                                                                                      |
-| `backend/integration/` | 接入层（对接外部系统/三方）      | 对接外部系统/三方服务的客户端与适配                                | PaymentClient/第三方 SDK 封装              | 与 infra 区分：infra 是内部基础设施，integration 是对外集成                                                 |
+| `backend/infra/`       | 基础支撑层（基础设施、通用支撑） | 数据库/缓存/消息等基础设施、通用工具、配置                         | <Z>Config/Redis/通用工具类                 | 支撑性代码，不承载业务                                                                                      |
+| `backend/integration/` | 接入层（对接外部系统/三方）      | 对接外部系统/三方服务的客户端与适配                                | <Y>Client/第三方 SDK 封装                  | 与 infra 区分：infra 是内部基础设施，integration 是对外集成                                                 |
 | `backend/reference/`   | 引用参考（只读）                 | 参考别的项目文档/代码，供查阅                                      | 参考文档/示例代码                          | **只读**，修改任何内容前必须询问用户，不能直接改                                                            |
 | `backend/test/`        | 测试                             | 各类测试（单元/集成/E2E）                                          | Test/测试夹具                              | 与被测对象对应                                                                                              |
 | `frontend/`            | 前端代码                         | 前端页面/组件/状态                                                 | pages/components/store                     | 与后端分离，结构见 APPLICATION-ARCHITECTURE                                                                 |
@@ -155,7 +155,7 @@ generation:
 
 > 【指引】说明目录组织的规则（为什么这么分层/分组），帮助理解结构、指导新增文件放哪。
 
-- **① 最多三级原则**：目录最多三级（`backend/controller/user/UserController.java` 即三级）；Java 包结构可折算为三层，本质仍是三层——超过三级时通过包名/命名折算，不无限加深。
+- **① 最多三级原则**：目录最多三级（`backend/controller/user/<X>Controller.java` 即三级）；Java 包结构可折算为三层，本质仍是三层——超过三级时通过包名/命名折算，不无限加深。
 - **② DDD 与前后端分离**：按 DDD 整理目录（领域/模块分组）；前端/后端分开（`frontend/` 与 `backend/`），各自内部结构见 APPLICATION-ARCHITECTURE。
 - **③ 语言/框架柔性适配**：项目结构不一定完全遵守上述分层，不同语言/框架有各自规范（如 Java 的 `controller/service/repository`、Go 的 `handler/service/store`），但大体应体现这些分层概念——目录命名可随语言/框架调整，职责对应不变。
 - **④ 文件归属判断与漂移处理**：放文件前先对照 §2 定义判断是否匹配——匹配则放入对应目录；不匹配（漂移）按三问清单判定：**1. 是否仅命名差异 → 扩定义（更新 §2）**；**2. 是否新增职责边界 → 新建目录（与用户确认后新建）**；**3. 不确定 → 问用户**。判定后更新本文档记录。

@@ -49,11 +49,11 @@ generation:
 
 > 【指引】接口/类/方法命名体现职责，来自领域语言。
 
-| 类型   | 规则                   | 反例                          | 正例                                     |
-| ------ | ---------------------- | ----------------------------- | ---------------------------------------- |
-| 接口   | 角色/能力名            | `IUserService`、`UserManager` | `QuotaChecker`、`UserAuthenticator`      |
-| 实现类 | 加 `Impl` 或技术栈前缀 | `UserService`                 | `MysqlUserRepository`、`UserServiceImpl` |
-| 方法   | 业务动词短语           | `update()`、`set()`           | `reserveQuota()`、`deductFor()`          |
+| 类型   | 规则                   | 反例                                        | 正例                                                   |
+| ------ | ---------------------- | ------------------------------------------- | ------------------------------------------------------ |
+| 接口   | 角色/能力名            | `I<实体_用户>Service`、`<实体_用户>Manager` | `<资源_额度>Checker`、`<实体_用户>Authenticator`       |
+| 实现类 | 加 `Impl` 或技术栈前缀 | `<实体_用户>Service`                        | `Mysql<实体_用户>Repository`、`<实体_用户>ServiceImpl` |
+| 方法   | 业务动词短语           | `update()`、`set()`                         | `reserve<资源_额度>()`、`deductFor()`                  |
 
 **纪律**：
 
@@ -66,12 +66,12 @@ generation:
 
 > 【指引】方法签名设计，体现单一职责。
 
-| 规则             | 说明                      | 例子                                     |
-| ---------------- | ------------------------- | ---------------------------------------- |
-| 参数 ≤ 3         | 超过用参数对象（Command） | `reserveQuota(cmd: ReserveQuotaCommand)` |
-| 无 boolean flag  | 拆成多个方法              | `processUrgent()` vs `processStandard()` |
-| 类型化 ID        | 不用裸 string             | `UserId` vs `string`                     |
-| 返回 Result/异常 | 不返回 boolean            | `Reservation` vs `boolean`               |
+| 规则             | 说明                      | 例子                                                 |
+| ---------------- | ------------------------- | ---------------------------------------------------- |
+| 参数 ≤ 3         | 超过用参数对象（Command） | `reserve<资源_额度>(cmd: Reserve<资源_额度>Command)` |
+| 无 boolean flag  | 拆成多个方法              | `processUrgent()` vs `processStandard()`             |
+| 类型化 ID        | 不用裸 string             | `<实体_用户>Id` vs `string`                          |
+| 返回 Result/异常 | 不返回 boolean            | `<凭证_预留>` vs `boolean`                           |
 
 ---
 
@@ -87,10 +87,10 @@ generation:
 
 ```typescript
 /**
- * 预扣配额。返回的 Reservation 可被 consume 或 refund。
- * @throws QuotaExceededException 当余额不足
+ * 预扣<资源_额度>。返回的 <凭证_预留> 可被 consume 或 refund。
+ * @throws <资源_额度>ExceededException 当余额不足
  */
-reserve(cmd: ReserveQuotaCommand): Promise<Reservation>;
+reserve(cmd: Reserve<资源_额度>Command): Promise<<凭证_预留>>;
 ```
 
 ---

@@ -9,7 +9,7 @@ globs:
 generation:
   tools:
     - Markdown 表格（契约文件结构/CI pipeline/协议支持表）
-    - 代码块（各语言安装/生成命令 + cfg.yaml 示例）
+    - 代码块（各语言安装/生成命令 + cfg.yaml 的 package 占位）
     - 不使用接口清单表/Action 映射表/能力映射表/字段表
   related: # 关联模板与联动修改
     DOMAIN-MODEL: 业务语义在它 §3.1-§3.5（聚合操作，接口来源）与 §4（领域事件，下游消费依据），新 Action 需联动出接口
@@ -67,123 +67,54 @@ generation:
 
 > 【指引】`openapi.yaml` 按端点与组件拆分多文件，`openapi.yaml` 顶层只承载元信息与 `$ref` 引用。
 
-| 文件                                | 作用                                    |
-| ----------------------------------- | --------------------------------------- |
-| `docs/L3/openapi/openapi.yaml`      | 主契约（paths 引用拆分文件）            |
-| `paths/<domain>.yaml`               | 端点定义（按聚合域拆分，如 user/order） |
-| `components/schemas/*.yaml`         | 类型定义                                |
-| `components/responses/*.yaml`       | 错误响应                                |
-| `components/securitySchemes/*.yaml` | 鉴权方案                                |
+| 文件                                | 作用                                  |
+| ----------------------------------- | ------------------------------------- |
+| `docs/L3/openapi/openapi.yaml`      | 主契约（paths 引用拆分文件）          |
+| `paths/<domain>.yaml`               | 端点定义（按聚合域拆分，如 <domain>） |
+| `components/schemas/*.yaml`         | 类型定义                              |
+| `components/responses/*.yaml`       | 错误响应                              |
+| `components/securitySchemes/*.yaml` | 鉴权方案                              |
 
 ## 2. 从 yaml 生成代码
 
 > 【指引】**目标语言确定**：探测项目技术栈（package.json/go.mod/pom.xml 等）→ 探测到用该语言；探测不到则问用户选（Go/Java-Spring/Python-FastAPI/Node-Express/TypeScript）。**生成时只保留选定语言小节，删除其他语言小节**（实例文档只写最终语言的 CLI）。命令以仓库根为 cwd；命令调整（路径/输出文件名/包名）后须同步更新本节。
 
-> 【指引】以下为各语言 CLI 参考（模板持有，生成时选用一种后删除其他）：
+> 【指引】以下为各语言 CLI 参考（模板持有，生成时选用一种后删除其他）。每语言仅列：安装 / 生成 / 产物 三行 + 官网链接；`cfg.yaml` 仅保留 `package: <包名>` 占位，其余 generate 项按需在实例中补充。
 
 ### 2.1 Go（推荐 oapi-codegen）
 
-**安装**：
-
-```bash
-go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
-```
-
-**生成**：
-
-```bash
-oapi-codegen --config cfg.yaml docs/L3/openapi/openapi.yaml
-```
-
-`cfg.yaml` 示例（package / output / generate: models, chi-server, strict-server, client, embedded-spec）：
-
-```yaml
-package: api
-output: gen/api.gen.go
-generate:
-  models: true
-  chi-server: true
-  strict-server: true
-  client: true
-  embedded-spec: true
-```
-
-**产物**：ServerInterface + StrictHandler + Go structs + 客户端。
+- **安装**：`go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest`
+- **生成**：`oapi-codegen --config cfg.yaml docs/L3/openapi/openapi.yaml`（`cfg.yaml` 仅需 `package: <包名>`）
+- **产物**：ServerInterface + StrictHandler + Go structs + 客户端
+- **官网**：https://github.com/oapi-codegen/oapi-codegen
 
 ### 2.2 Java-Spring（openapi-generator）
 
-**安装**：
-
-```bash
-npm install -g @openapitools/openapi-generator-cli
-```
-
-**生成**：
-
-```bash
-openapi-generator-cli generate \
-  -i docs/L3/openapi/openapi.yaml \
-  -g spring \
-  --additional-properties=interfaceOnly=true,library=spring-boot,useSpringBoot3=true,useTags=true,skipDefaultInterface=true
-```
-
-**产物**：`@RestController` 接口 + DTO；业务层 `implements` 接口，编译期对齐契约。
+- **安装**：`npm install -g @openapitools/openapi-generator-cli`
+- **生成**：`openapi-generator-cli generate -i docs/L3/openapi/openapi.yaml -g spring --additional-properties=interfaceOnly=true,library=spring-boot,useSpringBoot3=true,useTags=true,skipDefaultInterface=true`
+- **产物**：`@RestController` 接口 + DTO；业务层 `implements` 接口，编译期对齐契约
+- **官网**：https://github.com/OpenAPITools/openapi-generator
 
 ### 2.3 Python（datamodel-code-generator 模型 / fastapi-code-generator 骨架）
 
-**安装**：
-
-```bash
-pip install datamodel-code-generator
-pip install fastapi-code-generator
-```
-
-**模型生成**：
-
-```bash
-datamodel-codegen \
-  --input docs/L3/openapi/openapi.yaml \
-  --input-file-type openapi \
-  --output-model-type pydantic_v2.BaseModel \
-  -o models.py
-```
-
-**骨架生成**：
-
-```bash
-fastapi-codegen --input docs/L3/openapi/openapi.yaml --output ./app
-```
+- **安装**：`pip install datamodel-code-generator fastapi-code-generator`
+- **生成**：`datamodel-codegen --input docs/L3/openapi/openapi.yaml --input-file-type openapi --output-model-type pydantic_v2.BaseModel -o models.py`；骨架 `fastapi-codegen --input docs/L3/openapi/openapi.yaml --output ./app`
+- **产物**：Pydantic v2 模型 + FastAPI 骨架
+- **官网**：https://github.com/koxudaxi/datamodel-code-generator
 
 ### 2.4 TypeScript（推荐 openapi-typescript 类型 + openapi-fetch）
 
-**安装**：
-
-```bash
-npm i -D openapi-typescript
-```
-
-**类型生成**：
-
-```bash
-npx openapi-typescript docs/L3/openapi/openapi.yaml -o src/api/openapi.d.ts
-```
-
-**用法**：
-
-```typescript
-import type { paths, components } from "./api/openapi";
-```
+- **安装**：`npm i -D openapi-typescript`
+- **生成**：`npx openapi-typescript docs/L3/openapi/openapi.yaml -o src/api/openapi.d.ts`
+- **产物**：`paths`/`components` 类型（`import type { paths, components } from "./api/openapi"`）
+- **官网**：https://github.com/openapi-ts/openapi-typescript
 
 ### 2.5 Node 服务端 stub（openapi-generator）
 
-**安装**：同 §2.2（openapi-generator-cli）或 npm 全局。
-
-```bash
-openapi-generator-cli generate \
-  -i docs/L3/openapi/openapi.yaml \
-  -g nodejs-express-server \
-  -o ./out
-```
+- **安装**：同 §2.2（openapi-generator-cli）
+- **生成**：`openapi-generator-cli generate -i docs/L3/openapi/openapi.yaml -g nodejs-express-server -o ./out`
+- **产物**：Express 服务端 stub
+- **官网**：https://github.com/OpenAPITools/openapi-generator
 
 ## 3. 契约维护规范
 

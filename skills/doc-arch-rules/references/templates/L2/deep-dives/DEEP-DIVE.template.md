@@ -13,12 +13,12 @@ generation:
     - Mermaid flowchart（按需，图规范见宪法）
   related: # 关联模板与联动修改
     TECHNOLOGY-ARCHITECTURE: 参数总览 SSOT 在它 §3.1（存储选型明细），详情链到本 Deep Dive §2
-    DOMAIN-MODEL: R8/R9 规则 SSOT 链到本 Deep Dive §6
+    DOMAIN-MODEL: 规则 SSOT（R<n>）链到本 Deep Dive §6
     APPLICATION-ARCHITECTURE: 应用模块索引链到本 Deep Dive
     SPEC: SPEC:5 env vars 双向引用不复制
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
-    - 推理流水线细节有争议 / 精度分层依据不足时问用户
+    - <主题>细节有争议 / 精度分层依据不足时问用户（如 <模型_xx> 精度选型）
   flow: # 生成流程
     - 扫描（自主）：目标 deep-dive 关联代码 File:Line + SPEC env + 三总览
     - 按 7 章骨架生成
@@ -56,24 +56,24 @@ generation:
 
 ### 1.1 阶段时序图
 
-> 【指引】本图为**时序图**（Mermaid sequenceDiagram）。示例为推理流水线 7 阶段：ws_endpoint → audio_pipeline → model_runner → stream_converter → result_emitter。参与者用真实模块名，消息标注真实接口/事件名；其他主题按实际阶段数调整。
+> 【指引】本图为**时序图**（Mermaid sequenceDiagram）。示例为推理流水线 7 阶段：<模块_接入> → <模块_预处理> → <模块_推理> → <模块_转化> → <模块_输出>。参与者用真实模块名，消息标注真实接口/事件名；其他主题按实际阶段数调整。
 
 ```mermaid
 sequenceDiagram
-    participant C as ws_endpoint（WebSocket 入口）
-    participant A as audio_pipeline（音频流水线）
-    participant M as model_runner（模型推理）
-    participant S as stream_converter（流转换）
-    participant R as result_emitter（结果回传）
+    participant C as <模块_接入>（接入入口）
+    participant A as <模块_预处理>（预处理流水线）
+    participant M as <模块_推理>（模型推理）
+    participant S as <模块_转化>（流转换）
+    participant R as <模块_输出>（结果回传）
 
-    C->>A: 阶段 1 音频帧（ws 消息）
+    C->>A: 阶段 1 输入帧（消息）
     A->>A: 阶段 2 预处理（重采样/分帧）
     A->>M: 阶段 3 特征提取
-    M->>M: 阶段 4 模型推理（whisper/CFM）
-    M->>S: 阶段 5 流转换（SOLA 重叠）
-    S->>S: 阶段 6 后处理（GTCRN/LUFS/EQ）
+    M->>M: 阶段 4 模型推理（<模型_ASR>/<模型_转化>）
+    M->>S: 阶段 5 流转换（重叠拼接）
+    S->>S: 阶段 6 后处理（<模型_增强>/响度/EQ）
     S->>R: 阶段 7 结果封装与回传
-    R->>C: ws 消息
+    R->>C: 消息
 ```
 
 ### 1.2 总图（D2 容器图）
@@ -81,10 +81,7 @@ sequenceDiagram
 > 【指引】本图为 **C4 容器图**（D2，绘制方式见宪法 §3.2）。画主题涉及的容器/模块分层与依赖，只画与本主题相关的部分；每层子容器显式算 width（等宽居中，[详见 c4-container-diagram §6.13]）。
 
 ```d2
-# 图标准元信息
-# 图名: <主题> 总览（容器图）
-# 视角: 架构详情（deep-dive）
-# 说明: 只画与本主题相关的容器/模块
+# 图名: <主题> 总览（容器图）· 视角: 架构详情（deep-dive）· 只画与本主题相关的容器/模块
 
 vars: {
   d2-config: {
@@ -111,7 +108,7 @@ vars: {
     style.stroke-width: 2
     style.border-radius: 12
     grid-columns: 1
-    e1: { label: "ws_endpoint\nWebSocket 入口"; width: 880; height: 70; class: mod }
+    e1: { label: "<模块_接入>\n接入入口"; width: 880; height: 70; class: mod }
   }
 
   处理层: {
@@ -124,8 +121,8 @@ vars: {
     style.border-radius: 12
     grid-columns: 2
     grid-gap: 12
-    p1: { label: "audio_pipeline\n音频流水线"; width: 494; height: 80; class: mod }
-    p2: { label: "stream_converter\n流转换"; width: 494; height: 80; class: mod }
+    p1: { label: "<模块_预处理>\n预处理流水线"; width: 494; height: 80; class: mod }
+    p2: { label: "<模块_转化>\n流转换"; width: 494; height: 80; class: mod }
   }
 
   推理层: {
@@ -137,7 +134,7 @@ vars: {
     style.stroke-width: 2
     style.border-radius: 12
     grid-columns: 1
-    m1: { label: "model_runner\n模型推理（whisper/CFM/BigVGAN）"; width: 880; height: 70; class: mod }
+    m1: { label: "<模块_推理>\n模型推理（<模型_ASR>/<模型_转化>/<模型_合成>）"; width: 880; height: 70; class: mod }
   }
 }
 
@@ -156,24 +153,17 @@ classes: {
 
 ## 2. 永久参数
 
-> 【指引】本节维护主题的**永久参数表**（长期存在、跨版本稳定的参数）。**每个参数必须带 `File:Line`**（`参见 <文件>:<行号>`），保证可跳转验证。参数总览 SSOT 在 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1（存储选型明细）（引用不复制），本表只列本主题专属参数。示例为推理流水线 13 项，其他主题按实际替换。
+> 【指引】本节维护主题的**永久参数表**（长期存在、跨版本稳定的参数）。**每个参数必须带 `File:Line`**（`参见 <文件>:<行号>`），保证可跳转验证。参数总览 SSOT 在 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1（存储选型明细）（引用不复制），本表只列本主题专属参数。示例为推理流水线 6 项代表性参数（采样率/分帧/并发/队列/重叠/限流），其他主题按实际替换。
 
-| Parameter         | Value | Purpose                        | File:Line                               |
-| ----------------- | ----- | ------------------------------ | --------------------------------------- |
-| `sample_rate`     | 16000 | 音频采样率（whisper 输入要求） | 参见 `src/audio_pipeline/config.py:12`  |
-| `chunk_ms`        | 320   | 分帧时长（ws 消息粒度）        | 参见 `src/ws_endpoint/handler.py:45`    |
-| `max_conn`        | 100   | 最大并发连接                   | 参见 `src/ws_endpoint/server.py:78`     |
-| `queue_size`      | 64    | 音频帧队列容量                 | 参见 `src/audio_pipeline/queue.py:23`   |
-| `overlap_ms`      | 40    | SOLA 重叠时长                  | 参见 `src/stream_converter/sola.py:56`  |
-| `denoise_on`      | true  | GTCRN 降噪开关                 | 参见 `src/stream_converter/post.py:89`  |
-| `lufs_target`     | -14   | LUFS 响度目标                  | 参见 `src/stream_converter/post.py:102` |
-| `eq_profile`      | vocal | EQ 预设                        | 参见 `src/stream_converter/post.py:115` |
-| `kv_batch`        | 3     | KV cache 批大小 B              | 参见 `src/model_runner/kv_cache.py:31`  |
-| `kv_len`          | 8192  | KV cache 序列长度 L            | 参见 `src/model_runner/kv_cache.py:32`  |
-| `rate_limit_ws`   | 30    | ws 消息限流（次/秒）           | 参见 `src/ws_endpoint/guard.py:67`      |
-| `rate_limit_conn` | 5     | 连接建立限流（次/分）          | 参见 `src/ws_endpoint/guard.py:71`      |
-| `idle_timeout_s`  | 300   | 空闲连接超时                   | 参见 `src/ws_endpoint/server.py:90`     |
-| `TEMP_example`    | —     | 占位                           | TODO: 待 File:Line（新模块未落地）      |
+| Parameter       | Value | Purpose                       | File:Line                             |
+| --------------- | ----- | ----------------------------- | ------------------------------------- |
+| `sample_rate`   | 16000 | 采样率（<模型_ASR> 输入要求） | 参见 `src/<模块_预处理>/config.py:12` |
+| `chunk_ms`      | 320   | 分帧时长（消息粒度）          | 参见 `src/<模块_接入>/handler.py:45`  |
+| `max_conn`      | 100   | 最大并发连接                  | 参见 `src/<模块_接入>/server.py:78`   |
+| `queue_size`    | 64    | 帧队列容量                    | 参见 `src/<模块_预处理>/queue.py:23`  |
+| `overlap_ms`    | 40    | 流转换重叠时长                | 参见 `src/<模块_转化>/sola.py:56`     |
+| `rate_limit_ws` | 30    | 消息限流（次/秒）             | 参见 `src/<模块_接入>/guard.py:67`    |
+| `...`           | —     | 按主题补充                    | 参见 `src/<模块_xx>/...`              |
 
 > 【指引】**File:Line 必须真实可跳转**（生成后校验）；参数值变化只改本表 + 代码，不复制到总览。env vars 相关参数**双向引用 SPEC §5**（SPEC 定义 env var 名，本表引用不复制）。**无对应代码时写 `TODO: 待 File:Line（原因）` 并问用户，不虚构行号**。
 
@@ -181,90 +171,73 @@ classes: {
 
 ## 3. 精度分层
 
-> 【指引】本节维护主题的**精度/性能分层**（同一能力多档精度取舍）。每档标注：模型、精度、用途、File:Line。**精度是强约束**（如 whisper fp16 / CFM fp32 不可随意降档），依据不足时问用户。示例为推理流水线 4 档，其他主题按实际替换。
+> 【指引】本节维护主题的**精度/性能分层**（同一能力多档精度取舍）。每档标注：模型、精度、用途、File:Line。**精度是强约束**（如 <模型_ASR> fp16 / <模型_转化> fp32 不可随意降档），依据不足时问用户。示例为推理流水线 2 档代表性精度（弱约束可降档 + 强约束不可降档），其他主题按实际替换。
 
-| 档位 | 模型/模块 | 精度 | 用途                             | File:Line                              |
-| ---- | --------- | ---- | -------------------------------- | -------------------------------------- |
-| P1   | whisper   | fp16 | 语音识别（速度优先）             | 参见 `src/model_runner/whisper.py:40`  |
-| P2   | CFM       | fp32 | 音色转换（质量强约束，不可降档） | 参见 `src/model_runner/cfm.py:55`      |
-| P3   | BigVGAN   | fp16 | 波形生成（速度/质量折中）        | 参见 `src/model_runner/bigvgan.py:70`  |
-| P4   | GTCRN     | fp32 | 降噪（稳定性强约束）             | 参见 `src/stream_converter/post.py:88` |
+| 档位 | 模型/模块   | 精度 | 用途                           | File:Line                            |
+| ---- | ----------- | ---- | ------------------------------ | ------------------------------------ |
+| P1   | <模型_ASR>  | fp16 | 识别（速度优先，弱约束可降档） | 参见 `src/<模块_推理>/asr.py:40`     |
+| P2   | <模型_转化> | fp32 | 转换（质量强约束，不可降档）   | 参见 `src/<模块_推理>/convert.py:55` |
 
-> 【指引】**强约束档位（fp32）标注"不可降档"**；弱约束档位标注降档条件。精度分层依据（基准/实验）不足时问用户。
+> （其余档位按主题补充，如 <模型_合成>/<模型_增强> 等）
+
+> 【指引】**强约束档位（fp32）标注"不可降档"**，弱约束档位标注降档条件；精度分层依据（基准/实验）不足时问用户。
 
 ---
 
 ## 4. 流水线步骤
 
-> 【指引】本节按处理顺序描述主题的**流水线步骤**。每步一个小节（**可插拔**：主题没有的步骤直接删小节），标注：输入/输出、关键算法、File:Line。示例为推理流水线步骤（SOLA 重叠 / GTCRN 降噪 / LUFS / EQ 等）。
+> 【指引】本节按处理顺序描述主题的**流水线步骤**。每步一个小节（**可插拔**：主题没有的步骤直接删小节），标注：输入/输出、关键算法、File:Line。示例为推理流水线步骤（重叠拼接 / <模型_增强> 降噪 / 响度归一 / EQ 等）。
 
-### 4.1 预处理
+### 4.1 预处理与特征提取
 
-> 【指引】输入音频的标准化（重采样/去噪/分帧）。
+> 【指引】输入数据标准化（重采样/去噪/分帧）→ 模型输入特征。
 
-- 输入：原始音频帧（ws 消息）
-- 处理：重采样至 `sample_rate`、分帧 `chunk_ms`
-- 输出：标准化帧队列
-- File:Line：参见 `src/audio_pipeline/preprocess.py:20`
-
-### 4.2 特征提取
-
-> 【指引】帧 → 模型输入特征。
-
-- 输入：标准化帧
-- 处理：<特征提取算法>
+- 输入：原始输入帧（消息）
+- 处理：重采样至 `sample_rate`、分帧 `chunk_ms` → <特征提取算法>
 - 输出：特征张量
-- File:Line：参见 `src/audio_pipeline/features.py:35`
+- File:Line：参见 `src/<模块_预处理>/preprocess.py:20`、`src/<模块_预处理>/features.py:35`
 
-### 4.3 模型推理
+### 4.2 模型推理
 
 > 【指引】特征 → 推理结果（精度分层见 §3）。
 
 - 输入：特征张量
-- 处理：whisper（ASR）→ CFM（音色）→ BigVGAN（波形）
-- 输出：中间音频
-- File:Line：参见 `src/model_runner/infer.py:60`
+- 处理：<模型_ASR>（识别）→ <模型_转化>（转换）→ <模型_合成>（合成）
+- 输出：中间结果
+- File:Line：参见 `src/<模块_推理>/infer.py:60`
 
-### 4.4 流转换（SOLA 重叠）
+### 4.3 流转换与后处理
 
-> 【指引】流式输出的重叠拼接（SOLA：Synchronous Overlap-Add），消除拼接断点。
+> 【指引】流式输出的重叠拼接 + 输出前质量后处理，各处理**可插拔**（按需取舍）。
 
-- 输入：中间音频块
-- 处理：SOLA 重叠（`overlap_ms`）
-- 输出：连续音频流
-- File:Line：参见 `src/stream_converter/sola.py:56`
+- 重叠拼接：`overlap_ms`，参见 `src/<模块_转化>/sola.py:56`
+- <模型_增强> 降噪：`denoise_on` 开关，参见 `src/<模块_转化>/post.py:88`
+- 响度归一：`lufs_target`，参见 `src/<模块_转化>/post.py:102`
+- EQ 预设：`eq_profile`，参见 `src/<模块_转化>/post.py:115`
 
-### 4.5 后处理（GTCRN 降噪 / LUFS / EQ）
+### 4.4 结果封装与回传
 
-> 【指引】输出前的质量后处理，各处理**可插拔**（按需取舍）。
+> 【指引】结果封装为消息并回传。
 
-- GTCRN 降噪：`denoise_on` 开关，参见 `src/stream_converter/post.py:88`
-- LUFS 响度归一：`lufs_target`，参见 `src/stream_converter/post.py:102`
-- EQ 预设：`eq_profile`，参见 `src/stream_converter/post.py:115`
-
-### 4.6 结果封装与回传
-
-> 【指引】结果封装为 ws 消息并回传。
-
-- 输入：后处理音频流
+- 输入：后处理结果流
 - 处理：封装（格式/元数据）
-- 输出：ws 消息
-- File:Line：参见 `src/result_emitter/emit.py:30`
+- 输出：消息
+- File:Line：参见 `src/<模块_输出>/emit.py:30`
 
 ---
 
 ## 5. 缓存
 
-> 【指引】本节维护主题的**缓存设计**。示例为推理流水线两级缓存：**一级 `_get_ref_cache`（引用缓存）+ 二级 KV cache（模型上下文缓存）**。缓存命中率/失效策略是重点；两级 vs 单级按需取舍，不强行套用。
+> 【指引】本节维护主题的**缓存设计**。示例为推理流水线两级缓存：**一级引用缓存 + 二级 KV cache（模型上下文缓存）**。缓存命中率/失效策略是重点；两级 vs 单级按需取舍，不强行套用。
 
-### 5.1 一级缓存：引用缓存（_get_ref_cache）
+### 5.1 一级缓存：引用缓存
 
 > 【指引】进程内引用缓存，避免重复解析/加载。
 
-- 结构：`_get_ref_cache`（dict，key = 引用 ID）
+- 结构：引用缓存（dict，key = 引用 ID）
 - 失效：<失效策略，如 LRU / TTL>
 - 启动预热：<预热逻辑，如启动时预加载常用引用>
-- File:Line：参见 `src/audio_pipeline/ref_cache.py:15`
+- File:Line：参见 `src/<模块_预处理>/ref_cache.py:15`
 
 ### 5.2 二级缓存：KV cache（模型上下文）
 
@@ -272,47 +245,42 @@ classes: {
 
 - 参数：`kv_batch = 3`（批大小 B）、`kv_len = 8192`（序列长度 L）
 - 失效：<失效策略，如连接断开即清>
-- File:Line：参见 `src/model_runner/kv_cache.py:31`
+- File:Line：参见 `src/<模块_推理>/kv_cache.py:31`
 
-> 【指引】缓存参数（B/L）带 File:Line；缓存设计取舍（两级 vs 单级）按需，不强行套用。
+> 【指引】缓存参数（B/L）带 File:Line；两级 vs 单级按需取舍，不强行套用。
 
 ---
 
 ## 6. 限流与并发控制
 
-> 【指引】本节维护主题的**限流/并发控制**，与 [DOMAIN-MODEL](../DOMAIN-MODEL.template.md) 规则（R8/R9 等）对应——**规则 SSOT 在 DOMAIN-MODEL，本节只写实现细节**（引用不复制）。示例为推理流水线双层限流。
+> 【指引】本节维护主题的**限流/并发控制**，与 [DOMAIN-MODEL](../DOMAIN-MODEL.template.md) 规则（R<n> 等）对应——**规则 SSOT 在 DOMAIN-MODEL，本节只写实现细节**（引用不复制）。示例为推理流水线双层限流。
 
-| 机制           | 行为                                  | 对应规则           | File:Line                           |
-| -------------- | ------------------------------------- | ------------------ | ----------------------------------- |
-| 4017 踢旧      | 新连接挤掉最旧连接                    | R8（连接数上限）   | 参见 `src/ws_endpoint/guard.py:40`  |
-| 4016 拒绝      | 超限新连接直接拒绝                    | R8（连接数上限）   | 参见 `src/ws_endpoint/guard.py:52`  |
-| TOCTOU 防护    | 检查-使用间竞态防护（原子操作）       | R9（并发安全）     | 参见 `src/ws_endpoint/guard.py:60`  |
-| identity guard | 连接身份校验（防伪造）                | R9（并发安全）     | 参见 `src/ws_endpoint/guard.py:75`  |
-| ws_ping        | 心跳保活（空闲超时 `idle_timeout_s`） | R8（连接生命周期） | 参见 `src/ws_endpoint/server.py:90` |
+| 机制        | 行为                                  | 对应规则             | File:Line                           |
+| ----------- | ------------------------------------- | -------------------- | ----------------------------------- |
+| 踢旧        | 新连接挤掉最旧连接                    | R<n>（连接数上限）   | 参见 `src/<模块_接入>/guard.py:40`  |
+| 拒绝        | 超限新连接直接拒绝                    | R<n>（连接数上限）   | 参见 `src/<模块_接入>/guard.py:52`  |
+| TOCTOU 防护 | 检查-使用间竞态防护（原子操作）       | R<n>（并发安全）     | 参见 `src/<模块_接入>/guard.py:60`  |
+| 身份校验    | 连接身份校验（防伪造）                | R<n>（并发安全）     | 参见 `src/<模块_接入>/guard.py:75`  |
+| 心跳保活    | 心跳保活（空闲超时 `idle_timeout_s`） | R<n>（连接生命周期） | 参见 `src/<模块_接入>/server.py:90` |
 
-> 【指引】**规则 ID（R8/R9）与 DOMAIN-MODEL 双向引用**：本节标注对应规则，DOMAIN-MODEL 规则条目链回本节；规则定义不复制（SSOT 在 DOMAIN-MODEL）。
+> 【指引】**规则 ID（R<n>）与 DOMAIN-MODEL 双向引用**：本节标注对应规则，DOMAIN-MODEL 规则条目链回本节；规则定义不复制（SSOT 在 DOMAIN-MODEL）。
 
 ---
 
 ## 7. 坑位
 
-> 【指引】本节维护主题的**已知坑位**（易错点/反模式/踩坑记录），每条标注：现象、原因、规避、File:Line。示例为推理流水线 11 坑位，其他主题按实际替换。坑位表是**活文档**：踩坑即补，不追求一次写全。
+> 【指引】本节维护主题的**已知坑位**（易错点/反模式/踩坑记录），每条标注：现象、原因、规避、File:Line。示例为推理流水线 6 坑位，其他主题按实际替换。坑位表是**活文档**：踩坑即补，不追求一次写全。
 
-| #   | 坑位          | 现象           | 原因                       | 规避                       | File:Line                                  |
-| --- | ------------- | -------------- | -------------------------- | -------------------------- | ------------------------------------------ |
-| 1   | 采样率不匹配  | 识别结果乱码   | 输入采样率 ≠ `sample_rate` | 预处理强制重采样           | 参见 `src/audio_pipeline/preprocess.py:20` |
-| 2   | 分帧边界断裂  | 音频卡顿       | 帧边界无重叠               | SOLA 重叠拼接              | 参见 `src/stream_converter/sola.py:56`     |
-| 3   | fp16 溢出     | 音色失真       | CFM 用 fp16                | CFM 强制 fp32（§3 P2）     | 参见 `src/model_runner/cfm.py:55`          |
-| 4   | KV cache 超长 | 显存 OOM       | L 超 `kv_len`              | 截断/滑动窗口              | 参见 `src/model_runner/kv_cache.py:32`     |
-| 5   | 连接数超限    | 新连接被拒     | 未限流                     | 4016 拒绝 + 4017 踢旧      | 参见 `src/ws_endpoint/guard.py:52`         |
-| 6   | TOCTOU 竞态   | 连接数统计错乱 | 检查-使用非原子            | 原子操作防护               | 参见 `src/ws_endpoint/guard.py:60`         |
-| 7   | 身份伪造      | 越权访问       | 未校验连接身份             | identity guard             | 参见 `src/ws_endpoint/guard.py:75`         |
-| 8   | 空闲连接泄漏  | 连接数缓慢上涨 | 无心跳/超时                | ws_ping + `idle_timeout_s` | 参见 `src/ws_endpoint/server.py:90`        |
-| 9   | 响度过高      | 听感刺耳       | 未做 LUFS 归一             | `lufs_target` 归一         | 参见 `src/stream_converter/post.py:102`    |
-| 10  | 降噪误伤人声  | 人声变闷       | GTCRN 参数过强             | 调 `denoise_on`/参数       | 参见 `src/stream_converter/post.py:88`     |
-| 11  | 缓存未预热    | 首请求慢       | 引用缓存空                 | 启动预热                   | 参见 `src/audio_pipeline/ref_cache.py:15`  |
+| #   | 坑位          | 现象           | 原因                       | 规避                           | File:Line                                 |
+| --- | ------------- | -------------- | -------------------------- | ------------------------------ | ----------------------------------------- |
+| 1   | 采样率不匹配  | 识别结果乱码   | 输入采样率 ≠ `sample_rate` | 预处理强制重采样               | 参见 `src/<模块_预处理>/preprocess.py:20` |
+| 2   | 分帧边界断裂  | 音频卡顿       | 帧边界无重叠               | 重叠拼接                       | 参见 `src/<模块_转化>/sola.py:56`         |
+| 3   | fp16 溢出     | 音色失真       | <模型_转化> 用 fp16        | <模型_转化> 强制 fp32（§3 P2） | 参见 `src/<模块_推理>/convert.py:55`      |
+| 4   | KV cache 超长 | 显存 OOM       | L 超 `kv_len`              | 截断/滑动窗口                  | 参见 `src/<模块_推理>/kv_cache.py:32`     |
+| 5   | 连接数超限    | 新连接被拒     | 未限流                     | 拒绝 + 踢旧                    | 参见 `src/<模块_接入>/guard.py:52`        |
+| 6   | TOCTOU 竞态   | 连接数统计错乱 | 检查-使用非原子            | 原子操作防护                   | 参见 `src/<模块_接入>/guard.py:60`        |
 
-> 【指引】每条 File:Line 指向坑位所在代码；坑位与 §2 参数/§3 精度/§6 限流交叉引用（如坑位 3 链 §3 P2）。
+> （其余坑位按主题补充；坑位与 §2 参数/§3 精度/§6 限流交叉引用，如坑位 3 链 §3 P2）
 
 ---
 
@@ -320,6 +288,6 @@ classes: {
 
 - [INDEX](INDEX.template.md)：deep-dives 索引（本主题在索引 §2 列表登记）
 - [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)：参数总览 SSOT（§3.1 存储选型明细），详情在本 Deep Dive
-- [DOMAIN-MODEL](../DOMAIN-MODEL.template.md)：R8/R9 等规则 SSOT，实现细节在本 Deep Dive
+- [DOMAIN-MODEL](../DOMAIN-MODEL.template.md)：规则 SSOT（R<n>），实现细节在本 Deep Dive
 - [APPLICATION-ARCHITECTURE](../APPLICATION-ARCHITECTURE.template.md)：应用模块索引，模块详情在本 Deep Dive
 - SPEC §5：env vars 定义（双向引用不复制）

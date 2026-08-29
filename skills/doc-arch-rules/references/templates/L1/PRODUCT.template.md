@@ -26,22 +26,25 @@ generation:
     - 按模板生成：§1 定位 → §2.1 产品能力架构图（分层 × 状态线型 × 优先级热力）→ §2.2 能力清单表（含聚合操作索引信息）
   notes: # 生成注意点（怎么生成）
     - §2.1 产品能力架构图是「当前能力清单」唯一源（SSOT），只列存在的功能——不存在的功能不列入（决策过程归 ADR，历史归 TECHDEBT，不写"已砍掉/无 Action"）
-    - §2.1 产品能力架构图三通道：布局=分层、线型=状态、颜色=优先级热力（编码规则见 §2 三通道表）；§2.2 能力清单表与之同源（SSOT 规则见 CONSTITUTION §3.2）
+    - 编码规则唯一源 = 本 rule 画图规范（全局惯例引用 CONSTITUTION §3.2 第 7 条，不复制）：线型 2 档（实线=已实现 / 虚线=规划中含 POC）、颜色 3 档（红核心 #dc2626 / 橙支撑 #f59e0b / 灰边缘 #d1d5db）、class 叠加（[module; planned; core] 等）、入口层白底无热力；产出文档零编码规则
+    - 布局/支撑/尺寸配色见正文 §2.1 实例，规范见 c4-container-diagram skill
+    - 图内不画图例容器；d2 元信息注释保留 3 行自描述（见 notes#2），不往正文加编码说明
     - 优先级定义：核心=用户主路径高频价值，支撑=主路径依赖，边缘=探索/低频；未标注则推断并标待确认
-    - 能力图节点 → 聚合操作(Action) 为 1:N 映射：一个能力节点可对应多个聚合操作（如「提取文字」→ 文本提取Action + 图片提取Action）；改名必须联动。一能力一行，「对应 Action」单元格内用顿号并列全部 Action，不拆多行，保证节点数==行数
+    - 能力图节点 → 聚合操作(Action) 为 1:N 映射：一个能力节点可对应多个聚合操作（如「<能力_提取类>」→ 文本提取Action + 图片提取Action）；改名必须联动。一能力一行，「对应 Action」单元格内用顿号并列全部 Action，不拆多行，保证节点数==行数
     - 能力清单表（§2.2）同时承载聚合操作索引（对应 Action 列 + Action 状态列 + 说明列），不另设 Action 索引节
     - 横向能力 vs 垂直能力（关键区分）：
-      - 垂直能力（业务功能）：沿业务线展开的能力，有明确业务价值与业务语义——如「视频号提取」「文字配音」。在架构图业务能力层按能力域组织，对应 `docs/L2/DOMAIN-MODEL.md` §3 中该能力的 Action 列表
-      - 横向能力（原子能力）：被多个垂直能力共用的底层能力，无独立业务语义——如「算力体系」「用户体系」「微信支付」「AI能力」「文件上传」。在架构图归入共享业务服务层，对应 `docs/L2/DOMAIN-MODEL.md` §3 中该原子能力的 Action 列表
+      - 垂直能力（业务功能）：沿业务线展开的能力，有明确业务价值与业务语义——如「<能力_提取类>」「<能力_转化类>」。在架构图业务能力层按能力域组织，对应 `docs/L2/DOMAIN-MODEL.md` §3 中该能力的 Action 列表
+      - 横向能力（原子能力）：被多个垂直能力共用的底层能力，无独立业务语义——如「<能力_账户类>」「<能力_用户类>」「<外部_支付>」「<能力_生成类>」「<能力_存储类>」。在架构图归入共享业务服务层，对应 `docs/L2/DOMAIN-MODEL.md` §3 中该原子能力的 Action 列表
       - 判断标准：被 ≥2 个垂直能力共用 → 横向能力；单一业务功能 → 垂直能力
-    - 业务解耦原则：垂直能力之间不互相依赖（各自独立）；垂直能力只依赖横向能力（共享业务服务层）；横向能力之间尽量解耦（如算力体系不依赖支付细节）
+    - 业务解耦原则：垂直能力之间不互相依赖（各自独立）；垂直能力只依赖横向能力（共享业务服务层）；横向能力之间尽量解耦（如<能力_账户类>不依赖支付细节)
+    - 模板正文 = 产出目标结构，生成规范见本 rule 画图规范
   checks: # 生成后反向 check · 中文注释
     - "§2.1 架构图能力节点数 == §2.2 能力清单表行数（一一对应，一能力一行；一能力多 Action 时在'对应 Action'单元格内用顿号并列，不拆多行；只列存在的功能，垂直+横向 全覆盖）"
-    - "§2.1 架构图节点线型表达状态、颜色表达优先级（编码规则见 §2 三通道表），图例在 D2 图底部独立图例容器中说明；与 §2.2 能力清单表一致"
+    - "图内不画图例容器；编码规则见 notes#2"
     - "能力图节点名与 DOMAIN-MODEL §3 中对应 Action 名一致（1:N，能力聚合多个 Action 时逐一核对）"
     - "与 USER-STORY 角色/故事、DOMAIN-MODEL Action 一一对应，无遗漏"
     - "§2.2 能力清单表含全部横向能力行，Action 状态列与 DOMAIN-MODEL §3 实际定义一致（已定义标已实现）"
-    - "§2 顶部三通道表唯一表达编码规则（线型 2 档 + 颜色 3 档），文档内无重复的图例表、无『虚线+角标』残留"
+    - "产出文档负面清单：grep -nE '固定元信息|固定画法|三通道' docs/L1/PRODUCT.md 无命中；d2 块内无图例节点"
     - "入口层节点未设热力色（页面/触点无优先级维度，白底实线）"
     - "横向能力识别正确：被 ≥2 个垂直能力共用 → 归共享业务服务层；单一业务 → 归能力域（垂直）"
     - "垂直能力之间无互相依赖（解耦）；垂直只依赖横向能力"
@@ -53,6 +56,7 @@ generation:
 > 本文档是「<项目名>」的**产品规格全景（PRODUCT 模板）**——L1 产品层的产品级聚合文档。
 > 【模板使用指引】复制为 `docs/L1/PRODUCT.md`，按各章节指引填写。
 > 【原则】① 章节全保留，用不到留空；② `> 【指引】` 是给填写者的说明，填写后删除；③ **PRODUCT = L1 产品级聚合文档**：聚合 `docs/L2/DOMAIN-MODEL.md` §3 聚合操作（Action）/§4 领域事件（Event），表达能力分层、依赖关系、实现状态与优先级（SSOT）；④ 与具体技术栈/框架无关；⑤ **产品能力图（§2：产品能力架构图 2.1 + 能力清单表 2.2）是功能分层、状态与优先级的唯一事实源**（D2 文本图，直接写入 Markdown），其他文档引用不复制。
+> 【占位符声明】本文示例均用 <占位> 表示，实际填具体业务名；占位覆盖提取/转化/生成/交易/账户等场景类型。
 
 ---
 
@@ -66,50 +70,11 @@ generation:
 
 ## 2. 产品能力图
 
-> 【固定规范】本节是**产品能力图的标准定义**——用**一张产品能力架构图 + 一份能力清单表**表达产品能力。**产品能力架构图是功能分层、状态与优先级的唯一事实源（SSOT）**，其他文档引用不复制。
->
-> **一张图承载三个维度（视觉通道分工）**：
->
-> | 视觉通道 | 表达       | 规则                                                                   |
-> | -------- | ---------- | ---------------------------------------------------------------------- |
-> | **布局** | 能力分层   | 入口层 / 业务能力层 / 共享业务服务层——能力在哪层、谁支撑谁             |
-> | **线型** | 实现状态   | 实线 = 已实现；虚线 = 规划中（含 POC/开发中/中间态，细节见能力清单表） |
-> | **颜色** | 优先级热力 | 红 = 核心（优先投资）；橙 = 支撑（按需投入）；灰 = 边缘（探索/低优先） |
->
-> **产品不同只体现在**：功能节点内容、能力域数量、状态与优先级标注。
->
-> **入口层节点不参与编码**：页面/触点不是能力，无状态与优先级维度（白底实线，仅示意触点存在）。
+> 【指引】本节是产品能力的纯内容表达（给人看的），编码规则见 PRODUCT rule 画图规范（给 AI 看的唯一载体）。产品能力架构图是功能分层与优先级的唯一事实源（SSOT），其他文档引用不复制。**产品层不画技术底座**（数据存储/消息/网络/缓存归 TECHNOLOGY-ARCHITECTURE）。
 
 ### 2.1 产品能力架构图（唯一图）
 
-> 【指引】本图同时表达三个维度：**布局**（能力在哪层、谁支撑谁）+ **线型**（实现状态）+ **颜色**（优先级热力）。**产品层不画技术底座**（数据存储/消息/网络/缓存归 TECHNOLOGY-ARCHITECTURE）。
->
-> **固定元信息（5 项）**：
->
-> - 标准名称：产品能力架构图（Product Capability Architecture Map）
-> - 视角：逻辑视图（能力分层 × 状态 × 优先级）
-> - 用途：产品功能全貌 + 分层支撑 + 实现状态 + 投资优先级
-> - 反映的问题：产品有哪些能力、能力在哪层、做到哪一步、先做哪个
-> - 边界：不是 IA（不按页面分）、不是时间轴 roadmap（无日期承诺）、不是部署图
->
-> **能力分层（三层 + 右侧竖条）**：
->
-> | 层  | 名称           | 业界对应       | 职责               | 能力类型                                              | 图上位置     |
-> | --- | -------------- | -------------- | ------------------ | ----------------------------------------------------- | ------------ |
-> | ①   | 入口层         | 前台（Front）  | 用户触点、导航分发 | 页面/触点                                             | 左侧顶部     |
-> | ②   | 业务能力层     | 中台（Middle） | 通用能力复用       | **垂直能力**（业务功能，对应 DOMAIN-MODEL §3 Action） | 左侧主体     |
-> | ③   | 共享业务服务层 | 中台下沉服务   | 横向能力复用       | **横向能力**（原子能力，对应 DOMAIN-MODEL §3 Action） | **右侧竖条** |
->
-> **固定画法**：
->
-> - 形式：**C4 容器图**（绘制方式见 CONSTITUTION §3.2 图规范）
-> - **布局**：左侧 = 主体（入口层 + 业务能力层，纵向堆叠）；右侧 = **共享业务服务层竖条**（横向能力，横跨主体，表达"支撑所有垂直能力"）
-> - **层间关系 = 支撑，不是依赖**：上层由下层**支撑**（共享业务服务层支撑业务能力层，业务能力层支撑入口层）——产品能力分层表达"归类/支撑"，不表达"调用/依赖"（依赖是架构视角的概念）
-> - **状态用线型表达**（编码规则见 §2 三通道表；SSOT 规则见 CONSTITUTION §3.2）
-> - **优先级用颜色表达（热力）**：**红 = 核心（优先投资）；橙 = 支撑（按需投入）；灰 = 边缘（探索/低优先）**——节点 `fill` 设热力色，与线型（状态）叠加
-> - **入口层不设热力色**：页面/触点不是能力，无优先级维度（保持白色底）
->
-> **使用方式**：下方 d2 图为**完整实例**（AI 智能工具箱已填充，含分层、状态线型与优先级热力）。其他产品复制本模板时：① 把左侧功能节点替换为产品功能；② 业务能力层的能力域按产品增减；③ 右侧共享业务服务层放横向能力（被 ≥2 个垂直能力共用者，如用户体系/算力体系/AI能力/微信支付）；④ **按状态设节点线型**（已实现实线 / 规划中虚线，含 POC/开发中/中间态）；⑤ **按优先级设节点热力色**（核心红 / 支撑橙 / 边缘灰），`class: [module; planned; core]` 等叠加；⑥ 图底部画图例（线型 + 颜色）。**本图表达分层、支撑、状态与优先级；变更只改本节**（文本可 diff）。
+> 【指引】左侧主体 + 右侧竖条布局。下方 d2 图为**完整实例**（<产品名>已填充）：① 替换左侧功能节点；② 增减能力域；③ 右侧放横向能力（被 ≥2 个垂直能力共用者）；④ 按状态设线型；⑤ 按优先级设热力色 `class: [module; planned; core]` 等叠加。
 
 ```d2
 # 图标准元信息 · 中文注释
@@ -119,8 +84,8 @@ generation:
 # 反映的问题: 产品有哪些能力、能力在哪层、做到哪一步、先做哪个
 # 边界: 产品层不画技术底座（数据存储/消息/网络/缓存归 TECHNOLOGY-ARCHITECTURE）
 # 说明: 节点 id（h1/c1/s1 等）仅技术标识，与功能名无关；c7 缺失为历史遗留编号
-# 校验: 能力节点数（业务能力层+共享业务服务层，不含入口层与图例）== §2.2 表行数，一能力一行；一能力多 Action 在对应 Action 单元格内顿号并列
-# 编码: 线型=状态、颜色=优先级热力（编码规则见 §2 三通道表）、入口层白底无热力
+# 校验: 能力节点数（业务能力层+共享业务服务层，不含入口层）== §2.2 表行数，一能力一行；一能力多 Action 在对应 Action 单元格内顿号并列
+# 编码: 见本 rule 画图规范（线型=状态/颜色=优先级）
 
 vars: {
   d2-config: {
@@ -144,36 +109,36 @@ vars: {
       # 入口层 · 仅示意触点，非能力，无状态与热力维度，白底实线
       label: "① 入口层（前台 · 用户触点）"
       width: 1000; grid-columns: 3; grid-gap: 12; style.fill: "#dbeafe"; style.font-color: "#1e293b"; style.stroke: "#2563eb"; style.border-radius: 12
-      h1: { label: "AI工具首页"; width: 317; height: 60; class: module }
-      h2: { label: "我的作品"; width: 317; height: 60; class: module }
-      h3: { label: "用户中心"; width: 317; height: 60; class: module }
-      h4: { label: "工具使用页"; width: 317; height: 60; class: module }
-      h5: { label: "充值中心"; width: 317; height: 60; class: module }
-      h6: { label: "邀请/推广页"; width: 317; height: 60; class: module }
+      h1: { label: "<页面_首页>"; width: 317; height: 60; class: module }
+      h2: { label: "<页面_作品>"; width: 317; height: 60; class: module }
+      h3: { label: "<页面_用户中心>"; width: 317; height: 60; class: module }
+      h4: { label: "<页面_工具使用>"; width: 317; height: 60; class: module }
+      h5: { label: "<页面_充值>"; width: 317; height: 60; class: module }
+      h6: { label: "<页面_推广>"; width: 317; height: 60; class: module }
     }
 
     业务能力层: {
       # 业务能力层 · 垂直能力按能力域分列，线型=状态/颜色=优先级
       label: "② 业务能力层（垂直能力 · 按能力域分列）"
       width: 1000; grid-columns: 4; grid-gap: 12; style.fill: "#ede9fe"; style.font-color: "#1e293b"; style.stroke: "#7c3aed"; style.border-radius: 12
-      内容获取: { label: "内容获取"; width: 235; grid-columns: 2; grid-gap: 12; style.fill: "#f3e8ff"; style.font-color: "#1e293b"; style.stroke: "#a855f7"; style.border-radius: 8
-        c1: { label: "视频号提取"; width: 103; height: 50; class: [core; planned] }
-        c2: { label: "图片去水印"; width: 103; height: 50; class: [core; planned] }
-        c3: { label: "提取文字"; width: 103; height: 50; class: [core; planned] }
-        c4: { label: "视频转字幕"; width: 103; height: 50; class: [support; planned] }
+      内容获取: { label: "<能力域_提取>"; width: 235; grid-columns: 2; grid-gap: 12; style.fill: "#f3e8ff"; style.font-color: "#1e293b"; style.stroke: "#a855f7"; style.border-radius: 8
+        c1: { label: "<能力_提取类>"; width: 103; height: 50; class: [module; core; planned] }
+        c2: { label: "<能力_提取类>"; width: 103; height: 50; class: [module; core; planned] }
+        c3: { label: "<能力_提取类>"; width: 103; height: 50; class: [module; core; planned] }
+        c4: { label: "<能力_提取类>"; width: 103; height: 50; class: [module; support; planned] }
       }
-      内容创作: { label: "内容创作"; width: 235; grid-columns: 2; grid-gap: 12; style.fill: "#cffafe"; style.font-color: "#1e293b"; style.stroke: "#06b6d4"; style.border-radius: 8
-        c5: { label: "文字配音"; width: 103; height: 50; class: [core; planned] }
-        c6: { label: "AI绘画"; width: 103; height: 50; class: [edge; planned] }
+      内容创作: { label: "<能力域_创作>"; width: 235; grid-columns: 2; grid-gap: 12; style.fill: "#cffafe"; style.font-color: "#1e293b"; style.stroke: "#06b6d4"; style.border-radius: 8
+        c5: { label: "<能力_转化类>"; width: 103; height: 50; class: [module; core; planned] }
+        c6: { label: "<能力_生成类>"; width: 103; height: 50; class: [module; edge; planned] }
       }
-      商业化: { label: "商业化"; width: 235; grid-columns: 2; grid-gap: 12; style.fill: "#ffedd5"; style.font-color: "#1e293b"; style.stroke: "#f97316"; style.border-radius: 8
-        c8: { label: "充值中心"; width: 103; height: 50; class: [support; module] }
-        c9: { label: "推广收益"; width: 103; height: 50; class: [edge; module] }
-        c10: { label: "邀请分享"; width: 103; height: 50; class: [edge; module] }
+      商业化: { label: "<能力域_商业化>"; width: 235; grid-columns: 2; grid-gap: 12; style.fill: "#ffedd5"; style.font-color: "#1e293b"; style.stroke: "#f97316"; style.border-radius: 8
+        c8: { label: "<能力_交易类>"; width: 103; height: 50; class: [module; support] }
+        c9: { label: "<能力_交易类>"; width: 103; height: 50; class: [module; edge] }
+        c10: { label: "<能力_交易类>"; width: 103; height: 50; class: [module; edge] }
       }
-      作品沉淀: { label: "作品沉淀"; width: 235; grid-columns: 2; grid-gap: 12; style.fill: "#dcfce7"; style.font-color: "#1e293b"; style.stroke: "#22c55e"; style.border-radius: 8
-        c11: { label: "我的作品"; width: 103; height: 50; class: [support; module] }
-        c12: { label: "分享功能"; width: 103; height: 50; class: [edge; planned] }
+      作品沉淀: { label: "<能力域_沉淀>"; width: 235; grid-columns: 2; grid-gap: 12; style.fill: "#dcfce7"; style.font-color: "#1e293b"; style.stroke: "#22c55e"; style.border-radius: 8
+        c11: { label: "<能力_查询类>"; width: 103; height: 50; class: [module; support] }
+        c12: { label: "<能力_查询类>"; width: 103; height: 50; class: [module; edge; planned] }
       }
     }
   }
@@ -183,25 +148,17 @@ vars: {
     label: "③ 共享业务服务层\n（横向能力）\n被多个垂直能力共用"
     grid-columns: 1
     style.fill: "#fef3c7"; style.font-color: "#1e293b"; style.stroke: "#f59e0b"; style.border-radius: 12
-    s1: { label: "用户体系"; width: 160; height: 90; class: [core; module] }
-    s2: { label: "算力体系"; width: 160; height: 90; class: [core; planned] }
-    s3: { label: "AI能力 (POC)"; width: 160; height: 90; class: [core; planned] }
-    s4: { label: "微信支付"; width: 160; height: 90; class: [support; planned] }
-    s5: { label: "文件上传"; width: 160; height: 90; class: [support; planned] }
+    s1: { label: "<能力_用户类>"; width: 160; height: 90; class: [module; core] }
+    s2: { label: "<能力_账户类>"; width: 160; height: 90; class: [module; core; planned] }
+    s3: { label: "<能力_生成类> (POC)"; width: 160; height: 90; class: [module; core; planned] }
+    s4: { label: "<外部_支付>"; width: 160; height: 90; class: [module; support; planned] }
+    s5: { label: "<能力_存储类>"; width: 160; height: 90; class: [module; support; planned] }
   }
 }
 
 # 层间支撑关系（上层依赖下层；右侧竖条支撑左侧主体）
 产品能力.共享业务服务层 -> 产品能力.左主体.业务能力层: 支撑 { style.stroke: "#f59e0b" }
 产品能力.左主体.业务能力层 -> 产品能力.左主体.入口层: 支撑 { style.stroke: "#7c3aed" }
-
-# 图例 · 中文注释：线型=状态、颜色=优先级，入口层白底无热力
-图例: {
-  grid-columns: 3; grid-gap: 12; style.fill: "#f8fafc"; style.stroke: "#94a3b8"; style.border-radius: 8
-  线型图例: { label: "线型=状态\n实线=已实现\n虚线=规划中（含POC/开发中/中间态）"; width: 340; style.fill: "#ffffff"; style.stroke: "#1e40af"; style.border-radius: 6; style.font-color: "#1e293b" }
-  颜色图例: { label: "颜色=优先级\n红=核心 橙=支撑 灰=边缘"; width: 340; style.fill: "#ffffff"; style.stroke: "#94a3b8"; style.border-radius: 6; style.font-color: "#1e293b" }
-  入口说明: { label: "入口层=白底实线\n页面/触点非能力\n无优先级维度"; width: 340; style.fill: "#ffffff"; style.stroke: "#1e40af"; style.border-radius: 6; style.font-color: "#1e293b" }
-}
 
 classes: {
   # 样式类 · 中文注释：状态与热力叠加
@@ -212,6 +169,8 @@ classes: {
   edge: { style: { fill: "#d1d5db"; font-color: "#1f2937"; stroke: "#6b7280" } }
 }
 ```
+
+> 图内 label 为占位，实际填具体业务名
 
 ### 2.2 能力清单表
 
