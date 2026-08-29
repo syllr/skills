@@ -57,29 +57,20 @@ gitee auth login
 
 | 参数         | 默认来源                                                                                                                                                                          | 说明                                             |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `owner/repo` | `git remote get-url origin` 解析（如 `git@gitee.com:syllr/enterprise-ai-hub.git` → `syllr/enterprise-ai-hub`）；可用 `--repo owner/repo` 覆盖                                     | 用户可感知（仓库）                               |
+| `owner/repo` | **只从当前仓库 origin 推导**：`git remote get-url origin` 解析（如 `git@gitee.com:syllr/enterprise-ai-hub.git` → `syllr/enterprise-ai-hub`），且 host 必须为 `gitee.com`          | 用户可感知（仓库）；必须是 Gitee 仓库            |
 | `sha`        | **承载 commit，自动选定，用户无感**。规则见下方「承载 commit 决策链」——默认当前分支的*远程最新* sha（`git ls-remote origin refs/heads/<分支>`），兜底 `gitee api branches/<分支>` | **内部承载，不向用户暴露**；仅调试/管理时给到 AI |
 
 解析 `owner/repo` 并校验是否为 Gitee 仓库：
 
-> **参数映射**：用户传 `--repo owner/repo` → 注入环境变量 `REPO_OVERRIDE`（AI 在调用命令时把 `--repo` 的值设为该变量）。`REPO_OVERRIDE` 存在时，`repo` 直接用它的值，跳过 origin 解析与 host 校验。
-
 ```bash
-# ① 用户显式 --repo owner/repo（=REPO_OVERRIDE）→ repo 直接用该值，跳过 origin 解析与 host 校验
-if [ -n "$REPO_OVERRIDE" ]; then
-  repo="$REPO_OVERRIDE"
-else
-  # ② 否则从 origin 解析
-  url=$(git remote get-url origin)
-  host=$(echo "$url" | sed -E 's#(https?|ssh|git)://##; s#git@##; s#[:/].*##')
-  repo=$(echo "$url" | sed -E 's#.*[:/]([^/]+)/([^/.]+)(\.git)?$#\1/\2#')
-  # ③ 校验：默认（未显式 --repo）时，remote host 必须是 gitee.com
-  [ "$host" != "gitee.com" ] && echo "⚠️ 当前仓库不是 Gitee 仓库（remote host = $host）。本 skill 只能操作 Gitee 仓库的评论，流程结束。若目标确是 Gitee 仓库，请用 --repo owner/repo 显式指定。" && exit 1
-fi
+# 只从 origin 推导 + 校验 host == gitee.com（本 skill 只操作当前 Gitee 仓库）
+url=$(git remote get-url origin)
+host=$(echo "$url" | sed -E 's#(https?|ssh|git)://##; s#git@##; s#[:/].*##')
+repo=$(echo "$url" | sed -E 's#.*[:/]([^/]+)/([^/.]+)(\.git)?$#\1/\2#')
+[ "$host" != "gitee.com" ] && echo "⚠️ 当前仓库不是 Gitee 仓库（remote host = $host）。本 skill 只能操作 Gitee 仓库的评论，流程结束。" && exit 1
 ```
 
-- **显式传 `--repo owner/repo` 时跳过 host 校验**——信任用户指定的目标仓库（此时本地 `origin` 可能不是 Gitee，但评审目标是 Gitee 仓库）。`repo` 取 `REPO_OVERRIDE` 值。
-- 未传 `--repo` 时，host 非 `gitee.com` → **提示并结束**（本 skill 不操作非 Gitee 仓库）。
+> 评论目标 = 当前 git 仓库的 origin，且必须是 `gitee.com`。若非 Gitee → 提示并结束（不操作非 Gitee 仓库）。
 
 ## 承载 commit 决策链（给 AI 看；对用户隐藏）
 
@@ -96,17 +87,12 @@ fi
 **Step 2 获取承载 sha（保证存在于 Gitee 服务端，只读）**：
 
 ```bash
-# ① 显式 --repo 指定过：origin 可能不是目标仓库，直接用官方 API（ls-remote 的 sha 会 404）
-if [ -n "$REPO_OVERRIDE" ]; then
-  sha=$(gitee api -p "/repos/$repo/branches/$branch" | python3 -c 'import json,sys; print(json.load(sys.stdin)["commit"]["sha"])')
-else
-  # ② 首选：当前分支远程最新（只读、免登录、浅 clone 也可靠）
-  sha=$(git ls-remote origin "refs/heads/$branch" | awk '{print $1}')
-  # ③ 本地分支名 ≠ 远程名时，试 upstream 名
-  [ -z "$sha" ] && { up=$(git rev-parse --abbrev-ref @{u} | sed 's#^origin/##'); [ -n "$up" ] && sha=$(git ls-remote origin "refs/heads/$up" | awk '{print $1}'); }
-  # ④ 官方 API 兜底（确认分支存在 + 最新 sha）
-  [ -z "$sha" ] && sha=$(gitee api -p "/repos/$repo/branches/$branch" | python3 -c 'import json,sys; print(json.load(sys.stdin)["commit"]["sha"])')
-fi
+# 首选：当前分支远程最新（只读、免登录、浅 clone 也可靠）
+sha=$(git ls-remote origin "refs/heads/$branch" | awk '{print $1}')
+# 本地分支名 ≠ 远程名时，试 upstream 名
+[ -z "$sha" ] && { up=$(git rev-parse --abbrev-ref @{u} | sed 's#^origin/##'); [ -n "$up" ] && sha=$(git ls-remote origin "refs/heads/$up" | awk '{print $1}'); }
+# 官方 API 兜底（确认分支存在 + 最新 sha）
+[ -z "$sha" ] && sha=$(gitee api -p "/repos/$repo/branches/$branch" | python3 -c 'import json,sys; print(json.load(sys.stdin)["commit"]["sha"])')
 [ -z "$sha" ] && { echo "分支 $branch 不存在或无提交，请核对分支名"; exit 1; }
 ```
 
