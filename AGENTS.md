@@ -1,11 +1,13 @@
 # PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-08-07
-**Role:** 个人自定义 Agent Skills 仓库（vercel-labs/skills 生态，`npx skills` 分发）
+**Generated:** 2026-08-29
+**Role:** 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。**本项目只负责 skill 的开发/迭代/格式校验；将 skill 安装到 opencode 等 Agent 由用户自行执行，AI 不代装。**
 
 ## OVERVIEW
 
 仓库管理一组自包含的 Agent Skills（每个 skill = 一个目录，含 `SKILL.md` + 可选 `references/`/`assets/`/`scripts/`）。核心关注点：**skill 内部资源的引用规范**（相对路径 / Markdown 链接，禁止 `@path`）与格式合规（agentskills.io 规范）。语言：中文文档。
+
+**职责边界**：本项目只做「创建 / 优化 / 校验」skill 三件事；**安装到 Agent（如 `npx skills add`）由用户自行执行，不属于本项目职责**，AI 不得代为安装。
 
 ## STRUCTURE
 
@@ -13,6 +15,7 @@
 skills/
 ├── c4-container-diagram/ # 画 C4 Container Diagram skill：D2 实现 + references/（20 官方文档 + diagram-review 自研 + README 清单）
 ├── doc-arch-rules/   # 文档架构规范 + omo rule 生成：references/（13 文档模板 + 14 rule 模板[CONSTITUTION rule 即宪法] + README 清单）
+├── gitee-review-comments/  # Gitee 提交评审评论 skill（单 SKILL.md）
 ├── remote-shell/    # SSH 远程执行 skill（单 SKILL.md）
 ├── score-prompt/    # prompt 质量评分 skill（单 SKILL.md）
 └── skill-creator/   # 创建新 skill 的 skill：SKILL.md + references/（含 guide.md）+ assets/templates/
@@ -23,14 +26,14 @@ README.md            # 面向用户的安装/技能表
 
 ## WHERE TO LOOK
 
-| 任务                      | 位置                                      | 说明                                                                                       |
-| ------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------ |
-| 查看全部 skill            | `skills/`                                 | 每个子目录一个 skill                                                                       |
-| 新 skill 的模板与格式规范 | `skills/skill-creator/references/`        | 含 guide / path-resolution / skill-md-format / directory-structure / script-language-guide |
-| 官方文档本地化范例        | `skills/c4-container-diagram/references/` | 20 个官方文档页 + 自研 diagram-review.md + README 清单（共 22 个 .md）                     |
-| 文档架构模板 + omo rule 生成 | `skills/doc-arch-rules/references/`    | 13 个文档模板（templates/ 按 L1-L4+common 分层，CONSTITUTION 无模板）+ 14 个 rule 生成模板（rules/，CONSTITUTION rule 即宪法全文）+ README 清单 |
-| 创建新 skill              | `npx skills init skills/<name>`           | 或读 skill-creator 流程                                                                    |
-| 本地测试安装              | `npx skills add . -s '*' -a opencode`     | 见 README.md（⚠️ 用 `-s '*'` 而非 `--all`：`--all` 会忽略 `-a` 装到所有 agent）            |
+| 任务                         | 位置                                      | 说明                                                                                                                                            |
+| ---------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 查看全部 skill               | `skills/`                                 | 每个子目录一个 skill                                                                                                                            |
+| 新 skill 的模板与格式规范    | `skills/skill-creator/references/`        | 含 guide / path-resolution / skill-md-format / directory-structure / script-language-guide                                                      |
+| 官方文档本地化范例           | `skills/c4-container-diagram/references/` | 20 个官方文档页 + 自研 diagram-review.md + README 清单（共 22 个 .md）                                                                          |
+| 文档架构模板 + omo rule 生成 | `skills/doc-arch-rules/references/`       | 13 个文档模板（templates/ 按 L1-L4+common 分层，CONSTITUTION 无模板）+ 14 个 rule 生成模板（rules/，CONSTITUTION rule 即宪法全文）+ README 清单 |
+| 创建新 skill                 | `npx skills init skills/<name>`           | 或读 skill-creator 流程                                                                                                                         |
+| 安装到 Agent（用户自执行）   | 见 README.md（`npx skills add ...`）      | ⚠️ 本项目只管创建/优化 skill，安装到 opencode 等 Agent 由用户自行执行，AI 不代装                                                                |
 
 ## SKILL 引用规范（本仓库核心约定）
 
@@ -102,15 +105,14 @@ find skills -name "SKILL.md" | sort
 # 创建新 skill
 npx skills init skills/<skill-name>
 
-# 本地测试安装（项目级，⚠️ 用 -s '*' 而非 --all，--all 会忽略 -a 装到所有 agent）
-npx skills add . -s '*' -a opencode
-
 # 检查更新（只检查，不更新）
 npx skills check
 
 # 更新本机已安装的 skill（从 GitHub 拉最新覆盖本地）
 npx skills update -g -y
 ```
+
+> ⚠️ **安装到 Agent 由用户自行执行**，AI 不代装。安装命令见 README.md（如 `npx skills add . -s '*' -a opencode`），不写进本项目工作流。
 
 ## NOTES
 
