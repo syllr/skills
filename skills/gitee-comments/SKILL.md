@@ -15,9 +15,9 @@ allowed-tools: Bash
 
 > 本 skill 只做「评审评论」域（增删查改回）。**不**做 PR/Issue 操作——那是 Gitee 官方 MCP 的职责。
 
-## 机制事实（给 AI 看，已实测 2026-08-29）
+## 机制事实
 
-> **⚠️ commit 对用户隐藏**：下述 commit 仅是底层实现载体，向用户沟通时**只讲「文件:行区间」**，不要出现 sha/commit 字样。承载 commit 由 skill 自动选定（默认当前分支最新提交），用户无感。
+> **commit 对用户隐藏**：下述 commit 仅是底层实现载体，向用户沟通时**只讲「文件:行区间」**，不要出现 sha/commit 字样。承载 commit 由 skill 自动选定（默认当前分支最新提交），用户无感。
 
 - **评论必然依托某个 commit**：创建端点是 `POST /repos/{owner}/{repo}/commits/{sha}/comments`，`sha` 是必填路径参数；`GET /repos/{owner}/{repo}/comments` 及其 `/{id}` 管理端点注释均为「Commit 评论」。**没有不挂 commit 的独立仓库评论**。
 - **Gitee 不支持真正的行锚定**：尽管官方文档为 `POST /comments` 列出 `path`（文件相对路径）+ `position`（Diff 相对行数），**实测服务器会静默忽略这两个参数**——POST 后响应仅含 `id/body/user/source/target(issue:null,pull:null)/时间`，无任何行/文件字段。即无法像 GitHub/GitLab 那样把评论精确锚定到某文件某行。
@@ -48,7 +48,7 @@ npm install -g @gitee/gitee-cli
 gitee auth login
 ```
 
-> ⚠️ 本 skill **不替你安装**、不做任何 token/凭据处理。认证由 `gitee auth login` 的登录凭据承担，
+> 本 skill **不替你安装**、不做任何 token/凭据处理。认证由 `gitee auth login` 的登录凭据承担，
 > 调用时用 `gitee api` 自动读取 `~/.config/gitee/credentials.yml`。
 >
 > **重入语义**：CLI 缺失造成失败后，用户装好并登录，重新调用本 skill 即自动放行，无需修改 skill。
@@ -67,7 +67,7 @@ gitee auth login
 url=$(git remote get-url origin)
 host=$(echo "$url" | sed -E 's#(https?|ssh|git)://##; s#git@##; s#[:/].*##')
 repo=$(echo "$url" | sed -E 's#.*[:/]([^/]+)/([^/.]+)(\.git)?$#\1/\2#')
-[ "$host" != "gitee.com" ] && echo "⚠️ 当前仓库不是 Gitee 仓库（remote host = $host）。本 skill 只能操作 Gitee 仓库的评论，流程结束。" && exit 1
+[ "$host" != "gitee.com" ] && echo "当前仓库不是 Gitee 仓库（remote host = $host）。本 skill 只能操作 Gitee 仓库的评论，流程结束。" && exit 1
 ```
 
 > 评论目标 = 当前 git 仓库的 origin，且必须是 `gitee.com`。若非 Gitee → 提示并结束（不操作非 Gitee 仓库）。
