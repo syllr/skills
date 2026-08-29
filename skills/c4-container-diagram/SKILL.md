@@ -58,34 +58,25 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 
 ### 1.4 特点→语法映射表（怎么实现这些要求）
 
-> 每个特点靠 D2 语法实现。**先定目标（1.2）→ 查此表选语法 → 按 §6 公式算尺寸 → 写代码**。
+> 每个特点靠 D2 语法实现。**先定目标（1.2）→ 查此表选语法 → 按 §6 公式算尺寸 → 写代码**。垂直居中仅单列容器要求（见 §1.3 铁律 2）。
 
-| 特点              | D2 语法                                                                                                             | 关键规则                                                                         |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| 分层（纵向堆叠）  | 外层容器 `grid-rows:1; grid-columns:1; grid-gap:24` + 每层 `width` 统一                                             | 见 [§6.1](#61-外层容器必须-grid-rows1-grid-columns1-强制纵向堆叠)                |
-| 嵌套（层内分区）  | 层内 `grid-columns: N` 分分区，分区内再嵌套 grid                                                                    | 见 [§5.5](#55-层内分区grid-嵌套22-子模块)                                        |
-| 对称（水平）      | 多列子容器显式 `width`（公式 §6.13：`(父宽−24−(N−1)×gap)/N`）；单列竖条**不设 width** 让 ELK 自动包裹居中           | 见 [§6.13](#613-尺寸计算规则父容器与子容器核心约束)                              |
-| 对称（垂直）      | ⚠️ **D2/ELK 无法垂直居中**（见 §1.3 铁律 2）。仅单列竖条可上下均匀：一维 `grid-columns:1` + 子容器按公式设 `height` | 见 [§6.13](#613-尺寸计算规则父容器与子容器核心约束)                              |
-| 均匀（等宽等高）  | 同分区子容器 width/height 一致 + grid-gap 统一                                                                      | 见 [§6.11](#611-同一列等宽约束)                                                  |
-| 边界（不超界）    | width/height 精确按公式算；竖条不设 width（ELK 自动包裹，§6.13 B）；子容器 height 算小勿算大                        | 见 [§6.13](#613-尺寸计算规则父容器与子容器核心约束)                              |
-| 通信（箭头+标签） | **父级到父级**：`整体架构.层A -> 整体架构.层B: "HTTP"`（完整路径，见 §6.3）；双向 `a <-> b`；**不连层内子容器**     | 见 [§6.3](#63-层间箭头父级到父级完整路径否则静默重复节点) [§6.12](#612-双向箭头) |
-| 可读（配色）      | §4.2 色系 + **对比度铁律**（文字深色/背景中浅色/边框加深）；§4.6 按层/功能域/单色系                                 | 见 [§4.2](#42-颜色编码惯例5-大层系) [§4.6](#46-配色模式三种)                     |
-| 可读（形状）      | **一律圆角矩形**（`style.border-radius: 8`）；数据库用 `shape: cylinder`                                            | 见 [§4.7](#47-形状速查架构图常用)                                                |
-| 可读（文本）      | label 放不下时 trade-off：按 §6.14 的 4 选项流程处理，**给用户选**                                                  | 见 [§6.14](#614-文本溢出-trade-off必须给用户选择)                                |
+| 特点         | 实现要点                                                                    | §          |
+| ------------ | --------------------------------------------------------------------------- | ---------- |
+| 容器化       | 每个大块 = 一个容器（应用/服务/数据存储）                                   | §1.1       |
+| 分层         | 外层容器 `grid-rows:1; grid-columns:1; grid-gap:24` 强制纵向堆叠            | §6.1       |
+| 嵌套         | 层内 `grid-columns: N` 分分区，分区内再嵌套 grid                            | §5.5       |
+| 对称         | 多列显式 `width`（公式 §6.13）；单列竖条**不设 width** 自动居中；垂直仅单列 | §6.13      |
+| 均匀         | 同分区子容器 width/height 一致 + grid-gap 统一                              | §6.11      |
+| 边界         | width/height 精确按公式算，不超界；竖条不设 width                           | §6.13      |
+| 通信         | 父级到父级完整路径箭头（`整体架构.层A -> 整体架构.层B`），不连层内子容器    | §6.3/§6.12 |
+| 可读         | 配色（§4.2/§4.6）+ 圆角矩形（§4.7）+ 文本 trade-off（§6.14）                | §4/§6.14   |
+| 每层显式算宽 | 每一层嵌套（A→B→C→D）都要为子容器显式算 width                               | §6.13      |
 
 ### 1.5 核心方法论（DSL 从源头保证）
 
 > **D2 是声明式 DSL——每个要求都能用语法从源头保证，不需要"画出来再检查发现错误"**。生成代码时就要让语法天然满足要求，渲染只是验证。
 
-**写代码前先按规则计算，让 DSL 语法承载约束：**
-
-| 要求           | 从源头保证的写法（不是事后检查）                                                                                                                       |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 对称/均匀      | 写代码前**先算好每个子容器 width/height**（§6.9/6.13 公式），写进去就对称，无需渲染后调                                                                |
-| 边界（不超界） | width/height **精确按公式算**（§6.13），D2 不会自动压缩超宽子容器（实测 width:300×3 > 层 800 → 第 3 个直接超界）——所以算错 = 必然超界，算对 = 必然不超 |
-| 圆角矩形       | **每个节点挂含 `border-radius` 的 class**（§4.8），从源头保证全图圆角，无需逐个检查                                                                    |
-| 文本完整       | 层 width 按"最宽 label + 内边距"预留（§6.13/6.14）；竖条不设 width 自动包裹，放不下提前 trade-off                                                      |
-| 垂直均匀       | 竖条一维 grid + 子容器按公式设 height（§6.13），写进去就均匀                                                                                           |
+**写代码前先按规则计算，让 DSL 语法承载约束**：对称/均匀靠 §6.13 公式先算 width/height；边界靠公式精确（算错 = 必然超界）；圆角靠 §4.8 挂 class；文本靠 §6.13/6.14 预留与 trade-off；垂直均匀仅单列竖条（§1.3 铁律 2）。
 
 **自检的定位**：自检（§7）是**验证**（确认语法写对了），不是**修复手段**（发现错了再改）。如果自检发现问题，说明上面的规则没遵守——回头改写法，而不是临时打补丁。
 
@@ -173,9 +164,10 @@ python3 scripts/d2-workbench.py extract docs.md 1 --out .     # 或按序号
 # 2. 改图迭代：编辑工作区 .d2（改 label/加容器/调宽度）→ 渲染+校验
 python3 scripts/d2-workbench.py render docs-fig1.d2
 
-# 3. 回写：工作区 .d2 同步回 md（替换原代码块 + 重新生成 base64 fallback，只留 1 份）
+# 3. 回写：工作区 .d2 同步回 md（替换原代码块；fallback 语义见 §7.4）
 python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 --name "系统架构图"
 python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 1   # 或按序号
+# 需 fallback 时显式：sync docs.md docs-fig1.d2 --fallback=img ；清理：clean-fallback docs.md
 ```
 
 **局部修改规则（只动改的部分）**：
@@ -327,7 +319,7 @@ h1: { label: "红包雨交互"; style.fill: "#3b5bdb"; style.font-color: "#fffff
 | 圆形/椭圆        | `shape: circle` / `shape: oval`   | ❌ **不用**（改圆角矩形） |
 | 队列             | `shape: queue`                    | 消息队列/缓冲             |
 
-写法：`节点名: { shape: cylinder }` 或 `节点名.shape: cylinder`。以上已实测 validate 通过（注意：`shape: database` 不存在，数据库用 `shape: cylinder`）。圆角矩形的圆角值：大容器 8~12，子模块 4~8（见 §4.5）。
+写法：`节点名: { shape: cylinder }` 或 `节点名.shape: cylinder`。以上已实测 validate 通过（注意：`shape: database` 不存在，数据库用 `shape: cylinder`）。圆角值见 §4.5（大容器 8~~12 / 子模块 4~~8）。
 
 ### 4.8 圆角矩形全局落实（每一个图形都必须圆角）
 
@@ -345,11 +337,11 @@ classes: {
 
 **规则**：
 
-1. **每个子容器**必须挂一个含 `border-radius` 的 class（如 `class: mod`、`class: white`、`class: blue`），或显式写 `style.border-radius: 4~8`。
-2. **每个容器/分区/层**显式写 `style.border-radius: 8~12`（容器比子模块圆角略大）。
+1. **每个子容器**必须挂含 `border-radius` 的 class（统一 `class: module`），或显式写 `style.border-radius`（子模块 4~8，见 §4.5）。
+2. **每个容器/分区/层**显式写 `style.border-radius`（大容器 8~12，见 §4.5；容器比子模块圆角略大）。
 3. **检查**：渲染后数 SVG 里 `rx` 属性的 rect 数量——应等于全部图形数量，无直角矩形（`rx` 缺失 = 漏设）。
-4. **对比度**：class 必须同时设 `font-color`（浅底用 `#1e293b` 或对应色相深色档、深底用 `#ffffff` 白）——不能只设 fill/stroke 依赖主题默认浅色文字（§4.2 对比度铁律）。
-5. **优先单 class**（实测 v0.8.1）：**多 class（≥2 种 class 各自带 fill/stroke）+ 深嵌套 grid（>2 层）+ 竖条** 组合会触发 ELK 整数溢出（viewBox 变 int64 极值，空白图，见 §6.16）。**规避：优先用单一 `module` class，节点自身写 `style.fill`/`style.stroke`/`style.font-color`**——不要为了"不同颜色"分散成多个 class。
+4. **对比度**：`module` class 设 `font-color` 与 `stroke-width`，`fill/stroke` 由节点 `style.fill`/`style.stroke` 自写（浅底用 `#1e293b` 或对应色相深色档、深底用 `#ffffff` 白）——不能依赖主题默认浅色文字（§4.2 对比度铁律）。
+5. **⚠️ 单 class 铁律（实测 v0.8.1，见 §6.16）**：**禁止多 class（≥2 种 class 各自带 fill/stroke）+ 深嵌套（>2 层）+ 竖条** 组合——会触发 ELK int64 溢出（viewBox=-9e18 空白图）。**必须用单一 `module` class**，颜色差异由节点 `style.fill`/`style.stroke` 自写，不要分散成多个 class。
 
 ---
 
@@ -390,7 +382,7 @@ vars: {
     style.border-radius: 12
     grid-columns: 3        # ← 关键：子模块数 = grid-columns 才能填满宽度
     grid-gap: 12
-    # width 按 §6.9 公式: (1000−24−2×12)/3 = 317（6 个子容器 → 2 行 3 列）
+    # width 按 §6.13 公式: (1000−24−2×12)/3 = 317（6 个子容器 → 2 行 3 列）
     h1: { width: 317; height: 60; class: module }
     h2: { width: 317; height: 60; class: module }
     h3: { width: 317; height: 60; class: module }
@@ -409,10 +401,10 @@ vars: {
     style.border-radius: 12
     grid-columns: 4        # 4 个能力子域
     grid-gap: 12
-    内容创作: { width: 235; height: 220; class: purpleCard }
-    内容加工: { width: 235; height: 220; class: cyanCard }
-    账户商业化: { width: 235; height: 220; class: orangeCard }
-    作品沉淀: { width: 235; height: 220; class: greenCard }
+    内容创作: { width: 235; height: 220; class: module; style.fill: "#ede9fe"; style.stroke: "#7c3aed"; style.font-color: "#312e81" }
+    内容加工: { width: 235; height: 220; class: module; style.fill: "#cffafe"; style.stroke: "#0e7490"; style.font-color: "#164e63" }
+    账户商业化: { width: 235; height: 220; class: module; style.fill: "#ffedd5"; style.stroke: "#c2410c"; style.font-color: "#7c2d12" }
+    作品沉淀: { width: 235; height: 220; class: module; style.fill: "#dcfce7"; style.stroke: "#15803d"; style.font-color: "#14532d" }
   }
 
   基础支撑层: {
@@ -425,7 +417,7 @@ vars: {
     style.border-radius: 12
     grid-columns: 3
     grid-gap: 12
-    # width 按 §6.9 公式: (1000−24−2×12)/3 = 317（6 个子容器 → 2 行 3 列）
+    # width 按 §6.13 公式: (1000−24−2×12)/3 = 317（6 个子容器 → 2 行 3 列）
     f1: { width: 317; height: 60; class: module }
     f2: { width: 317; height: 60; class: module }
     f3: { width: 317; height: 60; class: module }
@@ -435,38 +427,10 @@ vars: {
   }
 }
 
-# === ④ 子模块通用样式（classes 定义） ===
+# === ④ 子模块通用样式（单 class 规避溢出，见 §4.8/§6.16） ===
 classes: {
-  module: {              # 基础模块样式
-    style: { border-radius: 6; fill: "#dbeafe"; stroke: "#1e40af"; font-color: "#1e293b"; stroke-width: 1 }
-  }
-  purpleCard: {           # 紫色卡（内容创作）
-    width: 235
-    style.fill: "#ede9fe"
-    style.stroke: "#7c3aed"
-    style.font-color: "#312e81"
-    style.border-radius: 8
-  }
-  cyanCard: {             # 青色卡（内容加工）
-    width: 235
-    style.fill: "#cffafe"
-    style.stroke: "#0e7490"
-    style.font-color: "#164e63"
-    style.border-radius: 8
-  }
-  orangeCard: {           # 橙色卡（账户商业化）
-    width: 235
-    style.fill: "#ffedd5"
-    style.stroke: "#c2410c"
-    style.font-color: "#7c2d12"
-    style.border-radius: 8
-  }
-  greenCard: {            # 绿色卡（作品沉淀）
-    width: 235
-    style.fill: "#dcfce7"
-    style.stroke: "#15803d"
-    style.font-color: "#14532d"
-    style.border-radius: 8
+  module: {
+    style: { border-radius: 8; font-color: "#1e293b"; stroke-width: 1 }
   }
 }
 
@@ -479,94 +443,17 @@ classes: {
 
 ### 5.2 左侧竖排标签 — 类架构师风格
 
-> 适用：需要明确的"左侧层名 + 右侧内容区"对照风格。
+> 适用：需要明确的"左侧层名 + 右侧内容区"对照风格。**相对 §5.1 的差异补丁**（其余结构/样式同 §5.1）：
 
-```d2
-vars: { d2-config: { layout-engine: elk } }
-
-整体架构: {
-  grid-rows: 1
-  grid-columns: 1
-  grid-gap: 24
-  style.font-color: "#1e293b"
-  style.border-radius: 16
-
-  入口层: {
-    width: 1200
-    grid-columns: 2          # 左标签 + 右内容
-    grid-gap: 12
-    style.font-color: "#1e293b"
-    style.border-radius: 12
-
-    入口层_标签: {
-      width: 140
-      style.fill: "#1e293b"
-      style.font-color: "#ffffff"
-      style.bold: true
-      style.border-radius: 8
-      label: "① 入口层\n前台"
-    }
-
-    入口层_内容: {
-      width: 1024
-      grid-rows: 1
-      grid-columns: 3
-      grid-gap: 12
-      style.fill: "#dbeafe"
-      style.font-color: "#1e293b"
-      style.stroke: "#2563eb"
-      style.stroke-width: 2
-      style.border-radius: 12
-      # width 按 §6.9 公式: (1024−24−2×12)/3 = 325
-      h1: { width: 325; height: 60; class: module }
-      h2: { width: 325; height: 60; class: module }
-      h3: { width: 325; height: 60; class: module }
-    }
-  }
-
-  业务能力层: {
-    width: 1200
-    grid-columns: 2
-    grid-gap: 12
-    style.font-color: "#1e293b"
-    style.border-radius: 12
-
-    业务能力层_标签: {
-      width: 140
-      style.fill: "#1e293b"
-      style.font-color: "#ffffff"
-      style.bold: true
-      style.border-radius: 8
-      label: "② 业务层\n中台"
-    }
-
-    业务能力层_内容: {
-      width: 1024
-      grid-rows: 1
-      grid-columns: 4
-      grid-gap: 12
-      style.fill: "#ede9fe"
-      style.font-color: "#1e293b"
-      style.stroke: "#7c3aed"
-      style.stroke-width: 2
-      style.border-radius: 12
-      # 4 列 235 与 §5.1 保持一致（235×4+36=976 ≤ 1024−24，留白 12/侧；公式值 241 亦可）
-      内容创作: { width: 235; height: 220; class: purpleCard }
-      内容加工: { width: 235; height: 220; class: cyanCard }
-      账户商业化: { width: 235; height: 220; class: orangeCard }
-      作品沉淀: { width: 235; height: 220; class: greenCard }
-    }
-  }
-}
-
-classes: {
-  module: { style: { border-radius: 6; fill: "#dbeafe"; stroke: "#1e40af"; font-color: "#1e293b"; stroke-width: 1 } }
-  purpleCard: { width: 235; style.fill: "#ede9fe"; style.stroke: "#7c3aed"; style.font-color: "#312e81"; style.border-radius: 8 }
-  cyanCard: { width: 235; style.fill: "#cffafe"; style.stroke: "#0e7490"; style.font-color: "#164e63"; style.border-radius: 8 }
-  orangeCard: { width: 235; style.fill: "#ffedd5"; style.stroke: "#c2410c"; style.font-color: "#7c2d12"; style.border-radius: 8 }
-  greenCard: { width: 235; style.fill: "#dcfce7"; style.stroke: "#15803d"; style.font-color: "#14532d"; style.border-radius: 8 }
-}
+```diff
+- 层容器: { width: 1000; grid-columns: N }        # §5.1：直接铺子模块
++ 层容器: { width: 1200; grid-columns: 2 }         # 左标签 + 右内容
++ 层名_标签: { width: 140; style.fill: "#1e293b"; style.font-color: "#ffffff"; style.bold: true; label: "① 入口层\n前台" }
++ 层名_内容: { width: 1024; grid-columns: N; grid-gap: 12; style.fill: "#dbeafe"; style.stroke: "#2563eb" }
++   # 子容器 width 按 §6.13 公式: (1024−24−(N−1)×12)/N（3 列 325 / 4 列 241；235 为父1000 场景）
 ```
+
+> 标签列不设 height（由外层 grid 决定）；内容区子容器挂 `class: module`（§4.8 单 class 铁律）。
 
 ### 5.3 层间调用关系（超范围，不提供模板）
 
@@ -576,115 +463,25 @@ classes: {
 
 ### 5.4 左右分栏 + 贯穿竖条（架构图高频版式）
 
-> 适用：需要**右侧贯穿栏**（图2 支付全景的补偿/对账/运营中心、图4 的日志/消息/权限竖条、图6 的平台总称竖条）或**左侧贯穿标签列**（图4/图6 的层名标签）的架构图。核心：外层 `grid-columns: 2`（或 3）分栏，一侧是"纵向堆叠主体"，另一侧是"贯穿竖条"——**竖条是独立顶层子容器，用 grid 列定位，不要用连接线连各层**。已实测 ELK 渲染通过。
+> 适用：需要**右侧贯穿栏**（图2 支付全景的补偿/对账/运营中心、图4 的日志/消息/权限竖条、图6 的平台总称竖条）或**左侧贯穿标签列**（图4/图6 的层名标签）的架构图。核心：外层 `grid-columns: 2`（或 3）分栏，一侧是"纵向堆叠主体"，另一侧是"贯穿竖条"——**竖条是独立顶层子容器，用 grid 列定位，不要用连接线连各层**。已实测 ELK 渲染通过。**相对 §5.1 的差异补丁**（其余同 §5.1）：
 
-```d2
-vars: { d2-config: { layout-engine: elk } }
-整体: {
-  grid-columns: 2          # ← 分两栏：左主体 + 右贯穿栏（3 栏则为左右双竖条）
-  grid-rows: 1
-  grid-gap: 16
-  style.font-color: "#1e293b"
-  style.border-radius: 16
-
-  左主体: {                 # 主体：内部各层纵向堆叠（复用 §5.1 结构）
-    grid-rows: 1; grid-columns: 1; grid-gap: 24
-    style.font-color: "#1e293b"
-    style.border-radius: 12
-    入口层: { width: 800; grid-columns: 3; grid-gap: 12; style.fill: "#dbeafe"; style.font-color: "#1e293b"; style.stroke: "#2563eb"; style.border-radius: 12
-      h1: { width: 250; height: 60; class: module }
-      h2: { width: 250; height: 60; class: module }
-      h3: { width: 250; height: 60; class: module }
-    }
-    业务层: { width: 800; grid-columns: 3; grid-gap: 12; style.fill: "#ede9fe"; style.font-color: "#1e293b"; style.stroke: "#7c3aed"; style.border-radius: 12
-      b1: { width: 250; height: 60; class: module }
-      b2: { width: 250; height: 60; class: module }
-      b3: { width: 250; height: 60; class: module }
-    }
-  }
-
-  右侧贯穿竖条: {            # ← 贯穿栏：独立顶层容器，高度由外层 grid 与主体现高（勿设 height，会被覆盖）
-    grid-columns: 1           # ← 关键：一维 grid + 不设 width → ELK 按子容器+等边距自动包裹居中（v0.8.1 实测，见 6.13 B）
-    style.fill: "#dcfce7"; style.font-color: "#1e293b"; style.stroke: "#15803d"; style.border-radius: 12
-    # 子容器不设 width（ELK 自动包裹居中）；height 按 6.13 公式：主体高 600 → (600−120−2×40)/3 ≈ 133
-    r1: { label: "日志记录"; height: 133; class: module }
-    r2: { label: "消息系统"; height: 133; class: module }
-    r3: { label: "权限控制"; height: 133; class: module }
-  }
-}
+```diff
+- 整体架构: { grid-rows: 1; grid-columns: 1 }     # §5.1：单列纵向堆叠
++ 整体: { grid-columns: 2; grid-rows: 1; grid-gap: 16 }   # 左主体 + 右贯穿竖条（3 栏 = 左右双竖条）
++ 左主体: { grid-rows: 1; grid-columns: 1; grid-gap: 24 } # 内部复用 §5.1 各层结构
++ 右侧贯穿竖条: { grid-columns: 1 }                # 不设 width，ELK 自动包裹居中（§6.13 B）
++   r1: { label: "日志记录"; height: 133 }         # 子容器设 height 不设 width（(600−120−2×40)/3）
 ```
 
 要点：
 
-- **左贯穿标签列**（图4/图6 层名标签）：外层 `grid-columns: 2`，**左列**为窄竖条（`width: 80`，放层名 `label` 即可），右列为主体。镜像 5.4 结构即可。
+- **竖条 width 例外**：**左贯穿标签列**（图4/图6 层名标签，仅放层名文字）可用 `width: 80`；**其余竖条一律不设 width**（让 ELK 按子容器+等边距自动包裹居中，见 §6.13 B）。
 - **左右双竖条**（图5）：外层 `grid-columns: 3`——左竖条 + 主体 + 右竖条。
-- 竖条内子容器高度不设等高，靠 grid 自动对齐。
+- 竖条内子容器高度不设等高，靠 grid 自动对齐；竖条内**不要写 `grid-gap`**（§6.13 B）。
 
 > **⚠️ 竖条标准写法（v0.8.1 实测）**：竖条**不设 width**，让 ELK 按子容器+等边距自动包裹 → 子容器天然居中（见 §6.13 B）。`width: 80` 的旧写法仅适用于"左贯穿标签列"这种极窄列场景。
-
-**完整实测模板（2 层左主体 + 右竖条，产品能力分层图，v0.8.1 验证）**：
-
-```d2
-vars: { d2-config: { layout-engine: elk } }
-产品能力: {
-  grid-columns: 2
-  grid-rows: 1
-  grid-gap: 16
-  style.font-color: "#1e293b"
-  style.border-radius: 16
-
-  左主体: {
-    grid-rows: 1; grid-columns: 1; grid-gap: 24   # ← 标准 1×1, ELK 自动纵向堆叠
-    style.font-color: "#1e293b"
-    style.border-radius: 12
-    入口层: {
-      label: "① 入口层"
-      width: 1000; grid-columns: 3; grid-gap: 12
-      style.fill: "#dbeafe"; style.font-color: "#1e293b"; style.stroke: "#2563eb"; style.border-radius: 12
-      h1: { label: "AI工具首页"; width: 317; height: 60; class: module }
-      h2: { label: "我的作品"; width: 317; height: 60; class: module }
-      h3: { label: "用户中心"; width: 317; height: 60; class: module }
-    }
-    业务能力层: {
-      label: "② 业务能力层"
-      width: 1000; grid-columns: 2; grid-gap: 12
-      style.fill: "#ede9fe"; style.font-color: "#1e293b"; style.stroke: "#7c3aed"; style.border-radius: 12
-      内容获取: {
-        label: "内容获取"; width: 492; grid-columns: 2; grid-gap: 12
-        style.fill: "#f3e8ff"; style.font-color: "#1e293b"; style.stroke: "#a855f7"; style.border-radius: 8
-        c1: { label: "视频号提取"; width: 230; height: 50; class: module }
-        c2: { label: "图片去水印"; width: 230; height: 50; class: module }
-      }
-      内容创作: {
-        label: "内容创作"; width: 492; grid-columns: 2; grid-gap: 12
-        style.fill: "#cffafe"; style.font-color: "#1e293b"; style.stroke: "#06b6d4"; style.border-radius: 8
-        c3: { label: "文字配音"; width: 230; height: 50; class: module }
-        c4: { label: "AI绘画"; width: 230; height: 50; class: module }
-      }
-    }
-  }
-
-  共享业务服务层: {
-    label: "③ 共享业务服务层\n（横向能力）\n被多个垂直能力共用"   # ← \n 换行防撑宽(§6.17)
-    grid-columns: 1                                          # ← 不设 width, ELK 自动包裹居中
-    style.fill: "#fef3c7"; style.font-color: "#1e293b"; style.stroke: "#f59e0b"; style.border-radius: 12
-    s1: { label: "用户体系"; width: 160; height: 90; class: module }
-    s2: { label: "算力体系"; width: 160; height: 90; class: module }
-    s3: { label: "AI能力"; width: 160; height: 90; class: module }
-    s4: { label: "微信支付"; width: 160; height: 90; class: module }
-  }
-}
-
-# 层间箭头: 父级到父级, 完整路径(§6.3)
-产品能力.共享业务服务层 -> 产品能力.左主体.业务能力层: 支撑 { style.stroke: "#f59e0b" }
-产品能力.左主体.业务能力层 -> 产品能力.左主体.入口层: 支撑 { style.stroke: "#7c3aed" }
-
-classes: {
-  module: { style: { border-radius: 6; fill: "#ffffff"; stroke: "#1e40af"; font-color: "#1e293b"; stroke-width: 1 } }
-}
-```
-
-> 实测结果：viewBox `0 0 1578 893`（正常）、竖条宽 281（label 换行后不撑宽）、子容器左距 60 = 右距 60（居中）、PNG 正常输出。**规避要点**：单 class（module）、左主体 1×1 grid、竖条不设 width（见 §6.16/§6.13 B）。
+>
+> **实测结果**（产品能力分层图，v0.8.1）：viewBox `0 0 1578 893`（正常）、竖条宽 281（label 换行后不撑宽）、子容器左距 60 = 右距 60（居中）。**规避要点**：单 class（module）、左主体 1×1 grid、竖条不设 width（见 §6.16/§6.13 B）。
 
 ### 5.5 层内分区（grid 嵌套，2×2 子模块）
 
@@ -711,7 +508,7 @@ classes: {
 }
 ```
 
-2×2 嵌套（图1）：父容器 `grid-columns: 2` 分 2 个分区，每个分区再 `grid-columns: 2` 放 4 个子容器。**各分区子容器 width 一致**（6.11），父容器 width 按 6.9 公式算。
+2×2 嵌套（图1）：父容器 `grid-columns: 2` 分 2 个分区，每个分区再 `grid-columns: 2` 放 4 个子容器。**各分区子容器 width 一致**（6.11），父容器 width 按 §6.13 公式算。
 
 ---
 
@@ -740,13 +537,13 @@ ELK/dagre **不会自动纵向堆叠无连接的独立子容器**——实测会
 **实测陷阱**（本机 D2 v0.8.1 + ELK 验证）：grid 列宽**默认由该列内容宽度决定，不会自动均分容器宽度**。
 
 - ❌ 不设 width：3 个模块层 = 4 个模块层宽度不同 → 视觉参差；2 个模块层右侧留白 60%
-- ✅ 设 width（按 §6.9 公式）：所有模块完全等宽且撑满父容器，等距 gap 均匀分布
+- ✅ 设 width（按 §6.13 公式）：所有模块完全等宽且撑满父容器，等距 gap 均匀分布
 
 ```d2
 入口层: {
   width: 1000
   grid-columns: 3
-  h1: { width: 317; height: 60; class: module }    # ← 固定 width 必须（§6.9: (1000−24−24)/3 = 317）
+  h1: { width: 317; height: 60; class: module }    # ← 固定 width 必须（§6.13: (1000−24−24)/3 = 317）
   h2: { width: 317; height: 60; class: module }
   h3: { width: 317; height: 60; class: module }
 }
@@ -796,27 +593,9 @@ TALA 是**闭源付费引擎**（商用需许可，免费版有水印），本 s
 
 中文字符在 ELK/dagre 下按 2 列宽处理，ASCII 输出时字符间会被插入对齐空格（如"应用"渲染为"应 用"）。**自检注意事项见 §7.2**（用 cat 全文阅读，不要 grep 中文字面）。
 
-### 6.9 子容器 `width` 撑满公式（稳定基线核心）
+### 6.9 子容器 `width` 撑满公式（已并入 §6.13）
 
-> 完整版见 [6.13 尺寸计算规则](#613-尺寸计算规则父容器与子容器核心约束)（含确定性公式/垂直分布/边界约束/trade-off）。本条为基础公式 + 速查表。
-
-ELK 的 grid **不会自动均分容器宽度**——列宽 = 该列子容器 width（不设 width 则取内容宽）。要让子容器**恰好撑满父容器**，必须手算 width：
-
-```
-子容器 width = (父容器 width − 内边距 − (每行列数 N − 1) × grid-gap) / N
-```
-
-其中 **N = 该层的 `grid-columns` 值**，内边距 ≈ 24（左右各 12）。速查表（父容器 width:1000，gap:12，内边距≈24）：
-
-| 每行列数 N | 子容器 width | 每行总宽 |
-| ---------- | ------------ | -------- |
-| 2          | 482          | 976      |
-| 3          | 317          | 975      |
-| 4          | 235          | 976      |
-| 5          | 185          | 973      |
-| 6          | 152          | 972      |
-
-> 其他父容器宽度：子容器 width 按比例缩放即可（如父 780 → (780−24−24)/4 = 183）。**超界判断**（子总宽是否挤出）用 §6.13 的"父宽−4 阈值"，本条只算 width。
+> 公式与速查表已并入 [§6.13 尺寸计算规则](#613-尺寸计算规则父容器与子容器核心约束)（确定性公式 + 折叠速查表 + 边界约束）。本条仅保留关键认知。
 
 **关键认知**：撑满与否取决于**每行的列数 N**（即 grid-columns 值），不是子容器总数。子容器总数 > N 时会换行（见 6.10），每行宽度由 N 决定。
 
@@ -824,7 +603,7 @@ ELK 的 grid **不会自动均分容器宽度**——列宽 = 该列子容器 wi
 
 `grid-columns: 3` 放 6 个子容器 = 3 列 × 2 行，自动换行。先写 `grid-rows` → 行主导（先填满行）；先写 `grid-columns` → 列主导（先填满列，默认视觉横向）。
 
-**核心认知（影响宽度计算）**：想等宽撑满时，**N 必须取每行列数**（如 6 子想要 2 行 3 列 → `grid-columns: 3`，width 按 §6.9 算 317），不是子容器总数。
+**核心认知（影响宽度计算）**：想等宽撑满时，**N 必须取每行列数**（如 6 子想要 2 行 3 列 → `grid-columns: 3`，width 按 §6.13 算 317），不是子容器总数。
 
 ### 6.11 同一列等宽约束
 
@@ -858,11 +637,11 @@ grid **同一列的单元格等宽、同一行的等高**（取该列/行最大�
    子容器 width = (父容器 width − 内边距 − (N − 1) × grid-gap) / N
    ```
 
-   其中 N = 该行子容器个数（= grid-columns 值），内边距 ≈ 24。**速查表见 §6.9**（父 1000 / gap 12 / 内边距 24 的 N=2~6 对应宽度）。
+   其中 N = 该行子容器个数（= grid-columns 值），内边距 ≈ 24。**速查表见 §6.13**（父 1000 / gap 12 / 内边距 24 的 N=2~6 对应宽度）。
 
    如果算出的 width 放不下文本（子容器文本溢出），**禁止超宽硬塞**——见 6.14 的 trade-off。
 
-2. **垂直：子容器在父容器内均匀分布，不能挤在任意一侧**（ELK 实测结论）：
+2. **垂直：子容器在父容器内均匀分布，不能挤在任意一侧**（ELK 实测结论；垂直居中仅单列容器要求，见 §1.3 铁律 2）：
 
    **背景**：竖条/标签列等父容器的高度往往由外层 grid 决定（与主体现高），远大于子容器内容自然高。ELK 不会自动把子容器拉伸填满超高容器，需要手算。实测六种写法效果：
 
@@ -916,14 +695,29 @@ grid **同一列的单元格等宽、同一行的等高**（取该列/行最大�
    >
    > - **24px**（左 12 + 右 12）= **设计留白**，用于"视觉上撑满且左右留白"的**宽度计算**：`子width = (父宽 − 24 − (N−1)×gap) / N`
    > - **4px** = **ELK 居中安全阈值**，用于**超界判断**（ELK 实测：子总宽 > 父宽−4 时挤出右边界）：`Σ子宽 + (N−1)×gap ≤ 父宽 − 4`
-   >   算 width 用 24，判断超界用 4，二者不冲突。速查表（上表）用的就是 24 口径。
+   >   算 width 用 24，判断超界用 4，二者不冲突。速查表（下方折叠表）用的就是 24 口径。
+
+   <details>
+   <summary><b>速查表（设计宽度，24 口径；父容器 width:1000，gap:12，内边距≈24）</b></summary>
+
+   | 每行列数 N | 子容器 width | 每行总宽 |
+   | ---------- | ------------ | -------- |
+   | 2          | 482          | 976      |
+   | 3          | 317          | 975      |
+   | 4          | 235          | 976      |
+   | 5          | 185          | 973      |
+   | 6          | 152          | 972      |
+
+   其他父容器宽度：子容器 width 按比例缩放即可（如父 780 → (780−24−24)/4 = 183）。**超界判断**（子总宽是否挤出）用上方"父宽−4 阈值"，本表只算设计宽度。
+
+   </details>
 
    ```
    A. 多列容器 (grid-columns: N, N ≥ 2):
       ELK 行为: 整组子容器自动居中 (左距 = 右距)
       安全条件: Σ子width + (N−1)×grid-gap ≤ 父宽 − 4
       # 注意: 这是"超界临界值"判断 (ELK 实测阈值), 不是设计宽度!
-      # 实际设计宽度用 §6.9/速查表公式: 子width = (父宽 − 24 − (N−1)×gap) / N
+      # 实际设计宽度用速查表公式: 子width = (父宽 − 24 − (N−1)×gap) / N
       验证: 父340, N=3, gap=4 → 设计宽度 (340−24−8)/3 = 102.7 → 102
             3×102+8=314 ≤ 336 ✓ 不超界; 若按临界值 109 → 3×109+8=335 仍 ≤336
             # 102 (设计) 与 109 (临界) 都在安全区, 但设计宽度用 102 才有左右留白
@@ -1023,9 +817,9 @@ label: "③ 共享业务服务层（横向能力 · 被多个垂直能力共用�
 
 1. **定结构**：与用户对齐层数/每层模块/标签样式（§2 工作流）。
 2. **按 §6.13 公式算出每个容器、每个子容器的 width**：
-   - 多列容器（grid-columns:N, N≥2）：`子width = (父宽−24−(N−1)×gap)/N`（设计宽度，§6.9/§6.13），**整组自动居中**；超界判断用 `Σ子宽+(N−1)×gap ≤ 父宽−4`
+   - 多列容器（grid-columns:N, N≥2）：`子width = (父宽−24−(N−1)×gap)/N`（设计宽度，§6.13），**整组自动居中**；超界判断用 `Σ子宽+(N−1)×gap ≤ 父宽−4`
    - 单列容器/竖条（grid-columns:1）：**不设 width**，让 ELK 按子容器+等边距自动包裹 → 子容器天然居中（v0.8.1 实测，见 §6.13 B）
-   - 每一层嵌套都要算（A→B→C→D 每层），**不能只算最外层**。
+   - 每一层嵌套都要算（A→B→C→D 每层，见 §6.13），**不能只算最外层**。
 3. **按 §4.8 给每个节点挂圆角 class**（border-radius）——**含最外层 wrapper 容器**（如 `整体架构: { ... }` 这个整体容器，用 `border-radius: 16`）。实测坑：漏外层容器 → verify 报"1 个图形无圆角"，靠坐标+label 定位（见 §7.1）。
 4. **检查 label 长度**：子容器 width 是否放得下最长的 label？放不下 → §6.14 trade-off（缩文本/改布局/扩父容器/消减子项数，**禁止接受超界**）。
 
@@ -1088,7 +882,7 @@ python3 scripts/verify-svg.py <渲染出的.svg>
 python3 scripts/d2-workbench.py extract docs.md --name "系统架构图"
 # 改图迭代：编辑工作区 .d2 后
 python3 scripts/d2-workbench.py render docs-fig1.d2
-# 回写 md（替换原代码块 + base64 fallback 只留 1 份，块数断言防多张图）
+# 回写 md（替换原代码块，默认无 fallback，自动 round-trip 校验并防多张图）
 python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 --name "系统架构图"
 ```
 
@@ -1140,25 +934,19 @@ grep -o 'viewBox="[^"]*"' "$SVG"
 
 **回环规则**：脚本 FAIL 或辅助检查 FAIL → 按 §6.13 超界排查序定位根因（label 撑宽/N 取错/公式）→ 修改 d2 代码 → 重渲染重跑脚本，最多 3 轮；3 轮未通过 → 回到 [第 3 节](#3-ascii-架构确认画图前必做) 重新确认 ASCII 架构本身。
 
-### 7.4 SVG fallback 嵌入（渲染器不支持 d2 时）
+### 7.4 SVG fallback 嵌入（渲染器不支持 d2 时，按需）
 
-**背景**：部分 Markdown 渲染器不渲染 ` ```d2 ` 代码块（只显示代码文本），用户看到"空白"。**解决**：在 d2 代码块后追加一个 SVG fallback（`<img src="data:image/svg+xml;base64,...">`），确保任何渲染器都能显示图。
+**背景**：部分 Markdown 渲染器不渲染 ` ```d2 ` 代码块（只显示代码文本）， historically 用 SVG fallback（`<img src="data:image/svg+xml;base64,...">`）兜底。但当目标渲染器已原生支持 ` ```d2 `（如本项目、GitHub 等），双轨并存会导致双图重复，且 34KB base64 不可 diff，违反项目宪法定"文本可 diff"原则（fallback 应走 ASCII 文本图，见 CONSTITUTION §3.2）。
 
-````markdown
-```d2
-...（d2 代码块，供支持 D2 的渲染器）
-```
-````
+**硬性规则**：
 
-<img src="data:image/svg+xml;base64,<base64 编码的 SVG>">
-```
+1. **渲染器已支持 ` ```d2 ` 时禁止嵌入 img fallback**（会产生双图）。本项目即此场景，`sync` 默认 **不写 fallback**。
+2. **fallback 加开关**：`sync --fallback=none|img`（默认 `none`）/`--remove-fallback`。`none`=不插入不更新；`img`=显式嵌入 base64 img。无开关时不写 fallback。
+3. **只保留一份**：`img` 模式下更新时先删所有旧 fallback 再插入新的；删除以 `<!-- D2 渲染 Fallback SVG` 锚定的整段（正则 `\n<!-- D2 渲染 Fallback SVG.*?/>\n`，自闭合 `/>` 结尾）。
+4. **清理历史污染**：`python3 scripts/d2-workbench.py clean-fallback docs.md` 或 `sync --remove-fallback` 删除 `<!-- D2 渲染 Fallback SVG -->` 及其后 img 行。
+5. **fallback 保留时遵循项目图规范**：本项目fallback 走 **ASCII 文本图**，不在 md 嵌入 base64 img；需 img 时显式 `--fallback=img`。
 
-**规则**：
-
-1. **只保留一份 fallback**——更新时先删所有旧 fallback 再插入新的
-2. **删除用 `.*?/>` 正则**（fallback 是自闭合 img 标签，结尾是 `/>` 不是 `</div>`——用 `</div>` 删不掉会累积成多张图）
-3. 代码块 + fallback 双轨并存：代码块供支持 D2 的渲染器，img 供普通渲染器
-4. base64 编码方法：`base64 -i out.svg`（macOS）或 `openssl base64 -in out.svg`
+**sync 同步语义（修复后）**：`sync` 自动保证围栏独占一行（` ```d2\n` + 内容 + `\n``` `，`D2_BLOCK_RE` 要求闭合围栏独占一行，粘连直接报错），写回后强制 **round-trip 回读校验**（extract 第 N 块 → `d2 validate` → 渲染 → `verify-svg.py` → viewBox），任一失败则回滚本次写回并以非零码退出。
 
 ---
 

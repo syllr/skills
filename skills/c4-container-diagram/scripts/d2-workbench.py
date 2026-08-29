@@ -29,8 +29,9 @@ import shutil
 VERIFY_SCRIPT = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "verify-svg.py"
 )
-D2_BLOCK_RE = re.compile(r"```d2\n(.*?)```", re.DOTALL)
+D2_BLOCK_RE = re.compile(r"```d2\n(.*?)\n```", re.DOTALL)
 FALLBACK_RE = re.compile(r"\n<!-- D2 渲染 Fallback SVG.*?/>\n", re.DOTALL)
+MALFORMED_RE = re.compile(r"```d2\n.*?```", re.DOTALL)
 
 
 def err(msg):
@@ -53,9 +54,14 @@ def check_d2():
 
 
 def extract_blocks(md_path):
-    """返回所有 d2 代码块内容列表。"""
     content = open(md_path, encoding="utf-8").read()
+    # 加固：闭合围栏必须独占一行；粘连 `}```` 直接报错而非静默匹配
+    malformed_cnt = len(MALFORMED_RE.findall(content))
     blocks = D2_BLOCK_RE.findall(content)
+    if malformed_cnt != len(blocks):
+        err(
+            f"{md_path} 存在围栏粘连（闭合 ``` 未独占一行，如 `}}````），已拒绝处理，请修复围栏换行"
+        )
     if not blocks:
         err(f"{md_path} 中未找到任何 ```d2 代码块")
     return blocks, content
@@ -138,13 +144,6 @@ def resolve_index(args, blocks, names):
             f"请指定图序号（extract <md> N）或用 --name 图名匹配。文档 d2 块：\n  {listing}"
         )
     return 0  # sync 无 index/name 默认第 1 块
-    out_dir = args.out or "."
-    os.makedirs(out_dir, exist_ok=True)
-    stem = os.path.join(
-        out_dir,
-        f"{os.path.splitext(os.path.basename(args.md))[0]}-fig{args.index or 1}",
-    )
-    d2_path = stem + ".d2"
 
 
 def cmd_extract(args):
@@ -185,6 +184,7 @@ def cmd_sync(args):
     if not os.path.exists(args.file):
         err(f"{args.file} 不存在")
     new_d2 = open(args.file, encoding="utf-8").read().rstrip("\n")
+    original_content = open(args.md, encoding="utf-8").read()
     blocks, content = extract_blocks(args.md)
     names = block_names(blocks)
     n = resolve_index(args, blocks, names)
@@ -195,49 +195,96 @@ def cmd_sync(args):
             f"便于后续语义定位（§2.1 分诊）"
         )
 
-    # 1. 精确替换第 N 个代码块（用 span 定位，不用 replace count=1——避免
-    #    两个块内容相同时替换错位置；也不会新增块，从机制上防"多张图"）
     before = len(blocks)
     matches = list(D2_BLOCK_RE.finditer(content))
     m = matches[n]
-    content = content[: m.start()] + "```d2\n" + new_d2 + "```" + content[m.end() :]
+    content = content[: m.start()] + "```d2\n" + new_d2 + "\n```" + content[m.end() :]
 
-    # 块数一致性断言：修改不应增删代码块（防止误把"修改"做成"追加"）
     after = len(list(D2_BLOCK_RE.finditer(content)))
     if after != before:
         err(f"同步后 d2 块数 {after} ≠ 替换前 {before}——修改不应增删代码块，已中止回写")
 
-    # 2. 重新定位替换后的第 N 个块，删除其后的旧 fallback
     blocks2 = list(D2_BLOCK_RE.finditer(content))
     blk = blocks2[n]
-    m = FALLBACK_RE.search(content, blk.end())
-    if m:
-        content = content[: m.start()] + content[m.end() :]
+    fm = FALLBACK_RE.search(content, blk.end())
+    if fm:
+        content = content[: fm.start()] + content[fm.end() :]
 
-    # 3. 渲染新 SVG → base64 fallback，插入到该块之后
-    stem = os.path.join(
-        os.path.dirname(args.md), os.path.splitext(os.path.basename(args.file))[0]
-    )
-    svg = stem + ".svg"
-    check_d2()
-    run(["d2", args.file, svg], f"d2 渲染 → {os.path.basename(svg)}")
-    if not check_viewbox(svg):
-        err("viewBox 异常，已中止回写（防止把坏图嵌入文档）")
-    b64 = base64.b64encode(open(svg, encoding="utf-8").read().encode()).decode()
-    fallback = (
-        f"\n<!-- D2 渲染 Fallback SVG -->\n"
-        f'<img src="data:image/svg+xml;base64,{b64}" '
-        f'alt="容器图（D2 渲染）" style="max-width:100%;height:auto;" />\n'
-    )
-    blocks3 = list(D2_BLOCK_RE.finditer(content))
-    blk3 = blocks3[n]
-    content = content[: blk3.end()] + fallback + content[blk3.end() :]
+    fallback_mode = getattr(args, "fallback", "none")
+    if getattr(args, "remove_fallback", False):
+        fallback_mode = "none"
+
+    if fallback_mode == "img":
+        stem = os.path.join(
+            os.path.dirname(args.md), os.path.splitext(os.path.basename(args.file))[0]
+        )
+        svg = stem + ".svg"
+        check_d2()
+        run(["d2", args.file, svg], f"d2 渲染 → {os.path.basename(svg)}")
+        if not check_viewbox(svg):
+            err("viewBox 异常，已中止回写（防止把坏图嵌入文档）")
+        b64 = base64.b64encode(open(svg, encoding="utf-8").read().encode()).decode()
+        fallback = (
+            f"\n<!-- D2 渲染 Fallback SVG -->\n"
+            f'<img src="data:image/svg+xml;base64,{b64}" '
+            f'alt="容器图（D2 渲染）" style="max-width:100%;height:auto;" />\n'
+        )
+        blocks3 = list(D2_BLOCK_RE.finditer(content))
+        blk3 = blocks3[n]
+        content = content[: blk3.end()] + fallback + content[blk3.end() :]
+        fb_cnt = content.count("D2 渲染 Fallback SVG")
+    else:
+        fb_cnt = content.count("D2 渲染 Fallback SVG")
 
     open(args.md, "w", encoding="utf-8").write(content)
-    print(
-        f"✅ 已同步回 {args.md}（第 {n + 1} 个 d2 块{name_note} + fallback 已更新，仅 1 份）"
-    )
-    print(f"   fallback 数量: {content.count('D2 渲染 Fallback SVG')}")
+
+    try:
+        v_blocks, _ = extract_blocks(args.md)
+        if len(v_blocks) != before:
+            raise RuntimeError(f"回读校验：块数 {len(v_blocks)} ≠ 期望 {before}")
+        verify_d2 = v_blocks[n]
+        stem_v = os.path.join(
+            os.path.dirname(args.md), os.path.splitext(os.path.basename(args.file))[0]
+        )
+        tmp_d2 = stem_v + ".verify.d2"
+        tmp_svg = stem_v + ".verify.svg"
+        open(tmp_d2, "w", encoding="utf-8").write(verify_d2)
+        run(["d2", "validate", tmp_d2], "回读校验 d2 validate")
+        run(["d2", tmp_d2, tmp_svg], "回读校验 d2 渲染")
+        if not check_viewbox(tmp_svg):
+            raise RuntimeError("回读校验 viewBox 异常")
+        run(["python3", VERIFY_SCRIPT, tmp_svg], "回读校验 verify-svg")
+        for p in (tmp_d2, tmp_svg):
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+    except SystemExit as e:
+        open(args.md, "w", encoding="utf-8").write(original_content)
+        raise
+    except Exception as e:
+        open(args.md, "w", encoding="utf-8").write(original_content)
+        err(f"回读校验失败已回滚：{e}")
+
+    if fallback_mode == "img":
+        print(
+            f"✅ 已同步回 {args.md}（第 {n + 1} 个 d2 块{name_note} + fallback 已更新，仅 1 份）"
+        )
+    else:
+        print(f"✅ 已同步回 {args.md}（第 {n + 1} 个 d2 块{name_note}，无 fallback）")
+    print(f"   fallback 数量: {fb_cnt}")
+    print("   回读校验: PASS（extract → validate → render → verify-svg → viewBox）")
+
+
+def cmd_clean_fallback(args):
+    content = open(args.md, encoding="utf-8").read()
+    original = content
+    new_content, n = FALLBACK_RE.subn("", content)
+    if n == 0:
+        print(f"{args.md} 无 fallback，已干净")
+        return
+    open(args.md, "w", encoding="utf-8").write(new_content)
+    print(f"✅ 已清理 {args.md} 的 {n} 个 fallback")
 
 
 def main():
@@ -254,12 +301,26 @@ def main():
     pr.add_argument("file")
 
     ps = sub.add_parser(
-        "sync", help="把工作区 .d2 同步回 Markdown（代码块 + fallback）"
+        "sync", help="把工作区 .d2 同步回 Markdown（代码块 + 按需 fallback）"
     )
     ps.add_argument("md")
     ps.add_argument("file")
     ps.add_argument("index", nargs="?", type=int, help="图序号（默认 1）")
     ps.add_argument("--name", help="按图名语义匹配（首行注释，中英任一）")
+    ps.add_argument(
+        "--fallback",
+        choices=["none", "img"],
+        default="none",
+        help="fallback 模式：none=不插入（默认，原生支持 d2 的渲染器）/ img=嵌入 base64 img",
+    )
+    ps.add_argument(
+        "--remove-fallback",
+        action="store_true",
+        help="等同 --fallback none，并清理已有 fallback",
+    )
+
+    pc = sub.add_parser("clean-fallback", help="清理文档中所有 D2 fallback img")
+    pc.add_argument("md", help="目标 Markdown 文件")
 
     args = p.parse_args()
     if args.mode == "extract":
@@ -268,6 +329,8 @@ def main():
         cmd_render(args)
     elif args.mode == "sync":
         cmd_sync(args)
+    elif args.mode == "clean-fallback":
+        cmd_clean_fallback(args)
 
 
 if __name__ == "__main__":
