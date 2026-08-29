@@ -88,22 +88,24 @@ def check_viewbox(svg_path):
     return True
 
 
-def render_and_verify(d2_path, out_stem, want_png=True):
-    """渲染 .d2 → .svg(+.png) + verify-svg.py + viewBox 检查。"""
+def render_and_verify(d2_path, out_stem, want_png=False):
+    """渲染 .d2 → .svg(+.png, 仅显式 --png) + verify-svg.py + viewBox 检查。"""
     check_d2()
     svg = out_stem + ".svg"
     run(["d2", d2_path, svg], f"d2 渲染 → {os.path.basename(svg)}")
     ok = check_viewbox(svg)
-    r = run(["python3", VERIFY_SCRIPT, svg], "verify-svg.py 校验")
     png = None
     if want_png and shutil.which("sips"):
         png = out_stem + ".png"
-        run(
+        subprocess.run(
             ["sips", "-s", "format", "png", svg, "--out", png],
-            f"sips 转 PNG → {os.path.basename(png)}",
-        )
-    png_note = f" + {os.path.basename(png)}" if png else ""
-    print(f"\n✅ 工作产物: {svg}{png_note}")
+            capture_output=True,
+            text=True,
+        )  # PNG 仅供用户看视觉，失败不阻断校验
+    png_note = f" + {os.path.basename(png)}" if png and os.path.exists(png) else ""
+    print(f"工作产物: {svg}{png_note}")
+    r = run(["python3", VERIFY_SCRIPT, svg], "verify-svg.py 校验")
+    print(f"✅ 工作产物: {svg}{png_note}")
     if r.returncode == 0 and ok:
         print("✅ verify 全部通过")
     else:
@@ -112,11 +114,25 @@ def render_and_verify(d2_path, out_stem, want_png=True):
 
 
 def block_names(blocks):
-    """提取每个 d2 块的首行注释（图名标识，§2 步骤 4：`# 图名`）；首行非注释 = 无名"""
+    """提取每个 d2 块的图名（§2 步骤 4：`# 图名`）。
+
+    扫描块内**所有前导注释行**（含元信息块），优先匹配 `# 图名[:：]` 行，
+    无则回退首行；若无任何注释则返回空串（无名块）。
+    """
     names = []
     for b in blocks:
-        first = b.strip().split("\n", 1)[0].strip() if b.strip() else ""
-        names.append(first if first.startswith("#") else "")
+        name = ""
+        for line in b.strip().split("\n"):
+            line = line.strip()
+            if not line.startswith("#"):
+                break
+            m = re.search(r"#\s*图名[:：]\s*(.+)", line)
+            if m:
+                name = m.group(1).strip()
+                break
+            if not name:
+                name = line.lstrip("#").strip()
+        names.append(name)
     return names
 
 
@@ -129,6 +145,8 @@ def resolve_index(args, blocks, names):
         if not hits:
             err(
                 f"图名 '{args.name}' 与文档所有块注释都匹配不上，文档里有：\n  {listing}"
+                f"\n提示: ① 图名可能不在首行（首行是元信息块，如 `# 图标准元信息`）——"
+                f"用 `# 图名: xxx` 显式标注，或改用图序号 `extract <md> N` 精确指定"
             )
         if len(hits) > 1:
             multi = "\n  ".join(f"{i + 1}: {names[i]}" for i in hits)
@@ -164,20 +182,20 @@ def cmd_extract(args):
     print(f"已提取第 {n + 1} 个 d2 块{name_note} → {d2_path}")
     if not names[n]:
         print(
-            f"  ⚠️ 该块无图名（首行无注释）——建议先补 `# 图名` 再改，"
+            f"  ⚠️ 该块无有效图名（前导注释非 `# 图名: xxx`）——建议先补 `# 图名: xxx` 再改，"
             f"便于后续语义定位（§2.1 分诊）"
         )
     print(
         f"改图工作流: 编辑 {d2_path} → python3 scripts/d2-workbench.py render {d2_path} → "
         f"python3 scripts/d2-workbench.py sync {args.md} {d2_path} {n + 1}"
     )
-    if render_and_verify(d2_path, stem):
+    if render_and_verify(d2_path, stem, want_png=getattr(args, "png", False)):
         print("✅ 提取 + 校验通过，可以开始修改")
 
 
 def cmd_render(args):
     stem = os.path.splitext(args.file)[0]
-    render_and_verify(args.file, stem, want_png=True)
+    render_and_verify(args.file, stem, want_png=getattr(args, "png", False))
 
 
 def cmd_sync(args):
@@ -294,11 +312,21 @@ def main():
     pe = sub.add_parser("extract", help="从 Markdown 提取 d2 块到工作区（含渲染+校验）")
     pe.add_argument("md")
     pe.add_argument("index", nargs="?", type=int, help="图序号（默认需指定）")
-    pe.add_argument("--name", help="按图名语义匹配（首行注释，中英任一）")
+    pe.add_argument("--name", help="按图名语义匹配（前导注释，中英任一）")
     pe.add_argument("--out", default=".", help="工作区目录（默认当前目录）")
+    pe.add_argument(
+        "--png",
+        action="store_true",
+        help="额外生成 PNG（默认不生成，仅看视觉效果时用）",
+    )
 
     pr = sub.add_parser("render", help="渲染工作区 .d2 → .svg/.png + 校验（改图迭代）")
     pr.add_argument("file")
+    pr.add_argument(
+        "--png",
+        action="store_true",
+        help="额外生成 PNG（默认不生成，仅看视觉效果时用）",
+    )
 
     ps = sub.add_parser(
         "sync", help="把工作区 .d2 同步回 Markdown（代码块 + 按需 fallback）"

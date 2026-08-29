@@ -45,9 +45,11 @@ TALA 是**闭源付费引擎**（商用需许可，免费版有水印），本 s
 
 **触发条件**（多条独立路径，命中任一即可能溢出，实测定位）：
 
-- 多 class（≥2 种 class 各自带 fill/stroke）+ 深嵌套 grid（>2 层）+ 竖条 组合
+- 多 class（≥2 种 class **各自带独立 fill/stroke，样式在同一节点上冲突归属**）+ 深嵌套 grid（>2 层）+ 竖条 组合
 - 左主体容器内部写 `grid-rows: 2` 或 `grid-rows: 3`（而非标准 1×1）
 - 深度嵌套 grid（≥3 层）+ 长 label 也可能触发
+
+> **免责澄清**：**并非所有多 class 都会溢出**。若 `module` 类只带形状（border-radius/stroke-width），热力类（`core`/`support`/`edge`）只带 fill、状态类（`planned`）只带 stroke-dash——`[module; core; planned]` 这种「职责分离」的多 class 是**安全**的（实测产品能力架构图，见 references/templates.md §5.6）。溢出的关键是「多个 class 同时写独立 fill」导致样式归属冲突。
 
 > **关键认知**：触发路径不止一条（修改时加 class/加层都可能是诱因）。**只要遵守规避写法（单 class + 外层 1×1 grid + 竖条不设 width）就不会溢出**——修改后溢出时按这三点排查，而不是怀疑"class 数量是不是问题"。
 

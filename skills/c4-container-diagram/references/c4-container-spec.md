@@ -200,4 +200,7 @@ classes: {
 2. **每个容器/分区/层**显式写 `style.border-radius`（大容器 8~12，见 §4.5；容器比子模块圆角略大）。
 3. **检查**：渲染后数 SVG 里 `rx` 属性的 rect 数量——应等于全部图形数量，无直角矩形（`rx` 缺失 = 漏设）。
 4. **对比度**：`module` class 设 `font-color` 与 `stroke-width`，`fill/stroke` 由节点 `style.fill`/`style.stroke` 自写（浅底用 `#1e293b` 或对应色相深色档、深底用 `#ffffff` 白）——不能依赖主题默认浅色文字（§4.2 对比度铁律）。
-5. **⚠️ 单 class 铁律（实测 v0.8.1，见 d2-syntax-cheatsheet viewBox 溢出）**：**禁止多 class（≥2 种 class 各自带 fill/stroke）+ 深嵌套（>2 层）+ 竖条** 组合——会触发 ELK int64 溢出（viewBox=-9e18 空白图）。**必须用单一 `module` class**，颜色差异由节点 `style.fill`/`style.stroke` 自写，不要分散成多个 class。
+5. **多 class 铁律（精确化，实测 v0.8.1）**：**并非所有多 class 都禁用**——真正触发 ELK int64 溢出（viewBox=-9e18 空白）的组合是「**多个 class 各自带独立 `fill`/`stroke` 且叠加在同一个节点上**」（样式归属不明确）。**安全的多 class**：`module` 类**只负责形状**（`border-radius`/`stroke-width`），**不带 fill/stroke 填充冲突**；颜色/线型由其它类（如热力类 `core`/`support`/`edge` 只带 fill，状态类 `planned` 只带 `stroke-dash`）或节点 `style.fill` 单独提供——这样 `[module; core; planned]` 组合安全（见 references/templates.md §5.6 产品能力架构图）。
+   - ❌ **禁用**：≥2 个 class **各自写独立 `fill`**（样式同节点上冲突归属）→ ELK int64 溢出（空白图）
+   - ✅ **安全**：`module`（只形状）+ 热力类（只 fill）+ 状态类（只 stroke-dash）叠加
+   - ⚠️ **深嵌套 + 竖条 也是叠加诱因**：即使 class 安全，深嵌套 grid（>2 层）+ 竖条组合仍可能触发，需同时满足「单 class 或安全多 class」「外层 1×1 grid」「竖条不设 width」（见 d2-syntax-cheatsheet §6.16）

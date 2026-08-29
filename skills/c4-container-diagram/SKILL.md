@@ -1,6 +1,6 @@
 ---
 name: c4-container-diagram
-description: 用 D2（d2lang.com）画**容器式分层图**——多层大容器纵向嵌套、每层内含若干子容器、子容器等宽均匀分布、左右居中对称、全圆角矩形的图。典型形态包括：C4 model Container Diagram（c4model.com 标准第 2 层图）、技术架构图、产品架构图、业务能力分层图、微服务架构图等——**凡是"大容器套小容器、分层堆叠"的图都适用**，不限于技术架构。展示系统/产品/业务的容器划分（应用、服务、数据存储、业务模块等）与容器间通信关系。Markdown 内嵌 ```d2 代码块渲染。当用户要画容器图 / 分层架构图 / 容器架构图 / 多层嵌套图 / C4 Container Diagram 时使用。**不在此范围**：流程图、时序图、ER 图、UML 类图、C4 的 Component/Code 层（组件级调用）——请用其他 skill。⚠️ 铁律：每一层嵌套（A→B→C→D）都必须为子容器显式算 width（公式见 references/layout-and-grid.md；**唯一例外：单列竖条不设 width**，让 ELK 自动包裹居中）。⚠️ 多板图（layers/scenarios/steps）禁用。
+description: 用 D2（d2lang.com）画**容器式分层图**——多层大容器纵向嵌套、每层内含若干子容器、子容器等宽均匀分布、左右居中对称、全圆角矩形的图。典型形态包括：C4 model Container Diagram（c4model.com 标准第 2 层图）、技术架构图、产品架构图、业务能力分层图、微服务架构图等——**凡是"大容器套小容器、分层堆叠"的图都适用**，不限于技术架构。**含产品能力架构图**（Product Capability Architecture Map：一张图三通道编码——布局=分层、线型=状态[实线=已实现/虚线=规划中]、颜色=优先级热力[红=核心/橙=支撑/灰=边缘]，配套图例 + 主体/竖条分栏），模板见 references/templates.md §5.6。展示系统/产品/业务的容器划分（应用、服务、数据存储、业务模块等）与容器间通信关系。Markdown 内嵌 ```d2 代码块渲染。当用户要画容器图 / 分层架构图 / 容器架构图 / 多层嵌套图 / C4 Container Diagram / 产品能力架构图 / 业务能力分层图时使用。**不在此范围**：流程图、时序图、ER 图、UML 类图、C4 的 Component/Code 层（组件级调用）——请用其他 skill。⚠️ 铁律：每一层嵌套（A→B→C→D）都必须为子容器显式算 width（公式见 references/layout-and-grid.md；**唯一例外：单列竖条不设 width**，让 ELK 自动包裹居中）。⚠️ 多板图（layers/scenarios/steps）禁用。
 ---
 
 # 容器式分层图技能（C4 Container 实现 · D2）
@@ -18,6 +18,7 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 
 - **C4 model Container Diagram**：展示**一个软件系统由哪些容器组成**（C4 官方定义："A container represents an application or data store... The container diagram shows the high-level technology choices and how the containers communicate with one another."）。
 - **技术架构图 / 产品架构图 / 业务能力分层图 / 微服务架构图**等：只要符合"多层大容器纵向嵌套 + 子容器分布"的形态，都适用本 skill。
+- **产品能力架构图**（Product Capability Architecture Map）：容器式分层图的高频变体——在分层基础上叠加**三通道编码**（布局=分层、线型=状态、颜色=优先级热力）+ 图例，用于"能力在哪层、做到哪一步、先做哪个"。完整模板见 [references/templates.md §5.6](references/templates.md)。
 
 **不在此范围**（见 frontmatter description 完整清单）：流程图、时序图、ER 图、UML 类图、C4 Component/Code 层。
 
@@ -78,7 +79,7 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 - 多块匹配不上：文档有多个 d2 块，用户说的图名与所有块首行注释都匹配不上 → 列出各块图名让用户选（"文档里有：① 系统架构图 System Architecture ② 部署架构图 Deployment... 改哪个？"）
 - 完全无位置：只说"画一张图"没给任何文档线索 → 问"画在哪？"
 
-**信息收集（定位靠图名，不靠序号）**：Read 目标文档，提取所有 ```d2 块的**第一行注释（图名）**，与用户提到的图名做**语义匹配**（中英文任一对上即命中）。**⚠️ 目标图无图名（首行无注释）时：先问用户"要不要给它加个名字？"**——可建议按图中内容起名（如"应用架构图"），用户确认后**先补上名字再改**，逐步收敛到文档里所有图都有名可查。**未完成分诊（三选一明确）前，禁止写 d2 代码**。
+**信息收集（定位靠图名，不靠序号）**：Read 目标文档，提取所有 ```d2 块的**前导注释行（图名，优先 `# 图名: xxx`，允许首行放元信息块）**，与用户提到的图名做**语义匹配**（中英文任一对上即命中）。**⚠️ 目标图无有效图名（无前导注释）时：先问用户"要不要给它加个名字？"**——可建议按图中内容起名（如"应用架构图"），用户确认后**先补上名字再改**，逐步收敛到文档里所有图都有名可查。**未完成分诊（三选一明确）前，禁止写 d2 代码**。
 
 > **渲染方式**：d2 代码块由项目 Markdown 渲染引擎自动渲染（内嵌 ```d2 即渲染）。AI **不手动渲染 SVG 到文件**——所有图产物在 Markdown 代码块中。**仅在自检时临时渲染 SVG 用脚本验证**（见 [references/troubleshooting.md](references/troubleshooting.md)）。
 
@@ -91,7 +92,7 @@ description: 用 D2（d2lang.com）画**容器式分层图**——多层大容�
 1. **定位目标 Markdown 文档**：确认插入位置（新建）或目标代码块（修改）。**未确认目标文档前，禁止写 d2 代码**
 2. **对齐架构图参数（强制，阻塞性 #1）**：与用户确认：① **几层**（通常 3~6 层）；② **每层模块名**（用户会列出每个产品/服务/能力名——**必须用真实业务 label，禁止用占位符**如 e1/e2/c1/c2，占位符只出现在 skill 模板示例中）；③ **标签样式**（顶部居中 = 主流 / 左侧竖排 = 类架构师风格）；④ **颜色偏好**（蓝/紫/绿/橙/灰五大层系默认即可，或用户指定）；⑤ **是否需要层间箭头**（默认靠堆叠隐含依赖；要箭头时**只连层容器之间**，父级到父级，见 [references/connection-routing.md](references/connection-routing.md)）
 3. **ASCII 架构确认（强制，阻塞性 #2）**：在对话中以 `text` 代码块直接输出 ASCII 架构图（层数 + 每层模块 + 层间连线 + 标签位置），等用户明确确认。用户提出修改则更新 ASCII 图再次确认。（见 [references/templates.md](references/templates.md)）
-4. **在目标文档写/改 ` ```d2 ` 代码块**：**首行写图名注释（`# 图名`）——这是图的标识，后续定位/修改靠它语义匹配（§2.1），禁止省略**。格式不限：中文优先（如 `# 系统架构图`），用户喜好为准，中英皆可（`# System Architecture` 也行）——关键是有一个可识别的名字。第二行起 `vars: { d2-config: { layout-engine: elk } }`（默认 elk），可继续写视角/用途等元信息注释。**写完后渲染由 Markdown 引擎自动完成，AI 不做任何输出/渲染动作**
+4. **在目标文档写/改 ` ```d2 ` 代码块**：**前导注释写图名（`# 图名: xxx`——这是图的标识，后续定位/修改靠它语义匹配（§2.1），禁止省略**。**允许首行放元信息块**（如 `# 图标准元信息`），真图名用 `# 图名: xxx` 行标注，工作台会按"优先 `# 图名:`、无则回退首行"识别。格式不限：中文优先（如 `# 图名: 系统架构图`），用户喜好为准，中英皆可（`# 图名: System Architecture`）——关键是有一个可识别的名字。第二行起 `vars: { d2-config: { layout-engine: elk } }`（默认 elk），可继续写视角/用途等元信息注释。**写完后渲染由 Markdown 引擎自动完成，AI 不做任何输出/渲染动作**
 5. **自检**：一律用 [§2.3 工作台](#23-修改模式对已有图做调整不等于重画) 一条命令（自动校验 viewBox/超界/等宽/圆角）——新建图：`extract docs.md --name 图名` 提取刚写的块验证（不需 sync）；已有图修改：`extract → render → sync`。工作台不可用时才用 troubleshooting.md 手动流程。
 
 完成标准：目标 Markdown 文档中 ` ```d2 ` 代码块已写入/更新；`verify-svg.py` 脚本校验通过；渲染结果与第 3 步确认的 ASCII 架构一致。
@@ -147,6 +148,7 @@ python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 1   # 或按序号
 | D2 语法坑 / 引擎选型 / 多板·TALA 禁用 / viewBox 溢出 / `\n` 换行 / 长 label | [references/d2-syntax-cheatsheet.md](references/d2-syntax-cheatsheet.md)                                                                                                                 |
 | 生成前/后自检流程、SVG 坐标验证、验收执行、fallback、CLI 速查               | [references/troubleshooting.md](references/troubleshooting.md)                                                                                                                           |
 | ASCII 要素 / 实测模板（3 层标准·竖排·竖条·层内分区·最简骨架）               | [references/templates.md](references/templates.md)                                                                                                                                       |
+| **产品能力架构图（三通道编码 + 图例 + 多 class 叠加）**                     | [references/templates.md §5.6](references/templates.md)                                                                                                                                  |
 | 连接语法基础（边类型/标签/链式/箭头样式）                                   | [references/connections.md](references/connections.md)                                                                                                                                   |
 | 网格布局范例 / 容器形态 / ELK 引擎 / 渲染后评审清单                         | [references/grid-diagrams.md](references/grid-diagrams.md) · [containers.md](references/containers.md) · [elk.md](references/elk.md) · [diagram-review.md](references/diagram-review.md) |
 
@@ -170,10 +172,10 @@ python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 1   # 或按序号
 
 ## 6. 自检（一条命令闭环）
 
-> 工作台脚本一条命令（自动校验 viewBox/超界/等宽/圆角），详细流程见 [references/troubleshooting.md](references/troubleshooting.md)。
+> 工作台脚本一条命令（自动校验 viewBox/超界/等宽/圆角/**文字溢出**），详细流程见 [references/troubleshooting.md](references/troubleshooting.md)。
 
 ```bash
-# 从 md 提取 d2 块 → 工作区 .d2/.svg/.png + 自动校验（改图首选）
+# 从 md 提取 d2 块 → 工作区 .d2/.svg + 自动校验（改图首选；默认不生成 PNG，仅看视觉时加 --png）
 python3 scripts/d2-workbench.py extract docs.md --name "系统架构图"
 # 改图迭代
 python3 scripts/d2-workbench.py render docs-fig1.d2
@@ -181,7 +183,7 @@ python3 scripts/d2-workbench.py render docs-fig1.d2
 python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 --name "系统架构图"
 ```
 
-工作台不可用时，用 troubleshooting.md §7.2 手动流程（`d2 validate` → 渲染 → `verify-svg.py`）。**验收权威脚本**：`python3 scripts/verify-svg.py out.svg`（超界/等宽/圆角判断，PASS/FAIL + 数值）。
+工作台不可用时，用 troubleshooting.md §7.2 手动流程（`d2 validate` → 渲染 → `verify-svg.py`）。**验收权威脚本**：`python3 scripts/verify-svg.py out.svg`（超界/等宽/圆角/**文字溢出**判断，PASS/FAIL + 数值）。
 
 ---
 

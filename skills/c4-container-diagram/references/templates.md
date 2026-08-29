@@ -10,6 +10,7 @@
 - [5.3 层间调用关系（超范围，不提供模板）](#53-层间调用关系超范围不提供模板)
 - [5.4 左右分栏 + 贯穿竖条](#54-左右分栏--贯穿竖条)
 - [5.5 层内分区（grid 嵌套，2×2 子模块）](#55-层内分区grid-嵌套22-子模块)
+- [5.6 产品能力架构图（三通道编码 + 多 class 叠加）](#56-产品能力架构图product-capability-architecture-map)
 - [最简模板（3 层骨架）](#最简模板3-层骨架)
 
 ---
@@ -269,3 +270,101 @@ vars: { d2-config: { layout-engine: elk } }
   }
 }
 ```
+
+---
+
+## 5.6 产品能力架构图（Product Capability Architecture Map）
+
+> 适用：**产品能力分层图**——在一张图里同时表达「能力在哪层、做到哪一步、先做哪个」。它是容器式分层图的高频应用，比标准 C4 容器图多一个维度：**三通道编码**（见下方「编码规则」）。已实测（enterprise-ai-hub PRODUCT 能力图，v0.8.1 + ELK）。
+>
+> **三通道编码（SSOT）**：一张图用 3 个视觉通道叠加，每个通道表达一种语义：
+>
+> | 视觉通道 | 表达       | 规则                                                                                                 |
+> | -------- | ---------- | ---------------------------------------------------------------------------------------------------- |
+> | **布局** | 能力分层   | 入口层 / 业务能力层 / 共享业务服务层——能力在哪层、谁支撑谁                                           |
+> | **线型** | 实现状态   | 实线（无 `planned` class）= 已实现；虚线（`planned`，stroke-dash:4）= 规划中/待实现（含 POC/开发中） |
+> | **颜色** | 优先级热力 | 红（`core`）= 核心优先投资；橙（`support`）= 支撑按需投入；灰（`edge`）= 边缘探索/低优先             |
+>
+> **编码规则（节点 = 多 class 叠加）**：每个节点挂 `[module; <状态>; <热力>]` 组合 class。`module` 只负责形状（圆角/描边宽），**不带 fill**；状态（`planned`）与热力（`core`/`support`/`edge`）各带样式。**入口层节点不挂热力 class**（页面/触点不是能力，无优先级维度，白底实线）。
+>
+> **多 class 安全边界（铁律 §4.8 第 5 条的精确化）**：多 class 合法**当且仅当** `module` 类**不携带 fill/stroke 填充类**的冲突样式（见 c4-container-spec §4.8）。若多个类的 `fill`/`stroke` 各自独立且叠加（颜色由哪个 class 决定不明确），才触发 int64 溢出。**本项目约定**：`module` 只带 `border-radius`+`stroke-width`，fill 由热力类（`core`/`support`/`edge`）或节点 `style.fill` 提供，状态类 `planned` 只带 `stroke-dash`。这样多 class 安全。⚠️ **不要给 2 个以上 class 各自写独立的 `fill`**（会溢出，见 d2-syntax-cheatsheet §6.16）。
+>
+> **图例**：图底部放图例容器（线型表 + 颜色表 + 入口说明），读者一眼读懂状态与优先级。**SSOT**：状态与优先级是产品层信息，唯一事实源在 PRODUCT §2（架构图 + 能力清单表），其它文档引用不复制。
+>
+> **布局**：符合 [§5.4 左右分栏 + 贯穿竖条](#54-左右分栏--贯穿竖条)——外层 `grid-columns: 2`（左主体 + 右竖条）；左主体 `grid-rows:1; grid-columns:1` 纵向堆叠入口层+业务能力层；右竖条是共享业务服务层（**不设 width，ELK 自动包裹居中**）。业务能力层内可再分**能力域分区**（网格嵌套，见 §5.5），各分区内子容器 width 按 layout-and-grid §6.13 公式算。
+
+```d2
+# 图标准元信息 · 中文注释
+# 图名: 产品能力架构图（Product Capability Architecture Map）
+# 视角: 逻辑视图（能力分层 × 状态 × 优先级）
+# 用途: 产品功能全貌 + 分层支撑 + 实现状态 + 投资优先级
+# 反映的问题: 产品有哪些能力、能力在哪层、做到哪一步、先做哪个
+# 边界: 产品层不画技术底座（数据存储/消息/网络/缓存归技术架构图）
+# 编码: 线型=状态、颜色=优先级热力，入口层白底无热力
+
+vars: {
+  d2-config: { layout-engine: elk }
+}
+
+产品能力: {
+  grid-rows: 1
+  grid-columns: 2
+  grid-gap: 16
+  style.font-color: "#1e293b"
+  style.border-radius: 16
+
+  左主体: {
+    grid-rows: 1; grid-columns: 1; grid-gap: 24
+    style.font-color: "#1e293b"
+    style.border-radius: 12
+
+    入口层: {
+      # 入口层 · 仅示意触点，非能力，无状态与热力维度，白底实线
+      label: "① 入口层\n（前台 · 用户触点）"
+      width: 1000; grid-columns: 2; grid-gap: 12; style.fill: "#dbeafe"; style.font-color: "#1e293b"; style.stroke: "#2563eb"; style.border-radius: 12
+      h1: { label: "审计工作台"; width: 482; height: 60; class: module }
+      h2: { label: "审计项目"; width: 482; height: 60; class: module }
+    }
+
+    业务能力层: {
+      # 业务能力层 · 垂直能力按能力域分列，线型=状态 / 颜色=优先级（多 class 叠加）
+      label: "② 业务能力层\n（垂直能力 · 按能力域分列）"
+      width: 1000; grid-columns: 1; grid-gap: 12; style.fill: "#ede9fe"; style.font-color: "#1e293b"; style.stroke: "#7c3aed"; style.border-radius: 12
+      审计项目管理: { label: "审计项目管理"; width: 880; grid-columns: 3; grid-gap: 12; style.fill: "#f3e8ff"; style.font-color: "#1e293b"; style.stroke: "#a855f7"; style.border-radius: 8
+        c1: { label: "审计立项"; width: 277; height: 50; class: [core; planned] }
+        c2: { label: "审前调查"; width: 277; height: 50; class: [core; planned] }
+        c3: { label: "实施方案"; width: 277; height: 50; class: [core; planned] }
+        c4: { label: "取证单"; width: 277; height: 50; class: [core; planned] }
+        c5: { label: "审计底稿"; width: 277; height: 50; class: [core; planned] }
+        c6: { label: "审计报告"; width: 277; height: 50; class: [core; planned] }
+        c7: { label: "整改问效"; width: 277; height: 50; class: [support; planned] }
+        c8: { label: "审计归档"; width: 277; height: 50; class: [support; planned] }
+        c9: { label: "分析看板"; width: 277; height: 50; class: [support; planned] }
+      }
+    }
+  }
+
+  共享业务服务层: {
+    # 共享业务服务层 · 系统内置默认服务，无管理界面，右侧竖条支撑左侧主体（不设 width，ELK 自动包裹居中）
+    label: "③ 共享业务服务层\n（内置默认 · 无管理界面）"
+    grid-columns: 1
+    style.fill: "#fef3c7"; style.font-color: "#1e293b"; style.stroke: "#f59e0b"; style.border-radius: 12
+    s1: { label: "系统内置默认服务\n默认智能体/提示词\n数据源/规则/工具"; width: 200; height: 170; class: [support; planned] }
+  }
+}
+
+# 层间支撑关系（上层依赖下层；右侧竖条支撑左侧主体）
+产品能力.共享业务服务层 -> 产品能力.左主体.业务能力层: 支撑 { style.stroke: "#f59e0b" }
+产品能力.左主体.业务能力层 -> 产品能力.左主体.入口层: 支撑 { style.stroke: "#7c3aed" }
+
+classes: {
+  # 样式类 · 中文注释：状态与热力叠加（各状态类均含 border-radius，保证多 class 组合节点仍有圆角）
+  module: { style: { border-radius: 6; fill: "#ffffff"; stroke: "#1e40af"; font-color: "#1e293b"; stroke-width: 1 } }
+  planned: { style: { stroke-dash: 4; stroke: "#94a3b8"; border-radius: 6 } }
+  core: { style: { fill: "#dc2626"; font-color: "#ffffff"; border-radius: 6 } }
+  support: { style: { fill: "#f59e0b"; font-color: "#ffffff"; border-radius: 6 } }
+  edge: { style: { fill: "#d1d5db"; font-color: "#1f2937"; stroke: "#6b7280"; border-radius: 6 } }
+}
+```
+
+> ⚠️ **复制时注意**：`审计项目管理` 分区内的 9 个能力（c1~c9）只是示例，替换为项目自己的能力清单；每个能力节点的 `[core; planned]` / `[support; planned]` 类按实际优先级与状态调整（核心=红 core / 支撑=橙 support / 边缘=灰 edge；已实现去掉 `planned`）。**节点数要与 PRODUCT §2.2 能力清单表行数一一对应**（一个能力一行，一能力多 Action 在表格里顿号并列）。
