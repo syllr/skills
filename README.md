@@ -64,14 +64,14 @@ npx skills update -g -y
 
 ## 可用技能
 
-| 技能                                                   | 描述                                                                                                                                                                                                                                      |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [c4-container-diagram](skills/c4-container-diagram/)   | 用 D2（d2lang.com）画 C4 Container Diagram（[c4model.com](https://c4model.com/diagrams/container) 标准第 2 层图）——展示系统级容器划分、容器间通信关系、多层大容器纵向堆叠。Markdown 内嵌 d2 代码块渲染；画图前先以 ASCII 架构图与用户确认 |
-| [doc-arch-rules](skills/doc-arch-rules/)               | 文档架构规范（L0-L4 + common 分层）+ omo rule 生成——为具体项目生成 .omo/rules/ rule，使 AI 修改 docs 下文档时按模板 generation 元数据自动更新                                                                                             |
-| [gitee-review-comments](skills/gitee-review-comments/) | 管理 Gitee 仓库提交（commit）的评审评论——程序化记录评审意见、列出未解决待办、回复线程、解决/删除评论；适合 AI 与团队成员共用一套留痕机制                                                                                                  |
-| [remote-shell](skills/remote-shell/)                   | 通过 SSH 在远程服务器上执行命令，优先使用 remote-shell CLI 并支持降级回退                                                                                                                                                                 |
-| [score-prompt](skills/score-prompt/)                   | 对任意 LLM prompt / 文档跑 5 维度质量评分（Clarity/Conciseness/Actionability/Consistency/Minimal-slop）并迭代修复至目标分数                                                                                                               |
-| [skill-creator](skills/skill-creator/)                 | 创建新的 OpenCode Skill，含目录结构、格式规范、路径解析与脚本模板                                                                                                                                                                         |
+| 技能                                                 | 描述                                                                                                                                                                                                                                      |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [c4-container-diagram](skills/c4-container-diagram/) | 用 D2（d2lang.com）画 C4 Container Diagram（[c4model.com](https://c4model.com/diagrams/container) 标准第 2 层图）——展示系统级容器划分、容器间通信关系、多层大容器纵向堆叠。Markdown 内嵌 d2 代码块渲染；画图前先以 ASCII 架构图与用户确认 |
+| [doc-arch-rules](skills/doc-arch-rules/)             | 文档架构规范（L0-L4 + common 分层）+ omo rule 生成——为具体项目生成 .omo/rules/ rule，使 AI 修改 docs 下文档时按模板 generation 元数据自动更新                                                                                             |
+| [gitee-comments](skills/gitee-comments/)             | 管理 Gitee 仓库提交（commit）的评审评论——程序化记录评审意见、列出未解决待办、回复线程、解决/删除评论；适合 AI 与团队成员共用一套留痕机制                                                                                                  |
+| [remote-shell](skills/remote-shell/)                 | 通过 SSH 在远程服务器上执行命令，优先使用 remote-shell CLI 并支持降级回退                                                                                                                                                                 |
+| [score-prompt](skills/score-prompt/)                 | 对任意 LLM prompt / 文档跑 5 维度质量评分（Clarity/Conciseness/Actionability/Consistency/Minimal-slop）并迭代修复至目标分数                                                                                                               |
+| [skill-creator](skills/skill-creator/)               | 创建新的 OpenCode Skill，含目录结构、格式规范、路径解析与脚本模板                                                                                                                                                                         |
 
 ## 创建新技能
 

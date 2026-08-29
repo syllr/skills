@@ -15,12 +15,12 @@
 skills/
 ├── c4-container-diagram/ # 画 C4 Container Diagram skill：D2 实现 + references/（20 官方文档 + diagram-review 自研 + README 清单）
 ├── doc-arch-rules/   # 文档架构规范 + omo rule 生成：references/（13 文档模板 + 14 rule 模板[CONSTITUTION rule 即宪法] + README 清单）
-├── gitee-review-comments/  # Gitee 提交评审评论 skill（单 SKILL.md）
+├── gitee-comments/  # Gitee 提交评审评论 skill（单 SKILL.md）
 ├── remote-shell/    # SSH 远程执行 skill（单 SKILL.md）
 ├── score-prompt/    # prompt 质量评分 skill（单 SKILL.md）
 └── skill-creator/   # 创建新 skill 的 skill：SKILL.md + references/（含 guide.md）+ assets/templates/
 improve/             # 研究笔记（非 skill，勿动）
-test/                # 测试文件（非 skill，勿动）
+demo/                # doc-arch-rules 演示样例（非 skill，与 .omo/demo 配套）
 README.md            # 面向用户的安装/技能表
 ```
 
@@ -67,24 +67,24 @@ scripts/render.py --template assets/templates/report.xml
 
 ### 长文档拆分原则（渐进式披露）
 
-- `SKILL.md` 保持精简（<500 行，**例外：`c4-container-diagram/SKILL.md` 为系统级综合技能，542 行属已知例外**），放核心工作流与速查
+- `SKILL.md` 保持精简（<500 行），放核心工作流与速查；详参按主题下沉 `references/`（SKILL.md 作 router 按需指向）。`c4-container-diagram` 已按此拆为 229 行（详见其 `references/README.md`）
 - 详细参考放 `references/`，SKILL.md 内用 Markdown 链接按需指向
 - references 文件可本地化官方资料（爬取后内联代码块、去除 Docusaurus 组件残留），使 skill 离线可用
 
 ## FRONTMATTER 合规清单
 
-| 字段            | 要求                                                                                                            |
-| --------------- | --------------------------------------------------------------------------------------------------------------- |
-| `name`          | 必填，小写连字符，与目录名一致                                                                                  |
-| `description`   | 必填，含功能 + 触发词，<1024 字符                                                                               |
-| `license`       | 可选                                                                                                            |
-| `metadata`      | 可选，可含 `supportedAgents: ["opencode"]`                                                                      |
-| `allowed-tools` | 可选，**空格分隔字符串**（`Read Write Edit Bash`），支持 `Bash(git:*)` 子命令形式；**禁止 YAML 数组或逗号分隔** |
+| 字段            | 要求                                                                                                                    |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `name`          | 必填，小写连字符，与目录名一致                                                                                          |
+| `description`   | 必填，含功能 + 触发词，<1024 字符                                                                                       |
+| `license`       | 可选                                                                                                                    |
+| `metadata`      | 可选，可含 `supportedAgents: '["opencode"]'`（值需用**单引号包成字符串**；官方校验器不认 JSON 流式数组 `["opencode"]`） |
+| `allowed-tools` | 可选，**空格分隔字符串**（`Read Write Edit Bash`），支持 `Bash(git:*)` 子命令形式；**禁止 YAML 数组或逗号分隔**         |
 
 ## CONVENTIONS
 
 - 文档与注释全部使用中文（技术术语/命令/路径保留原文）
-- 不修改 `improve/`、`test/`、`.omo/`、`.codegraph/` 等非 skill 目录
+- 不修改 `improve/`、`demo/`、`.omo/`、`.codegraph/` 等非 skill 目录
 - skill 目录只放 SKILL.md + references/ + assets/ + scripts/，不混入无关文件
 
 ## ANTI-PATTERNS（THIS PROJECT）
@@ -110,6 +110,13 @@ npx skills check
 
 # 更新本机已安装的 skill（从 GitHub 拉最新覆盖本地）
 npx skills update -g -y
+
+# 校验 skill 合规性（agentskills.io 官方 skills-ref，uvx 一次性运行，不落地安装）
+# 注意：可执行名是 agentskills（不是 skills-ref）；npx skills check 只是 update 只读模式，≠合规校验
+uvx --from skills-ref agentskills validate ./skills/<skill-name>
+
+# 校验全部 skill
+for d in skills/*/; do uvx --from skills-ref agentskills validate "$d" || echo "!! FAIL: $d"; done
 ```
 
 > ⚠️ **安装到 Agent 由用户自行执行**，AI 不代装。安装命令见 README.md（如 `npx skills add . -s '*' -a opencode`），不写进本项目工作流。
@@ -118,4 +125,4 @@ npx skills update -g -y
 
 - 项目约定统一由 AGENTS.md 承担；skill 格式基础规范见 [skill-md-format.md](skills/skill-creator/references/skill-md-format.md)，改 skill 前先读
 - `references/` 的官方资料可通过 `references/README.md` 的更新命令重新拉取（上游分支为 `master`）
-- 仓库未设置 CI；格式校验靠 `npx skills` 与人工 review
+- 仓库未设置 CI；**合规校验用 `uvx --from skills-ref agentskills validate`**（agentskills.io 官方 skills-ref，见 COMMANDS），`npx skills check` 只查更新；改 skill 后必跑校验，若改动的是已有 skill，改前也建议跑一次作为基线（区分「既有问题」vs「本次改动引入」）
