@@ -468,21 +468,21 @@ classes: {
 
 > 【本项目图规范】文档中的图，**"是什么图"由各文档自行标注**（如"本图为流程图/容器图/时序图"）；**"怎么画"（用什么工具、fallback）统一在此定义（SSOT）**，各文档引用不复制。
 
-| 图类型                                                    | 画什么                                                   | 工具                               | 代码块                         | Fallback                       |
-| --------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------- | ------------------------------ | ------------------------------ |
-| **容器图**（C4 Container）                                | 多层大容器嵌套分层（应用/技术/能力/文档架构）            | D2（工具 `c4-container-diagram`）  | ` ```d2 `                      | ASCII 图（保持同样分层布局）   |
-| **C4 Context 图**                                         | 系统与外部（用户/平台/服务）的关系                       | Mermaid                            | ` ```mermaid ` flowchart       | ASCII 图                       |
-| **结构/拓扑图**（上下文映射/部署拓扑/资产总览）           | 关系/分类/分区（非控制流）                               | Mermaid（subgraph 分组）           | ` ```mermaid ` flowchart       | ASCII 图                       |
-| **流程图**                                                | 控制流/分支/处理步骤                                     | Mermaid                            | ` ```mermaid ` flowchart       | ASCII 图                       |
-| **状态流转**（流式线性片段）                              | 功能触发的状态路径（A→B→C，单向推进）                    | Mermaid                            | ` ```mermaid ` flowchart       | ASCII 图                       |
-| **状态机**（完整环式）                                    | 领域对象完整状态（状态可来回/循环）                      | Mermaid                            | ` ```mermaid ` stateDiagram-v2 | ASCII 图                       |
-| **时序图**                                                | 跨模块/跨系统调用时序                                    | Mermaid                            | ` ```mermaid ` sequenceDiagram | ASCII 图                       |
-| **ER 图**                                                 | 实体关系                                                 | Mermaid                            | ` ```mermaid ` erDiagram       | ASCII 图                       |
-| **脑图**（mindmap）                                       | 能力分解/结构发散                                        | Mermaid                            | ` ```mermaid ` mindmap         | ASCII 缩进树                   |
-| **产品能力架构图**（Product Capability Architecture Map） | 产品能力分层 × 状态 × 优先级（三通道编码，见通用规则 7） | D2（工具 `c4-container-diagram`）  | ` ```d2 `                      | ASCII 图（保持同样分层布局）   |
-| **类图**（classDiagram）                                  | 类/角色关系                                              | Mermaid                            | ` ```mermaid ` classDiagram    | ASCII 图                       |
-| **目录树**                                                | 项目/文档目录结构                                        | ASCII（天然）                      | ` ```text `                    | —（ASCII 即默认）              |
-| **UI 图**（界面原型）                                     | 页面/界面结构（USER-STORY §4.2 单故事交互「涉及 UI」）   | Pencil（.pen 文件，工具 `pencil`） | `.pen` 文件                    | —（UI 图专用工具，不走 ASCII） |
+| 图类型                                                    | 画什么                                                 | 工具                               | 代码块                         | Fallback                       |
+| --------------------------------------------------------- | ------------------------------------------------------ | ---------------------------------- | ------------------------------ | ------------------------------ |
+| **容器图**（C4 Container）                                | 多层大容器嵌套分层（应用/技术/能力/文档架构）          | D2（工具 `c4-container-diagram`）  | ` ```d2 `                      | ASCII 图（保持同样分层布局）   |
+| **C4 Context 图**                                         | 系统与外部（用户/平台/服务）的关系                     | Mermaid                            | ` ```mermaid ` flowchart       | ASCII 图                       |
+| **结构/拓扑图**（上下文映射/部署拓扑/资产总览）           | 关系/分类/分区（非控制流）                             | Mermaid（subgraph 分组）           | ` ```mermaid ` flowchart       | ASCII 图                       |
+| **流程图**                                                | 控制流/分支/处理步骤                                   | Mermaid                            | ` ```mermaid ` flowchart       | ASCII 图                       |
+| **状态流转**（流式线性片段）                              | 功能触发的状态路径（A→B→C，单向推进）                  | Mermaid                            | ` ```mermaid ` flowchart       | ASCII 图                       |
+| **状态机**（完整环式）                                    | 领域对象完整状态（状态可来回/循环）                    | Mermaid                            | ` ```mermaid ` stateDiagram-v2 | ASCII 图                       |
+| **时序图**                                                | 跨模块/跨系统调用时序                                  | Mermaid                            | ` ```mermaid ` sequenceDiagram | ASCII 图                       |
+| **ER 图**                                                 | 实体关系                                               | Mermaid                            | ` ```mermaid ` erDiagram       | ASCII 图                       |
+| **脑图**（mindmap）                                       | 能力分解/结构发散                                      | Mermaid                            | ` ```mermaid ` mindmap         | ASCII 缩进树                   |
+| **产品能力架构图**（Product Capability Architecture Map） | 产品能力分层 × 状态（单通道编码，见通用规则 7）        | D2（工具 `c4-container-diagram`）  | ` ```d2 `                      | ASCII 图（保持同样分层布局）   |
+| **类图**（classDiagram）                                  | 类/角色关系                                            | Mermaid                            | ` ```mermaid ` classDiagram    | ASCII 图                       |
+| **目录树**                                                | 项目/文档目录结构                                      | ASCII（天然）                      | ` ```text `                    | —（ASCII 即默认）              |
+| **UI 图**（界面原型）                                     | 页面/界面结构（USER-STORY §4.2 单故事交互「涉及 UI」） | Pencil（.pen 文件，工具 `pencil`） | `.pen` 文件                    | —（UI 图专用工具，不走 ASCII） |
 
 **通用规则**：
 
@@ -492,12 +492,12 @@ classes: {
 4. **状态流转 vs 状态机**：流式线性状态片段（DOMAIN-MODEL §3 Action）用 flowchart；完整环式状态机（DOMAIN-MODEL §3.6）用 stateDiagram-v2，不混用。
 5. **容器图特则**：多层大容器纵向嵌套、每层子容器显式算 width（等宽居中）、全圆角、按层配色、文字深色（对比度 ≥ 4.5:1）——细节见 `c4-container-diagram` 工具。
 6. **文档标注**：各文档图旁只需标"本图是什么图"（如"本图为 C4 容器图"），绘制方式引用本节，不复制工具细节。
-7. **能力图编码规范（状态线型 + 优先级热力 · 一眼可见）**：**产品能力架构图（PRODUCT §2.1）用节点线型表达实现状态、节点颜色表达投资优先级**——两个视觉通道叠加在节点上（`class: [module; planned; core]` 组合）。**编码规则（SSOT）**：
-   - **线型 = 状态**：实线框（`stroke-width: 2`）= 已实现；虚线框（`stroke-dash: 4`）= 规划中/待实现（中间态如 POC 验证中也用虚线，细节在能力清单表标注）
-   - **颜色 = 优先级热力**：红（`#dc2626`）= 核心（优先投资）；橙（`#f59e0b`）= 支撑（按需投入）；灰（`#d1d5db`）= 边缘（探索/低优先）
-   - **入口层不设热力色**：页面/触点不是能力，无优先级维度（保持白底）
-   - 图底部放**图例说明**（线型表 + 颜色表），读者一眼读懂状态与优先级
-   - **归属**：状态与优先级是产品层信息，**唯一事实源在 PRODUCT §2（架构图 + 能力清单表）**，其他文档引用不复制；演进时状态/优先级变化只改 PRODUCT（检查：grep -r "优先级" 仅 PRODUCT 命中）
+7. **能力图编码规范（状态线型 · 单通道 · 一眼可见）**：**产品能力架构图（PRODUCT §2.1）用节点线型表达实现状态**——单一视觉通道（`class: [solid]` / `class: [dashed]`）。**不设优先级热力**（投资优先级是主观、易变的决策，不属于能力本身属性，不应上图——C4 实物线/虚线只表达 existing/planned；Bertin 可视化理论将优先级这类有序维度用 hue 无序变量编码属通道-维度错配）。**编码规则（SSOT）**：
+   - **线型 = 状态**：实线框（`stroke-width: 2`，`solid`）= 已实现（含本迭代要实现）；虚线框（`stroke-dash`，`dashed`）= 待规划（本迭代不做；中间态如 POC/开发中归入待规划，细节在能力清单表标注，不细分第三档）
+   - **入口层不参与编码**：页面/触点不是能力，无状态维度（保持白底实线）
+   - **图例独立成 d2 图**：图例是跨文档的编码规则说明，不挤进架构图底部——放 §2 顶部**独立**的 ` ```d2 ` 图例块（实线/虚线两个节点示例），架构图内不画图例、不重复编码说明
+   - **归属**：状态是产品层信息，**唯一事实源在 PRODUCT §2（架构图 + 能力清单表）**，其他文档引用不复制；演进时状态变化只改 PRODUCT（检查：grep -r "优先级" 仅确认 PRODUCT 文档无优先级残留）
+   - **能力 → 聚合操作（Action）映射**：Action 签名/状态/事件是领域层信息，**SSOT 在 DOMAIN-MODEL §3**，PRODUCT 能力表**不平铺 Action**（产品层不暴露实现），引用/链接而非复制
 8. **图即文本（S8）**：文档图必须用文本化方式（D2 / Mermaid / ASCII 代码块，直接写入 .md），禁止位图截图/在线工具导出图——文本化才能进 Git、可 diff、可在任何渲染器显示。检查：`grep -E '```(d2|mermaid)'` 确认图以文本形式存在于 .md 内。
 
 ### 3.3 代码分层（前端/后端分开，固定分层）
