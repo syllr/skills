@@ -11,7 +11,7 @@ generation:
     - D2 容器图（§2.1 产品能力架构图 + §2 顶部图例图，图规范见 CONSTITUTION §3.2）
   related: # 关联模板与联动修改
     USER-STORY: 需求源头，新故事需联动在能力图补能力
-    DOMAIN-MODEL(Action/Event): 能力→Action 映射（1:N）在它 §3；能力图节点增删需联动 DOMAIN-MODEL §3 Action 增删
+    DOMAIN-MODEL(Action/Event): 能力→Action 映射（1:N）在它 §3；能力增删需联动 DOMAIN-MODEL §3 Action 增删，**能力状态（已实现/待规划）是全部实现视图的建模边界——PRODUCT 标「待规划」的能力，DOMAIN/API/APPLICATION/STRUCTURE/openapi 全部不建模不留 stub，仅 PRODUCT 保留待规划标注（产品全景含规划；双向强制）**
     APPLICATION-ARCHITECTURE: 能力→模块映射（N:M）在它 §3.2，能力增删需同步映射
     CONSTITUTION: 图规范在它 §3.2
     DEEP-DIVES: 高复杂度能力详情可链到 L2/deep-dives（能力→Action 映射的深入展开）
@@ -36,6 +36,7 @@ generation:
       - 判断标准：被 ≥2 个垂直能力共用 → 横向能力；单一业务功能 → 垂直能力；开箱自带无管理界面 → 系统内置（类型列标记）
       - **能力域 = 架构图层**：能力域取值 = 架构图的层（业务能力层 / 共享业务服务层），与架构图分层一致，避免「能力分组 / 业务域 / 层」三种含义混淆
     - 业务解耦原则：垂直能力之间不互相依赖（各自独立）；垂直能力只依赖共享业务服务层；横向/系统内置能力之间尽量解耦
+    - **能力状态是 DOMAIN-MODEL 建模边界**（双向强制，case 5/7）：PRODUCT §2 能力状态（已实现/待规划）SSOT 在 PRODUCT——标「待规划」的能力，DOMAIN-MODEL 不深建 Action/状态机/ER（只预留 PRO... 产品层）；PRODUCT 增/删能力 → DOMAIN-MODEL 增/删 Action；DOMAIN-MODEL 增/删 Action → PRODUCT 同步能力状态。**禁止「PRODUCT 无、DOMAIN 有」漂移**
     - 模板正文 = 产出目标结构，生成规范见本 rule 画图规范
   checks: # 生成后反向 check · 中文注释
     - "§2.1 业务能力层节点数 == §2.2 表「类型=业务能力」行数（一一对应，一能力一行）；共享业务服务层聚合节点（1 个）== §2.2 表「类型=系统内置/横向」行数——校验按「类型」分维度，非笼统节点数==总行数"

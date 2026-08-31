@@ -10,11 +10,11 @@ generation:
   tools:
     - D2 容器图（§1 技术分层图，图规范见宪法）
   related: # 关联模板与联动修改
-    APPLICATION-ARCHITECTURE: 应用清单 SSOT 在它 §2.2，技术架构按应用描述
+    APPLICATION-ARCHITECTURE: 应用清单 SSOT 在它 §2.2，技术架构按应用描述（应用/容器/外部系统分类一致）
     PRODUCT: 功能清单 SSOT 在它 §2，技术架构不重列功能
     DOMAIN-MODEL: 存储设计在它 §5，技术选型需与其一致
     DEPLOYMENT: 技术栈影响部署，选型变化需同步部署方式
-    TEST-PLAN: UT 清单在它 §5.1，写法在它 §6（引用不复制）
+    TEST-PLAN: UT 清单在它 §5.1，写法在它 §5.4（SSOT，引用不复制）
     DEEP-DIVES: L2 根为索引，deep-dives 为详情，S2 SSOT——同一信息只在一处维护，其余详见 docs/L2/deep-dives/<name>.md#锚点
     RESEARCH: 调研详情 SSOT 在 docs/L2/research/<name>.md，选型结论 SSOT 在本模板 §3/§4，推荐链 ADR
   # 需要用户决策的才问（无歧义则不问）
@@ -24,19 +24,30 @@ generation:
   flow: # 生成流程
     - 扫描（自主）：读应用架构 + 领域存储 + 目标文档
     - 已有 TECHNOLOGY-ARCHITECTURE → 参考旧文档有效信息，但结构按本模板重建
-    - 按模板生成：§1 技术分层图 → §2 前端选型 → §3 后端选型 + 存储选型 → §4 基础设施 → §5 非功能约束
+    - 按模板生成：§1 技术分层图（左主体[应用/容器] + 右侧外部系统竖条[外部·Boundary外]）→ §2 前端选型 → §3 后端选型 + 存储选型 → §4 基础设施 → §5 非功能约束
+    - 每个选型在 §3.1「依据」列链 `[ADR-NNNN]`（决策详情归 docs/adr/，正文只留结论+引用）
     - 检查是否命中 deep-dives 收敛标准（2/4 阈值：定义见 notes，命中则瘦身为索引并链到 deep-dives）
   notes: # 生成注意点（怎么生成）
+    - §1 技术分层图：左主体分层（展现/接入/服务/数据，[应用]/[容器] Boundary 内）+ 右侧外部系统竖条（[外部] Boundary 外，不拥有只消费——大模型 API/SMTP/业务数据源/他团队服务），与应用架构图画法对齐（跨图同约定）
+    - **技术栈方括号（C4 最佳实践）**：所有容器节点 label = `[技术栈]\n职责`（如 `[Vue 3 + Element Plus]\n页面/组件 · 状态管理`、`[Python+FastAPI]\n...`、`[MySQL 8]`），C4 标准要求容器附主技术栈（technology beats web frontend）
+    - **容器 vs 外部系统判别**（与 CONSTITUTION §3.3 infra/integration「坏了找谁修」一致）：自己运维管理 → 容器（Boundary 内）；别人提供服务（他团队/第三方）→ 外部系统（Boundary 外）——外部依赖一律放右侧竖条，不混入主分层横排
+    - **层间调用仅 3 根**（展现→接入→服务→数据）；外部系统竖条**不画连线**（对接关系见 INTEGRATION，标注"不在此图画，见 INTEGRATION"）
     - 按应用描述技术栈（应用清单见 APPLICATION-ARCHITECTURE §2.2，引用不重列）
-    - 不复制功能清单/能力归属/状态（产品规格 是 SSOT）
-    - 每个选型给备选 + 弃用原因（Google Design Doc 惯例）
+    - 不复制功能清单/能力归属/状态（产品规格 是 SSOT）；应用内模块清单见 APPLICATION-ARCHITECTURE §3.1（SSOT）
+    - 每个选型给备选 + 弃用原因（Google Design Doc 惯例）+ 在 §3.1「依据」列链 `[ADR-NNNN]`（决策详情归 docs/adr/，正文只留结论+引用）
     - §3.1 存储选型明细含容量/性能预期；表/集合级结构在 DOMAIN-MODEL §5
+    - **UT 写法规范 SSOT 在 TEST-PLAN §5.4**（本文档不定义 UT 框架/覆盖率/命名，不设 §6 单元测试规范）
     - 瘦身约束：本模板生成的文档仅保留 1 张技术分层图 + 1 张参数总览表作索引，详情链到 docs/L2/deep-dives/<name>.md，引用不复制；File:Line 链代码；与 SPEC:5 env 双向引用不复制
     - 收敛标准：2/4 阈值（选型行数>8 或 单节>80 行 为 1 项，命中≥2 节即瘦身；定义见本条，flow 中引用）
     - 调研详情见 docs/L2/research/<name>.md，选型结论在此索引
+    - **不设 §7 相关文档**（信息内联在各章节，避免"聚合链接"低价值章节）
   checks: # 生成后反向 check
     - "技术分层图只画技术组件，无功能模块清单"
-    - "应用清单引用 APPLICATION-ARCHITECTURE，未重列"
+    - "§1 图为左主体分层（[应用]/[容器] Boundary 内）+ 右侧外部系统竖条（[外部] Boundary 外），与应用架构图对齐；外部依赖在竖条，未混入主分层"
+    - "所有容器节点 label = `[技术栈]\\n职责`（技术栈方括号，C4 标准）；无缺方括号节点"
+    - "层间调用仅 3 根（展现→接入→服务→数据）；外部系统竖条无连线（对接见 INTEGRATION）"
+    - "§3.1 每个选型「依据」列链 `[ADR-NNNN]`；无 §6 单元测试规范（UT 写法 SSOT 在 TEST-PLAN §5.4）；无 §7 相关文档（信息内联）"
+    - "应用清单引用 APPLICATION-ARCHITECTURE，未重列；应用内模块清单见 APPLICATION-ARCHITECTURE §3.1"
     - "每个选型都有备选 + 弃用原因"
     - "存储选型与 DOMAIN-MODEL §5 数据设计不冲突"
     - "各节有且仅有一处详见链路（每小节至多一链；§3 允许 2 链：§3.1 存储→deep-dives，§3 续→research）；research 链仅允许在 §3/§4"
@@ -57,7 +68,7 @@ generation:
 
 ## 1. 技术架构总览（按应用 · 分层）
 
-> 【指引】技术架构基于应用架构（APPLICATION-ARCHITECTURE）：**应用清单见 APPLICATION-ARCHITECTURE §2.2 应用划分图（SSOT，此处引用不重列）**。本图为 **C4 容器图**（绘制方式见宪法图规范）——**横向分层**（自上而下），每层标注归属应用。**本图只画技术组件（技术层骨架），不列功能模块**——功能模块清单与能力归属见产品规格（唯一事实源，此处引用不重列）。
+> 【指引】技术架构基于应用架构（APPLICATION-ARCHITECTURE）：**应用清单见 APPLICATION-ARCHITECTURE §2.2 应用划分图（SSOT，此处引用不重列）**。本图为 **C4 容器图**（绘制方式见宪法图规范）——**左主体分层（[应用]/[容器]，Boundary 内）+ 右侧外部系统竖条（[外部]，Boundary 外）**，对齐应用架构图画法；**所有容器节点 label = `[技术栈]\n职责`（C4 技术栈方括号）**。**本图只画技术组件（技术层骨架），不列功能模块**——功能模块清单与能力归属见产品规格（唯一事实源）；**应用内模块清单见 APPLICATION-ARCHITECTURE §3.1（SSOT）**。**层间调用仅 3 根（展现→接入→服务→数据）；外部系统竖条不画连线**（对接关系见 INTEGRATION）。
 
 ```d2
 # 图标准元信息
@@ -74,80 +85,96 @@ vars: {
 
 技术架构: {
   grid-rows: 1
-  grid-columns: 1
-  grid-gap: 24
+  grid-columns: 2
+  grid-gap: 16
   style.fill: "#ffffff"
   style.font-color: "#1e293b"
   style.stroke: "#94a3b8"
   style.stroke-width: 1
   style.border-radius: 16
 
-  展现层: {
-    label: "展现层（前端应用）"
-    width: 1000
-    style.fill: "#dbeafe"
-    style.font-color: "#1e293b"
-    style.stroke: "#2563eb"
-    style.stroke-width: 2
-    style.border-radius: 12
+  左主体: {
+    grid-rows: 1
     grid-columns: 1
-    t1: { label: "<前端应用: 框架/状态管理>\n<页面/组件/状态管理 · API 请求封装>"; width: 880; height: 70; class: mod }
+    grid-gap: 16
+    style.font-color: "#1e293b"
+    style.border-radius: 12
+
+    展现层: {
+      label: "① 展现层（前端应用）"
+      width: 1000
+      style.fill: "#dbeafe"
+      style.font-color: "#1e293b"
+      style.stroke: "#2563eb"
+      style.stroke-width: 2
+      style.border-radius: 12
+      grid-columns: 1
+      t1: { label: "[<前端框架>]\n页面/组件 · 状态管理 · API 请求封装"; width: 880; height: 70; class: mod }
+    }
+
+    接入层: {
+      label: "② 接入层（后端应用）"
+      width: 1000
+      style.fill: "#ede9fe"
+      style.font-color: "#1e293b"
+      style.stroke: "#7c3aed"
+      style.stroke-width: 2
+      style.border-radius: 12
+      grid-columns: 1
+      t2: { label: "[<API网关/框架>]\nAPI 网关 / 鉴权 / 限流"; width: 880; height: 70; class: mod }
+    }
+
+    服务层: {
+      label: "③ 服务层（后端应用）"
+      width: 1000
+      style.fill: "#cffafe"
+      style.font-color: "#1e293b"
+      style.stroke: "#0e7490"
+      style.stroke-width: 2
+      style.border-radius: 12
+      grid-columns: 5
+      grid-gap: 12
+      t3a: { label: "[<运行时>]\n常规业务"; width: 185; height: 60; class: mod }
+      t3b: { label: "[<Agent框架>]\nAgent 编排"; width: 185; height: 60; class: mod }
+      t3c: { label: "[<运行时>]\n解析"; width: 185; height: 60; class: mod }
+      t3d: { label: "[<运行时>]\n检索"; width: 185; height: 60; class: mod }
+      t3e: { label: "[<运行时>]\n生成"; width: 185; height: 60; class: mod }
+    }
+
+    数据层: {
+      label: "④ 数据层（存储依赖，非应用）"
+      width: 1000
+      style.fill: "#ffedd5"
+      style.font-color: "#1e293b"
+      style.stroke: "#c2410c"
+      style.stroke-width: 2
+      style.border-radius: 12
+      grid-columns: 3
+      grid-gap: 12
+      t4a: { label: "[<数据库>]\n业务主库"; shape: cylinder; width: 285; height: 60; class: mod }
+      t4b: { label: "[<对象存储>]\n文件/对象"; shape: cylinder; width: 285; height: 60; class: mod }
+      t4c: { label: "[<缓存/MQ>]\n缓存/消息/进度"; shape: cylinder; width: 285; height: 60; class: mod }
+    }
   }
 
-  接入层: {
-    label: "接入层（后端 API 应用）"
-    width: 1000
-    style.fill: "#ede9fe"
-    style.font-color: "#1e293b"
-    style.stroke: "#7c3aed"
-    style.stroke-width: 2
-    style.border-radius: 12
+  外部系统: {
+    label: "⑤ 外部系统\n[外部·Boundary外]"
     grid-columns: 1
-    t2: { label: "<API网关>\n<鉴权 · 限流>"; width: 880; height: 70; class: mod }
-  }
-
-  服务层: {
-    label: "服务层（后端 API 应用）"
-    width: 1000
-    style.fill: "#cffafe"
-    style.font-color: "#1e293b"
-    style.stroke: "#0e7490"
-    style.stroke-width: 2
-    style.border-radius: 12
-    grid-columns: 1
-    t3: { label: "<后端服务运行时>\n<各功能模块实现，清单见产品规格>"; width: 880; height: 70; class: mod }
-  }
-
-  数据层: {
-    label: "数据层（后端 API 应用）"
-    width: 1000
-    style.fill: "#ffedd5"
-    style.font-color: "#1e293b"
-    style.stroke: "#c2410c"
-    style.stroke-width: 2
-    style.border-radius: 12
-    grid-columns: 1
-    t4: { label: "<数据库/对象存储/缓存>"; width: 880; height: 70; class: mod }
-  }
-
-  基础支撑层: {
-    label: "基础支撑层 + 外部依赖"
-    width: 1000
     style.fill: "#e2e8f0"
     style.font-color: "#1e293b"
-    style.stroke: "#475569"
-    style.stroke-width: 2
+    style.stroke: "#64748b"
     style.border-radius: 12
-    grid-columns: 1
-    t5: { label: "<基础支撑：<能力_用户类·账户类·生成类> · 数据存储 · 支付 · 消息>\n<外部依赖：第三方 AI 服务 · <平台_接入方A> · <平台_接入方B>>"; width: 880; height: 80; class: mod }
+    e1: { label: "<外部_大模型API>"; width: 200; height: 50; class: mod }
+    e2: { label: "<外部_邮件>"; width: 200; height: 50; class: mod }
+    e3: { label: "<外部_数据源>"; width: 200; height: 50; class: mod }
+    e4: { label: "<外部_他团队服务>\n（他团队）"; width: 200; height: 50; class: mod }
   }
 }
 
-# 层间调用（自上而下）
-技术架构.展现层 -> 技术架构.接入层: HTTPS 请求 { style.stroke: "#2563eb" }
-技术架构.接入层 -> 技术架构.服务层: 调用 { style.stroke: "#7c3aed" }
-技术架构.服务层 -> 技术架构.数据层: 读写 { style.stroke: "#0e7490" }
-技术架构.数据层 -> 技术架构.基础支撑层: 支撑/调用 { style.stroke: "#c2410c" }
+# 层间调用（自上而下，仅 3 根；外部系统竖条不画连线——对接关系见 INTEGRATION）
+技术架构.左主体.展现层 -> 技术架构.左主体.接入层: HTTPS 请求 { style.stroke: "#2563eb" }
+技术架构.左主体.接入层 -> 技术架构.左主体.服务层: 调用 { style.stroke: "#7c3aed" }
+技术架构.左主体.服务层 -> 技术架构.左主体.数据层: SQL/读写 { style.stroke: "#0e7490" }
 
 classes: {
   mod: {
@@ -156,25 +183,27 @@ classes: {
 }
 ```
 
-> 【填写指引】本图只画**技术组件**（框架/网关/运行时/数据库/缓存/云平台等）；功能模块、能力归属、功能状态一律不在此重列，引用产品规格。层数按项目调整。
+> **图例说明**：左主体 = [应用]/[容器]（System Boundary 内，自己拥有并负责）；右侧竖条 = [外部]（System Boundary 外，不拥有只消费——他团队/客户环境提供）。图例与 APPLICATION-ARCHITECTURE §2.2 应用划分图一致（跨图同约定）。
+>
+> 【填写指引】本图只画**技术组件**（框架/网关/运行时/数据库/缓存/云平台等），节点 label 一律 `[技术栈]\n职责`（C4 技术栈方括号）；功能模块、能力归属、功能状态一律不在此重列，引用产品规格。层数按项目调整。
 >
 > 【详见】技术分层图详情见 `docs/L2/deep-dives/<name>.md`。
 
 ---
 
-## 2. 小程序前端应用
+## 2. 前端应用
 
 ### 2.1 技术选型
 
-> 【指引】前端应用的技术栈，每个选型给出备选与弃用原因。
+> 【指引】前端应用的技术栈，每个选型给出备选与弃用原因，「依据」列链 `[ADR-NNNN]`。
 
-| 领域     | 选型                     | 备选（弃用原因）                                             | 依据        |
-| -------- | ------------------------ | ------------------------------------------------------------ | ----------- |
-| 框架     | <选型>                   | <备选 1>（弃用原因）；<备选 2>（弃用原因）                   | <依据>      |
-| （示例） | 如 <技术_运行时A>（LTS） | 如 <技术_运行时B>（生态小）；如 <技术_运行时B>（兼容性风险） | 如 LTS 支持 |
-| UI 组件  |                          |                                                              |             |
-| 状态管理 |                          |                                                              |             |
-| 请求封装 |                          |                                                              |             |
+| 领域     | 选型                     | 备选（弃用原因）                                             | 依据（含 ADR 链）   |
+| -------- | ------------------------ | ------------------------------------------------------------ | ------------------- |
+| 框架     | <选型>                   | <备选 1>（弃用原因）；<备选 2>（弃用原因）                   | <依据> `[ADR-NNNN]` |
+| （示例） | 如 <技术_运行时A>（LTS） | 如 <技术_运行时B>（生态小）；如 <技术_运行时B>（兼容性风险） | 如 LTS 支持         |
+| UI 组件  |                          |                                                              |                     |
+| 状态管理 |                          |                                                              |                     |
+| 请求封装 |                          |                                                              |                     |
 
 ### 2.2 版本与兼容
 
@@ -187,15 +216,15 @@ classes: {
 
 ### 3.1 技术选型（按层）
 
-> 【指引】后端 API 应用的技术栈，按层（接入/服务/数据/外部集成）组织，每个选型给出备选与弃用原因。
+> 【指引】后端 API 应用的技术栈，按层（接入/服务/数据/外部集成）组织，每个选型给出备选与弃用原因，**「依据」列链 `[ADR-NNNN]`**（决策详情归 `docs/adr/`，正文只留结论+引用，不展开完整论证）。
 
-| 层                  | 选型   | 备选（弃用原因）   | 依据   |
-| ------------------- | ------ | ------------------ | ------ |
-| 接入层（网关/鉴权） | <选型> | <备选>（弃用原因） | <依据> |
-| 服务层（运行时）    |        |                    |        |
-| 数据层（数据库）    |        |                    |        |
-| 数据层（对象存储）  |        |                    |        |
-| 外部集成（AI 接入） |        |                    |        |
+| 层                  | 选型   | 备选（弃用原因）   | 依据（含 ADR 链）   |
+| ------------------- | ------ | ------------------ | ------------------- |
+| 接入层（网关/鉴权） | <选型> | <备选>（弃用原因） | <依据> `[ADR-NNNN]` |
+| 服务层（运行时）    |        |                    |                     |
+| 数据层（数据库）    |        |                    |                     |
+| 数据层（对象存储）  |        |                    |                     |
+| 外部集成（AI 接入） |        |                    |                     |
 
 #### 存储选型明细（数据层选型 + 容量/性能预期）
 
@@ -242,19 +271,4 @@ classes: {
 | 成本 | <如：<平台_接入方A> 免费额度内> |                  |
 | 合规 | <如：AIGC 标识要求>             |                  |
 
----
-
-## 6. 单元测试规范（UT）
-
-> 【指引】UT 写法规范见 TEST-PLAN §6，此处不重复，本节仅声明技术栈对测试框架的约束。
-
-| 测试框架   | 版本   | 选型约束                     | 依据   |
-| ---------- | ------ | ---------------------------- | ------ |
-| <测试框架> | <版本> | <如：须与语言运行时版本兼容> | <依据> |
-
----
-
-## 7. 相关文档
-
-- TEST-PLAN（测试计划）：UT 清单见它 §5.1，写法见它 §6
-- DOMAIN-MODEL（领域模型）：UT 覆盖的领域对象状态机见它 §6
+> 注：UT（单元测试）写法规范 **SSOT 在 TEST-PLAN §5.4**（本文档不定义 UT 框架/覆盖率/命名）。

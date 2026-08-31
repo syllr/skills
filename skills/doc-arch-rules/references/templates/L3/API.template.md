@@ -12,9 +12,9 @@ generation:
     - 代码块（各语言安装/生成命令 + cfg.yaml 的 package 占位）
     - 不使用接口清单表/Action 映射表/能力映射表/字段表
   related: # 关联模板与联动修改
-    DOMAIN-MODEL: 业务语义在它 §3.1-§3.5（聚合操作，接口来源）与 §4（领域事件，下游消费依据），新 Action 需联动出接口
-    APPLICATION-ARCHITECTURE: 能力→聚合 bipartite 在它 §3.2，接口增减需同步能力映射
-    PRODUCT: 能力清单 SSOT 在它 §2.1，接口覆盖能力需与之一致
+    DOMAIN-MODEL: 业务语义在它 §3 各域小节（聚合操作 Action，接口来源）与 §4（领域事件，下游消费依据），新 Action 需联动出接口
+    APPLICATION-ARCHITECTURE: 应用/模块划分在它 §2.2/§3.1，接口归属应用需与之一致（能力→聚合映射 SSOT 在 DOMAIN-MODEL §3 / PRODUCT §2.1，不在应用架构重复）
+    PRODUCT: 能力清单 SSOT 在它 §2.1，接口覆盖能力需与之一致；**PRODUCT 标「待规划」的能力不建端点（case A：API.md 与 openapi.yaml 均不留 auth 类 stub）**
     INTEGRATION: 互补（Inbound vs Outbound），接口变化需同步外部集成
     DEPLOYMENT: 接口上线需同步部署
     DATA-DICTIONARY: 字段级定义 SSOT，接口字段需引用
@@ -24,13 +24,13 @@ generation:
     - 项目技术栈未探测到（项目尚无代码/配置文件）→ 列出语言选项（Go / Java-Spring / Python-FastAPI / Node-Express / TypeScript）让用户选，生成说明书只写选定语言的 CLI
     - 项目技术栈已探测到 → 不问，说明书只写该语言的 CLI（不写其他语言）
   flow: # 生成流程
-    - 扫描（自主）：读 openapi.yaml + paths/* + components/* + DOMAIN-MODEL §3.1-§3.5（全部 Actions，见 DOMAIN-MODEL §3）+ §4 + APPLICATION-ARCHITECTURE §3.2 能力→聚合 bipartite + PRODUCT §2.1 + 目标文档
+    - 扫描（自主）：读 openapi.yaml + paths/* + components/* + DOMAIN-MODEL §3 各域小节（全部 Actions）+ §4 + APPLICATION-ARCHITECTURE §2.2/§3.1（应用与模块）+ PRODUCT §2.1 + 目标文档
     - 确定目标语言：探测项目技术栈（package.json/go.mod/pom.xml 等）→ 探测到则用该语言；探测不到则按 ask_user 让用户选（Go/Java-Spring/Python-FastAPI/Node-Express/TypeScript）
     - 定位文档模式：openapi.yaml 是契约 SSOT；API.md 是说明书（不重复接口清单/字段），承载「如何使用 yaml 生成目标语言代码 + 维护规范 + CI 防漂移」
     - openapi.yaml 已存在 → 说明书按本模板生成；API.md 不出现接口清单表/Action 映射表/能力映射表/字段表，字段一律以引用指向 openapi.yaml
     - openapi.yaml 不存在 → 先按 DOMAIN-MODEL + APPLICATION-ARCHITECTURE 推导接口清单与字段契约，落 openapi.yaml（机器可读 SSOT），再生成 API.md 说明书
     - 已有 API → 参考旧文档有效信息，但结构按本模板重建为说明书模式；删除原接口清单/接口详情章节；迁移为契约文件结构 + 目标语言生成命令 + CI pipeline + 协议支持表
-    - 二部图校验：a) 每个接口向上追溯到 APPLICATION-ARCHITECTURE §3.2 中至少一个能力；b) 该能力承载的聚合至少含一个 §3 Action 与接口语义对应（双向对齐）
+    - 二部图校验：a) 每个接口向上追溯到 PRODUCT §2.1 至少一个能力；b) 该能力承载的聚合至少含一个 §3 Action 与接口语义对应（双向对齐，能力→聚合映射 SSOT 在 DOMAIN-MODEL §3）
     - 按模板生成：§1 契约文件结构 → §2 目标语言生成命令（仅写探测/选定语言的 CLI，不写其他语言）→ §3 维护规范 → §4 CI 防漂移 pipeline → §5 协议支持表
   notes: # 生成注意点（怎么生成）
     - OpenAPI 3.1 为契约 SSOT，API.md 是「openapi.yaml 使用说明书」不是「接口清单文档」
@@ -39,15 +39,19 @@ generation:
     - 目标语言确定：先探测项目技术栈（package.json/go.mod/pom.xml 等）；探测到 → 只写该语言 CLI；探测不到 → ask_user 提供选项让用户选（Go/Java-Spring/Python-FastAPI/Node-Express/TypeScript）。最终文档只写选定语言的 CLI，不写其他语言（避免文档膨胀 + 与项目无关）
     - 其他协议（gRPC/WebSocket/私有协议）用协议支持表中的占位行表达；启用时各自维护 .proto / 自定义 IDL 文件
     - 鉴权方案/字段级契约/错误响应以 JSON Pointer 引用 openapi.yaml 节点，文档内不展开
-    - 接口来自聚合操作（Action），与 DOMAIN-MODEL §3.1-§3.5 一一对应（用于校验覆盖完整性，不写入正文表）
+    - 接口来自聚合操作（Action），与 DOMAIN-MODEL §3 各域小节一一对应（用于校验覆盖完整性，不写入正文表）
     - 接口按 endpoint（方法+路径）标识，不用顺序编号
     - 只写说明书四要素，技术契约细节在 openapi.yaml
+    - **PRODUCT 待规划能力不建端点（case A）**：PRODUCT 标「待规划」的能力，API.md 不写端点说明、openapi.yaml 不留 tag/paths/stub——仅 PRODUCT 保留待规划标注
+    - **API.md 端点增删必须同步 openapi.yaml（case G）**：同步 tag/paths/文件头注释端点计数；删除端点时在 yaml 注释留痕删除原因（如「auth.yaml 已随 <能力> 待规划移除」），保证 yaml 与 API.md 一致可机检
   checks: # 生成后反向 check
     - "协议支持表含默认 HTTP/REST（指向 openapi.yaml）+ 其他协议占位（gRPC/WebSocket/私有协议）"
     - "接口契约与 openapi.yaml 一致（无字段漂移：API.md 引用与 openapi.yaml 节点逐项对得上）"
-    - "接口覆盖 DOMAIN-MODEL §3.1-§3.5 全部 Actions（见 DOMAIN-MODEL §3；1 Action 可对应 1+ 接口，无遗漏）"
-    - "接口与 APPLICATION-ARCHITECTURE §3.2 能力→聚合 bipartite 对齐（每个接口可追溯到至少一个能力，能力承载的聚合含对应 Action）"
+    - "接口覆盖 DOMAIN-MODEL §3 各域小节全部 Action（1 Action 可对应 1+ 接口，无遗漏）"
+    - "每个接口可追溯到 PRODUCT §2.1 至少一个能力，能力承载的聚合含对应 Action（能力→聚合映射 SSOT 在 DOMAIN-MODEL §3）"
     - "接口来源能力在 PRODUCT §2.1 能力清单存在且功能状态已确认"
+    - "PRODUCT 标「待规划」的能力无端点（API.md 与 openapi.yaml 均无 stub/tag/paths）"
+    - "API.md 端点增删已同步 openapi.yaml（tag/paths/文件头端点计数一致；删除在 yaml 注释留痕原因）"
     - "字段级契约不与 DOMAIN-MODEL §3/§4 业务语义冲突"
     - "与 INTEGRATION（Outbound）方向不混淆"
     - "内容条目无顺序编号（接口按 endpoint 标识，不用 API-N）"

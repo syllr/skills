@@ -18,7 +18,7 @@ generation:
     CONSTITUTION: 文档分层规则 SSOT 在它 §3.1，规则变更需同步 docs/ 子树目录；代码分层概念（controller/service/infra 等）不重复其规则
     APPLICATION-ARCHITECTURE: 应用划分 SSOT，代码目录（前端/后端、模块归属）需与之对应
     L3/API: controller 的 api 代码来源——从 openapi.yaml schema 生成，controller 目录与 API 文档联动
-    PRODUCT: 功能 SSOT，功能目录增删需同步
+    PRODUCT: 功能 SSOT，功能目录增删需同步；**PRODUCT 标「待规划」的功能不加实现目录/模块目录（case A：待规划在实现视图不建模，仅 PRODUCT 保留标注）**
     DEEP-DIVES: 高复杂度单列详情（2/4 阈值：T1 跨模块交互≥3 / T2 永久参数≥5 / T3 精度性能分层≥3 / T4 坑位≥5，命中任意 2 个即单列；判定见 L2/deep-dives/INDEX.md §1），目录树需含 deep-dives/ 分支，与 L2 根索引双向引用
     RESEARCH: 调研详情（候选≥2 或维度≥3（命中其一即单列）；判定见 §1 research/ 行；无独立索引，TECHNOLOGY-ARCHITECTURE.md 为逻辑入口，双向引用），目录树需含 research/ 分支
     # common 角色：本文档是「改任何文档前」的必读项（定位文档对应代码，防漂移）
@@ -48,6 +48,7 @@ generation:
     - research 目录中性收纳技术/竞品调研，与 deep-dives 并列同为 L2 子目录
   checks: # 生成后反向 check
     - "目录树与 宪法 文档分层一致（L0-L4 + common 层），README/AGENTS 引用的路径与目录树一致"
+    - "PRODUCT 标「待规划」的功能无实现目录/模块目录（待规划在实现视图不建模）"
     - "每个二级目录都有职责说明（干什么/作用/约束），`reference` 标注只读、`controller` 标注由 `api.md` schema 生成"
     - "`reference` 未被直接修改（任何改动前已询问用户）；`controller` 与 `L3/API.md` 一致性（api 代码与 `openapi.yaml` schema 对齐）"
     - "漂移处理有说明（新建 vs 调整的判断 + 用户确认）且漂移项已校验"
