@@ -24,6 +24,7 @@
    - 多列容器（grid-columns:N, N≥2）：`子width = (父宽−24−(N−1)×gap)/N`（设计宽度，layout-and-grid），**整组自动居中**；超界判断用 `Σ子宽+(N−1)×gap ≤ 父宽−4`
    - 单列容器/竖条（grid-columns:1）：**不设 width**，让 ELK 按子容器+等边距自动包裹 → 子容器天然居中（v0.8.1 实测，见 layout-and-grid §6.13 B）
    - 每一层嵌套都要算（A→B→C→D 每层，见 layout-and-grid §6.13），**不能只算最外层**。
+   - ⚠️ **cylinder（数据库/存储节点）**：一律显式设 `width`（layout-and-grid §6.7a）——不设则由 label 决定且会撑大整列；label 用短行（每行 ≤4-6 字）。
 3. **按 c4-container-spec §4.8 给每个节点挂圆角 class**（border-radius）——**含最外层 wrapper 容器**（如 `整体架构: { ... }` 这个整体容器，用 `border-radius: 16`）。实测坑：漏外层容器 → verify 报"1 个图形无圆角"，靠坐标+label 定位（见 §7.1）。
 4. **检查 label 长度**：子容器 width 是否放得下最长的 label？放不下 → d2-syntax-cheatsheet §6.14 trade-off（缩文本/改布局/扩父容器/消减子项数，**禁止接受超界**）。
 
@@ -50,6 +51,8 @@ python3 scripts/verify-svg.py <渲染出的.svg> [--source file.d2]
 ```
 
 > **嵌套层级（P8）**：脚本会输出整图最大嵌套层数；加 `--source <file.d2>` 时，用 .d2 缩进解析真实层级树，并与几何嵌套判定对比——**不一致则告警**（深嵌套下几何推断可能误判父/子，以 .d2 源码层级为准）。**已知坑**：D2 可能生成重复的画布背景 rect（面积相同），脚本按"面积=最大"排除所有背景，勿依赖"仅第 1 个"。**脚本方法论**（也是手写验证的算法）：
+
+> **⚠️ cylinder 检测（P0 修复）**：`shape: cylinder` 由 `<path>` 渲染、**不产生 `<rect>`**。旧版 `verify-svg.py` 只扫 `<rect>`，导致 cylinder 视觉超界被漏报（P0 盲区）。现脚本通过 `parse_cylinders` 把 cylinder 外体 path 的 bbox 并入 shapes 统一检测（超界/等宽/嵌套/文字溢出主机），且**天然跳过 cylinder 的圆角检查**（圆柱顶弧自身即圆角，无 rx）。
 
 **超界判断**（对每个父容器 c 和其直接子容器 k，容差 = stroke-width/2 + 0.5）：
 
@@ -102,6 +105,13 @@ python3 scripts/d2-workbench.py render docs-fig1.d2
 # 回写 md（替换原代码块，默认无 fallback，自动 round-trip 校验并防多张图）
 python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 --name "系统架构图"
 ```
+
+> [!WARNING]
+> **改图后必须重新 verify（不能只看临时 .d2）——本次复盘踩坑根因**：
+>
+> - **写完 md 后必须重新从 md 提取再跑一次 `verify-svg.py`**。只对临时 `.d2` 验证过不算数（临时 `.d2` 与写回 md 的内容可能不一致，尤其手写/脚本直接改 md 时）。`sync` 已内置 round-trip 校验（提取→validate→渲染→verify-svg→viewBox），**切勿绕过它手动改 md**。
+> - **改一次图就要重新 verify 一次**（超界/等宽/圆角/文字溢出是渲染产物属性，改任何色值/label/width 都可能影响），不要只在"最终图"上跑一次。
+> - 违背上述任一 → 出现"verify 通过但视觉超界"的假阳性（P0 场景）。
 
 **手动替代流程**（工作台不可用/单次验证时）：
 

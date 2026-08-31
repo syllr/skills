@@ -7,9 +7,11 @@
 方法论: 见 SKILL.md §7.1
 
 判断规则:
-- 超界: 子容器任一 4 边超出父容器边界 > 容差(stroke-width/2 + 0.5)
+- 超界: 子容器/子形状任一 4 边超出父容器边界 > 容差(stroke-width/2 + 0.5)
+       ⚠️ shape:cylinder 由 <path> 渲染、不产生 <rect>，本脚本将其 bbox 并入 shapes 判定，
+       否则 cylinder 视觉超界会被漏报（P0 修复）。
 - 等宽: 单列容器(竖条, grid-columns:1, 不设 width 由 ELK 自动包裹) 内所有直接子容器 x 相同 → 左右距相等
-- 圆角: 图形节点(排除画布背景/箭头文字标签/span徽章) 都应有 rx
+- 圆角: 图形节点(排除画布背景/箭头文字标签/span徽章) 都应有 rx（cylinder 天然圆角，不参与此查）
 - 文字溢出: 文本估算宽 > 宿主容器宽 + 容差(TEXT_OVERFLOW_TOL) → 铁律4 文本完整
 - 嵌套深度: 几何包含计数; --source 时与 .d2 缩进层级对比, 不一致告警
 
@@ -44,6 +46,95 @@ def parse_rects(path):
         rx = rect.get("rx", None)
         rects.append((x, y, w, h, sw, rx))
     return rects
+
+
+def parse_path_bbox(d):
+    """从 SVG path 的 d 属性解析真实边界框，返回 (minx, miny, maxx, maxy) 或 None。
+
+    D2 的 shape:cylinder 渲染为 <g class="shape"> 内的两条 <path>——外体（闭合，
+    以 Z 结尾）+ 顶弧（不闭合），**不产生任何 <rect>**。因此 verify 若只解析 rect
+    会完全看不见 cylinder（P0：视觉超界被漏报）。
+
+    cylinder 的实际可视边界 = 外体 path 的 bbox。此解析对 M/L/C/S/Q/T/H/V/A 取所有
+    坐标的 min/max：
+    - V/H 是单坐标命令（V 只有 y，H 只有 x），需按命令区分而非盲目两两配对
+    - cubic/quad bezier（C/S/Q）曲线始终位于控制点凸包内，故对控制点与端点取
+      min/max 即得到保守而精确的 bbox（cylinder 外体只用 M/C/V/Z）
+    - Z 关闭路径不新增坐标，不影响 bbox
+    """
+    seq = []
+    # 拆分命令字母与数字（数字可带负号/小数点/连续空格）
+    for letter, num in re.findall(r"([A-Za-z])|\s*(-?\d+(?:\.\d+)?)\s*", d):
+        if letter:
+            seq.append([letter.upper(), []])
+        else:
+            seq[-1][1].append(float(num))
+    xs, ys = [], []
+    for cmd, nums in seq:
+        n = len(nums)
+        if cmd in ("M", "L", "T"):
+            for j in range(0, n - 1, 2):
+                xs.append(nums[j])
+                ys.append(nums[j + 1])
+        elif cmd == "H":
+            for j in range(n):
+                xs.append(nums[j])
+        elif cmd == "V":
+            for j in range(n):
+                ys.append(nums[j])
+        elif cmd == "C":
+            for j in range(0, n - 5, 6):
+                for k in range(6):
+                    (xs if k % 2 == 0 else ys).append(nums[j + k])
+        elif cmd in ("S", "Q"):
+            for j in range(0, n - 3, 4):
+                for k in range(4):
+                    (xs if k % 2 == 0 else ys).append(nums[j + k])
+        elif cmd == "A":
+            # A rx ry x-axis-rot large-arc sweep x y → 只取终点 (x, y)
+            for j in range(0, n - 6, 7):
+                xs.append(nums[j + 5])
+                ys.append(nums[j + 6])
+        # Z 及其余：关闭路径，不新增坐标
+    if not xs or not ys:
+        return None
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def parse_cylinders(path):
+    """解析 SVG 中 shape:cylinder 节点的真实边界框。
+
+    遍历所有 class 含 "shape" 的 <g>：凡是不含 rect 却含闭合 <path>（d 以 Z 结尾）
+    的节点即为 cylinder（数据库/存储组件）。cylinder 无 rx（天然圆角，圆柱顶弧），故
+    第 6 项置 None，使 rx 检查（只扫 rect）自动跳过，不误报"无圆角"。
+
+    返回 [(x, y, w, h, stroke_width, None)]。
+    """
+    tree = ET.parse(path)
+    root = tree.getroot()
+    out = []
+    for g in root.iter(f"{{http://www.w3.org/2000/svg}}g"):
+        if "shape" not in g.get("class", "").split():
+            continue
+        if any(c.tag.endswith("rect") for c in list(g)):
+            continue  # rect 形状由 parse_rects 处理
+        for p in list(g):
+            if not p.tag.endswith("path"):
+                continue
+            d = p.get("d", "")
+            if not d.strip().endswith("Z"):
+                continue  # 顶弧（不闭合）是外体子集，跳过
+            bbox = parse_path_bbox(d)
+            if bbox is None:
+                continue
+            minx, miny, maxx, maxy = bbox
+            style = p.get("style", "")
+            sw = 1.0
+            m = re.search(r"stroke-width:([\d.]+)", style)
+            if m:
+                sw = float(m.group(1))
+            out.append((minx, miny, maxx - minx, maxy - miny, sw, None))
+    return out
 
 
 def parse_texts(path):
@@ -121,7 +212,7 @@ def parse_text_geo(path):
     return out
 
 
-def is_edge_label(text_geo, rects):
+def is_edge_label(text_geo, shapes):
     """判断 text 是否为箭头边标签（非容器内 label）。
 
     箭头边标签由 D2 生成一个 h<40 的小背景 rect 承载（实测 h≈21），而容器
@@ -130,7 +221,7 @@ def is_edge_label(text_geo, rects):
     """
     cx = text_geo["cx"]
     cy = text_geo["y"]
-    for r in rects:
+    for r in shapes:
         rx, ry, rw, rh, _, rrx = r
         if rh >= 40 or (rrx is not None and float(rrx) > 0):
             continue
@@ -142,18 +233,22 @@ def is_edge_label(text_geo, rects):
     return False
 
 
-def find_host_rect(text_geo, rects):
-    """找承载该文本的最小容器 rect（取文本锚点 cx 与 y 落于其内的最小 rect）。"""
-    if is_edge_label(text_geo, rects):
+def find_host_rect(text_geo, shapes):
+    """找承载该文本的最小容器 rect（取文本锚点 cx 与 y 落于其内的最小形状）。
+
+    shapes 同时含 rect 与 cylinder bbox，因此 cylinder 内的 label 也能定位宿主
+    （cylinder 的 rx=None，容器性由面积/尺寸判定）。
+    """
+    if is_edge_label(text_geo, shapes):
         return None
     cx = text_geo["cx"]
     ys = [ly for _, ly, _ in text_geo["lines"]]
     top = min(ys)
     n = len(text_geo["lines"])
     bottom = top + n * text_geo["font_size"] * 1.1
-    all_area = max((r[2] * r[3] for r in rects), default=0)
+    all_area = max((r[2] * r[3] for r in shapes), default=0)
     best, best_area = None, None
-    for r in rects:
+    for r in shapes:
         rx, ry, rw, rh, _, rrx = r
         if rw * rh >= all_area - 1:  # 画布背景
             continue
@@ -339,14 +434,19 @@ def main():
         sys.exit(1)
     path = argv[0]
     rects = parse_rects(path)
+    cylinders = parse_cylinders(path)
     texts = parse_texts(path)
-    if not rects:
-        print(f"{path}: 未找到任何 rect")
+    if not rects and not cylinders:
+        print(f"{path}: 未找到任何形状（rect / cylinder）")
         sys.exit(1)
 
-    # 画布背景 = 面积最大 rect（D2 可能生成重复画布 rect，面积相同均需排除）
-    outer_area = max(r[2] * r[3] for r in rects) if rects else 0
-    containers = [r for r in rects if r[2] * r[3] < outer_area and r[2] >= 100]
+    # shapes = 所有几何形状（rect + cylinder bbox），用于超界/等宽/嵌套/文字宿主判定。
+    #   ⚠️ cylinder 由 <path> 渲染、不产生 rect，必须并入 shapes，否则 P0 视觉超界被漏报。
+    # rects 单独用于 rx / 徽章 / 边标签等"仅 rect"判定（cylinder 无 rx，天然圆角）。
+    shapes = rects + cylinders
+    # 画布背景 = 面积最大形状（D2 可能生成重复画布 rect，面积相同均需排除）
+    outer_area = max(r[2] * r[3] for r in shapes) if shapes else 0
+    containers = [r for r in shapes if r[2] * r[3] < outer_area and r[2] >= 100]
 
     text_geo_list = parse_text_geo(path)
     over_cnt = 0
@@ -354,7 +454,7 @@ def main():
     eq_pass = 0
     text_of = 0
     print(f"=== {path} 验收 ===")
-    print(f"容器数: {len(containers)}")
+    print(f"形状数: {len(containers)}（含 cylinder）")
 
     # 圆角检查: 排除画布背景(面积最大, rx=0 正常) + 箭头文字标签背景(h<40) + span 徽章
     bg_area = outer_area
@@ -385,15 +485,19 @@ def main():
     for c in containers:
         cx, cy, cw, ch, csw, _ = c
         tol = csw / 2 + 0.5
+        # 子形状候选 = "拓扑锚点落在父内容区内"（子左上角从父内开始）。
+        # ⚠️ 不能用旧的"子完全在父内"过滤——那会把严重超界（子宽 > 父宽）的子形状直接
+        #    排除，导致 check_overlap 根本不运行，超界被漏报（P0 根因之一）。
         cands = [
             k
-            for k in rects
+            for k in shapes
             if k is not c
-            and k[0] >= cx - 1
-            and k[0] + k[2] <= cx + cw + 1
-            and k[1] >= cy - 1
-            and k[1] + k[3] <= cy + ch + 1
-            and k[2] < cw - 1
+            and k[2] >= 5
+            and k[3] >= 5
+            and k[0] >= cx - tol
+            and k[0] < cx + cw
+            and k[1] >= cy - tol
+            and k[1] < cy + ch
         ]
         direct = []
         for k in cands:
@@ -451,7 +555,7 @@ def main():
 
     # 文字溢出检测（铁律 4 文本完整，P0-1）
     for tg in text_geo_list:
-        host = find_host_rect(tg, rects)
+        host = find_host_rect(tg, shapes)
         if host is None:
             continue
         hx, hy, hw, hh, _, _ = host
