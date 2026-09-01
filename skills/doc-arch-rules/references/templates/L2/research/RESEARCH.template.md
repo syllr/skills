@@ -21,14 +21,14 @@ generation:
     - 校验：对比表与 ADR 链
   notes: # 生成注意点（怎么生成）
     - 对比表候选≥2，维度≥3（功能/性能/成本/许可证/生态）；单候选但含多维度验证（如环境预检/部署验证）亦可单列，属技术验证类调研
-    - 每候选带 File:Line / 官网链；研究证据（数据来源/版本/验证环境）保留在本文附录，属当前意图G，不移至 ADR
+    - 每候选带 File:Line / 官网链；研究证据（数据来源/版本/验证环境）保留在本文附录，属当前意图 G（generation，当前设计意图，见宪法 S6：文档当前态规则），不移至 ADR
     - POC/验证必有；缺失时标注【未验证-阻塞】并问用户，未补做不得进§6；未覆盖维度在§3.1标"否+原因"即可，不强制 filler
     - 小体量豁免：候选≤2且无需成本对比时，§4成本/§5风险可合并为"成本与风险"一节；无许可证成本写"开源无费用，运维成本见§4"类明确表述，不写空话
     - 风险合规：评估许可证/数据/vendor lock-in，填§5表并问用户合规缺口
     - 推荐链 ADR；正文不写文档演进历史（合并/改名/编号沿用等归 git log）
   checks: # 生成后反向 check
     - "6章骨架齐全（§1-6）"
-    - "对比表候选≥2 / 维度≥3"
+    - "对比表候选≥2 或单候选多维度验证 / 维度≥3"
     - "POC 存在"
     - "风险合规齐全"
     - "与 TECHNOLOGY 单链正确"
@@ -38,7 +38,7 @@ generation:
 
 > 本文档是「<项目名>」的 **RESEARCH（通用调研模板）**——L2 架构层的选型/对比/技术验证类调研文档（含内部 POC 与部署验证，第三方/自建不限）。
 > 【模板使用指引】复制为 `docs/L2/research/<kebab-name>.md`（`<kebab-name>` 用 kebab-case，如 `tech-xxx`、`competitor-yyy`），按各章节指引填写。
-> 【原则】① **调研定位**：research 承载单个选型/对比/技术验证主题的完整调研（候选/对比/验证/成本/风险/结论，含内部 POC 与部署验证），[TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) 只放一行"调研见"引用（S2 同一信息只在一处维护）；② **结论 SSOT 在 TECHNOLOGY**：本调研的最终选型结论写入 TECHNOLOGY §3.1/§4，research 只做论证过程，不反向承载结论；③ **决策链**：结论链到 [ADR](../ADR.template.md)（`见 ADR-xxx`），ADR 承载决策记录；研究证据（数据来源/版本/验证环境）保留在本文附录属当前意图G，文档演进历史（合并/改名等）归 git log；④ 图用 **Mermaid**（图规范见宪法 §3.2），无元信息表、无变更记录；⑤ **小体量豁免**：候选≤2且无需成本对比时§4/§5可合并，未覆盖 POC 维度标"否+原因"即可。
+> 【原则】① **调研定位**：research 承载单个选型/对比/技术验证主题的完整调研（候选/对比/验证/成本/风险/结论，含内部 POC 与部署验证），[TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) 只放一行"调研见"引用（S2：SSOT 单源原则，同一信息只在一处维护，见宪法 §2.2）；② **结论 在 TECHNOLOGY**：本调研的最终选型结论写入 TECHNOLOGY §3.1/§4，research 只做论证过程，不反向承载结论；③ **决策链**：结论链到 [ADR](../ADR.template.md)（`见 ADR-xxx`），ADR 承载决策记录；研究证据（数据来源/版本/验证环境）保留在本文附录属当前意图 G（generation，见宪法 S6），文档演进历史（合并/改名等）归 git log；④ 图用 **Mermaid**（图规范见宪法 §3.2），无元信息表、无变更记录；⑤ **小体量豁免**：候选≤2且无需成本对比时§4/§5可合并，未覆盖 POC 维度标"否+原因"即可。
 > 【章节】6 章骨架指 §1-6，§7 为相关文档导航。
 > 【示例】全文图/表/步骤均以「技术选型」为示例，其他主题按实际替换（候选/维度/验证按主题实际）。
 
@@ -59,7 +59,7 @@ generation:
 
 ## 2. 候选对比
 
-> 【指引】本节列出 **≥2 个候选**，从 **≥3 个维度**（功能/性能/成本/许可证/生态等）对比。**每个候选必须带 `File:Line` 或官网链接**，保证可跳转验证。对比表为 SSOT：候选/维度增减只改本表。
+> 【指引】本节列出 **≥2 个候选**，从 **≥3 个维度**（功能/性能/成本/许可证/生态等）对比。**每个候选必须带 `File:Line` 或官网链接**，保证可跳转验证。**例外：单候选但含多维度验证（如环境预检/部署验证）亦可单列**，属技术验证类调研。对比表为 SSOT：候选/维度增减只改本表。
 
 | 维度   | 候选 A（如 tech-xxx）  | 候选 B（如 competitor-yyy） | 说明 / 依据（File:Line / 官网）                     |
 | ------ | ---------------------- | --------------------------- | --------------------------------------------------- |
@@ -107,10 +107,12 @@ generation:
 - 源码结构：<目录/分层是否清晰，关键文件 `src/xxx:Line`>
 - 扩展点：<是否可插件/配置化，或需改源码，`src/xxx:Line`>
 - 代码片段（可复现）：
-  ```ts
-  // 最小可跑示例，含 File:Line 引用
-  import { xxx } from "tech-xxx"; // 参见 `src/poc.ts:12`
-  ```
+
+```ts
+// 最小可跑示例，含 File:Line 引用
+import { xxx } from "tech-xxx"; // 参见 `src/poc.ts:12`
+```
+
 - 问题：<可读性/坑位>
 
 #### 3.3.2 文档验证
@@ -122,13 +124,15 @@ generation:
 #### 3.3.3 流程设计验证
 
 - 接入流程：<从接入到跑通的步骤，Mermaid 时序图>
-  ```mermaid
-  sequenceDiagram
-      participant Dev as 开发者
-      participant Lib as 候选库
-      Dev->>Lib: 接入/配置
-      Lib-->>Dev: 返回/回调
-  ```
+
+```mermaid
+sequenceDiagram
+participant Dev as 开发者
+participant Lib as 候选库
+Dev->>Lib: 接入/配置
+Lib-->>Dev: 返回/回调
+```
+
 - 异常流程：<异常/回滚/重试是否闭环>
 - 流程断点：<需人工介入环节>
 
@@ -182,10 +186,10 @@ generation:
 
 ## 6. 结论
 
-> 【指引】本节给出**推荐 + ADR 链**。推荐结论写入 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1/§4（选型结论 SSOT），本调研只做论证；决策记录链到 [ADR](../ADR.template.md)（`见 ADR-xxx`）。**决策规则**：各维度按主题设权重（例：功能 40% / 性能 25% / 成本 20% / 生态 15%）对候选加权打分；存在**一票否决项**（如许可证传染性、硬约束不满足）的候选直接淘汰，不参与加权；推荐 = 加权得分最高且无否决项的候选；证据不足的维度显式标注并相应扣分，不模糊带过；若全员被否决则标注【阻塞-需放宽约束】并问用户；示例权重按主题自定义，未定时问用户。
+> 【指引】本节给出**推荐 + ADR 链**。推荐结论写入 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1/§4，本调研只做论证；决策记录链到 [ADR](../ADR.template.md)（`见 ADR-xxx`）。**决策规则**：各维度按主题设权重（例：功能 40% / 性能 25% / 成本 20% / 生态 15%）对候选加权打分；存在**一票否决项**（如许可证传染性、硬约束不满足）的候选直接淘汰，不参与加权；推荐 = 加权得分最高且无否决项的候选；证据不足的维度显式标注并相应扣分，不模糊带过；若全员被否决则标注【阻塞-需放宽约束】并问用户；示例权重按主题自定义，未定时问用户。
 
 - 推荐：<推荐候选 + 理由（呼应 §2 对比 / §3 POC / §4 成本 / §5 风险，按权重打分 + 注明一票否决项）>
-- 结论 SSOT：写入 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1/§4
+- 结论 ：写入 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1/§4
 - 决策链：见 `ADR-xxx`（[ADR](../ADR.template.md)）
 
 > 【指引】推荐必须可追溯到 §2-5 证据；ADR 链缺失时问用户（是否已建 ADR）。
@@ -194,5 +198,5 @@ generation:
 
 ## 7. 相关文档
 
-- [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)：选型结论 SSOT（§3.1/§4），调研详情在本 RESEARCH
+- [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)：选型结论 （§3.1/§4），调研详情在本 RESEARCH
 - [ADR](../ADR.template.md)：决策链（`见 ADR-xxx`）

@@ -9,7 +9,7 @@ globs:
 generation:
   tools:
     - ASCII 索引表（§2 列表，fallback 见宪法 §3.2）
-    - Mermaid flowchart（§3 引用声明图，图规范见宪法）
+    - Mermaid flowchart（§3 引用声明图，图规范见宪法 §3.2）
   related: # 关联模板与联动修改
     APPLICATION-ARCHITECTURE: 应用模块索引，deep-dives 为详情，SSOT 单源
     DOMAIN-MODEL: 规则 SSOT，deep-dives 为详情，SSOT 单源
@@ -42,7 +42,7 @@ generation:
 
 ## 1. 收敛标准（什么主题值得单独成篇）
 
-> 【指引】deep-dive 是**高复杂度主题的详情页**，不是所有主题都值得单独成篇。命中以下 4 个阈值中 **任意 2 个** 即单列一篇；不足 2 个的并入 L2 三总览对应章节，不单独成篇。阈值来源：AWS Well-Architected Lens、arc42 §8、C4 model L3（Component）、Google Design Doc。
+> 【指引】deep-dive 是**高复杂度主题的详情页**，不是所有主题都值得单独成篇。判定规则见下方「命中 ≥2 即单列」（不足 2 个并入 L2 三总览对应章节）。阈值来源：AWS Well-Architected Lens、arc42 §8、C4 model L3（Component）、Google Design Doc。
 
 | #   | 阈值                     | 说明                                                                  | 来源                         |
 | --- | ------------------------ | --------------------------------------------------------------------- | ---------------------------- |
@@ -57,14 +57,12 @@ generation:
 
 ## 2. Deep Dive 列表
 
-> 【指引】按主题维护 deep-dive 清单。**首篇为 inference-pipeline（推理流水线）**；预留位（如 grant-scheduling）在主题出现时启用。每篇标注：主题、判定（命中哪些阈值）、关联总览章节、状态。**本表为 SSOT**：新增/删除 deep-dive 只改本表。
+> 【指引】按主题维护 deep-dive 清单。**首篇为 inference-pipeline（推理流水线）**；预留位（如 grant-scheduling）在主题出现时启用并补判定与关联总览。每篇标注：主题、判定（命中哪些阈值）、关联总览章节、状态。**本表为 deep-dive 清单的唯一入口**：新增/删除 deep-dive 只改本表；每篇 deep-dive 的「相关文档」章节反向链回本索引（单链，不双向复制）。`§X`/`R8/R9` 为占位符，替换为总览实际章节号 / DOMAIN-MODEL 规则编号。
 
 | 主题       | 文件                                            | 判定          | 关联总览（索引）                                                                                                         | 状态 |
 | ---------- | ----------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------ | ---- |
 | 推理流水线 | [inference-pipeline](inference-pipeline.md)     | T1+T2+T3+T4   | [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §X / [DOMAIN-MODEL](../DOMAIN-MODEL.template.md) R8/R9 | 已建 |
 | 授权调度   | [grant-scheduling](grant-scheduling.md)（预留） | T1+T2（示例） | [APPLICATION-ARCHITECTURE](../APPLICATION-ARCHITECTURE.template.md) §3                                                   | 预留 |
-
-> 【指引】列表为 **SSOT**：新增/删除 deep-dive 只改本表；每篇 deep-dive 的「相关文档」章节反向链回本索引（单链，不双向复制）。预留位在主题出现时启用，启用后补判定与关联总览。
 
 ---
 
@@ -74,10 +72,10 @@ generation:
 
 ```mermaid
 flowchart LR
-    AA[APPLICATION-ARCHITECTURE] -->|详情见| DD[deep-dives/*]
-    DM[DOMAIN-MODEL] -->|详情见| DD
-    TA[TECHNOLOGY-ARCHITECTURE] -->|详情见| DD
-    DD -->|参见 File:Line| CODE[代码]
+ AA[APPLICATION-ARCHITECTURE] -->|详情见| DD[deep-dives/*]
+ DM[DOMAIN-MODEL] -->|详情见| DD
+ TA[TECHNOLOGY-ARCHITECTURE] -->|详情见| DD
+ DD -->|参见 File:Line| CODE[代码]
 ```
 
 > 图注：实例路径为 INDEX.md，模板期指向 INDEX.template.md。
@@ -88,7 +86,7 @@ flowchart LR
 
 ## 4. 与 STRUCTURE 的联动
 
-> 【指引】目录结构 SSOT 在 [STRUCTURE](../../common/STRUCTURE.template.md)（common 层）。新增/删除 deep-dive 时，同步更新 STRUCTURE 中 `docs/L2/deep-dives/` 的说明（文件清单/职责），保持目录 ↔ 文档一致。
+> 【指引】目录结构定义在 [STRUCTURE](../../common/STRUCTURE.template.md)（common 层）。新增/删除 deep-dive 时，同步更新 STRUCTURE 中 `docs/L2/deep-dives/` 的说明（文件清单/职责），保持目录 ↔ 文档一致。
 
 | 动作           | 本索引        | STRUCTURE                                                                        |
 | -------------- | ------------- | -------------------------------------------------------------------------------- |
@@ -96,7 +94,7 @@ flowchart LR
 | 删除 deep-dive | §2 列表删行   | 同步 STRUCTURE §1 目录树（deep-dives 分支）+ §2 职责表（docs/L2/deep-dives/ 行） |
 | 收敛标准调整   | §1 阈值表更新 | 无需联动（不涉及目录）                                                           |
 
-> 【指引】STRUCTURE 是目录结构 SSOT，本索引只维护"主题 → 文件"映射；目录级说明一律以 STRUCTURE 为准，此处引用不复制。
+> 【指引】STRUCTURE 是目录结构的 SSOT，本索引只维护"主题 → 文件"映射；目录级说明一律以 STRUCTURE 为准，此处引用不复制。
 
 ---
 
@@ -104,4 +102,4 @@ flowchart LR
 
 - [DEEP-DIVE](DEEP-DIVE.template.md)：单篇 deep-dive 的通用模板（7 章骨架）
 - [APPLICATION-ARCHITECTURE](../APPLICATION-ARCHITECTURE.template.md) / [DOMAIN-MODEL](../DOMAIN-MODEL.template.md) / [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)：L2 三总览（索引）
-- [STRUCTURE](../../common/STRUCTURE.template.md)：目录结构 SSOT（`docs/L2/deep-dives/` 说明）
+- [STRUCTURE](../../common/STRUCTURE.template.md)：目录结构的 SSOT（`docs/L2/deep-dives/` 说明）

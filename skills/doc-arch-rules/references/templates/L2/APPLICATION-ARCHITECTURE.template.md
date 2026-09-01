@@ -11,11 +11,11 @@ generation:
     - Mermaid flowchart（§2.1 C4 Context 图，图规范见宪法）
     - D2 容器图（§2.2 应用划分图，图规范见宪法）
   related: # 关联模板与联动修改
-    PRODUCT: 能力清单 SSOT 在它 §2.1，能力增删需同步应用模块（映射在 DOMAIN-MODEL SSOT，不在此重复）；**PRODUCT 标「待规划」的能力不加应用模块（case A：待规划能力在实现视图不建模，仅 PRODUCT 保留标注）**
+    PRODUCT: 能力清单 SSOT 在它 §2.1，能力增删需同步应用模块（映射在 DOMAIN-MODEL SSOT，不在此重复）；**PRODUCT 标「待规划」的能力不加应用模块（待规划能力在实现视图不建模，仅 PRODUCT 保留标注）**
     TECHNOLOGY-ARCHITECTURE: 应用划分 SSOT 在 §2.2，技术架构按应用描述需引用
     DOMAIN-MODEL: 领域聚合归属领域，能力→聚合映射 SSOT 在它 §3（应用架构不重复）
     DEPLOYMENT: 部署单元来自应用划分，应用增减需同步部署
-    DEEP-DIVES: L2 根为索引，deep-dives 为详情，S2 SSOT（声明见正文【与 deep-dives 分工】）
+    DEEP-DIVES: L2 根为索引，deep-dives 为详情，宪法 S2（SSOT 同一信息只在一处维护；声明见正文【与 deep-dives 分工】）
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - 应用划分（几个应用/前端后端边界）有争议时 → 问用户确认
@@ -32,7 +32,7 @@ generation:
     - §3 模块划分：应用内模块按知识域划分（不按能力）；模块命名以 §2.2 应用划分图为基准（防一物多名，宪法 S9 通用语言贯穿）；能力→领域/聚合映射 SSOT 在 DOMAIN-MODEL §3（PRODUCT §2.1），**应用架构不重复该映射**
     - 不写实现细节（类/接口/表结构在代码）
     - 图规范见宪法（Context 用 flowchart，应用划分用 D2）
-    - 瘦身约束：本模板生成的文档仅保留 1 张总览图 + 1 张参数/映射总览表作索引，详情链到 deep-dives/，引用不复制；File:Line 链代码；与 SPEC:5 env 双向引用不复制
+    - 瘦身约束：本模板生成的文档仅保留 1 张总览图（§2.1 Context 图；§2.2 应用划分折叠为 §3.1 模块表，不重复建表，兼作索引表），详情链到 deep-dives/，引用不复制；File:Line 链代码；与项目 env 文档（如 SPEC:5 env，存在时）双向引用不复制
   checks: # 生成后反向 check
     - [ ] §2.2 应用划分图分四类（应用[应用]/容器[容器]/外部[外部]/用户层[Person]），无「依赖」笼统类
     - [ ] 容器=你拥有并负责（Boundary 内）；外部系统=别人提供服务（Boundary 外）——判别正确，无容器/外部混淆
@@ -42,17 +42,17 @@ generation:
     - [ ] PRODUCT 标「待规划」的能力无对应应用模块/层节点（实现视图不建模，仅 PRODUCT 保留标注）
     - [ ] Context 图标注为 C4 Context 图
     - [ ] 应用划分图标注为 C4 容器图
-    - [ ] 各节有且仅有一处 详见 deep-dives/... 链路
-    - [ ] 行数 ~300 而非 ~500
+    - [ ] §2.2/§3 各一处 详见 deep-dives/... 链路（每处有且仅有一处；§2.1 Context 不强制）
+    - [ ] 行数 ~300（宪法 §3.1 收敛标准）而非 ~500
     - [ ] 与 deep-dives/INDEX 可检索一致
 ---
 
 # APPLICATION-ARCHITECTURE — 应用架构
 
-> 本文档是「<项目名>」的 **APPLICATION-ARCHITECTURE（应用架构模板）**——L2 架构层的应用架构文档。
+> 本文档是「<项目名>」的 **APPLICATION-ARCHITECTURE（应用架构模板）**——L2 架构层的应用架构文档。（实例化后删除模板自述行，保留【原则】与【与 deep-dives 分工】声明）
 > 【模板使用指引】复制为 `docs/L2/APPLICATION-ARCHITECTURE.md`，按各章节指引填写。
 > 【原则】① **应用架构视角**（TOGAF）：系统分几个应用、应用依赖什么——回答"系统怎么组织"；② 不写实现细节（类/接口/表结构在代码）；③ 与具体技术栈/框架无关；④ 图用 **Mermaid**（Context）+ **D2 容器图**（应用划分）无元信息表、无变更记录。
-> 【与 deep-dives 分工】本 L2 根文档为**索引**，详情在 `deep-dives/<name>.md`（S2 SSOT）——同一信息只在一处维护，其余详见 `deep-dives/<name>.md#锚点`，引用不复制。
+> 【与 deep-dives 分工】本 L2 根文档为**索引**，详情在 `deep-dives/<name>.md`——同一信息只在一处维护，其余详见 `deep-dives/<name>.md#锚点`，引用不复制。
 
 ---
 
@@ -72,23 +72,23 @@ generation:
 
 ```mermaid
 flowchart TB
-    U(["用户<br/>Person · <用户角色>"])
-    W["<外部系统><br/>External System<br/><外部系统职责：宿主 / 登录鉴权 / 支付>"]
-    S["<系统名><br/>Software System<br/><系统核心职责>"]
-    A["<外部系统 2><br/>External System<br/><外部服务职责：生成 / 提取 / 配音>"]
+ U(["用户<br/>Person · <用户角色>"])
+ W["<外部系统><br/>External System<br/><外部系统职责：宿主 / 登录鉴权 / 支付>"]
+ S["<系统名><br/>Software System<br/><系统核心职责>"]
+ A["<外部系统 2><br/>External System<br/><外部服务职责：生成 / 提取 / 配音>"]
 
-    U -->|"<使用方式>"| W
-    W -->|"<加载 / 接入方式>"| S
-    S -->|"<交互 1：登录鉴权 / 支付回调>"| W
-    S -->|"<调用外部服务>"| A
+ U -->|"<使用方式>"| W
+ W -->|"<加载 / 接入方式>"| S
+ S -->|"<交互 1：登录鉴权 / 支付回调>"| W
+ S -->|"<调用外部服务>"| A
 
-    classDef person fill:#08427b,stroke:#052e56,color:#fff
-    classDef system fill:#1168bd,stroke:#0b4884,color:#fff
-    classDef external fill:#999999,stroke:#6b6b6b,color:#fff
+ classDef person fill:#08427b,stroke:#052e56,color:#fff
+ classDef system fill:#1168bd,stroke:#0b4884,color:#fff
+ classDef external fill:#999999,stroke:#6b6b6b,color:#fff
 
-    class U person
-    class S system
-    class W,A external
+ class U person
+ class S system
+ class W,A external
 ```
 
 ### 2.2 应用划分（Application）
@@ -103,72 +103,72 @@ flowchart TB
 # 图例: [应用]/[容器]/[外部]/[Person]
 
 vars: {
-  d2-config: {
-    layout-engine: elk
-  }
+ d2-config: {
+ layout-engine: elk
+ }
 }
 
 应用划分: {
-  grid-rows: 1; grid-columns: 2; grid-gap: 16
-  style.fill: "#ffffff"
-  style.font-color: "#1e293b"
-  style.stroke: "#94a3b8"
-  style.border-radius: 16
+ grid-rows: 1; grid-columns: 2; grid-gap: 16
+ style.fill: "#ffffff"
+ style.font-color: "#1e293b"
+ style.stroke: "#94a3b8"
+ style.border-radius: 16
 
-  左主体: {
-    grid-rows: 1; grid-columns: 1; grid-gap: 16
-    style.font-color: "#1e293b"
-    style.border-radius: 12
+ 左主体: {
+ grid-rows: 1; grid-columns: 1; grid-gap: 16
+ style.font-color: "#1e293b"
+ style.border-radius: 12
 
-    用户层: {
-      label: "① 用户层 [Person]"
-      width: 1000; grid-columns: 3; grid-gap: 12; style.fill: "#f8fafc"; style.font-color: "#1e293b"; style.stroke: "#94a3b8"; style.border-radius: 12
-      u1: { label: "<用户角色_主>"; width: 317; height: 50; class: mod }
-      u2: { label: "<用户角色_管>"; width: 317; height: 50; class: mod }
-      u3: { label: "<用户角色_客>"; width: 317; height: 50; class: mod }
-    }
+ 用户层: {
+ label: "① 用户层 [Person]"
+ width: 1000; grid-columns: 3; grid-gap: 12; style.fill: "#f8fafc"; style.font-color: "#1e293b"; style.stroke: "#94a3b8"; style.border-radius: 12
+ u1: { label: "<用户角色_主>"; width: 317; height: 50; class: mod }
+ u2: { label: "<用户角色_管>"; width: 317; height: 50; class: mod }
+ u3: { label: "<用户角色_客>"; width: 317; height: 50; class: mod }
+ }
 
-    前端层: {
-      label: "② <前端应用> [应用]"
-      width: 1000; grid-columns: 2; grid-gap: 12; style.fill: "#dbeafe"; style.font-color: "#1e293b"; style.stroke: "#2563eb"; style.border-radius: 12
-      f1: { label: "<页面模块_首页>"; width: 482; height: 60; class: mod }
-      f2: { label: "<页面模块_工作台>"; width: 482; height: 60; class: mod }
-    }
+ 前端层: {
+ label: "② <前端应用> [应用]"
+ width: 1000; grid-columns: 2; grid-gap: 12; style.fill: "#dbeafe"; style.font-color: "#1e293b"; style.stroke: "#2563eb"; style.border-radius: 12
+ f1: { label: "<页面模块_首页>"; width: 482; height: 60; class: mod }
+ f2: { label: "<页面模块_工作台>"; width: 482; height: 60; class: mod }
+ }
 
-    后端层: {
-      label: "③ <后端应用> [应用]"
-      width: 1000; grid-columns: 5; grid-gap: 12; style.fill: "#ede9fe"; style.font-color: "#1e293b"; style.stroke: "#7c3aed"; style.border-radius: 12
-      b1: { label: "<模块_业务1>"; width: 186; height: 60; class: mod }
-      b2: { label: "<模块_业务2>"; width: 186; height: 60; class: mod }
-      b3: { label: "<模块_业务3>"; width: 186; height: 60; class: mod }
-      b4: { label: "<模块_文件>"; width: 186; height: 60; class: mod }
-      b5: { label: "<模块_权限>"; width: 186; height: 60; class: mod }
-      a1: { label: "<模块_Agent编排>"; width: 186; height: 60; class: mod }
-      a2: { label: "<模块_解析>"; width: 186; height: 60; class: mod }
-      a3: { label: "<模块_检索>"; width: 186; height: 60; class: mod }
-      a4: { label: "<模块_生成>"; width: 186; height: 60; class: mod }
-      a5: { label: "<模块_规则库>"; width: 186; height: 60; class: mod }
-    }
+ 后端层: {
+ label: "③ <后端应用> [应用]"
+ width: 1000; grid-columns: 5; grid-gap: 12; style.fill: "#ede9fe"; style.font-color: "#1e293b"; style.stroke: "#7c3aed"; style.border-radius: 12
+ b1: { label: "<模块_业务1>"; width: 186; height: 60; class: mod }
+ b2: { label: "<模块_业务2>"; width: 186; height: 60; class: mod }
+ b3: { label: "<模块_业务3>"; width: 186; height: 60; class: mod }
+ b4: { label: "<模块_文件>"; width: 186; height: 60; class: mod }
+ b5: { label: "<模块_权限>"; width: 186; height: 60; class: mod }
+ a1: { label: "<模块_Agent编排>"; width: 186; height: 60; class: mod }
+ a2: { label: "<模块_解析>"; width: 186; height: 60; class: mod }
+ a3: { label: "<模块_检索>"; width: 186; height: 60; class: mod }
+ a4: { label: "<模块_生成>"; width: 186; height: 60; class: mod }
+ a5: { label: "<模块_规则库>"; width: 186; height: 60; class: mod }
+ }
 
-    数据层: {
-      label: "④ 数据与基础能力层 [容器]"
-      width: 1000; grid-columns: 1; grid-gap: 12; style.fill: "#cffafe"; style.font-color: "#1e293b"; style.stroke: "#0e7490"; style.border-radius: 12
-      存储: { label: "存储组件"; width: 880; grid-columns: 3; grid-gap: 12; style.fill: "#e0f2fe"; style.font-color: "#1e293b"; style.stroke: "#0284c7"; style.border-radius: 8
-        db: { label: "<数据库>"; shape: cylinder; width: 277; height: 60; class: mod }
-        mo: { label: "<对象存储>"; shape: cylinder; width: 277; height: 60; class: mod }
-        rd: { label: "<缓存>"; shape: cylinder; width: 277; height: 60; class: mod }
-      }
-    }
-  }
+ 数据层: {
+ label: "④ 数据与基础能力层 [容器]"
+ width: 1000; grid-columns: 1; grid-gap: 12; style.fill: "#cffafe"; style.font-color: "#1e293b"; style.stroke: "#0e7490"; style.border-radius: 12
+ 存储: { label: "存储组件"; width: 880; grid-columns: 3; grid-gap: 12; style.fill: "#e0f2fe"; style.font-color: "#1e293b"; style.stroke: "#0284c7"; style.border-radius: 8
+ db: { label: "<数据库>"; shape: cylinder; width: 277; height: 60; class: mod }
+ mo: { label: "<对象存储>"; shape: cylinder; width: 277; height: 60; class: mod }
+ rd: { label: "<缓存>"; shape: cylinder; width: 277; height: 60; class: mod }
+ }
+ }
+ }
 
-  外部系统: {
-    label: "⑤ 外部系统\n[外部·Boundary外]"
-    grid-columns: 1; style.fill: "#e2e8f0"; style.font-color: "#1e293b"; style.stroke: "#64748b"; style.border-radius: 12
-    e1: { label: "<外部_大模型API>"; width: 200; height: 50; class: mod }
-    e2: { label: "<外部_邮件>"; width: 200; height: 50; class: mod }
-    e3: { label: "<外部_数据源>"; width: 200; height: 50; class: mod }
-    e4: { label: "<外部_他团队服务>\n（他团队）"; width: 200; height: 50; class: mod }
-  }
+ 外部系统: {
+ label: "⑤ 外部系统\n[外部·Boundary外]"
+ grid-columns: 1; style.fill: "#e2e8f0"; style.font-color: "#1e293b"; style.stroke: "#64748b"; style.border-radius: 12
+ e1: { label: "<外部_大模型API>"; width: 200; height: 50; class: mod }
+ e2: { label: "<外部_邮件>"; width: 200; height: 50; class: mod }
+ e3: { label: "<外部_数据源>"; width: 200; height: 50; class: mod }
+ e4: { label: "<外部_他团队服务>\n（他团队）"; width: 200; height: 50; class: mod }
+ }
 }
 
 # 应用间通信（完整路径，避免静默重复节点）
@@ -178,13 +178,13 @@ vars: {
 应用划分.左主体.后端层 -> 应用划分.外部系统: 对接 { style.stroke: "#64748b" }
 
 classes: {
-  mod: {
-    style: { border-radius: 6; fill: "#ffffff"; stroke: "#64748b"; stroke-width: 1; font-size: 12; font-color: "#1e293b" }
-  }
+ mod: {
+ style: { border-radius: 6; fill: "#ffffff"; stroke: "#64748b"; stroke-width: 1; font-size: 12; font-color: "#1e293b" }
+ }
 }
 ```
 
-> 【填写指引】替换为系统实际应用；**应用[应用]是主体（前端/API），容器[容器]你拥有并负责（存储/基础能力，Boundary 内），外部系统[外部]别人提供（Boundary 外），用户层[Person]上下文展示**。应用内部再展开一层（api 接入层 / service+domain 业务层 / infra+integration 支撑层，分层规范见宪法 §3.3）。
+> 【填写指引】替换为系统实际应用；**四分类定义见 §2.2 上方指引**（应用[应用]是主体、容器[容器]你拥有、外部系统[外部]别人提供、用户层[Person]上下文展示）。应用内部再展开一层（api 接入层 / service+domain 业务层 / infra+integration 支撑层，分层规范见宪法 §3.3）。
 >
 > 【详见】应用内部展开详情详见 `deep-dives/<name>.md`。
 
@@ -194,7 +194,7 @@ classes: {
 
 > 【指引】**先分清两个概念**（避免把"能力"当"模块"）：
 >
-> - **能力（Capability）**：L1 产品层业务能力（产品规格能力图节点）——回答"产品做什么"，如 <能力_撰写>、<能力_变音>。**不在此处定义**（SSOT）。
+> - **能力（Capability）**：L1 产品层业务能力（产品规格能力图节点）——回答"产品做什么"，如 <能力_撰写>、<能力_变音>。**不在此处定义**。
 > - **模块（Module）**：L2 应用内部代码组织单元——回答"代码怎么组织"。**按知识域/职责划分**（宪法 D 系列：高内聚低耦合），**不是**能力的别名。
 >
 > **模块命名以 §2.2 应用划分图为基准**（防一物多名，宪法 S9 通用语言贯穿）；**能力 → 领域/聚合 映射是 N:M（多对多）**，但该映射 **SSOT 在 DOMAIN-MODEL §3 / PRODUCT §2.1**，**本节不重复**（应用架构只回答"应用内部有哪些模块"，不重复"能力由哪些聚合承载"）。

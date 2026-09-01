@@ -8,24 +8,26 @@ globs:
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   tools:
-    - Mermaid sequenceDiagram 时序图（§1.1，图规范见宪法）
-    - D2 容器图（§1.2 总览，图规范见宪法）
-    - Mermaid flowchart（按需，图规范见宪法）
+    - Mermaid sequenceDiagram 时序图（§1.1）
+    - D2 容器图（§1.2 总览）
+    - Mermaid flowchart（按需）
+    - 图规范统一见宪法 §3.2
   related: # 关联模板与联动修改
     TECHNOLOGY-ARCHITECTURE: 参数总览 SSOT 在它 §3.1（存储选型明细），详情链到本 Deep Dive §2
     DOMAIN-MODEL: 规则 SSOT（R<n>）链到本 Deep Dive §6
     APPLICATION-ARCHITECTURE: 应用模块索引链到本 Deep Dive
-    SPEC: SPEC:5 env vars 双向引用不复制
+    SPEC: 项目 env vars 文档（如 SPEC §5，存在则双向引用不复制；不存在则跳过）
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - <主题>细节有争议 / 精度分层依据不足时问用户（如 <模型_xx> 精度选型）
   flow: # 生成流程
-    - 扫描（自主）：目标 deep-dive 关联代码 File:Line + SPEC env + 三总览
+    - 扫描（自主）：目标 deep-dive 关联代码 File:Line + 项目 env 文档（SPEC 等，存在则读）+ 三总览（APPLICATION-ARCHITECTURE / DOMAIN-MODEL / TECHNOLOGY-ARCHITECTURE）
+    - **INDEX.md 判别**：globs `*.md` 会匹配 `INDEX.md`，但 INDEX.md 由 [INDEX](INDEX.md) 单独管理——命中 INDEX.md 时本 rule 跳过（不生成、不更新），由 INDEX rule 处理
     - 按 7 章骨架生成
-    - 校验：File:Line 可跳转 + 与 SPEC 双向引用
+    - 校验：File:Line 可跳转 + 与项目 env 文档双向引用（存在时）
     - §3/§5/§6 无则整节删除，checks 标记 N/A 并说明原因；§4 步骤按需增删小节，至少保留 1 步
   notes: # 生成注意点（怎么生成）
-    - 本模板不含 INDEX.md（另见 INDEX.template.md，globs 已排除）
+    - 本模板不含 INDEX.md（另见 INDEX.template.md，globs `*.md` 会匹配但 flow 已判别跳过）
     - 引用不复制 AGENTS.md（1500 行），用 参见 File:Line 链代码
     - 永久参数 / 精度分层 / 缓存 / 限流均带 File:Line（数量按主题实际，无固定阈值）
     - 精度分层强约束档位标注"不可降档"，依据不足问用户
@@ -36,15 +38,16 @@ generation:
     - "永久参数 / 精度分层 / 缓存 / 限流均带 File:Line（数量按主题实际，无固定阈值）"
     - "时序图跨模块调用链完整（参与者用真实模块名）"
     - "与 L2 三总览单链正确"
-    - "SPEC 双向引用不复制"
+    - "INDEX.md 未被本 rule 处理（flow 判别跳过，INDEX rule 接管）"
+    - "项目 env 文档存在时双向引用不复制（不存在则无此要求）"
 ---
 
 # DEEP-DIVE — 通用 Deep Dive 模板
 
 > 本文档是「<项目名>」的 **DEEP-DIVE（通用 Deep Dive 模板）**——L2 架构层的高复杂度主题详情文档。
 > 【模板使用指引】复制为 `docs/L2/deep-dives/<name>.md`（`<name>` 用 kebab-case，如 `inference-pipeline`），按各章节指引填写。
-> 【原则】① **详情定位**：deep-dive 承载单个高复杂度主题的完整细节（参数/精度/步骤/缓存/限流/坑位），L2 三总览只放一行"详情见"引用（S2 同一信息只在一处维护）；② **代码即真相**：细节一律用 `参见 File:Line` 链到代码，不复制代码、不复制 AGENTS.md（1500 行）；③ **SSOT 引用不复制**：参数总览在 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)、规则在 [DOMAIN-MODEL](../DOMAIN-MODEL.template.md)、env vars 在 SPEC §5——本模板只引用不复制，SPEC 双向引用（SPEC 链到本 Deep Dive，本 Deep Dive 链回 SPEC §5）；④ 图用 **Mermaid / D2**（图规范见宪法 §3.2），无元信息表、无变更记录。
-> 【覆盖范围】物理单 rule（DEEP-DIVE.md）通过 globs `*.md` 覆盖目录下多文档；INDEX.md 由 [INDEX](INDEX.template.md) 单独管理（globs 已排除）。
+> 【原则】① **详情定位**：deep-dive 承载单个高复杂度主题的完整细节（参数/精度/步骤/缓存/限流/坑位），L2 三总览只放一行"详情见"引用（S2 同一信息只在一处维护）；② **代码即真相**：细节一律用 `参见 File:Line` 链到代码，不复制代码、不复制 AGENTS.md（1500 行）；③ ** 引用不复制**：参数总览在 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)、规则在 [DOMAIN-MODEL](../DOMAIN-MODEL.template.md)、env vars 在项目 env 文档（如 SPEC §5，存在则双向引用不复制）；④ 图用 **Mermaid / D2**（图规范见宪法 §3.2），无元信息表、无变更记录。
+> 【覆盖范围】物理单 rule（DEEP-DIVE.md）通过 globs `*.md` 覆盖目录下多文档；INDEX.md 由 [INDEX](INDEX.md) 单独管理（globs `*.md` 会匹配，但 flow 判别 INDEX.md 时由 INDEX rule 处理，本 rule 跳过）。
 > 【章节】7 章骨架指 §1-7，§8 为相关文档导航。
 > 【示例】全文图/表/步骤均以「推理流水线」为首篇实例，其他主题按实际替换（数量/档位/坑位按主题实际，无固定阈值）。
 
@@ -60,82 +63,82 @@ generation:
 
 ```mermaid
 sequenceDiagram
-    participant C as <模块_接入>（接入入口）
-    participant A as <模块_预处理>（预处理流水线）
-    participant M as <模块_推理>（模型推理）
-    participant S as <模块_转化>（流转换）
-    participant R as <模块_输出>（结果回传）
+ participant C as <模块_接入>（接入入口）
+ participant A as <模块_预处理>（预处理流水线）
+ participant M as <模块_推理>（模型推理）
+ participant S as <模块_转化>（流转换）
+ participant R as <模块_输出>（结果回传）
 
-    C->>A: 阶段 1 输入帧（消息）
-    A->>A: 阶段 2 预处理（重采样/分帧）
-    A->>M: 阶段 3 特征提取
-    M->>M: 阶段 4 模型推理（<模型_ASR>/<模型_转化>）
-    M->>S: 阶段 5 流转换（重叠拼接）
-    S->>S: 阶段 6 后处理（<模型_增强>/响度/EQ）
-    S->>R: 阶段 7 结果封装与回传
-    R->>C: 消息
+ C->>A: 阶段 1 输入帧（消息）
+ A->>A: 阶段 2 预处理（重采样/分帧）
+ A->>M: 阶段 3 特征提取
+ M->>M: 阶段 4 模型推理（<模型_ASR>/<模型_转化>）
+ M->>S: 阶段 5 流转换（重叠拼接）
+ S->>S: 阶段 6 后处理（<模型_增强>/响度/EQ）
+ S->>R: 阶段 7 结果封装与回传
+ R->>C: 消息
 ```
 
 ### 1.2 总图（D2 容器图）
 
-> 【指引】本图为 **C4 容器图**（D2，绘制方式见宪法 §3.2）。画主题涉及的容器/模块分层与依赖，只画与本主题相关的部分；每层子容器显式算 width（等宽居中，[详见 c4-container-diagram §6.13]）。
+> 【指引】本图为 **C4 容器图**（D2，绘制方式见宪法 §3.2）。画主题涉及的容器/模块分层与依赖，只画与本主题相关的部分；每层子容器显式算 width（等宽居中，尺寸公式见 c4-container-diagram §6.13）。
 
 ```d2
 # 图名: <主题> 总览（容器图）· 视角: 架构详情（deep-dive）· 只画与本主题相关的容器/模块
 
 vars: {
-  d2-config: {
-    layout-engine: elk
-  }
+ d2-config: {
+ layout-engine: elk
+ }
 }
 
 主题总览: {
-  grid-rows: 1
-  grid-columns: 1
-  grid-gap: 24
-  style.fill: "#ffffff"
-  style.font-color: "#1e293b"
-  style.stroke: "#94a3b8"
-  style.stroke-width: 1
-  style.border-radius: 16
+ grid-rows: 1
+ grid-columns: 1
+ grid-gap: 24
+ style.fill: "#ffffff"
+ style.font-color: "#1e293b"
+ style.stroke: "#94a3b8"
+ style.stroke-width: 1
+ style.border-radius: 16
 
-  入口层: {
-    label: "入口层"
-    width: 1000
-    style.fill: "#dbeafe"
-    style.font-color: "#1e293b"
-    style.stroke: "#2563eb"
-    style.stroke-width: 2
-    style.border-radius: 12
-    grid-columns: 1
-    e1: { label: "<模块_接入>\n接入入口"; width: 880; height: 70; class: mod }
-  }
+ 入口层: {
+ label: "入口层"
+ width: 1000
+ style.fill: "#dbeafe"
+ style.font-color: "#1e293b"
+ style.stroke: "#2563eb"
+ style.stroke-width: 2
+ style.border-radius: 12
+ grid-columns: 1
+ e1: { label: "<模块_接入>\n接入入口"; width: 880; height: 70; class: mod }
+ }
 
-  处理层: {
-    label: "处理层"
-    width: 1000
-    style.fill: "#ede9fe"
-    style.font-color: "#1e293b"
-    style.stroke: "#7c3aed"
-    style.stroke-width: 2
-    style.border-radius: 12
-    grid-columns: 2
-    grid-gap: 12
-    p1: { label: "<模块_预处理>\n预处理流水线"; width: 494; height: 80; class: mod }
-    p2: { label: "<模块_转化>\n流转换"; width: 494; height: 80; class: mod }
-  }
+ 处理层: {
+ label: "处理层"
+ width: 1000
+ style.fill: "#ede9fe"
+ style.font-color: "#1e293b"
+ style.stroke: "#7c3aed"
+ style.stroke-width: 2
+ style.border-radius: 12
+ grid-columns: 2
+ grid-gap: 12
+ p1: { label: "<模块_预处理>\n预处理流水线"; width: 494; height: 80; class: mod }
+ p2: { label: "<模块_转化>\n流转换"; width: 494; height: 80; class: mod }
+ }
 
-  推理层: {
-    label: "推理层"
-    width: 1000
-    style.fill: "#cffafe"
-    style.font-color: "#1e293b"
-    style.stroke: "#0e7490"
-    style.stroke-width: 2
-    style.border-radius: 12
-    grid-columns: 1
-    m1: { label: "<模块_推理>\n模型推理（<模型_ASR>/<模型_转化>/<模型_合成>）"; width: 880; height: 70; class: mod }
-  }
+ 推理层: {
+ label: "推理层"
+ width: 1000
+ style.fill: "#cffafe"
+ style.font-color: "#1e293b"
+ style.stroke: "#0e7490"
+ style.stroke-width: 2
+ style.border-radius: 12
+ grid-columns: 1
+ m1: { label: "<模块_推理>\n模型推理（<模型_ASR>/<模型_转化>/<模型_合成>）"; width: 880; height: 70; class: mod }
+ }
 }
 
 # 层间调用（完整路径，避免静默重复节点）
@@ -143,9 +146,9 @@ vars: {
 主题总览.处理层 -> 主题总览.推理层: 特征/推理 { style.stroke: "#7c3aed" }
 
 classes: {
-  mod: {
-    style: { border-radius: 6; fill: "#ffffff"; stroke: "#64748b"; stroke-width: 1; font-size: 12; font-color: "#1e293b" }
-  }
+ mod: {
+ style: { border-radius: 6; fill: "#ffffff"; stroke: "#64748b"; stroke-width: 1; font-size: 12; font-color: "#1e293b" }
+ }
 }
 ```
 
@@ -153,7 +156,7 @@ classes: {
 
 ## 2. 永久参数
 
-> 【指引】本节维护主题的**永久参数表**（长期存在、跨版本稳定的参数）。**每个参数必须带 `File:Line`**（`参见 <文件>:<行号>`），保证可跳转验证。参数总览 SSOT 在 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1（存储选型明细）（引用不复制），本表只列本主题专属参数。示例为推理流水线 6 项代表性参数（采样率/分帧/并发/队列/重叠/限流），其他主题按实际替换。
+> 【指引】本节维护主题的**永久参数表**（长期存在、跨版本稳定的参数）。**每个参数必须带 `File:Line`**（`参见 <文件>:<行号>`），保证可跳转验证。参数总览 在 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1（存储选型明细），本表只列本主题专属参数。示例为推理流水线 6 项代表性参数（采样率/分帧/并发/队列/重叠/限流），其他主题按实际替换。
 
 | Parameter       | Value | Purpose                       | File:Line                             |
 | --------------- | ----- | ----------------------------- | ------------------------------------- |
@@ -165,7 +168,7 @@ classes: {
 | `rate_limit_ws` | 30    | 消息限流（次/秒）             | 参见 `src/<模块_接入>/guard.py:67`    |
 | `...`           | —     | 按主题补充                    | 参见 `src/<模块_xx>/...`              |
 
-> 【指引】**File:Line 必须真实可跳转**（生成后校验）；参数值变化只改本表 + 代码，不复制到总览。env vars 相关参数**双向引用 SPEC §5**（SPEC 定义 env var 名，本表引用不复制）。**无对应代码时写 `TODO: 待 File:Line（原因）` 并问用户，不虚构行号**。
+> 【指引】**File:Line 必须真实可跳转**（生成后校验）；参数值变化只改本表 + 代码，不复制到总览。env vars 相关参数**双向引用项目 env 文档**（如 SPEC §5，存在时）。**无对应代码时写 `TODO: 待 File:Line（原因）` 并问用户，不虚构行号**。
 
 ---
 
@@ -253,7 +256,7 @@ classes: {
 
 ## 6. 限流与并发控制
 
-> 【指引】本节维护主题的**限流/并发控制**，与 [DOMAIN-MODEL](../DOMAIN-MODEL.template.md) 规则（R<n> 等）对应——**规则 SSOT 在 DOMAIN-MODEL，本节只写实现细节**（引用不复制）。示例为推理流水线双层限流。
+> 【指引】本节维护主题的**限流/并发控制**，与 [DOMAIN-MODEL](../DOMAIN-MODEL.template.md) 规则（R<n> 等）对应——**规则 在 DOMAIN-MODEL，本节只写实现细节**。示例为推理流水线双层限流。
 
 | 机制        | 行为                                  | 对应规则             | File:Line                           |
 | ----------- | ------------------------------------- | -------------------- | ----------------------------------- |
@@ -263,7 +266,7 @@ classes: {
 | 身份校验    | 连接身份校验（防伪造）                | R<n>（并发安全）     | 参见 `src/<模块_接入>/guard.py:75`  |
 | 心跳保活    | 心跳保活（空闲超时 `idle_timeout_s`） | R<n>（连接生命周期） | 参见 `src/<模块_接入>/server.py:90` |
 
-> 【指引】**规则 ID（R<n>）与 DOMAIN-MODEL 双向引用**：本节标注对应规则，DOMAIN-MODEL 规则条目链回本节；规则定义不复制（SSOT 在 DOMAIN-MODEL）。
+> 【指引】**规则 ID（R<n>）与 DOMAIN-MODEL 双向引用**：本节标注对应规则，DOMAIN-MODEL 规则条目链回本节；规则定义不复制。
 
 ---
 
@@ -276,7 +279,7 @@ classes: {
 | 1   | 采样率不匹配  | 识别结果乱码   | 输入采样率 ≠ `sample_rate` | 预处理强制重采样               | 参见 `src/<模块_预处理>/preprocess.py:20` |
 | 2   | 分帧边界断裂  | 音频卡顿       | 帧边界无重叠               | 重叠拼接                       | 参见 `src/<模块_转化>/sola.py:56`         |
 | 3   | fp16 溢出     | 音色失真       | <模型_转化> 用 fp16        | <模型_转化> 强制 fp32（§3 P2） | 参见 `src/<模块_推理>/convert.py:55`      |
-| 4   | KV cache 超长 | 显存 OOM       | L 超 `kv_len`              | 截断/滑动窗口                  | 参见 `src/<模块_推理>/kv_cache.py:32`     |
+| 4   | KV cache 超长 | 显存 OOM       | L 超 `kv_len`              | 截断/滑动窗口                  | 参见 `src/<模块_推理>/kv_cache.py:31`     |
 | 5   | 连接数超限    | 新连接被拒     | 未限流                     | 拒绝 + 踢旧                    | 参见 `src/<模块_接入>/guard.py:52`        |
 | 6   | TOCTOU 竞态   | 连接数统计错乱 | 检查-使用非原子            | 原子操作防护                   | 参见 `src/<模块_接入>/guard.py:60`        |
 
@@ -286,8 +289,8 @@ classes: {
 
 ## 8. 相关文档
 
-- [INDEX](INDEX.template.md)：deep-dives 索引（本主题在索引 §2 列表登记）
-- [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)：参数总览 SSOT（§3.1 存储选型明细），详情在本 Deep Dive
-- [DOMAIN-MODEL](../DOMAIN-MODEL.template.md)：规则 SSOT（R<n>），实现细节在本 Deep Dive
+- [INDEX](INDEX.md)：deep-dives 索引（本主题在索引 §2 列表登记）
+- [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)：参数总览 （§3.1 存储选型明细），详情在本 Deep Dive
+- [DOMAIN-MODEL](../DOMAIN-MODEL.template.md)：规则 （R<n>），实现细节在本 Deep Dive
 - [APPLICATION-ARCHITECTURE](../APPLICATION-ARCHITECTURE.template.md)：应用模块索引，模块详情在本 Deep Dive
-- SPEC §5：env vars 定义（双向引用不复制）
+- 项目 env 文档（如 SPEC §5）：env vars 定义（存在时）

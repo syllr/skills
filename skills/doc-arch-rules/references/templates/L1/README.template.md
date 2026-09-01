@@ -10,7 +10,7 @@ generation:
   related: # 关联模板与联动修改
     CONSTITUTION: 文档架构 SSOT 在宪法 §3.1（docs/L0/CONSTITUTION.md §3.1），文档增删需同步 README 索引
     STRUCTURE: 目录结构 SSOT 在它 §1，目录变化需同步 README 路径
-    USER-STORY: §5 UI 结构与交互点，新增 UI 时需同步
+    USER-STORY: §4.2 单故事交互（UI 结构与交互点），新增 UI 时需同步
   # 只有需要用户决策的才问（用询问工具）
   ask_user:
     - 生成时点歧义时问用户（对话生成/扫描生成），已有 README 一律重建结构但吸收有效信息
@@ -21,10 +21,7 @@ generation:
     - 项目自动生成（代码已写）→ 扫描项目（代码/文档/配置）→ 按模板生成
     - 已有 README → 融入旧 README 的有效信息（历史/背景/已知决策），但结构按本模板重建
   notes: # 生成注意点
-    - README 定位 = 项目是什么 + 技术栈 + 文档索引（只做入口，不承载内容）
-    - 文档索引按 CONSTITUTION §3.1（L0-L4 + common 层），与实际文档一致
     - 技术栈只列事实，理由记 ADR
-    - 与具体技术栈/框架无关（模板）
     - 索引与 STRUCTURE 一致，含 deep-dives（L2/deep-dives/INDEX.md 索引 + <name>.md 详情）
   checks: # 生成后反向 check
     - "README 定位正确（是什么+技术栈+索引，无冗余内容）"
@@ -78,9 +75,9 @@ generation:
 
 ### L0 决策
 
-| 我想了解      | 看哪份文档                                                   |
-| ------------- | ------------------------------------------------------------ |
-| 项目宪法/规范 | `AGENTS.md`（宪法唯一真源在 `.omo/demo/L0/CONSTITUTION.md`） |
+| 我想了解      | 看哪份文档                                                  |
+| ------------- | ----------------------------------------------------------- |
+| 项目宪法/规范 | `AGENTS.md`（宪法规则在 `.omo/rules/docs/CONSTITUTION.md`） |
 
 ### L1 产品
 
@@ -116,10 +113,13 @@ generation:
 
 ### common
 
-| 我想了解                    | 看哪份文档                       |
-| --------------------------- | -------------------------------- |
-| 目录结构（文档 ↔ 代码映射） | `docs/common/STRUCTURE.md`       | 改文档前读取：定位文档对应代码，防漂移 |
-| 术语表                      | `docs/common/GLOSSARY.md`        |
-| 数据字典                    | `docs/common/DATA-DICTIONARY.md` |
-| 安全设计                    | `docs/common/SECURITY.md`        |
-| 技术债                      | `docs/common/TECHDEBT.md`        |
+> 【指引】改文档前读取 STRUCTURE.md：定位文档对应代码，防漂移。
+
+| 我想了解                    | 看哪份文档                                         |
+| --------------------------- | -------------------------------------------------- |
+| 目录结构（文档 ↔ 代码映射） | `docs/common/STRUCTURE.md`                         |
+| 术语表                      | `docs/common/GLOSSARY.md`                          |
+| 数据字典                    | `docs/common/DATA-DICTIONARY.md`                   |
+| 安全设计                    | `docs/common/SECURITY.md`                          |
+| 代码规范                    | `docs/common/CODE-GUIDE.md`                        |
+| 架构决策                    | `docs/adr/`（ADR 索引见 README 或 docs/adr/ 目录） |
