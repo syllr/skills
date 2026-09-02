@@ -24,7 +24,7 @@
    - 多列容器（grid-columns:N, N≥2）：`子width = (父宽−24−(N−1)×gap)/N`（设计宽度，layout-and-grid），**整组自动居中**；超界判断用 `Σ子宽+(N−1)×gap ≤ 父宽−4`
    - 单列容器/竖条（grid-columns:1）：**不设 width**，让 ELK 按子容器+等边距自动包裹 → 子容器天然居中（v0.8.1 实测，见 layout-and-grid §6.13 B）
    - 每一层嵌套都要算（A→B→C→D 每层，见 layout-and-grid §6.13），**不能只算最外层**。
-   - ⚠️ **cylinder（数据库/存储节点）**：一律显式设 `width`（layout-and-grid §6.7a）——不设则由 label 决定且会撑大整列；label 用短行（每行 ≤4-6 字）。
+   - ⚠️ **数据存储节点（数据库/对象存储/缓存）**：用 `shape: stored_data`（首选，label 垂直居中）——**不用 `cylinder`**（label 底部锚定、两行贴边溢出，见 d2-syntax-cheatsheet §6.18）；两行 label 时 `height` 提至 72。
 3. **按 c4-container-spec §4.8 给每个节点挂圆角 class**（border-radius）——**含最外层 wrapper 容器**（如 `整体架构: { ... }` 这个整体容器，用 `border-radius: 16`）。实测坑：漏外层容器 → verify 报"1 个图形无圆角"，靠坐标+label 定位（见 §7.1）。
 4. **检查 label 长度**：子容器 width 是否放得下最长的 label？放不下 → d2-syntax-cheatsheet §6.14 trade-off（缩文本/改布局/扩父容器/消减子项数，**禁止接受超界**）。
 
@@ -52,7 +52,7 @@ python3 scripts/verify-svg.py <渲染出的.svg> [--source file.d2]
 
 > **嵌套层级（P8）**：脚本会输出整图最大嵌套层数；加 `--source <file.d2>` 时，用 .d2 缩进解析真实层级树，并与几何嵌套判定对比——**不一致则告警**（深嵌套下几何推断可能误判父/子，以 .d2 源码层级为准）。**已知坑**：D2 可能生成重复的画布背景 rect（面积相同），脚本按"面积=最大"排除所有背景，勿依赖"仅第 1 个"。**脚本方法论**（也是手写验证的算法）：
 
-> **⚠️ cylinder 检测（P0 修复）**：`shape: cylinder` 由 `<path>` 渲染、**不产生 `<rect>`**。旧版 `verify-svg.py` 只扫 `<rect>`，导致 cylinder 视觉超界被漏报（P0 盲区）。现脚本通过 `parse_cylinders` 把 cylinder 外体 path 的 bbox 并入 shapes 统一检测（超界/等宽/嵌套/文字溢出主机），且**天然跳过 cylinder 的圆角检查**（圆柱顶弧自身即圆角，无 rx）。
+> **⚠️ 数据存储节点检测（P0 修复，cylinder/stored_data 通用）**：`shape: cylinder` 与 `shape: stored_data` 均由 `<path>` 渲染、**不产生 `<rect>`**。旧版 `verify-svg.py` 只扫 `<rect>`，导致数据存储节点视觉超界被漏报（P0 盲区）。现脚本通过 `parse_cylinders` 把数据存储节点外体 path 的 bbox 并入 shapes 统一检测（超界/等宽/嵌套/文字溢出主机），且**天然跳过其圆角检查**（圆柱顶弧/筒仓轮廓自身即圆角，无 rx）。**首选 `stored_data`**（label 垂直居中，见 d2-syntax-cheatsheet §6.18）。
 
 **超界判断**（对每个父容器 c 和其直接子容器 k，容差 = stroke-width/2 + 0.5）：
 
@@ -155,8 +155,8 @@ grep -o 'viewBox="[^"]*"' "$SVG"
 ```
 请按 checklist 检查，每项只回答 PASS/FAIL + 位置：
 1.【配色】颜色是否按层/按功能域区分（c4-container-spec §4.2/4.6）？同层色系是否统一？
-2.【形状】数据库是否用 cylinder？有无不该出现的圆形？
-3.【柱体文字】shape: cylinder 内文字是否在椭圆内、不贴底？
+2.【形状】数据存储节点是否用 stored_data（首选）？有无 cylinder（弃用）或不该出现的圆形？
+3.【数据节点文字】stored_data 内文字是否垂直居中、不贴边（两行 label 是否 height 提至 72）？
 4.【整体】层间是否左对齐、宽度一致？视觉是否协调？
 ```
 

@@ -7,7 +7,7 @@
 - [6.1 外层容器必须 grid-rows:1 grid-columns:1 强制纵向堆叠](#61-外层容器必须-grid-rows1-grid-columns1-强制纵向堆叠)
 - [6.2 子模块 width 必须固定（否则右侧大片留白）](#62-子模块-width-必须固定否则右侧大片留白)
 - [6.7 容器 width 与 label 长度的关系](#67-容器-width-与-label-长度的关系)
-- [6.7a cylinder 宽度规则（数据库节点，设 width 才受控）](#67a-cylinder-宽度规则数据库节点设-width-才受控)
+- [6.7a 数据存储节点形状与宽度（首选 stored_data，弃用 cylinder）](#67a-数据存储节点形状与宽度首选-stored_data弃用-cylinder)
 - [6.8 跨平台字体渲染差异](#68-跨平台字体渲染差异)
 - [6.9 子容器 width 撑满公式（已并入 6.13）](#69-子容器-width-撑满公式已并入-613)
 - [6.10 子容器总数 > grid-columns 会换行（主导方向）](#610-子容器总数--grid-columns-会换行主导方向)
@@ -64,11 +64,20 @@ ELK/dagre **不会自动纵向堆叠无连接的独立子容器**——实测会
 
 ---
 
-## 6.7a cylinder 宽度规则（数据库节点，设 `width` 才受控）
+## 6.7a 数据存储节点形状与宽度（首选 stored_data，弃用 cylinder）
 
-> `shape: cylinder` 的**实际可视边界无法由 `width` 完全钳制**——这是本次复盘踩到的真实盲区（P0/P1）。本机 D2 v0.8.1-HEAD 实测规律如下，画数据层/存储组件前必读。
+> **首选 `shape: stored_data`**（数据库筒仓图标）：label 默认垂直居中，单行/多行都不贴边（D2 v0.8.1 实测，见 d2-syntax-cheatsheet §6.18）。**弃用 `shape: cylinder`**——其 label 默认底部锚定、两行文字贴边溢出，且 `label.near` 无 center 值无法修复。
+>
+> 下方 cylinder 的实测规律保留作历史坑记录（迁移到 stored_data 后不适用；若必须用 cylinder，仍须遵守）：
 
-**实测结论（v0.8.1-HEAD）**：
+**stored_data 规则**：
+
+1. **首选 `stored_data`**（数据库/对象存储/缓存节点），不用 cylinder。
+2. **始终显式设 `width`**（与其他节点一致，按 §6.13 公式算）。
+3. **两行 label 时 `height` 提至 72**（单行 label 60 即可），label 垂直居中不贴边。
+4. **超界判定依赖 `verify-svg.py`**：stored_data 与 cylinder 一样由 `<path>` 渲染、不产生 `<rect>`，现脚本 `parse_cylinders` 已将其 bbox 纳入检测（P0 修复）。
+
+**cylinder 历史坑（弃用原因记录，v0.8.1-HEAD 实测）**：
 
 | 场景                                       | 行为                                                                                                                                                                                                          |
 | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -76,12 +85,7 @@ ELK/dagre **不会自动纵向堆叠无连接的独立子容器**——实测会
 | cylinder **未设 width**                    | 宽度由 **label 渲染所需**决定；在单列容器（grid-columns:1）内，**整列子容器按最宽内容统一等宽**——一个长 label 会把该列**所有** cylinder 一并撑宽（实测：`MySQL` 与 `向量服务\n检索·存储` 同列，都被撑到 129） |
 | 多列场景（grid-columns:N）中 cylinder 过宽 | 会撑大该列，可能把整层/父容器挤出边界（触发 `verify-svg.py` 超界）                                                                                                                                            |
 
-**安全规则（画 cylinder 时遵守）**：
-
-1. **始终显式给 cylinder 设 `width`**（与其他节点一致，按 §6.13 公式算），不要把宽度交给 label——否则长 label 会撑大圆柱 & 撑大整列。
-2. **cylinder 的 label 用短行**（每行 ≤ 4-6 字），或用 `\n` 拆成短行；长/多行 label 在单列容器内会等比放大整列宽度（见上表）。
-3. **超界判定依赖 `verify-svg.py`**：cylinder 由 `<path>` 渲染、不产生 `<rect>`，旧版脚本看不见它（P0 漏报）。现脚本已把 cylinder bbox 纳入检测（`parse_cylinders`）。
-4. cylinder **天然圆角**（顶弧），**无需也不应**误设 border-radius；`verify-svg.py` 的圆角检查只扫 `<rect>`，自动跳过 cylinder。
+cylinder **天然圆角**（顶弧），**无需也不应**误设 border-radius；`verify-svg.py` 的圆角检查只扫 `<rect>`，自动跳过 cylinder/stored_data。
 
 ---
 

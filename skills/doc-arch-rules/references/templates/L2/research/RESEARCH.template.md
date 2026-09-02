@@ -8,7 +8,7 @@ globs:
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   tools:
-    - Mermaid flowchart（按需，图规范见宪法）
+    - Mermaid flowchart（按需，图规范见 references/diagram-spec.md）
   related: # 关联模板与联动修改
     TECHNOLOGY-ARCHITECTURE: 选型结论 SSOT 在它 §3.1/§4，调研详情链到本 RESEARCH
     ADR: 决策链，本 RESEARCH 结论链到 ADR-xxx
@@ -38,7 +38,7 @@ generation:
 
 > 本文档是「<项目名>」的 **RESEARCH（通用调研模板）**——L2 架构层的选型/对比/技术验证类调研文档（含内部 POC 与部署验证，第三方/自建不限）。
 > 【模板使用指引】复制为 `docs/L2/research/<kebab-name>.md`（`<kebab-name>` 用 kebab-case，如 `tech-xxx`、`competitor-yyy`），按各章节指引填写。
-> 【原则】① **调研定位**：research 承载单个选型/对比/技术验证主题的完整调研（候选/对比/验证/成本/风险/结论，含内部 POC 与部署验证），[TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) 只放一行"调研见"引用（S2：SSOT 单源原则，同一信息只在一处维护，见宪法 §2.2）；② **结论 在 TECHNOLOGY**：本调研的最终选型结论写入 TECHNOLOGY §3.1/§4，research 只做论证过程，不反向承载结论；③ **决策链**：结论链到 [ADR](../ADR.template.md)（`见 ADR-xxx`），ADR 承载决策记录；研究证据（数据来源/版本/验证环境）保留在本文附录属当前意图 G（generation，见宪法 S6），文档演进历史（合并/改名等）归 git log；④ 图用 **Mermaid**（图规范见宪法 §3.2），无元信息表、无变更记录；⑤ **小体量豁免**：候选≤2且无需成本对比时§4/§5可合并，未覆盖 POC 维度标"否+原因"即可。
+> 【原则】① **调研定位**：research 承载单个选型/对比/技术验证主题的完整调研（候选/对比/验证/成本/风险/结论，含内部 POC 与部署验证），[TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) 只放一行"调研见"引用（S2：SSOT 单源原则，同一信息只在一处维护，见宪法 §2.2）；② **结论 在 TECHNOLOGY**：本调研的最终选型结论写入 TECHNOLOGY §3.1/§4，research 只做论证过程，不反向承载结论；③ **决策链**：结论链到 [ADR](../ADR.template.md)（`见 ADR-xxx`），ADR 承载决策记录；研究证据（数据来源/版本/验证环境）保留在本文附录属当前意图 G（generation，见宪法 S6），文档演进历史（合并/改名等）归 git log；④ 图用 **Mermaid**（图规范见 references/diagram-spec.md），无元信息表、无变更记录；⑤ **小体量豁免**：候选≤2且无需成本对比时§4/§5可合并，未覆盖 POC 维度标"否+原因"即可。
 > 【章节】6 章骨架指 §1-6，§7 为相关文档导航。
 > 【示例】全文图/表/步骤均以「技术选型」为示例，其他主题按实际替换（候选/维度/验证按主题实际）。
 

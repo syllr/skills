@@ -11,7 +11,7 @@ generation:
     - Mermaid sequenceDiagram 时序图（§1.1）
     - D2 容器图（§1.2 总览）
     - Mermaid flowchart（按需）
-    - 图规范统一见宪法 §3.2
+    - 图规范统一见 references/diagram-spec.md
   related: # 关联模板与联动修改
     TECHNOLOGY-ARCHITECTURE: 参数总览 SSOT 在它 §3.1（存储选型明细），详情链到本 Deep Dive §2
     DOMAIN-MODEL: 规则 SSOT（R<n>）链到本 Deep Dive §6
@@ -46,7 +46,7 @@ generation:
 
 > 本文档是「<项目名>」的 **DEEP-DIVE（通用 Deep Dive 模板）**——L2 架构层的高复杂度主题详情文档。
 > 【模板使用指引】复制为 `docs/L2/deep-dives/<name>.md`（`<name>` 用 kebab-case，如 `inference-pipeline`），按各章节指引填写。
-> 【原则】① **详情定位**：deep-dive 承载单个高复杂度主题的完整细节（参数/精度/步骤/缓存/限流/坑位），L2 三总览只放一行"详情见"引用（S2 同一信息只在一处维护）；② **代码即真相**：细节一律用 `参见 File:Line` 链到代码，不复制代码、不复制 AGENTS.md（1500 行）；③ ** 引用不复制**：参数总览在 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)、规则在 [DOMAIN-MODEL](../DOMAIN-MODEL.template.md)、env vars 在项目 env 文档（如 SPEC §5，存在则双向引用不复制）；④ 图用 **Mermaid / D2**（图规范见宪法 §3.2），无元信息表、无变更记录。
+> 【原则】① **详情定位**：deep-dive 承载单个高复杂度主题的完整细节（参数/精度/步骤/缓存/限流/坑位），L2 三总览只放一行"详情见"引用（S2 同一信息只在一处维护）；② **代码即真相**：细节一律用 `参见 File:Line` 链到代码，不复制代码、不复制 AGENTS.md（1500 行）；③ ** 引用不复制**：参数总览在 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)、规则在 [DOMAIN-MODEL](../DOMAIN-MODEL.template.md)、env vars 在项目 env 文档（如 SPEC §5，存在则双向引用不复制）；④ 图用 **Mermaid / D2**（图规范见 references/diagram-spec.md），无元信息表、无变更记录。
 > 【覆盖范围】物理单 rule（DEEP-DIVE.md）通过 globs `*.md` 覆盖目录下多文档；INDEX.md 由 [INDEX](INDEX.md) 单独管理（globs `*.md` 会匹配，但 flow 判别 INDEX.md 时由 INDEX rule 处理，本 rule 跳过）。
 > 【章节】7 章骨架指 §1-7，§8 为相关文档导航。
 > 【示例】全文图/表/步骤均以「推理流水线」为首篇实例，其他主题按实际替换（数量/档位/坑位按主题实际，无固定阈值）。
@@ -55,7 +55,7 @@ generation:
 
 ## 1. 总览
 
-> 【指引】本节给读者"这个主题是什么、阶段怎么流转"的整体认知。**时序图**（Mermaid sequenceDiagram）画跨模块/跨系统调用时序；**总图**（D2 容器图）画主题涉及的容器/模块分层。图旁标注真实图类型（图规范见宪法 §3.2，fallback 为 ASCII 图保持同样布局）。
+> 【指引】本节给读者"这个主题是什么、阶段怎么流转"的整体认知。**时序图**（Mermaid sequenceDiagram）画跨模块/跨系统调用时序；**总图**（D2 容器图）画主题涉及的容器/模块分层。图旁标注真实图类型（图规范见 references/diagram-spec.md，fallback 为 ASCII 图保持同样布局）。
 
 ### 1.1 阶段时序图
 
@@ -81,7 +81,7 @@ sequenceDiagram
 
 ### 1.2 总图（D2 容器图）
 
-> 【指引】本图为 **C4 容器图**（D2，绘制方式见宪法 §3.2）。画主题涉及的容器/模块分层与依赖，只画与本主题相关的部分；每层子容器显式算 width（等宽居中，尺寸公式见 c4-container-diagram §6.13）。
+> 【指引】本图为 **C4 容器图**（D2，绘制方式见 references/diagram-spec.md）。画主题涉及的容器/模块分层与依赖，只画与本主题相关的部分；每层子容器显式算 width（等宽居中，尺寸公式见 c4-container-diagram §6.13）。
 
 ```d2
 # 图名: <主题> 总览（容器图）· 视角: 架构详情（deep-dive）· 只画与本主题相关的容器/模块

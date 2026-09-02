@@ -127,7 +127,7 @@ description: >
 | L3                       | [API](references/templates/L3/API.template.md)                                           | 模板         | .omo/rules/docs/L3/API.md                                                                                                                                                    | globs                 |
 | L3                       | [INTEGRATION](references/templates/L3/INTEGRATION.template.md)                           | 模板         | .omo/rules/docs/L3/INTEGRATION.md（说明书模式，globs: docs/L3/INTEGRATION.md + docs/L3/integration-contracts/**）                                                            | globs                 |
 | L3/integration-contracts | [CONTRACT](references/templates/L3/integration-contracts/CONTRACT.template.md)           | 模板         | .omo/rules/docs/L3/integration-contracts/CONTRACT.md（目录级通配，globs: docs/L3/integration-contracts/** 覆盖目录下多契约文件，物理单 rule，一服务一契约，字段 SSOT）       | globs                 |
-| L4                       | [DEPLOYMENT](references/templates/L4/DEPLOYMENT.template.md)                             | 模板         | .omo/rules/docs/L4/DEPLOYMENT.md                                                                                                                                             | globs                 |
+| L4                       | [DEPLOYMENT](references/templates/L4/DEPLOYMENT.template.md)                             | 模板         | .omo/rules/docs/L4/DEPLOYMENT.md（globs 含 docs/L4/deployment/README.md，部署资产登记）                                                                                      | globs                 |
 | L4                       | [TEST-PLAN](references/templates/L4/TEST-PLAN.template.md)                               | 模板         | .omo/rules/docs/L4/TEST-PLAN.md                                                                                                                                              | globs                 |
 | common                   | [CODE-GUIDE](references/templates/common/CODE-GUIDE.template.md)                         | 模板         | .omo/rules/docs/common/CODE-GUIDE.md                                                                                                                                         | globs                 |
 | common                   | [DATA-DICTIONARY](references/templates/common/DATA-DICTIONARY.template.md)               | 模板         | .omo/rules/docs/common/DATA-DICTIONARY.md（字段/枚举/事件级 SSOT）                                                                                                           | globs                 |
@@ -137,7 +137,7 @@ description: >
 | common                   | [ADR](references/templates/common/ADR.template.md)                                       | 模板         | .omo/rules/docs/common/ADR.md（目录级通配，globs: docs/adr/*.md 覆盖目录下多文档，物理单 rule）                                                                              | globs                 |
 
 > **DATA-ARCHITECTURE 已合并**进 DOMAIN-MODEL（§5 数据设计），不生成 rule。
-> **模板 frontmatter 的 `generation` 块**（tools/related/ask_user/flow/notes/checks）是 rule 对应目标文档（`docs/**` 下由 `globs` 指定的路径）的生成提示词，仅模板持有——生成 rule 时**内联翻译**进正文四节，不保留 YAML 形态。[^scan]
+> **模板 frontmatter 的 `generation` 块**（tools/related/ask_user/flow/notes/checks）是 rule 对应目标文档（`docs/**` 下由 `globs` 指定的路径）的生成提示词，仅模板持有——生成 rule 时**内联翻译**进正文四节，不保留 YAML 形态。
 
 ## 功能 1：生成 rule（执行流程：AI 主流程）
 
@@ -283,5 +283,3 @@ test -n "$skill" || echo "未找到 skill（未安装或路径不符，请手动
 - **L2 deep-dives 约束**：目录名 `deep-dives`、文件 kebab-case 已定勿改；收敛标准 2/4 阈值命中即单列（AWS Lens/arc42/C4/Google 4 源）；L2 根为索引（1 图+1 表）、deep-dives 为详情，S2 引用不复制；File:Line 链代码
 - **L2 research 约束**：目录名 `research`、文件 kebab-case 已定勿改；准入 候选≥2 或维度≥3 即建议单列；对比表（功能/性能/成本/许可证/生态）+ POC 验证 + 风险/合规 6 章骨架，结论链 ADR
 - **脚本维护**：脚本只做解析/校验/指纹（omo 五键 + generation 六字段 + 剥离 frontmatter + meta 生成/对比），模板缺 `description` 或 `alwaysApply`/`globs` 时报错退出（不兜底）；配置（`LAYER_ZH`/`SPECIAL_TARGETS`/`SKIP_FILES`）在脚本顶部。脚本为 **Node 零依赖**（手写 YAML 解析，复刻 omo parser-yaml.ts，不引入 npm 包）
-
-[^scan]: 原 `scan` 字段已删除——读关联文档并入 `related`、检查目标现状与探测项目并入 `flow`。

@@ -110,6 +110,7 @@ generation:
 | ------------------ | ----------------------------------------- |
 | 测试计划/用例/报告 | `docs/L4/TEST-PLAN.md`                    |
 | 部署与发布         | `docs/L4/DEPLOYMENT.md`（含版本发布记录） |
+| 部署资产清单       | `docs/L4/deployment/README.md`            |
 
 ### common
 

@@ -8,8 +8,8 @@ globs:
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   tools:
-    - ASCII 索引表（§2 列表，fallback 见宪法 §3.2）
-    - Mermaid flowchart（§3 引用声明图，图规范见宪法 §3.2）
+    - ASCII 索引表（§2 列表，fallback 见 references/diagram-spec.md）
+    - Mermaid flowchart（§3 引用声明图，图规范见 references/diagram-spec.md）
   related: # 关联模板与联动修改
     APPLICATION-ARCHITECTURE: 应用模块索引，deep-dives 为详情，SSOT 单源
     DOMAIN-MODEL: 规则 SSOT，deep-dives 为详情，SSOT 单源
@@ -36,7 +36,7 @@ generation:
 
 > 本文档是「<项目名>」的 **L2/deep-dives 索引（模板）**——L2 架构层 deep-dives 文档的索引。
 > 【模板使用指引】复制为 `docs/L2/deep-dives/INDEX.md`，按各章节指引填写。
-> 【原则】① **索引定位**：只做入口与收敛标准，不承载 deep-dive 内容；② **L2 三总览（APPLICATION-ARCHITECTURE / DOMAIN-MODEL / TECHNOLOGY-ARCHITECTURE）为索引，deep-dives 为详情**——总览章节只放一行"详情见"引用，deep-dive 不反向承载总览内容（S2 同一信息只在一处维护）；③ 收敛标准（§1）决定"什么主题值得单独成篇"；④ 列表（§2）按主题维护，含首篇与预留位；⑤ 图用 **ASCII / Mermaid**（图规范见宪法 §3.2），无元信息表、无变更记录。
+> 【原则】① **索引定位**：只做入口与收敛标准，不承载 deep-dive 内容；② **L2 三总览（APPLICATION-ARCHITECTURE / DOMAIN-MODEL / TECHNOLOGY-ARCHITECTURE）为索引，deep-dives 为详情**——总览章节只放一行"详情见"引用，deep-dive 不反向承载总览内容（S2 同一信息只在一处维护）；③ 收敛标准（§1）决定"什么主题值得单独成篇"；④ 列表（§2）按主题维护，含首篇与预留位；⑤ 图用 **ASCII / Mermaid**（图规范见 references/diagram-spec.md），无元信息表、无变更记录。
 
 ---
 
@@ -68,7 +68,7 @@ generation:
 
 ## 3. 引用声明（与 L2 三总览的关系）
 
-> 【指引】**L2 三总览（APPLICATION-ARCHITECTURE / DOMAIN-MODEL / TECHNOLOGY-ARCHITECTURE）为索引，deep-dives 为详情**。总览章节只写"详情见 deep-dive X"一行引用；deep-dive 不复制总览内容（S2 同一信息只在一处维护）。引用方向单向：总览 → deep-dive → 代码（File:Line）。本图为**结构/拓扑图**（Mermaid flowchart，图规范见宪法 §3.2，fallback 为 ASCII 图保持同样布局）。
+> 【指引】**L2 三总览（APPLICATION-ARCHITECTURE / DOMAIN-MODEL / TECHNOLOGY-ARCHITECTURE）为索引，deep-dives 为详情**。总览章节只写"详情见 deep-dive X"一行引用；deep-dive 不复制总览内容（S2 同一信息只在一处维护）。引用方向单向：总览 → deep-dive → 代码（File:Line）。本图为**结构/拓扑图**（Mermaid flowchart，图规范见 references/diagram-spec.md，fallback 为 ASCII 图保持同样布局）。
 
 ```mermaid
 flowchart LR

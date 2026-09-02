@@ -8,8 +8,8 @@ globs:
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   tools:
-    - Mermaid flowchart（§2.1 C4 Context 图，图规范见宪法）
-    - D2 容器图（§2.2 应用划分图，图规范见宪法）
+    - Mermaid flowchart（§2.1 C4 Context 图，图规范见 references/diagram-spec.md）
+    - D2 容器图（§2.2 应用划分图，图规范见 references/diagram-spec.md）
   related: # 关联模板与联动修改
     PRODUCT: 能力清单 SSOT 在它 §2.1，能力增删需同步应用模块（映射在 DOMAIN-MODEL SSOT，不在此重复）；**PRODUCT 标「待规划」的能力不加应用模块（待规划能力在实现视图不建模，仅 PRODUCT 保留标注）**
     TECHNOLOGY-ARCHITECTURE: 应用划分 SSOT 在 §2.2，技术架构按应用描述需引用
@@ -24,14 +24,14 @@ generation:
     - 扫描（自主）：读能力图 + 领域模型 + 目标文档
     - 已有 APPLICATION-ARCHITECTURE → 参考旧文档有效信息，但结构按本模板重建
     - 按模板生成：§1 系统概述 → §2.1 Context 图 → §2.2 应用划分图（应用/容器/外部系统/用户层）→ §3 模块划分（应用内模块，能力→聚合映射 SSOT 在 DOMAIN-MODEL §3 不重复）
-    - 检查是否命中 deep-dives 收敛标准（满足 4 项中 ≥2 项即瘦身，定义见宪法 §3.1：①单节>80行 ②含>1张图 ③含>1张映射表 ④需 File:Line>3），命中则瘦身为索引并链到 deep-dives
+    - 检查是否命中 deep-dives 收敛标准（单列判定见 docs/L2/deep-dives/INDEX.md §1：跨模块交互≥3 / 永久参数≥5 / 精度分层≥3 / 坑位≥5，命中 2 项即单列），命中则瘦身为索引并链到 deep-dives
   notes: # 生成注意点（怎么生成）
     - §2.2 应用划分四分类（C4 语义）：「应用[应用]」= 承载业务逻辑的主体（前端/API）；「容器[容器]」= 应用依赖的资源、**你拥有并负责**（数据库/对象存储/缓存等，System Boundary 内）；「外部系统[外部]」= 第三方服务、**不拥有只消费**（大模型 API/SMTP/业务数据源/他团队提供的服务，Boundary 外）；「用户层[Person]」= 上下文展示（系统用户角色）
-    - **资源归谁管判别**（容器 vs 外部系统，与 CONSTITUTION §3.3 infra/integration「坏了找谁修」一致）：自己运维管理 → 容器（Boundary 内）；别人提供服务（他团队/第三方）→ 外部系统（Boundary 外）
+    - **资源归谁管判别**（容器 vs 外部系统，与 STRUCTURE §3.1 infra/integration「坏了找谁修」一致）：自己运维管理 → 容器（Boundary 内）；别人提供服务（他团队/第三方）→ 外部系统（Boundary 外）
     - **Person 位置规范**：用户层 [Person] 为「上下文物件展示（不参与系统边界）」——可画在左主体顶部（阅读布局）或 Boundary 外（严格 C4），**二选一明确即可**，不强制
     - §3 模块划分：应用内模块按知识域划分（不按能力）；模块命名以 §2.2 应用划分图为基准（防一物多名，宪法 S9 通用语言贯穿）；能力→领域/聚合映射 SSOT 在 DOMAIN-MODEL §3（PRODUCT §2.1），**应用架构不重复该映射**
     - 不写实现细节（类/接口/表结构在代码）
-    - 图规范见宪法（Context 用 flowchart，应用划分用 D2）
+    - 图规范见 references/diagram-spec.md（Context 用 flowchart，应用划分用 D2）
     - 瘦身约束：本模板生成的文档仅保留 1 张总览图（§2.1 Context 图；§2.2 应用划分折叠为 §3.1 模块表，不重复建表，兼作索引表），详情链到 deep-dives/，引用不复制；File:Line 链代码；与项目 env 文档（如 SPEC:5 env，存在时）双向引用不复制
   checks: # 生成后反向 check
     - [ ] §2.2 应用划分图分四类（应用[应用]/容器[容器]/外部[外部]/用户层[Person]），无「依赖」笼统类
@@ -43,7 +43,7 @@ generation:
     - [ ] Context 图标注为 C4 Context 图
     - [ ] 应用划分图标注为 C4 容器图
     - [ ] §2.2/§3 各一处 详见 deep-dives/... 链路（每处有且仅有一处；§2.1 Context 不强制）
-    - [ ] 行数 ~300（宪法 §3.1 收敛标准）而非 ~500
+    - [ ] 行数 ~300 而非 ~500（收敛标准见 docs/L2/deep-dives/INDEX.md §1）
     - [ ] 与 deep-dives/INDEX 可检索一致
 ---
 
@@ -68,7 +68,7 @@ generation:
 
 ### 2.1 系统上下文（Context）
 
-> 【指引】本图为 **C4 Context 图**（Mermaid flowchart 表达系统与外部关系，图规范见宪法）。展示系统与用户/平台/第三方服务的关系。
+> 【指引】本图为 **C4 Context 图**（Mermaid flowchart 表达系统与外部关系，图规范见 references/diagram-spec.md）。展示系统与用户/平台/第三方服务的关系。
 
 ```mermaid
 flowchart TB
@@ -93,8 +93,7 @@ flowchart TB
 
 ### 2.2 应用划分（Application）
 
-> 【指引】系统按「应用 → 容器 → 外部系统」分层——**应用[应用]是承载业务逻辑的主体**（前端/后端）；**数据与基础能力层[容器]**是应用依赖的容器（数据库/对象存储/缓存等，你拥有并负责，System Boundary 内）；**外部系统[外部]**是第三方服务（大模型 API/SMTP/业务数据源/他团队提供的服务，Boundary 外，不拥有只消费）；**用户层[Person]**为上下文展示（系统用户角色）。本图为 **C4 容器图**（绘制方式见宪法图规范）。图例区分「应用[应用]」「容器[容器]」「外部[外部]」「人物[Person]」。
-> **资源归谁管判别**（容器 vs 外部系统）：自己运维管理 → 容器（Boundary 内）；别人提供服务（他团队/第三方）→ 外部系统（Boundary 外）。与 CONSTITUTION §3.3 infra/integration「坏了找谁修」一致。
+> 【指引】本图为 **C4 容器图**（绘制方式见 references/diagram-spec.md）：系统按「应用 → 容器 → 外部系统」分层划分，另设用户层 [Person] 作上下文展示；图例区分「应用[应用] / 容器[容器] / 外部[外部] / 人物[Person]」。
 
 ```d2
 # 图标准元信息
@@ -154,9 +153,9 @@ vars: {
  label: "④ 数据与基础能力层 [容器]"
  width: 1000; grid-columns: 1; grid-gap: 12; style.fill: "#cffafe"; style.font-color: "#1e293b"; style.stroke: "#0e7490"; style.border-radius: 12
  存储: { label: "存储组件"; width: 880; grid-columns: 3; grid-gap: 12; style.fill: "#e0f2fe"; style.font-color: "#1e293b"; style.stroke: "#0284c7"; style.border-radius: 8
- db: { label: "<数据库>"; shape: cylinder; width: 277; height: 60; class: mod }
- mo: { label: "<对象存储>"; shape: cylinder; width: 277; height: 60; class: mod }
- rd: { label: "<缓存>"; shape: cylinder; width: 277; height: 60; class: mod }
+ db: { label: "<数据库>"; shape: stored_data; width: 277; height: 72; class: mod }
+ mo: { label: "<对象存储>"; shape: stored_data; width: 277; height: 72; class: mod }
+ rd: { label: "<缓存>"; shape: stored_data; width: 277; height: 72; class: mod }
  }
  }
  }
@@ -184,7 +183,7 @@ classes: {
 }
 ```
 
-> 【填写指引】替换为系统实际应用；**四分类定义见 §2.2 上方指引**（应用[应用]是主体、容器[容器]你拥有、外部系统[外部]别人提供、用户层[Person]上下文展示）。应用内部再展开一层（api 接入层 / service+domain 业务层 / infra+integration 支撑层，分层规范见宪法 §3.3）。
+> 【填写指引】替换为系统实际应用；**四分类定义见 §2.2 上方指引**（应用[应用]是主体、容器[容器]你拥有、外部系统[外部]别人提供、用户层[Person]上下文展示）。应用内部再展开一层（api 接入层 / service+domain 业务层 / infra+integration 支撑层，分层规范见 STRUCTURE §3.1）。
 >
 > 【详见】应用内部展开详情详见 `deep-dives/<name>.md`。
 
@@ -208,7 +207,7 @@ classes: {
 | <模块名> | <前端 / 后端 API> | <承载哪些业务逻辑，如 <能力_任务> / <聚合_算力>> |
 | （补充） |                   |                                                  |
 
-> 后端示例（按宪法 §3.3 固定分层）：`api`（接口/网关/鉴权）、`service`（各上下文应用服务：<能力_任务> / <聚合_算力> / <聚合_作品>）、`domain`（各上下文聚合/实体）、`infra`（数据访问/缓存）、`integration`（外部对接：<外部_支付A>/<外部_支付B>/<外部_AI>）。
+> 后端示例（按 STRUCTURE §3.1 固定分层）：`api`（接口/网关/鉴权）、`service`（各上下文应用服务：<能力_任务> / <聚合_算力> / <聚合_作品>）、`domain`（各上下文聚合/实体）、`infra`（数据访问/缓存）、`integration`（外部对接：<外部_支付A>/<外部_支付B>/<外部_AI>）。
 > 前端示例：<模块_工具页>、<模块_作品页>、<模块_用户中心>。
 >
 > 【详见】模块（如 <模块_转换>）仅名字级，模块内部细节详见 `deep-dives/<name>.md`。

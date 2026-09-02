@@ -16,7 +16,7 @@ generation:
   related: # 关联模板与联动修改
     DOMAIN-MODEL §1.2/§3: 领域特有术语在聚合设计内维护，新增需联动
     PRODUCT: 能力/功能术语，能力增删需同步术语
-    CONSTITUTION: 图规范见 CONSTITUTION §3.2，术语统一需对齐
+    CONSTITUTION: 文档分层规则 SSOT 在宪法 §3.1；图规范在 references/diagram-spec.md，术语统一需对齐
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - 术语定义有争议时（如某词含义）→ 问用户

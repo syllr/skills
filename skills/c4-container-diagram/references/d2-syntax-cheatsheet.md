@@ -10,6 +10,7 @@
 - [6.14 文本溢出 trade-off（必须给用户选择）](#614-文本溢出-trade-off必须给用户选择)
 - [6.16 viewBox 整数溢出 → 空白图（最严重坑）](#616-viewbox-整数溢出--空白图最严重坑)
 - [6.17 长 label 撑宽容器（必须 `\n` 换行）](#617-长-label-撑宽容器必须-n-换行)
+- [6.18 数据存储节点用 stored_data（弃用 cylinder）](#618-数据存储节点用-stored_data弃用-cylinder)
 
 ---
 
@@ -79,11 +80,11 @@ label: "③ 共享业务服务层（横向能力 · 被多个垂直能力共用�
 
 **规则**：容器/竖条/分区 label 若较长（> 8 字符），**必须用 `\n` 换行成短行（每行 ≤ 8 字）**，否则 label 撑宽容器。语义完整保留，宽度可控。**这是"必须换行"，不是"必须缩短"**。
 
-> **⚠️ cylinder（数据库）特例（v0.8.1-HEAD 实测，见 layout-and-grid §6.7a）**：
+> **⚠️ 数据存储节点（首选 stored_data，弃用 cylinder）**：数据库/对象存储/缓存节点用 `shape: stored_data`（label 垂直居中，两行不贴边，见 §6.18）。cylinder 的历史坑（v0.8.1-HEAD 实测，见 layout-and-grid §6.7a）：
 >
 > - cylinder **设了 width** → 宽度**受控**，label 不覆盖，但长/多行 label 在**单列容器内会把整列一起撑宽**（该列列宽 = 最宽子内容）
 > - cylinder **未设 width** → 宽度 = label 所需；长 label 会把圆柱本身撑大（实测 `MySQL` 与 `向量服务\n检索·存储` 同列时均被撑到 129）
-> - **规避**：cylinder 一律显式设 `width` + label 用短行（每行 ≤ 4-6 字）或 `\n` 拆行；超界判定交给 `verify-svg.py`（已纳入 cylinder bbox 检测）
+> - **弃用 cylinder**：label 底部锚定、两行贴边溢出、`label.near` 无 center 值——改用 stored_data（见 §6.18）
 
 > **⚠️ `\n` 写入方式铁律（反复踩坑的根因）**：d2 的 `\n` 是**字面量**（反斜杠 + n 两个字符），在 Markdown 代码块中原样书写即可。但**用脚本/命令行写临时 .d2 时**，`echo`、未加引号的 heredoc、Python 字符串拼接都会把 `\n` 解释成真实换行，破坏 d2 字符串语法（编译失败）：
 >
@@ -98,3 +99,27 @@ label: "③ 共享业务服务层（横向能力 · 被多个垂直能力共用�
 > ```
 >
 > **最稳妥**：用 [SKILL.md 修改模式工作台脚本](../SKILL.md)（`d2-workbench.py`）——文件 IO 直写，从机制上杜绝转义问题。
+
+---
+
+## 6.18 数据存储节点用 `stored_data`（弃用 cylinder）
+
+**症状**：`shape: cylinder` 的 label **默认底部锚定**（D2 v0.8.1 实测）——文字沉在圆柱下缘，两行 label（如「向量服务/RAGFlow」）直接贴边溢出。
+
+**无法修复定位**：`label.near` 没有单独的 `center` 值（仅 8 个方位常量，写 center 编译报错）；`top-center` 在圆柱上实测会把文字移到形状外面。
+
+**解决**：数据存储节点（数据库/对象存储/缓存）一律用 `shape: stored_data`（数据库筒仓图标，语义同为数据存储）：
+
+```d2
+# ✅ stored_data：label 默认垂直居中，单行/多行都不贴边
+db: { label: "[MySQL 8]\n业务主库"; shape: stored_data; width: 285; height: 72 }
+
+# ❌ cylinder：label 底部锚定，两行文字贴边溢出
+db: { label: "[MySQL 8]\n业务主库"; shape: cylinder; width: 285; height: 60 }
+```
+
+**规则**：
+
+- 数据库/对象存储/缓存节点 **首选 `stored_data`**，**不用 cylinder**（形状表 §4.7）
+- 两行 label 时 `height` 提至 **72**（单行 label 60 即可）
+- 仍有 width 显式设置要求（按 §6.13 公式，与普通节点一致）

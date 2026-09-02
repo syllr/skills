@@ -5,43 +5,46 @@ layer: L4
 description: L4 交付层 文档 DEPLOYMENT 的更新规范——修改 docs/L4/DEPLOYMENT.md 时触发，按模板 generation 元数据生成或更新该文档
 globs:
   - "docs/L4/DEPLOYMENT.md"
+  - "docs/L4/deployment/README.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   tools:
-    - Mermaid flowchart（§2.2 环境拓扑，图规范见 CONSTITUTION §3.2）
+    - Mermaid flowchart（§2.2 环境拓扑，图规范见 references/diagram-spec.md）
   related: # 关联模板与联动修改
     APPLICATION-ARCHITECTURE: 部署单元 SSOT 在它 §2.2，应用增减需同步部署
     TECHNOLOGY-ARCHITECTURE: 技术栈影响部署，选型变化需同步部署方式
     API: 接口上线需同步部署
     INTEGRATION: 外部服务密钥/回调需同步部署配置
     SECURITY: 密钥分层与注入规范见它，§6 引用不复制
-    CONSTITUTION: 版本号规则 SSOT 在它 §4
+    CONSTITUTION: 文档分层/规则基准 SSOT 在宪法；版本号规则与发布记录在本文件 §7（SSOT，宪法不重复）
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - 部署形态（云开发/自建）有分歧时 → 问用户
   flow: # 生成流程
-    - 扫描（自主）：读应用清单 + 技术栈 + 目标文档
+    - 扫描（自主）：读应用清单 + 技术栈 + 目标文档 + docs/L4/deployment/README.md（部署资产登记现状，存在则读）
     - 已有 DEPLOYMENT → 保留 §1/§3/§5/§7 的业务值（部署形态/单元/命令/历史发布记录），丢弃旧结构/旧图，按本模板重建结构与 Mermaid
-    - 按模板生成：§1 部署概述 → §2 环境 → §3 部署单元 → §4 操作手册 → §5 配置与发布命令脚本记录 → §6 密钥 → §7 版本发布记录
+    - 按模板生成：§1 部署概述 → §2 环境 → §3 部署单元 → §4 操作手册 → §5 配置与发布命令脚本记录（含 §5.3 部署资产登记）→ §6 密钥 → §7 版本发布记录
   notes: # 生成注意点（怎么生成）
     - 运维手册定位（非架构设计）：部署脚本/步骤/参数/环境
     - 部署单元来自 APPLICATION-ARCHITECTURE 应用划分图（引用不复制）
-    - 版本号规则（SSOT 见 CONSTITUTION §4），此处只记发布记录
+    - 版本号规则 + 发布记录 SSOT 在本节 §7（规则与记录同文档管理）
     - 密钥管理红线：密钥不入库、不落日志、不落前端包
     - 每应用必须分环境说明部署参数与配置文件（参数/环境变量/配置文件路径按环境差异列清）
+    - **纳管部署资产**：启动脚本/配置文件（compose/Dockerfile/nginx/config/scripts/.env 等）集中登记于 `docs/L4/deployment/README.md`（路径 + 用途，引用不复制）；文件本体保留在运行位置不移动（相对路径互引）；§5.3 为快速入口，登记清单以 deployment/README.md 为 SSOT
   checks: # 生成后反向 check
     - "部署单元与 APPLICATION-ARCHITECTURE 应用划分一致"
     - "部署单元数 == APPLICATION-ARCHITECTURE §2.2 应用数"
     - "每个应用都有分环境部署说明且参数/配置文件齐全"
-    - "版本发布记录不含版本号规则（在 CONSTITUTION §4）"
+    - "版本号规则与发布记录均在 §7（规则 SSOT，不引用宪法）"
     - "密钥未出现在任何示例/配置（红线）"
+    - "部署资产（compose/Dockerfile/nginx/scripts/.env）增删改已同步登记 docs/L4/deployment/README.md（§5.3 快速入口可定位）"
 ---
 
 # DEPLOYMENT — 部署与发布
 
 > 本文档是「<项目名>」的 **DEPLOYMENT（部署与发布模板）**——L4 交付层的部署与发布文档（运维手册）。
 > 【模板使用指引】复制为 `docs/L4/DEPLOYMENT.md`，按各章节指引填写。
-> 【原则】① **运维手册定位**（非架构设计）：部署脚本、部署步骤、部署参数、环境配置——回答"怎么部署上线、怎么运维"；② 部署单元来自 APPLICATION-ARCHITECTURE 应用划分图；③ 版本号规则 见宪法（本文档只记录发布记录）；④ 密钥管理红线见 §6；⑤ 图用 **Mermaid**、无元信息表（发布记录见 §7，版本号规则见 CONSTITUTION §4）。
+> 【原则】① **运维手册定位**（非架构设计）：部署脚本、部署步骤、部署参数、环境配置——回答"怎么部署上线、怎么运维"；② 部署单元来自 APPLICATION-ARCHITECTURE 应用划分图；③ 版本号规则 + 发布记录在本节 §7（SSOT）；④ 密钥管理红线见 §6；⑤ 图用 **Mermaid**、无元信息表（版本号规则与发布记录见 §7）。
 
 ---
 
@@ -78,7 +81,7 @@ generation:
 
 ### 2.2 环境拓扑
 
-> 【指引】本图为 **部署拓扑图**（Mermaid flowchart + subgraph 按环境分区，图规范见 CONSTITUTION §3.2）。用户 → 平台 → 系统 → 数据与外部依赖，按环境分区。节点与连线必须与 §3 单元清单一一对应，环境分区与 §2.1 环境矩阵一致。
+> 【指引】本图为 **部署拓扑图**（Mermaid flowchart + subgraph 按环境分区，图规范见 references/diagram-spec.md）。用户 → 平台 → 系统 → 数据与外部依赖，按环境分区。节点与连线必须与 §3 单元清单一一对应，环境分区与 §2.1 环境矩阵一致。
 
 ```mermaid
 flowchart TB
@@ -205,6 +208,21 @@ flowchart TB
 | <如 2. 部署>     | <如 kubectl apply> | prod     | <说明> |
 | （补充）         |                    |          |        |
 
+### 5.3 部署资产登记（部署脚本/配置文件集中登记）
+
+> 【指引】**部署资产**（compose / Dockerfile / nginx.conf / backend config / scripts / .env 等启动脚本与配置文件）**集中登记于 `docs/L4/deployment/README.md`**（路径 + 用途，引用不复制）。**文件本体保留在运行位置，不移动**——compose/Dockerfile 相对路径互引，移动即断构建。本小节只放**快速入口引用**，登记清单以 `deployment/README.md` 为 SSOT。
+
+- **登记目录**：`docs/L4/deployment/README.md`（部署资产清单 SSOT：路径 + 用途 + 关联说明）
+- **登记原则**：
+  1. 启动脚本/配置文件（compose/Dockerfile/nginx/config/scripts/.env 等）增删改 → **同步更新登记清单**
+  2. 文件本体不移动（保留在运行位置，相对路径互引）
+  3. 本文档 §5.1/§5.2 只列应用级配置与命令，资产级清单引用 `deployment/README.md`（引用不复制，S2）
+
+| 部署资产                | 路径                           | 说明                                   |
+| ----------------------- | ------------------------------ | -------------------------------------- |
+| <如 docker-compose.yml> | <如 deploy/docker-compose.yml> | <如 服务编排 + 启动顺序 + healthcheck> |
+| （补充）                |                                |                                        |
+
 ---
 
 ## 6. 密钥与配置管理
@@ -222,7 +240,17 @@ flowchart TB
 
 ## 7. 版本发布记录
 
-> 【指引】只记发布记录（版本号规则 SSOT 在 CONSTITUTION §4，此处不重复规则）；按时间倒序，每发一版加一行。
+> 【指引】**版本号规则（SSOT，本节定义）** + 发布记录（按时间倒序，每发一版加一行）。
+
+**版本号规则（SSOT，本节）**：
+
+- **格式**：SemVer `MAJOR.MINOR.PATCH`（MAJOR=不兼容变更 / MINOR=新功能 / PATCH=bug 修复）
+- **预发布**：`-alpha` / `-beta` / `-rc.1`，优先级低于正式版
+- **不可篡改**：已发布版本号不可修改；回滚通过新版本而非改动旧版本
+- **首版**：`1.0.0`（或开发期 `0.y.z`）
+- 发布文档、README 等一律引用本节，不得另写
+
+**发布记录**（每次发布一行，含灰度比例/回滚出口/审核时间线）：
 
 | 版本号      | 日期            | 变更内容                    | 环境   |
 | ----------- | --------------- | --------------------------- | ------ |

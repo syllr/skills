@@ -8,7 +8,7 @@ globs:
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   tools:
-    - D2 容器图（§1 技术分层图，图规范见宪法 §3.2）
+    - D2 容器图（§1 技术分层图，图规范见 references/diagram-spec.md）
   related: # 关联模板与联动修改
     APPLICATION-ARCHITECTURE: 应用清单 SSOT 在它 §2.2，技术架构按应用描述（应用/容器/外部系统分类一致）
     PRODUCT: 功能清单 SSOT 在它 §2，技术架构不重列功能
@@ -30,7 +30,7 @@ generation:
   notes: # 生成注意点（怎么生成）
     - §1 技术分层图：左主体分层（展现/接入/服务/数据，[应用]/[容器] Boundary 内）+ 右侧外部系统竖条（[外部] Boundary 外，不拥有只消费——大模型 API/SMTP/业务数据源/他团队服务），与应用架构图画法对齐（跨图同约定）
     - **技术栈方括号（C4 最佳实践）**：所有容器节点 label = `[技术栈]\n职责`（如 `[Vue 3 + Element Plus]\n页面/组件 · 状态管理`、`[Python+FastAPI]\n...`、`[MySQL 8]`），C4 标准要求容器附主技术栈（technology beats web frontend）
-    - **容器 vs 外部系统判别**（与 CONSTITUTION §3.3 infra/integration「坏了找谁修」一致）：自己运维管理 → 容器（Boundary 内）；别人提供服务（他团队/第三方）→ 外部系统（Boundary 外）——外部依赖一律放右侧竖条，不混入主分层横排
+    - **容器 vs 外部系统判别**（与 STRUCTURE §3.1 infra/integration「坏了找谁修」一致）：自己运维管理 → 容器（Boundary 内）；别人提供服务（他团队/第三方）→ 外部系统（Boundary 外）——外部依赖一律放右侧竖条，不混入主分层横排
     - **层间调用仅 3 根**（展现→接入→服务→数据）；外部系统竖条**不画连线**（对接关系见 INTEGRATION，标注"不在此图画，见 INTEGRATION"）
     - 按应用描述技术栈（应用清单见 APPLICATION-ARCHITECTURE §2.2，引用不重列）
     - 不复制功能清单/能力归属/状态（产品规格 是 SSOT）；应用内模块清单见 APPLICATION-ARCHITECTURE §3.1（SSOT）
@@ -60,7 +60,7 @@ generation:
 
 > 本文档是「<项目名>」的 **TECHNOLOGY-ARCHITECTURE（技术架构模板）**——L2 架构层的技术架构文档。
 > 【模板使用指引】复制为 `docs/L2/TECHNOLOGY-ARCHITECTURE.md`，按各章节指引填写。
-> 【原则】① **技术架构视角**（TOGAF）：技术栈选型、版本兼容、基础设施——回答"用什么技术实现"；② 与 APPLICATION-ARCHITECTURE 分工：APPLICATION-ARCHITECTURE 定"系统分几个应用"（应用架构），本文档**按应用分别描述技术栈**（技术架构）；③ **不复制功能清单/能力归属/功能状态**——这些以 产品规格 为唯一事实源，本文档只引用不重列；④ 每个选型给出**备选与弃用原因**（Google Design Doc 惯例，强迫证明决策）；⑤ 图用 **D2 容器图**（技术分层图，图规范见宪法 §3.2）无元信息表、无变更记录。
+> 【原则】① **技术架构视角**（TOGAF）：技术栈选型、版本兼容、基础设施——回答"用什么技术实现"；② 与 APPLICATION-ARCHITECTURE 分工：APPLICATION-ARCHITECTURE 定"系统分几个应用"（应用架构），本文档**按应用分别描述技术栈**（技术架构）；③ **不复制功能清单/能力归属/功能状态**——这些以 产品规格 为唯一事实源，本文档只引用不重列；④ 每个选型给出**备选与弃用原因**（Google Design Doc 惯例，强迫证明决策）；⑤ 图用 **D2 容器图**（技术分层图，图规范见 references/diagram-spec.md）无元信息表、无变更记录。
 > 【与 deep-dives 分工】本 L2 根文档为**索引**——仅保留 1 张技术分层图 + 1 张参数总览表作索引，详情链到 `docs/L2/deep-dives/<name>.md`，同一信息只在一处维护，其余详见 `docs/L2/deep-dives/<name>.md#锚点`，引用不复制。
 > 【与 research 分工】`docs/L2/research/` 为**调研详情 **（候选/对比/POC/成本/风险），本模板 §3/§4 为**选型结论 **，调研过程不承载结论，结论链 ADR（见 RESEARCH.template §6）。
 
@@ -68,7 +68,7 @@ generation:
 
 ## 1. 技术架构总览（按应用 · 分层）
 
-> 【指引】技术架构基于应用架构（APPLICATION-ARCHITECTURE）：**应用清单见 APPLICATION-ARCHITECTURE §2.2 应用划分图**。本图为 **C4 容器图**（绘制方式见宪法 §3.2 图规范）——**左主体分层（[应用]/[容器]，Boundary 内）+ 右侧外部系统竖条（[外部]，Boundary 外）**，对齐应用架构图画法；**所有容器节点 label = `[技术栈]\n职责`（C4 技术栈方括号）**。**本图只画技术组件（技术层骨架），不列功能模块**——功能模块清单与能力归属见产品规格；**应用内模块清单见 APPLICATION-ARCHITECTURE §3.1**。**层间调用仅 3 根（展现→接入→服务→数据）；外部系统竖条不画连线**（对接关系见 INTEGRATION）。
+> 【指引】本图为 **C4 容器图**（绘制方式见 references/diagram-spec.md，画法与应用架构图对齐）。本图只画技术组件（技术层骨架）不列功能模块——功能模块清单与能力归属见产品规格，应用内模块清单见 APPLICATION-ARCHITECTURE §3.1（应用清单见其 §2.2 应用划分图）。
 
 ```d2
 # 图标准元信息
@@ -152,9 +152,9 @@ vars: {
  style.border-radius: 12
  grid-columns: 3
  grid-gap: 12
- t4a: { label: "[<数据库>]\n业务主库"; shape: cylinder; width: 285; height: 60; class: mod }
- t4b: { label: "[<对象存储>]\n文件/对象"; shape: cylinder; width: 285; height: 60; class: mod }
- t4c: { label: "[<缓存/MQ>]\n缓存/消息/进度"; shape: cylinder; width: 285; height: 60; class: mod }
+ t4a: { label: "[<数据库>]\n业务主库"; shape: stored_data; width: 285; height: 72; class: mod }
+ t4b: { label: "[<对象存储>]\n文件/对象"; shape: stored_data; width: 285; height: 72; class: mod }
+ t4c: { label: "[<缓存/MQ>]\n缓存/消息/进度"; shape: stored_data; width: 285; height: 72; class: mod }
  }
  }
 
