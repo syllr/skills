@@ -13,11 +13,11 @@ generation:
     - 不使用接口清单表/Action 映射表/能力映射表/字段表
   related: # 关联模板与联动修改
     DOMAIN-MODEL: 业务语义在它 §3 各域小节（聚合操作 Action，接口来源）与 §4（领域事件，下游消费依据），新 Action 需联动出接口
-    APPLICATION-ARCHITECTURE: 应用/模块划分在它 §2.2/§3.1，接口归属应用需与之一致（能力→聚合映射 SSOT 在 DOMAIN-MODEL §3 / PRODUCT §2.1，不在应用架构重复）
-    PRODUCT: 能力清单 SSOT 在它 §2.1，接口覆盖能力需与之一致；**PRODUCT 标「待规划」的能力不建端点（case A：API.md 与 openapi.yaml 均不留 tag/paths/stub）**
+    APPLICATION-ARCHITECTURE: 应用/模块划分在它 §2.2/§3.1，接口归属应用需与之一致（能力→聚合映射见 DOMAIN-MODEL §3 / PRODUCT §2.1，不在应用架构重复）
+    PRODUCT: 能力清单见它 §2.1，接口覆盖能力需与之一致；**PRODUCT 标「待规划」的能力不建端点（case A：API.md 与 openapi.yaml 均不留 tag/paths/stub）**
     INTEGRATION: 互补（Inbound vs Outbound），接口变化需同步外部集成
     DEPLOYMENT: 接口上线需同步部署
-    DATA-DICTIONARY: 字段级定义 SSOT，接口字段需引用
+    DATA-DICTIONARY: 字段级定义见 DATA-DICTIONARY，接口字段需引用
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - 协议选型超出默认列表（HTTP/REST 之外的启用协议，或目标语言超出 Go/Java-Spring/Python-FastAPI/Node-Express/TypeScript 默认 5 种）→ 问用户
@@ -26,14 +26,14 @@ generation:
   flow: # 生成流程
     - 扫描（自主）：读 openapi.yaml + paths/* + components/* + DOMAIN-MODEL §3 各域小节（全部 Actions）+ §4 + APPLICATION-ARCHITECTURE §2.2/§3.1（应用与模块）+ PRODUCT §2.1 + 目标文档
     - 确定目标语言：探测项目技术栈（package.json/go.mod/pom.xml 等）→ 探测到则用该语言；探测不到则按 ask_user 让用户选（Go/Java-Spring/Python-FastAPI/Node-Express/TypeScript）
-    - 定位文档模式：openapi.yaml 是契约 SSOT；API.md 是说明书（不重复接口清单/字段），承载「如何使用 yaml 生成目标语言代码 + 维护规范 + CI 防漂移」
+    - 定位文档模式：契约以 openapi.yaml 为准；API.md 是说明书（不重复接口清单/字段），承载「如何使用 yaml 生成目标语言代码 + 维护规范 + CI 防漂移」
     - openapi.yaml 已存在 → 说明书按本模板生成；API.md 不出现接口清单表/Action 映射表/能力映射表/字段表，字段一律以引用指向 openapi.yaml
-    - openapi.yaml 不存在 → 先按 DOMAIN-MODEL + APPLICATION-ARCHITECTURE 推导接口清单与字段契约，落 openapi.yaml（机器可读 SSOT），再生成 API.md 说明书
+    - openapi.yaml 不存在 → 先按 DOMAIN-MODEL + APPLICATION-ARCHITECTURE 推导接口清单与字段契约，落 openapi.yaml（机器可读契约），再生成 API.md 说明书
     - 已有 API → 参考旧文档有效信息，但结构按本模板重建为说明书模式；删除原接口清单/接口详情章节；迁移为契约文件结构 + 目标语言生成命令 + CI pipeline + 协议支持表
-    - 二部图校验：a) 每个接口向上追溯到 PRODUCT §2.1 至少一个能力；b) 该能力承载的聚合至少含一个 §3 Action 与接口语义对应（双向对齐，能力→聚合映射 SSOT 在 DOMAIN-MODEL §3）
+    - 二部图校验：a) 每个接口向上追溯到 PRODUCT §2.1 至少一个能力；b) 该能力承载的聚合至少含一个 §3 Action 与接口语义对应（双向对齐，能力→聚合映射见 DOMAIN-MODEL §3）
     - 按模板生成：§1 契约文件结构 → §2 从 yaml 生成代码（仅写探测/选定语言的 CLI，不写其他语言）→ §3 维护规范 → §4 CI 防漂移 pipeline → §5 协议支持表
   notes: # 生成注意点（怎么生成）
-    - OpenAPI 3.1 为契约 SSOT，API.md 是「openapi.yaml 使用说明书」不是「接口清单文档」
+    - 契约以 openapi.yaml（OpenAPI 3.1）为准，API.md 是「openapi.yaml 使用说明书」不是「接口清单文档」
     - 接口字段/校验/错误码一律查 openapi.yaml，本文档不复制、不手抄
     - 说明书四要素：契约文件结构 + 目标语言代码生成命令 + 维护规范 + CI 防漂移 pipeline
     - 目标语言确定：先探测项目技术栈（package.json/go.mod/pom.xml 等）；探测到 → 只写该语言 CLI；探测不到 → ask_user 提供选项让用户选（Go/Java-Spring/Python-FastAPI/Node-Express/TypeScript）。最终文档只写选定语言的 CLI，不写其他语言（避免文档膨胀 + 与项目无关）
@@ -48,10 +48,12 @@ generation:
     - "协议支持表含默认 HTTP/REST（指向 openapi.yaml）+ 其他协议占位（gRPC/WebSocket/私有协议）"
     - "接口契约与 openapi.yaml 一致（无字段漂移：API.md 引用与 openapi.yaml 节点逐项对得上）"
     - "接口覆盖 DOMAIN-MODEL §3 各域小节全部 Action（1 Action 可对应 1+ 接口，无遗漏）"
-    - "每个接口可追溯到 PRODUCT §2.1 至少一个能力，能力承载的聚合含对应 Action（能力→聚合映射 SSOT 在 DOMAIN-MODEL §3）"
+    - "每个接口可追溯到 PRODUCT §2.1 至少一个能力，能力承载的聚合含对应 Action（能力→聚合映射见 DOMAIN-MODEL §3）"
     - "接口来源能力在 PRODUCT §2.1 能力清单存在且功能状态已确认"
     - "PRODUCT 标「待规划」的能力无端点（API.md 与 openapi.yaml 均无 stub/tag/paths）"
     - "API.md 端点增删已同步 openapi.yaml（tag/paths/文件头端点计数一致；删除在 yaml 注释留痕原因）"
+    - "主文件聚合 ref 数 = paths 文件 path 定义总数（无未聚合的孤儿 path）"
+    - "components/schemas 跨文件 schema 名唯一（同名 schema 定义 ≤1 处）"
     - "字段级契约不与 DOMAIN-MODEL §3/§4 业务语义冲突"
     - "与 INTEGRATION（Outbound）方向不混淆"
     - "内容条目无顺序编号（接口按 endpoint 标识，不用 API-N）"
@@ -71,13 +73,24 @@ generation:
 
 > 【指引】`openapi.yaml` 按端点与组件拆分多文件，`openapi.yaml` 顶层只承载元信息与 `$ref` 引用。
 
-| 文件                                | 作用                                  |
-| ----------------------------------- | ------------------------------------- |
-| `docs/L3/openapi/openapi.yaml`      | 主契约（paths 引用拆分文件）          |
-| `paths/<domain>.yaml`               | 端点定义（按聚合域拆分，如 <domain>） |
-| `components/schemas/*.yaml`         | 类型定义                              |
-| `components/responses/*.yaml`       | 错误响应                              |
-| `components/securitySchemes/*.yaml` | 鉴权方案                              |
+| 文件                                | 作用                                                                                                                                         | 端点计数 |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `docs/L3/openapi/openapi.yaml`      | 主契约（paths 引用拆分文件）                                                                                                                 | —        |
+| `paths/<domain>.yaml`               | 端点定义（按业务域拆 N 个文件，每文件行标注端点数）                                                                                          | <N>      |
+| `components/schemas/*.yaml`         | 类型定义（口径二选一：全部 schema 收敛本目录，或 paths 文件可含本地 components（跨文件同构模式）——选定后全篇一致，API.md §1 表按实际口径写） | —        |
+| `components/responses/*.yaml`       | 错误响应                                                                                                                                     | —        |
+| `components/securitySchemes/*.yaml` | 鉴权方案                                                                                                                                     | —        |
+
+> 【指引】**端点计数**：`paths/<domain>.yaml` 每文件行标注该文件定义的端点数（`<N>`）；**端点计数须与 `openapi.yaml` 文件尾注释块一致**（见下方「openapi 目录组织约定」），增删端点时同步更新两处。
+
+### openapi 目录组织约定
+
+> 【指引】`openapi/` 目录按「契约基座 + 拆分文件」组织，`openapi.yaml` 只承载元信息与 `$ref` 引用，不内联任何 path/schema 定义。
+
+- **`openapi.yaml` 头部结构**：`info`（标题/版本）+ `servers`（环境地址）+ `tags`（业务域标签）+ `security`（全局鉴权声明）；作为**只承载 `$ref` 的契约基座**，`paths` 与 `components` 一律用 `$ref` 指向拆分文件，不直接写定义。
+- **文件尾端点计数注释块**：`openapi.yaml` 文件末尾以注释块汇总各 `paths/<domain>.yaml` 的端点数（如 `# paths: auth=3, order=5, payment=2 → 合计 10`），与 §1 表「端点计数」列一致，供机检。
+- **`paths/<domain>.yaml` 文件头注释块**：每个 paths 文件顶部注释块标注：① 依据来源（对应 DOMAIN-MODEL §3 哪个域/哪些 Action）；② 边界（本文件覆盖的端点范围）；③ `x-action` 汇总（本文件所有 operation 的 Action 来源清单）。
+- **主文件 `paths` 用 path item 级 `$ref` 聚合**：`openapi.yaml` 的 `paths` 下每个 path 用 path item 级 `$ref` 指向拆分文件（如 `/orders/{id}`: `$ref: './paths/order.yaml#/paths/~1orders~1{id}'`）；**`~1` 为 `/` 的转义写法**（`~0` 为 `~`），`$ref` 中路径分隔符必须用 `~1` 转义。
 
 ## 2. 从 yaml 生成代码
 
@@ -99,12 +112,12 @@ generation:
 - **产物**：`@RestController` 接口 + DTO（`gen/java` 下）；业务层 `implements` 接口，编译期对齐契约；**产物路径须与 §4 step5 diff 目标一致**
 - **官网**：https://github.com/OpenAPITools/openapi-generator
 
-### 2.3 Python（datamodel-code-generator 模型 / fastapi-code-generator 骨架）
+### 2.3 Python（openapi-generator：python-fastapi 服务端 / python 客户端）
 
-- **安装**：`pip install datamodel-code-generator fastapi-code-generator`
-- **生成**：`datamodel-codegen --input docs/L3/openapi/openapi.yaml --input-file-type openapi --output-model-type pydantic_v2.BaseModel -o models.py`；骨架 `fastapi-codegen --input docs/L3/openapi/openapi.yaml --output ./app`
-- **产物**：Pydantic v2 模型 + FastAPI 骨架
-- **官网**：https://github.com/koxudaxi/datamodel-code-generator
+- **安装**：`npm install -g @openapitools/openapi-generator-cli`（同 §2.2）
+- **生成**：服务端 `openapi-generator-cli generate -i docs/L3/openapi/openapi.yaml -g python-fastapi -o gen/python-fastapi --additional-properties=packageName=<包名>`；客户端 `openapi-generator-cli generate -i docs/L3/openapi/openapi.yaml -g python -o gen/python --additional-properties=packageName=<包名>`
+- **产物**：服务端 FastAPI 路由 + Pydantic 模型（`gen/python-fastapi` 下）；客户端 SDK（`gen/python` 下）；**产物路径须与 §4 step5 diff 目标一致**
+- **官网**：https://github.com/OpenAPITools/openapi-generator
 
 ### 2.4 TypeScript（推荐 openapi-typescript 类型 + openapi-fetch）
 
@@ -127,6 +140,9 @@ generation:
 - 改接口 → 先改 `openapi.yaml`，再重新生成代码
 - API.md 不手抄字段；查契约看 yaml
 - 协议：默认 HTTP/REST（OpenAPI 3.1），gRPC/WebSocket/私有协议占位待启用
+- **operation 机检元数据**：每个 operation 必带 `x-action` 标注来源 Action（对应 DOMAIN-MODEL §3 聚合操作）、`x-capability` 标注归属能力（对应 PRODUCT §2.1），供机检追溯接口来源与能力覆盖
+- **豁免映射**：无领域 Action 的端点（如认证/系统支撑类）取单值 capability 标注 `x-capability`（如 `x-capability: auth` / `x-capability: system`），`x-action` 可省略或标注 `x-action: system`，保证每个 operation 至少可追溯到能力
+- **编号标识约定**：路径参数原型格式不硬编码 `pattern`（避免与具体实现耦合），仅以 `description` 标注参数语义/约束，校验规则下沉 `openapi.yaml` 的 schema
 
 ## 4. CI 防漂移 pipeline
 
