@@ -15,10 +15,10 @@ generation:
     - 扫描技术栈（package.json/go.mod/pom.xml 等）：判断语言/框架，目录命名与分层按该语言/框架规范柔性适配
     - 扫描 docs/ 现有子树（L1-L4 + common）与宪法 §3.1 分层是否一致
   related: # 关联模板与联动修改
-    CONSTITUTION: 文档分层规则 SSOT 在它 §3.1，规则变更需同步 docs/ 子树目录；代码分层概念（controller/service/infra 等）不重复其规则
-    APPLICATION-ARCHITECTURE: 应用划分 SSOT，代码目录（前端/后端、模块归属）需与之对应
+    CONSTITUTION: 文档分层规则见它 §3.1，规则变更需同步 docs/ 子树目录；代码分层概念（controller/service/infra 等）不重复其规则
+    APPLICATION-ARCHITECTURE: 应用划分见 APPLICATION-ARCHITECTURE，代码目录（前端/后端、模块归属）需与之对应
     L3/API: controller 的 api 代码来源——从 openapi.yaml schema 生成，controller 目录与 API 文档联动
-    PRODUCT: 功能 SSOT，功能目录增删需同步；**PRODUCT 标「待规划」的功能不加实现目录/模块目录（case A：待规划在实现视图不建模，仅 PRODUCT 保留标注）**
+    PRODUCT: 功能见 PRODUCT，功能目录增删需同步；**PRODUCT 标「待规划」的功能不加实现目录/模块目录（case A：待规划在实现视图不建模，仅 PRODUCT 保留标注）**
     DEEP-DIVES: 高复杂度单列详情（2/4 阈值：T1 跨模块交互≥3 / T2 永久参数≥5 / T3 精度性能分层≥3 / T4 坑位≥5，命中任意 2 个即单列；判定见 L2/deep-dives/INDEX.md §1），目录树需含 deep-dives/ 分支，与 L2 根索引双向引用
     RESEARCH: 调研详情（候选≥2 或维度≥3（命中其一即单列）；判定见 §1 目录树 research/ 行；无独立索引，TECHNOLOGY-ARCHITECTURE.md 为逻辑入口，双向引用），目录树需含 research/ 分支
     # common 角色：本文档是「改任何文档前」的必读项（定位文档对应代码，防漂移）
@@ -36,15 +36,15 @@ generation:
     - §3 阐述组织原则（最多三级/DDD/前后端分离/语言框架柔性）与漂移处理（新建 vs 调整的判断）
     - 结合项目现状扫描结果 + 询问用户 → 迭代出本项目的过渡规范（transitional spec），允许与模板有差异但需显性记录差异及理由
   notes: # 生成注意点（怎么生成）
-    - 代码与 docs 位置 SSOT = STRUCTURE（README/AGENTS 引用此处不重复）
+    - 代码与 docs 位置以 STRUCTURE 为准（README/AGENTS 引用此处不重复）；本文件 §1/§2 的目录职责判定是功能 3 阶段 1.5 globs 自适应的输入（代码→文档映射按此推导）
     - common 角色：STRUCTURE 是「文档 ↔ 代码」映射——改任何文档前，通过本文档定位其对应代码，再读代码核对漂移（文档与代码可能不一致，读代码防漂移）
-    - 分层规则 SSOT = 宪法 §3.1（docs/ 子树遵守该分层但不重复规则）
+    - 分层规则见宪法 §3.1（docs/ 子树遵守该分层但不重复规则）
     - 目录随功能与架构确定后落地（功能见 PRODUCT，架构见 APPLICATION-ARCHITECTURE）
     - 目录组织原则（最多三级/DDD/前后端分离/语言框架柔性）见 §3
     - 后端固定 6 个二级目录（controller/service/infra/integration/reference/test），职责见 §2
     - 任何二级目录都应在文档中说清「干什么、有什么作用、职责是什么」（见 §2）
     - controller 层与 L3/API.md 联动：从 openapi.yaml schema 生成对应 api 代码（见 §2）
-    - S4 差异主动修复：校验 pitfalls.md/contracts/api-status-code-spec.md 等漂移项，不存在即修复；deep-dives 目录中性收纳技术与业务 Deep Dive
+    - 第4条 差异主动修复：校验 pitfalls.md/contracts/api-status-code-spec.md 等漂移项，不存在即修复；deep-dives 目录中性收纳技术与业务 Deep Dive
     - research 目录中性收纳技术/竞品调研，与 deep-dives 并列同为 L2 子目录
   checks: # 生成后反向 check
     - "目录树与 宪法 文档分层一致（L0-L4 + common 层），README/AGENTS 引用的路径与目录树一致"
@@ -60,7 +60,7 @@ generation:
 
 > 本文档是「<项目名>」的 **STRUCTURE（目录结构模板）**——common 层的目录结构文档（文档 ↔ 代码映射）。
 > 【模板使用指引】复制为 `docs/common/STRUCTURE.md`，按各章节指引填写。
-> 【原则】① **代码与 docs 位置 = STRUCTURE**（README/AGENTS 引用此处不重复）——**分层规则 = 宪法 §3.1**（docs/ 怎么分层在宪法，STRUCTURE 只落地 docs/ 子树）；② **文档 ↔ 代码映射**：改文档前读本文档定位对应代码，读代码核对漂移（S4 差异主动修复）；③ **目录随功能与架构确定后落地**（功能见 PRODUCT，架构见 APPLICATION-ARCHITECTURE）；④ **reference 只读**——见 §2（backend/reference/ 与根级 reference/ 行）；⑤ **controller 关联 L3/API.md**——controller 层从 openapi.yaml schema 生成对应 api 代码；⑥ 图用 **ASCII 目录树**（文本可 diff、任何渲染器显示）。其余生成注意点见 frontmatter `generation.notes`（SSOT，本文档不重复）
+> 【原则】① **代码与 docs 位置 = STRUCTURE**（README/AGENTS 引用此处不重复）——**分层规则 = 宪法 §3.1**（docs/ 怎么分层在宪法，STRUCTURE 只落地 docs/ 子树）；② **文档 ↔ 代码映射**：改文档前读本文档定位对应代码，读代码核对漂移（第4条 差异主动修复）；③ **目录随功能与架构确定后落地**（功能见 PRODUCT，架构见 APPLICATION-ARCHITECTURE）；④ **reference 只读**——见 §2（backend/reference/ 与根级 reference/ 行）；⑤ **controller 关联 L3/API.md**——controller 层从 openapi.yaml schema 生成对应 api 代码；⑥ 图用 **ASCII 目录树**（文本可 diff、任何渲染器显示）。其余生成注意点见 frontmatter `generation.notes`（本文档不重复）
 
 ---
 
@@ -81,7 +81,8 @@ generation:
 │   │   └── USER-STORY.md # 用户故事（需求源头 + 旅程 + 交互）
 │   ├── L2/ # 架构层（How-Structure）
 │   │   ├── APPLICATION-ARCHITECTURE.md # 应用架构（应用划分 + 模块）
-│   │   ├── DOMAIN-MODEL.md # 领域模型 + 数据设计
+│   │   ├── DOMAIN-MODEL.md # 领域模型（业务语义 + 数据设计索引）
+│   │   ├── DATA-ARCHITECTURE.md # 数据架构（资产/拓扑/血缘/物理格式）
 │   │   ├── TECHNOLOGY-ARCHITECTURE.md # 技术架构（含存储选型）
 │   │   ├── deep-dives/ # Deep Dive 详情（高复杂度单列，命中 2/4 阈值）
 │   │   │   ├── INDEX.md # 索引：收敛标准 + 列表 + 与 L2 根的引用关系
@@ -96,19 +97,19 @@ generation:
 │   │   │   └── components/ # 类型/响应/鉴权定义
 │   │   ├── INTEGRATION.md # 外部集成说明书（Outbound）
 │   │   └── integration-contracts/ # 外部服务契约（一服务一份，kebab-case）
-│   │       └── <service>.md # 单服务契约（如 llm-api.md / vector-service.md，字段 SSOT）
+│   │       └── <service>.md # 单服务契约（如 llm-api.md / vector-service.md，字段见契约文件）
 │   ├── L4/ # 交付层（Deliver）
 │   │   ├── TEST-PLAN.md # 测试计划（E2E/流程/UT）+ RTM + 报告
 │   │   ├── DEPLOYMENT.md # 部署与发布
-│   │   └── deployment/ # 部署资产登记（compose/Dockerfile/scripts/.env 清单，SSOT）
+│   │   └── deployment/ # 部署资产登记（compose/Dockerfile/scripts/.env 清单）
 │   │       └── README.md # 部署资产清单（路径 + 用途；文件本体保留运行位置）
 │   ├── adr/ # 架构决策记录（common 贯穿层，一 feature 一 ADR）
 │   │   └── NNNN-<kebab-case>.md # 单篇 ADR（四位递增，与 ADR-NNNN 编号对应）
 │   └── common/ # common 层（贯穿所有层 · 全局知识）
 │       ├── STRUCTURE.md # 本文件（目录结构，文档 ↔ 代码映射）
 │       ├── GLOSSARY.md # 术语表
-│       ├── DATA-DICTIONARY.md # 数据字典（字段/枚举/事件级 SSOT）
-│       ├── SECURITY.md # 安全设计（贯穿所有层，密钥分层 SSOT 在 §6）
+│       ├── DATA-DICTIONARY.md # 数据字典（字段/枚举/事件级定义）
+│       ├── SECURITY.md # 安全设计（贯穿所有层，密钥分层见 §6）
 │       └── CODE-GUIDE.md # 代码规范（命名/签名/注释/坏味道）
 ├── backend/ # 后端代码（按 DDD 整理，固定 6 个二级目录）
 │   ├── controller/ # api 接入层（承接 API 契约，由 L3/API.md 的 openapi.yaml schema 生成）
@@ -170,7 +171,7 @@ generation:
 - **③ 语言/框架柔性适配**：项目结构不一定完全遵守上述分层，不同语言/框架有各自规范（如 Java 的 `controller/service/repository`、Go 的 `handler/service/store`），但大体应体现这些分层概念——目录命名可随语言/框架调整，职责对应不变。
 - **④ 文件归属判断与漂移处理**：放文件前先对照 §2 定义判断是否匹配——匹配则放入对应目录；不匹配（漂移）按三问清单判定：**1. 是否仅命名差异 → 扩定义（更新 §2）**；**2. 是否新增职责边界 → 新建目录（与用户确认后新建）**；**3. 不确定 → 问用户**。判定后更新本文档记录。
 - **⑤ 过渡规范（transitional spec）**：AI 按当前项目现状扫描 + 询问用户 → 总结出本项目的过渡目录规范；允许与模板有差异，但需在本文档中显性记录差异及理由（按项目现状迭代，不强行套模板）。
-- **⑥ 代码分层细则（SSOT）**：前端/后端固定分层、infra vs integration 判别、层间纪律——见下方「§3.1 代码分层细则」；分层是**手段不是目的**（目标是依赖单向、关注点分离），固定分层避免为"规范/模板"反复加层。
+- **⑥ 代码分层细则**：前端/后端固定分层、infra vs integration 判别、层间纪律——见下方「§3.1 代码分层细则」；分层是**手段不是目的**（目标是依赖单向、关注点分离），固定分层避免为"规范/模板"反复加层。
 
 ### 3.1 代码分层细则（前端/后端分开，固定分层）
 

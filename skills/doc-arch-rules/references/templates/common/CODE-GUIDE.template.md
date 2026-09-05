@@ -9,11 +9,11 @@ generation:
   tools:
     - Markdown 表格（命名/方法签名/注释/坏味道检查对照表）
   scan: # 生成前自主扫描（不依赖用户）
-    - 扫描宪法 §2.1（D 系列原则，SSOT）
+    - 扫描宪法 §2.1（D 系列原则）
     - 扫描现有 CODE-GUIDE（有效信息保留，结构重建见 flow）
     - 扫描项目 eslint/sonar 配置（实际启用的规则，坏味道检查需与之对齐）
   related:
-    CONSTITUTION: 原则 SSOT 在宪法 §2.1
+    CONSTITUTION: 原则见宪法 §2.1
     GLOSSARY: 术语一致
   ask_user:
     - 命名风格/阈值/既有约定有冲突时（如某类命名规则取舍、圈复杂度阈值定多少）→ 问用户

@@ -16,7 +16,7 @@ generation:
   related: # 关联模板与联动修改
     DOMAIN-MODEL §1.2/§3: 领域特有术语在聚合设计内维护，新增需联动
     PRODUCT: 能力/功能术语，能力增删需同步术语
-    CONSTITUTION: 文档分层规则 SSOT 在宪法 §3.1；图规范在 references/diagram-spec.md，术语统一需对齐
+    CONSTITUTION: 文档分层规则见宪法 §3.1；图规范在 references/diagram-spec.md，术语统一需对齐
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - 术语定义有争议时（如某词含义）→ 问用户
@@ -27,12 +27,13 @@ generation:
     - 按模板生成：项目级术语表（含义/别称易混淆）
     - 清理：删除所有 `<!-- 按需 -->` 占位行与 `<...>` 示例
   notes: # 生成注意点（怎么生成）
-    - 项目级通用术语只在本表维护（SSOT，见正文原则②），其他文档引用不复制；领域业务术语在 DOMAIN-MODEL §3 通用语言表维护（领域特有）——**分工唯一源：项目级通用 vs 领域特有**（见 related DOMAIN-MODEL）
+    - 项目级通用术语只在本表维护（见正文原则②），其他文档引用不复制；领域业务术语在 DOMAIN-MODEL §3 通用语言表维护（领域特有）——**分工：项目级通用 vs 领域特有**（见 related DOMAIN-MODEL）
     - 别称/易混淆词列出禁止混用
   checks: # 生成后反向 check
     - "术语覆盖项目级概念（能力/功能/应用/模块/状态机/状态流转）"
     - "与 DOMAIN-MODEL 聚合术语不冲突（项目级通用 vs 领域特有分工，见 related）"
     - "别称/易混淆词有禁止混用标注"
+    - "术语表内所有 DATA-DICTIONARY §x 引用与数据字典实际章节核对，无错节引用"
 ---
 
 # GLOSSARY — 术语表
