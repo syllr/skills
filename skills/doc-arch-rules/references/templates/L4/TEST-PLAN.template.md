@@ -12,10 +12,10 @@ generation:
     - Gherkin Feature（流程测试，Given-When-Then 中文）
     - Mermaid flowchart（测试流程含分支/并行时补充）
   related: # 关联模板与联动修改（= 改本文档前必读的文档）
-    PRODUCT: docs/L1/PRODUCT.md——能力分层与状态 SSOT（§2），能力增删需联动用例
+    PRODUCT: docs/L1/PRODUCT.md——能力分层与状态见它 §2，能力增删需联动用例
     USER-STORY: docs/L1/USER-STORY.md——需求场景来源，改测试前必读其故事场景
     DOMAIN-MODEL: docs/L2/DOMAIN-MODEL.md——聚合操作 + 状态机（在它 §3 各域小节内），领域变化需联动测试
-    TECHNOLOGY-ARCHITECTURE: docs/L2/TECHNOLOGY-ARCHITECTURE.md——技术栈选型（SSOT），技术栈变化需同步测试工具；UT 写法 SSOT 在本文档 §5.4（见 notes）
+    TECHNOLOGY-ARCHITECTURE: docs/L2/TECHNOLOGY-ARCHITECTURE.md——技术栈选型见它 §3，技术栈变化需同步测试工具；UT 写法见本文档 §5.4（见 notes）
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - RTM 存在未映射场景或 PRODUCT 与 DOMAIN-MODEL 冲突时 → 问用户
@@ -27,14 +27,14 @@ generation:
   notes: # 生成注意点（怎么生成）
     - 依赖链：用户故事（需求场景）→ PRODUCT/DOMAIN-MODEL（功能/事件）→ TEST-PLAN（测试计划）
     - 测试分三类：E2E/集成（测 API/契约/状态机，代码方式）、流程（用户旅程级，Gherkin + 浏览器自动化 + 截图视觉）、UT（单元清单，写法见正文 §5.4）
-    - UT 分工：TEST-PLAN §5.1 只列「要测哪些单元」，框架/覆盖率/命名在 §5.4（SSOT，本文档统一承载，不从技术架构复制）
+    - UT 分工：TEST-PLAN §5.1 只列「要测哪些单元」，框架/覆盖率/命名在 §5.4（本文档统一承载，不从技术架构复制）
     - 流程测试可 AI 执行：Gherkin 声明式 → Playwright → toHaveScreenshot() 视觉断言 → Trace 回放
     - 用例编号：E2E-<模块>-<序号> / FLOW-<模块>-<序号> / UT-<模块>-<序号>（用例标识，非内容条目编号）
     - 用例与 PRODUCT/DOMAIN-MODEL/用户故事追溯（RTM），引用不复制验收内容
   checks: # 生成后反向 check
     - "RTM 覆盖全部用户故事场景（无遗漏）"
     - "E2E 用例覆盖 PRODUCT/DOMAIN-MODEL 关键接口/状态机；流程用例覆盖用户旅程主路径"
-    - "UT 清单与 DOMAIN-MODEL 聚合对应，写法在 §5.4（SSOT，本模板定义框架/覆盖率/命名）"
+    - "UT 清单与 DOMAIN-MODEL 聚合对应，写法在 §5.4（本模板定义框架/覆盖率/命名）"
     - "流程测试用 Gherkin 中文（Given/When/Then），含至少 1 个视觉断言（截图）"
     - "用例引用 PRODUCT/DOMAIN-MODEL/用户故事，未重复定义验收"
 ---
