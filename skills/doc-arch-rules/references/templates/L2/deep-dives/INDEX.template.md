@@ -11,32 +11,32 @@ generation:
     - ASCII 索引表（§2 列表，fallback 见 references/diagram-spec.md）
     - Mermaid flowchart（§3 引用声明图，图规范见 references/diagram-spec.md）
   related: # 关联模板与联动修改
-    APPLICATION-ARCHITECTURE: 应用模块索引，deep-dives 为详情，SSOT 单源
-    DOMAIN-MODEL: 规则 SSOT，deep-dives 为详情，SSOT 单源
-    TECHNOLOGY-ARCHITECTURE: 参数总览，deep-dives 为详情，SSOT 单源
-    STRUCTURE: 目录结构 SSOT，需同步 deep-dives 说明
+    APPLICATION-ARCHITECTURE: 应用模块索引，deep-dives 为详情，单源
+    DOMAIN-MODEL: 规则见它 §3，deep-dives 为详情，单源
+    TECHNOLOGY-ARCHITECTURE: 参数总览见它 §3.1，deep-dives 为详情，单源
+    STRUCTURE: 目录结构见它 §1，需同步 deep-dives 说明
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - 收敛阈值有争议时问用户
   flow: # 生成流程
     - 扫描（自主）：现有 deep-dives/*.md + L2 三总览引用
     - 按模板生成：收敛标准 + 列表 + 引用声明
-    - 校验单链（S2 无重复）
+    - 校验单链（第2条 无重复）
   notes: # 生成注意点（怎么生成）
     - 收敛标准 2/4 阈值命中即单列，引 4 源（AWS Lens / arc42 §8 / C4 L3 / Google Design Doc）
-    - S2 同一信息只在一处维护（总览为索引，deep-dives 为详情）
+    - 第2条 同一信息只在一处维护（总览为索引，deep-dives 为详情）
   checks: # 生成后反向 check
     - "收敛标准表完整（4 阈值 + 2 命中即单列）"
-    - "列表含首篇（inference-pipeline）"
+    - "列表含首篇（首篇为首个单列主题，按项目实际命名，不硬编码示例名）"
     - "与 L2 三总览引用声明正确（总览为索引，deep-dives 为详情）"
-    - "S2 无重复（deep-dive 不复制总览内容）"
+    - "第2条 无重复（deep-dive 不复制总览内容）"
 ---
 
 # L2/deep-dives — 索引
 
 > 本文档是「<项目名>」的 **L2/deep-dives 索引（模板）**——L2 架构层 deep-dives 文档的索引。
 > 【模板使用指引】复制为 `docs/L2/deep-dives/INDEX.md`，按各章节指引填写。
-> 【原则】① **索引定位**：只做入口与收敛标准，不承载 deep-dive 内容；② **L2 三总览（APPLICATION-ARCHITECTURE / DOMAIN-MODEL / TECHNOLOGY-ARCHITECTURE）为索引，deep-dives 为详情**——总览章节只放一行"详情见"引用，deep-dive 不反向承载总览内容（S2 同一信息只在一处维护）；③ 收敛标准（§1）决定"什么主题值得单独成篇"；④ 列表（§2）按主题维护，含首篇与预留位；⑤ 图用 **ASCII / Mermaid**（图规范见 references/diagram-spec.md），无元信息表、无变更记录。
+> 【原则】① **索引定位**：只做入口与收敛标准，不承载 deep-dive 内容；② **L2 三总览（APPLICATION-ARCHITECTURE / DOMAIN-MODEL / TECHNOLOGY-ARCHITECTURE）为索引，deep-dives 为详情**——总览章节只放一行"详情见"引用，deep-dive 不反向承载总览内容（第2条 同一信息只在一处维护）；③ 收敛标准（§1）决定"什么主题值得单独成篇"；④ 列表（§2）按主题维护，含首篇与预留位；⑤ 图用 **ASCII / Mermaid**（图规范见 references/diagram-spec.md），无元信息表、无变更记录。
 
 ---
 
@@ -57,7 +57,7 @@ generation:
 
 ## 2. Deep Dive 列表
 
-> 【指引】按主题维护 deep-dive 清单。**首篇为 inference-pipeline（推理流水线）**；预留位（如 grant-scheduling）在主题出现时启用并补判定与关联总览。每篇标注：主题、判定（命中哪些阈值）、关联总览章节、状态。**本表为 deep-dive 清单的唯一入口**：新增/删除 deep-dive 只改本表；每篇 deep-dive 的「相关文档」章节反向链回本索引（单链，不双向复制）。`§X`/`R8/R9` 为占位符，替换为总览实际章节号 / DOMAIN-MODEL 规则编号。
+> 【指引】按主题维护 deep-dive 清单。**首篇为首个单列主题**（示例名 inference-pipeline 仅为占位，按项目实际替换）；预留位（如 grant-scheduling）在主题出现时启用并补判定与关联总览。每篇标注：主题、判定（命中哪些阈值）、关联总览章节、状态。**本表为 deep-dive 清单的唯一入口**：新增/删除 deep-dive 只改本表；每篇 deep-dive 的「相关文档」章节反向链回本索引（单链，不双向复制）。`§X`/`R8/R9` 为占位符，替换为总览实际章节号 / DOMAIN-MODEL 规则编号。
 
 | 主题       | 文件                                            | 判定          | 关联总览（索引）                                                                                                         | 状态 |
 | ---------- | ----------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------ | ---- |
@@ -68,7 +68,7 @@ generation:
 
 ## 3. 引用声明（与 L2 三总览的关系）
 
-> 【指引】**L2 三总览（APPLICATION-ARCHITECTURE / DOMAIN-MODEL / TECHNOLOGY-ARCHITECTURE）为索引，deep-dives 为详情**。总览章节只写"详情见 deep-dive X"一行引用；deep-dive 不复制总览内容（S2 同一信息只在一处维护）。引用方向单向：总览 → deep-dive → 代码（File:Line）。本图为**结构/拓扑图**（Mermaid flowchart，图规范见 references/diagram-spec.md，fallback 为 ASCII 图保持同样布局）。
+> 【指引】**L2 三总览（APPLICATION-ARCHITECTURE / DOMAIN-MODEL / TECHNOLOGY-ARCHITECTURE）为索引，deep-dives 为详情**。总览章节只写"详情见 deep-dive X"一行引用；deep-dive 不复制总览内容（第2条 同一信息只在一处维护）。引用方向单向：总览 → deep-dive → 代码（File:Line）。本图为**结构/拓扑图**（Mermaid flowchart，图规范见 references/diagram-spec.md，fallback 为 ASCII 图保持同样布局）。
 
 ```mermaid
 flowchart LR
@@ -94,7 +94,7 @@ flowchart LR
 | 删除 deep-dive | §2 列表删行   | 同步 STRUCTURE §1 目录树（deep-dives 分支）+ §2 职责表（docs/L2/deep-dives/ 行） |
 | 收敛标准调整   | §1 阈值表更新 | 无需联动（不涉及目录）                                                           |
 
-> 【指引】STRUCTURE 是目录结构的 SSOT，本索引只维护"主题 → 文件"映射；目录级说明一律以 STRUCTURE 为准，此处引用不复制。
+> 【指引】STRUCTURE 是目录结构的维护处，本索引只维护"主题 → 文件"映射；目录级说明一律以 STRUCTURE 为准，此处引用不复制。
 
 ---
 
@@ -102,4 +102,4 @@ flowchart LR
 
 - [DEEP-DIVE](DEEP-DIVE.template.md)：单篇 deep-dive 的通用模板（7 章骨架）
 - [APPLICATION-ARCHITECTURE](../APPLICATION-ARCHITECTURE.template.md) / [DOMAIN-MODEL](../DOMAIN-MODEL.template.md) / [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)：L2 三总览（索引）
-- [STRUCTURE](../../common/STRUCTURE.template.md)：目录结构的 SSOT（`docs/L2/deep-dives/` 说明）
+- [STRUCTURE](../../common/STRUCTURE.template.md)：目录结构（`docs/L2/deep-dives/` 说明）
