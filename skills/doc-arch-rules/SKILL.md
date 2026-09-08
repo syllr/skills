@@ -1,8 +1,9 @@
 ---
 name: doc-arch-rules
 description: >
-  文档架构规范（L0-L4 + common 分层），两种使用入口：①生成/更新 rule（关键字 init / 初始化 / 生成rule / 生成文档规范——从模板生成 .omo/rules/docs/ 下的 omo rule，已有 rule 时按版本指纹按需更新）；
-  ②对齐（默认，/doc-arch-rules 无关键字——一条龙：先按版本指纹检查并更新过期 rule，再检测 docs/ 文档与代码的漂移并以代码为准修复文档，遵守 rule，走宪法差异分诊）。
+  文档架构规范（L0-L4 + common 分层），三种使用入口：①生成/更新 rule（关键字 init / 初始化 / 生成rule / 生成文档规范——从模板生成 .omo/rules/docs/ 下的 omo rule，已有 rule 时按版本指纹按需更新，生成/更新后必做 globs 目录同步检查：空项目保持模板基线，有目录提双向同步提案）；
+  ②对齐（默认，/doc-arch-rules 无关键字——一条龙：先按版本指纹检查并更新过期 rule，再检测 docs/ 文档与代码的漂移并以代码为准修复文档，其中 globs 自适应为必做门槛，遵守 rule，走宪法差异分诊）；
+  ③globs 对齐（关键字 更新globs / globs对齐 / 目录变动 / rule没触发——轻量：ls 实际目录对比 STRUCTURE 目录树，有变动则提出 globs 双向同步提案（新目录追加、已删目录清理），用户确认后落盘）。
   内部机制：版本指纹 meta.json（version + implHash + templates hash）对比判定 rule 是否需要更新，避免 AI 随机性导致的无差别覆盖。
   仅用户手动调用时触发，不自动触发；仅操作 .omo/rules/docs/ 与 docs/ 文档，不生成业务代码。
 ---
@@ -11,16 +12,17 @@ description: >
 
 ## 简介
 
-本 skill 承载一套**文档架构规范**（基于 TOGAF 分层：L0 决策 → L1 产品 → L2 架构 → L3 契约 → L4 交付 + common 贯穿层），提供**两种使用入口**（内含三个内部能力：生成 rule / rule 更新检查 / 文档-代码漂移检测与修复）：
+本 skill 承载一套**文档架构规范**（基于 TOGAF 分层：L0 决策 → L1 产品 → L2 架构 → L3 契约 → L4 交付 + common 贯穿层），提供**三种使用入口**（内含三个内部能力：生成 rule / rule 更新检查 / 文档-代码漂移检测与修复）：
 
 - **入口① 生成/更新 rule**（关键字 `init`）：把规范落地到具体项目——生成/按需更新 `.omo/rules/docs/` 下的 omo rule
 - **入口② 对齐（默认）**：一条龙——检查并更新过期 rule（功能 2）→ 检测并修复文档-代码漂移（功能 3）
+- **入口③ globs 对齐（轻量）**（关键字 `更新globs` / `globs对齐` / `目录变动` / `rule没触发`）：只做目录盘点 + globs 自适应（功能 3 阶段 1 盘点 + 阶段 2），有变动提双向同步提案（新目录追加 + 已删目录清理）、无变动给显式结论，不动文档内容
 
 **rule 工厂**（功能 1）的输入输出：
 
 - 输入：`references/templates/` 下模板（1 个全局 Rule 源 + 21 个模板，清单见 [§文件清单](#文件清单模板-ssot)）
 - 输出：`.omo/rules/docs/` 下的 rule（一个模板对应一个 rule，目录结构与 `references/templates` 同构）
-- **除 DEEP-DIVE/RESEARCH/CONTRACT/ADR 目录级通配外，其余 1:1 同构**；目录级模板按 globs 通配覆盖，详见表
+- **除 DEEP-DIVE/RESEARCH/CONTRACT/ADR/DOMAIN（globs: `docs/L2/domain/*.md` 目录级通配）目录级通配，及 TEST-PLAN（globs 含 `docs/L4/testcases/*.md`）/INTEGRATION（globs 含 `docs/L3/integration-contracts/**`）主文档（TEST-PLAN 总文档 / INTEGRATION 说明书）+目录通配混合外，其余 1:1 同构**；目录级模板按 globs 通配覆盖，详见表
 - **只生成 rule，不生成文档**：宿主项目 `docs/**` 由 rule 触发后的 AI 按 rule 内容生成/更新
 
 **两种文件模式**：
@@ -34,16 +36,17 @@ description: >
 
 **只有两种分诊结果**：
 
-| 分诊结果                     | 触发关键词                                                                                     | 说明                                                                                                                                                 |
-| ---------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **① init → 生成 rule**       | `init` 类关键词（详见信号判定细则；"重建 <DOC>"强制重生成单个）                                | 初始化 rule（功能 1，直接全量 rebuild，无需 check 增量）                                                                                             |
-| **② 文档与代码对齐（默认）** | `/doc-arch-rules` 无 init 关键字（默认动作，含"检查一下/需要更新吗/看看有没有漂移"等只读询问） | 对齐流水线。缺失判定以文档架构（宪法 §3.1）`必选性`列为 SSOT。**不清晰时做二次分诊**：与预期清单对比，必选缺失→初始化，按需缺失属正常（见宪法 §3.1） |
+| 分诊结果                     | 触发关键词                                                                                     | 说明                                                                                                           |
+| ---------------------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **① init → 生成 rule**       | `init` 类关键词（详见信号判定细则；"重建 <DOC>"强制重生成单个）                                | 初始化 rule（功能 1，直接全量 rebuild，无需 check 增量）                                                       |
+| **② 文档与代码对齐（默认）** | `/doc-arch-rules` 无 init 关键字（默认动作，含"检查一下/需要更新吗/看看有没有漂移"等只读询问） | 对齐流水线。缺失判定以文档架构（宪法 §3.1）`必选性`列为 SSOT；**不清晰时做二次分诊**（判定细则同决策树步骤 2） |
 
+> **结果② 轻量子模式（入口③）**：输入含 `更新globs` / `globs对齐` / `目录变动` / `rule没触发`（且无 init）→ 只跑功能 3 阶段 1 盘点 + 阶段 2 双向同步，跳过步骤 0 摸底与阶段 3-5。
 > 详细路由见下方「分诊决策树」与「信号判定细则」。
 
 ## 功能分诊（进入 skill 的第一件事）
 
-**自动判断是默认，问用户只是 fallback**（实在分不清才问）。路由：按是否含 `init` 关键字分流到两种结果。
+**自动判断是默认，问用户只是 fallback**（实在分不清才问）。路由：按 init / globs 关键字分流到两种结果（globs 关键字走结果② 的轻量子模式，见上表注）。
 
 ### 分诊决策树（两种结果）
 
@@ -53,6 +56,9 @@ description: >
 │    → 分诊结果①：生成/更新 rule（功能 1，元数据直接全量 rebuild）
 │    ├─ 项目无 .omo/rules/docs/ → 全量生成
 │    └─ 已有 rule → 直接全量 rebuild（"重建 <DOC>"可指定单个，默认全量；无需 check 增量）
+│
+├─ 无 init，但含 globs 关键字（更新globs / globs对齐 / 目录变动 / rule没触发）
+│    → 结果② 轻量子模式：入口③ globs 对齐——只跑功能 3 阶段 1 盘点 + 阶段 2 双向同步（跳过步骤 0 摸底与阶段 3-5），无变动给显式结论
 │
 └─ 无 init 关键字（默认：/doc-arch-rules 啥都不带，含只读询问）
      → 分诊结果②：文档与代码对齐
@@ -66,14 +72,15 @@ description: >
 
 ### 信号判定细则
 
-| 维度             | 判定                                                                                                                                    |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **init 关键字**  | `init` / `初始化` / `生成rule` / `生成文档规范` → 分诊结果①；"重建 <DOC>"（指定单个文档）→ 结果①强制重生成该 rule                       |
-| **对齐（默认）** | 无 init 关键字即分诊结果②（含只读询问"需要更新吗/检查一下/看看有没有漂移"——走步骤 0 只读摸底，不写文件；确认后才进入动手）              |
-| **二次分诊**     | 同决策树「步骤 2 · 文档与代码对齐」的二次分诊（必选缺失→初始化；按需缺失属正常；已有的 → 漂移修复）。以此区分"首次生成"与"对齐修复"     |
-| **安全默认**     | 结果①（rule 属元数据）直接全量 rebuild（无需 check 增量）；结果②（文档）走 check → update（不做无差别全量覆盖，动手前必须经过范围确认） |
-| **范围确认**     | 结果① update / 结果② 步骤 1/2 动手前把清单给用户看（更新哪些、跳过哪些、疑似 Bug 哪些），确认后动手；用户可在此拒绝，退回只读           |
-| **fallback**     | 带 init 关键字但又像在做别的 / 意图混合（如"更新 rule 然后检查漂移"）→ 问用户确认                                                       |
+| 维度             | 判定                                                                                                                                       |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **init 关键字**  | `init` / `初始化` / `生成rule` / `生成文档规范` → 分诊结果①；"重建 <DOC>"（指定单个文档）→ 结果①强制重生成该 rule                          |
+| **globs 关键字** | `更新globs` / `globs对齐` / `目录变动` / `rule没触发`（无 init）→ 结果② 轻量子模式 = 入口③ globs 对齐：只跑阶段 1+2，跳过步骤 0 与阶段 3-5 |
+| **对齐（默认）** | 无 init 关键字即分诊结果②（含只读询问"需要更新吗/检查一下/看看有没有漂移"——走步骤 0 只读摸底，不写文件；确认后才进入动手）                 |
+| **二次分诊**     | 同决策树「步骤 2 · 文档与代码对齐」的二次分诊（必选缺失→初始化；按需缺失属正常；已有的 → 漂移修复）。以此区分"首次生成"与"对齐修复"        |
+| **安全默认**     | 结果①（rule 属元数据）直接全量 rebuild（无需 check 增量）；结果②（文档）走 check → update（不做无差别全量覆盖，动手前必须经过范围确认）    |
+| **范围确认**     | 结果① update / 结果② 步骤 1/2 动手前把清单给用户看（更新哪些、跳过哪些、疑似 Bug 哪些），确认后动手；用户可在此拒绝，退回只读              |
+| **fallback**     | 带 init 关键字但又像在做别的 / 意图混合（如"更新 rule 然后检查漂移"）→ 问用户确认                                                          |
 
 > **两个检查维度正交**：功能 2 检测 **rule 版本级漂移**（rule vs skill/模板指纹——AI 随机性与模板变更）；功能 3 检测 **文档内容级漂移**（文档 vs 代码，走宪法 第5条 差异分诊）。默认流水线把两者串起来，用户一次调用即完成全部对齐。
 
@@ -89,55 +96,41 @@ description: >
 | **2. 以代码为准** | 代码是 SSOT（宪法 第1条） | 按代码改文档（遵守 rule，走 第5条 分诊，默认推荐）               |
 | **3. 逐条判断**   | 每条差异单独定            | 列清单让用户逐条选 1/2，**生成漂移清单跟踪文档**，边修边更新状态 |
 
-**选项 3 的跟踪文档机制（.omo/drift/ · 按文件一清单 · 宪法 第8条 固定格式可解析）**：
+**选项 3 的跟踪文档机制（.omo/drift/）**：机制与格式以宪法 §2.2 第8条为准（按文件一清单/默认记录不问处置/四列表头/状态枚举/即修即更/完成即 rm/禁止入库），skill 侧增量仅 3 点：
 
-- **位置**：按漂移文件各落一清单 `.omo/drift/<doc>.md`（如 `DOMAIN-MODEL.md`→`.omo/drift/DOMAIN-MODEL.md`；`docs/L2/FOO.md`→`.omo/drift/FOO.md`；与 `.omo/plans` 同级，不入 docs/，不提交即跟踪态）
-- **记录时机**：发现漂移即记（默认不问处置，不填以文档/以代码）；真正要解决时才必问 Gap 处置
-- **格式**（默认记录，固定可解析）：
-  ```markdown
-  ## Drift: <doc>（YYYY-MM-DD HH:mm 生成，来源：rule 指纹 + 代码漂移）
-
-  | #   | 位置                        | 差异（文档 vs 代码）                             | 状态    |
-  | --- | --------------------------- | ------------------------------------------------ | ------- |
-  | 1   | docs/L2/DOMAIN-MODEL.md:123 | 文档写「待规划业务域只含 OHS」vs 代码已建 Action | ☐待修复 |
-  ```
-  - `状态`：`☐待修复 → ◐修复中 → ☑已修复 → ☑已验证`（枚举固定，符号可选前缀）
-- **解决时扩展**：用户选 Gap 处置 3.逐条判断时，**补 `建议`/`判定` 列**（`建议`=AI 按 第5条 预判 1/2，`判定`=用户逐条 1/2，默认同建议），表头变为 `| # | 位置 | 差异 | 建议 | 判定 | 状态 |`
-- **更新时机**：每修复一条，**立即**更新该行 `状态`（不批量）；`--check-meta` / 漂移机检每完成一批，追加/更新对应行
-- **完成判定**：单文件全部行 `状态=☑已验证`（或用户确认"剩余忽略"），且 `grep -rn "§x" docs/` 对已删章节零残留（第6条）
-- **删除规则**：单文件判定通过后，**立即删除该 drift 文件**（如 `rm .omo/drift/DOMAIN-MODEL.md`，空目录一并 `rmdir`）；删除前可在报告中贴"已修复 N/M，最后一条 @ <commit>" 摘要。**禁止**将 drift 清单提交入库或长期保留——它是过程态跟踪文档，完成即清理。
-- **异常**：中途用户改口（如"剩余全按 2 处理"）→ 批量更新 `判定` 列，继续跟踪。
+- 标题行含「来源：rule 指纹 + 代码漂移」：`## Drift: <doc>（YYYY-MM-DD HH:mm 生成，来源：rule 指纹 + 代码漂移）`
+- `--check-meta` / 漂移机检每完成一批，追加/更新对应行
+- 完成判定叠加：`grep -rn "§x" docs/ .omo/rules/` 对已删章节零残留（第6条）
 
 ## 文件清单（模板 SSOT）
 
-源文件位于 `references/templates/`：**1 个全局 Rule 源（CONSTITUTION，无后缀）+ 21 个模板（.template 后缀，含 L2/deep-dives + L2/research + L3/integration-contracts + common/ADR 子目录）**。
+源文件位于 `references/templates/`：**1 个全局 Rule 源（CONSTITUTION，无后缀）+ 21 个模板（.template 后缀，含 L2/domain + L2/deep-dives + L2/research + L3/integration-contracts 子目录；ADR.template.md 为 common 根下文件，无子目录）**。
 
-| 层                       | 文件                                                                                     | 类型         | rule 输出                                                                                                                                                                    | 触发方式              |
-| ------------------------ | ---------------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
-| CONSTITUTION             | [CONSTITUTION](references/templates/CONSTITUTION.md)（无后缀）                           | 全局 Rule 源 | .omo/rules/docs/CONSTITUTION.md                                                                                                                                              | alwaysApply           |
-| L1                       | [README](references/templates/L1/README.template.md)                                     | 模板         | .omo/rules/docs/L1/README.md                                                                                                                                                 | globs（根 README.md） |
-| L1                       | [PRODUCT](references/templates/L1/PRODUCT.template.md)                                   | 模板         | .omo/rules/docs/L1/PRODUCT.md                                                                                                                                                | globs                 |
-| L1                       | [USER-STORY](references/templates/L1/USER-STORY.template.md)                             | 模板         | .omo/rules/docs/L1/USER-STORY.md                                                                                                                                             | globs                 |
-| L2                       | [APPLICATION-ARCHITECTURE](references/templates/L2/APPLICATION-ARCHITECTURE.template.md) | 模板         | .omo/rules/docs/L2/APPLICATION-ARCHITECTURE.md                                                                                                                               | globs                 |
-| L2                       | [DOMAIN-MODEL](references/templates/L2/DOMAIN-MODEL.template.md)                         | 模板         | .omo/rules/docs/L2/DOMAIN-MODEL.md                                                                                                                                           | globs                 |
-| L2                       | [DATA-ARCHITECTURE](references/templates/L2/DATA-ARCHITECTURE.template.md)               | 模板         | .omo/rules/docs/L2/DATA-ARCHITECTURE.md                                                                                                                                      | globs                 |
-| L2                       | [TECHNOLOGY-ARCHITECTURE](references/templates/L2/TECHNOLOGY-ARCHITECTURE.template.md)   | 模板         | .omo/rules/docs/L2/TECHNOLOGY-ARCHITECTURE.md                                                                                                                                | globs                 |
-| L2/deep-dives            | [INDEX](references/templates/L2/deep-dives/INDEX.template.md)                            | 模板         | .omo/rules/docs/L2/deep-dives/INDEX.md                                                                                                                                       | globs                 |
-| L2/deep-dives            | [DEEP-DIVE](references/templates/L2/deep-dives/DEEP-DIVE.template.md)                    | 模板         | .omo/rules/docs/L2/deep-dives/DEEP-DIVE.md（目录级通配，globs: docs/L2/deep-dives/*.md 覆盖目录下多文档，物理单 rule）                                                       | globs                 |
-| L2/research              | [RESEARCH](references/templates/L2/research/RESEARCH.template.md)                        | 模板         | .omo/rules/docs/L2/research/RESEARCH.md（目录级通配，globs: docs/L2/research/*.md 覆盖目录下多文档，物理单 rule，独立成篇无索引；无 INDEX，区别于 deep-dives 的 INDEX 管理） | globs                 |
-| L3                       | [API](references/templates/L3/API.template.md)                                           | 模板         | .omo/rules/docs/L3/API.md                                                                                                                                                    | globs                 |
-| L3                       | [INTEGRATION](references/templates/L3/INTEGRATION.template.md)                           | 模板         | .omo/rules/docs/L3/INTEGRATION.md（说明书模式，globs: docs/L3/INTEGRATION.md + docs/L3/integration-contracts/**）                                                            | globs                 |
-| L3/integration-contracts | [CONTRACT](references/templates/L3/integration-contracts/CONTRACT.template.md)           | 模板         | .omo/rules/docs/L3/integration-contracts/CONTRACT.md（目录级通配，globs: docs/L3/integration-contracts/** 覆盖目录下多契约文件，物理单 rule，一服务一契约，字段 SSOT）       | globs                 |
-| L4                       | [DEPLOYMENT](references/templates/L4/DEPLOYMENT.template.md)                             | 模板         | .omo/rules/docs/L4/DEPLOYMENT.md（globs 含 docs/L4/deployment/README.md，部署资产登记）                                                                                      | globs                 |
-| L4                       | [TEST-PLAN](references/templates/L4/TEST-PLAN.template.md)                               | 模板         | .omo/rules/docs/L4/TEST-PLAN.md                                                                                                                                              | globs                 |
-| common                   | [CODE-GUIDE](references/templates/common/CODE-GUIDE.template.md)                         | 模板         | .omo/rules/docs/common/CODE-GUIDE.md                                                                                                                                         | globs                 |
-| common                   | [DATA-DICTIONARY](references/templates/common/DATA-DICTIONARY.template.md)               | 模板         | .omo/rules/docs/common/DATA-DICTIONARY.md（字段/枚举/事件级 SSOT）                                                                                                           | globs                 |
-| common                   | [SECURITY](references/templates/common/SECURITY.template.md)                             | 模板         | .omo/rules/docs/common/SECURITY.md（贯穿所有层，密钥分层 SSOT 在 §6）                                                                                                        | globs                 |
-| common                   | [GLOSSARY](references/templates/common/GLOSSARY.template.md)                             | 模板         | .omo/rules/docs/common/GLOSSARY.md                                                                                                                                           | globs                 |
-| common                   | [STRUCTURE](references/templates/common/STRUCTURE.template.md)                           | 模板         | .omo/rules/docs/common/STRUCTURE.md                                                                                                                                          | globs                 |
-| common                   | [ADR](references/templates/common/ADR.template.md)                                       | 模板         | .omo/rules/docs/common/ADR.md（目录级通配，globs: docs/adr/*.md 覆盖目录下多文档，物理单 rule）                                                                              | globs                 |
+| 层                       | 文件                                                                                     | 类型           | rule 输出                                                                                                                                                                                               | 触发方式              |
+| ------------------------ | ---------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| CONSTITUTION             | [CONSTITUTION](references/templates/CONSTITUTION.md)（无后缀）                           | 全局 Rule 源   | .omo/rules/docs/CONSTITUTION.md                                                                                                                                                                         | alwaysApply           |
+| L1                       | [README](references/templates/L1/README.template.md)                                     | 模板           | .omo/rules/docs/L1/README.md                                                                                                                                                                            | globs（根 README.md） |
+| L1                       | [PRODUCT](references/templates/L1/PRODUCT.template.md)                                   | 模板           | .omo/rules/docs/L1/PRODUCT.md                                                                                                                                                                           | globs                 |
+| L1                       | [USER-STORY](references/templates/L1/USER-STORY.template.md)                             | 模板           | .omo/rules/docs/L1/USER-STORY.md                                                                                                                                                                        | globs                 |
+| L2                       | [APPLICATION-ARCHITECTURE](references/templates/L2/APPLICATION-ARCHITECTURE.template.md) | 模板           | .omo/rules/docs/L2/APPLICATION-ARCHITECTURE.md                                                                                                                                                          | globs                 |
+| L2/domain                | [DOMAIN-MODEL](references/templates/L2/domain/DOMAIN-MODEL.template.md)                  | 模板（总文档） | .omo/rules/docs/L2/domain/DOMAIN-MODEL.md（globs: docs/L2/domain/DOMAIN-MODEL.md，总文档兼域文档索引，domain/ 不设 INDEX.md——宪法 §3.2 总文档例外）                                                     | globs                 |
+| L2/domain                | [DOMAIN](references/templates/L2/domain/DOMAIN.template.md)                              | 模板（域文档） | .omo/rules/docs/L2/domain/DOMAIN.md（目录级通配，globs: docs/L2/domain/*.md 覆盖每业务域一文档；命中 DOMAIN-MODEL.md 由总文档模板处理，本 rule 跳过）                                                   | globs                 |
+| L2                       | [DATA-ARCHITECTURE](references/templates/L2/DATA-ARCHITECTURE.template.md)               | 模板           | .omo/rules/docs/L2/DATA-ARCHITECTURE.md                                                                                                                                                                 | globs                 |
+| L2                       | [TECHNOLOGY-ARCHITECTURE](references/templates/L2/TECHNOLOGY-ARCHITECTURE.template.md)   | 模板           | .omo/rules/docs/L2/TECHNOLOGY-ARCHITECTURE.md                                                                                                                                                           | globs                 |
+| L2/deep-dives            | [DEEP-DIVE](references/templates/L2/deep-dives/DEEP-DIVE.template.md)                    | 模板           | .omo/rules/docs/L2/deep-dives/DEEP-DIVE.md（目录级通配，globs: docs/L2/deep-dives/*.md 覆盖目录下多文档，物理单 rule；命中 INDEX.md 按本模板「索引基准」节维护）                                        | globs                 |
+| L2/research              | [RESEARCH](references/templates/L2/research/RESEARCH.template.md)                        | 模板           | .omo/rules/docs/L2/research/RESEARCH.md（目录级通配，globs: docs/L2/research/*.md 覆盖目录下多文档，物理单 rule；命中 INDEX.md 按本模板「索引基准」节维护）                                             | globs                 |
+| L3                       | [API](references/templates/L3/API.template.md)                                           | 模板           | .omo/rules/docs/L3/API.md                                                                                                                                                                               | globs                 |
+| L3                       | [INTEGRATION](references/templates/L3/INTEGRATION.template.md)                           | 模板           | .omo/rules/docs/L3/INTEGRATION.md（说明书模式，globs: docs/L3/INTEGRATION.md + docs/L3/integration-contracts/**）                                                                                       | globs                 |
+| L3/integration-contracts | [CONTRACT](references/templates/L3/integration-contracts/CONTRACT.template.md)           | 模板           | .omo/rules/docs/L3/integration-contracts/CONTRACT.md（目录级通配，globs: docs/L3/integration-contracts/** 覆盖目录下多契约文件，物理单 rule，一服务一契约，字段 SSOT；命中 INDEX.md 由 INDEX 模板处理） | globs                 |
+| L3/integration-contracts | [INDEX](references/templates/L3/integration-contracts/INDEX.template.md)                 | 模板           | .omo/rules/docs/L3/integration-contracts/INDEX.md（目录唯一入口：文件清单，宪法 §3.2 目录索引约定）                                                                                                     | globs                 |
+| L4                       | [DEPLOYMENT](references/templates/L4/DEPLOYMENT.template.md)                             | 模板           | .omo/rules/docs/L4/DEPLOYMENT.md（globs: docs/L4/DEPLOYMENT.md；部署资产登记于 §7，文件本体不移动）                                                                                                     | globs                 |
+| L4                       | [TEST-PLAN](references/templates/L4/TEST-PLAN.template.md)                               | 模板           | .omo/rules/docs/L4/TEST-PLAN.md（总文档模式，globs: docs/L4/TEST-PLAN.md + docs/L4/testcases/*.md）                                                                                                     | globs                 |
+| common                   | [CODE-GUIDE](references/templates/common/CODE-GUIDE.template.md)                         | 模板           | .omo/rules/docs/common/CODE-GUIDE.md                                                                                                                                                                    | globs                 |
+| common                   | [SECURITY](references/templates/common/SECURITY.template.md)                             | 模板           | .omo/rules/docs/common/SECURITY.md（贯穿所有层，密钥分层 SSOT 在 §6）                                                                                                                                   | globs                 |
+| common                   | [GLOSSARY](references/templates/common/GLOSSARY.template.md)                             | 模板           | .omo/rules/docs/common/GLOSSARY.md                                                                                                                                                                      | globs                 |
+| common                   | [STRUCTURE](references/templates/common/STRUCTURE.template.md)                           | 模板           | .omo/rules/docs/common/STRUCTURE.md                                                                                                                                                                     | globs                 |
+| common                   | [ADR](references/templates/common/ADR.template.md)                                       | 模板           | .omo/rules/docs/common/ADR.md（目录级通配，globs: docs/adr/*.md 覆盖目录下多文档，物理单 rule）                                                                                                         | globs                 |
 
-> **DATA-ARCHITECTURE 已合并**进 DOMAIN-MODEL（§5 数据设计），不生成 rule。
 > **模板 frontmatter 的 `generation` 块**（tools/related/ask_user/flow/notes/checks）是 rule 对应目标文档（`docs/**` 下由 `globs` 指定的路径）的生成提示词，仅模板持有——生成 rule 时**内联翻译**进正文四节，不保留 YAML 形态。
 
 ## 功能 1：生成 rule（执行流程：AI 主流程）
@@ -158,10 +151,20 @@ description: >
 
 ### 步骤 3：落盘校验
 
-- 批量写入 `.omo/rules/docs/<路径>`（CONSTITUTION.md 在根；其余在 `<层>/<DOC>.md`，含 `L2/deep-dives/<name>.md` + `L2/research/<name>.md`）
-- **rule 落盘校验**（本步骤对象）：frontmatter 中 `description`/`alwaysApply` 与模板 omo 一致，`globs` 含模板基线全部条目（允许含功能 3 追加的扩展条目，`--check` 只判基线子集、不禁扩展）；rule 内不含 `generation:` YAML 块；「模板」章节正文与模板正文一致——用 `--check <rule> <模板>` 逐 rule 复核（批量用 `--all` 解析全部模板拿清单后循环调用）
-- **globs 基线（初始化不可改）**：功能 1 初始化时 `globs` 逐字抄模板基线，AI 不得删除/改写基线条目；项目演进后的扩展只在功能 3 对齐时追加（见功能 3 阶段 2），不在本功能动手
-- **宿主文档单链校验（顺带，属功能 3 机检对象，非 rule 校验）**：生成 rule 后顺带检查宿主项目 `docs/` 文档的单链一致性——L2 三总览（APPLICATION-ARCHITECTURE / DOMAIN-MODEL / TECHNOLOGY-ARCHITECTURE = 3 个文件）各节有且仅有一处 `详见 deep-dives/`（应为 3）；仅 2 份 L2 总览（TECHNOLOGY-ARCHITECTURE + APPLICATION-ARCHITECTURE）引用 research，各一处 `详见 research/`（应为 2）。示例：`grep -rn "详见 deep-dives/" docs/L2/*.md | wc -l` 应为 3；`grep -rn "详见 research/" docs/L2/*.md | wc -l` 应为 2
+- 批量写入 `.omo/rules/docs/<路径>`（CONSTITUTION.md 在根；其余在 `<层>/<DOC>.md`，含 `L2/deep-dives/DEEP-DIVE.md` + `L2/research/RESEARCH.md`）
+- **rule 落盘校验**（本步骤对象）：frontmatter 中 `description`/`alwaysApply` 与模板 omo 一致，`globs` 含模板基线全部条目（允许含 globs 目录同步追加的扩展条目，`--check` 只判基线子集、不禁扩展）；rule 内不含 `generation:` YAML 块；「模板」章节正文与模板正文一致——用 `--check <rule> <模板>` 逐 rule 复核（批量用 `--all` 解析全部模板拿清单后循环调用）
+- **globs 基线（组装期不可改）**：生成 rule 时 `globs` 逐字抄模板基线，AI 不得删除/改写基线条目；扩展条目一律不在组装时手工拼——统一走**步骤 4 globs 目录同步**（生成/更新完成后必做，功能 2 与功能 3 同流程）
+- **宿主文档引用方向校验（顺带，属功能 3 机检对象，非 rule 校验）**：生成 rule 后顺带检查宿主项目 `docs/` 的引用方向——**deep-dives 单向**：L1-L4 任何文档不得 `详见 deep-dives/`（发现入口唯一为 deep-dives/INDEX.md，宪法 §3.2），`grep -rnE "详见 (docs/L2/)?deep-dives/" docs/ --include="*.md" | grep -v "^docs/L2/deep-dives/" | wc -l` 应为 0；**research**：L2 总览（APP/DATA/TECH）引用 research 每文件至多一处（3 份总览各至多一处），逐文件计数 `grep -cE "(docs/L2/)?research/" docs/L2/*.md`（输出 `文件:计数`）每文件 ≤1
+
+### 步骤 4：后置必做 · globs 目录同步
+
+生成收尾必做一次（空项目也不例外，显式给结论）：
+
+- `ls` 实际目录（排除 `.git/node_modules/dist/build/.venv/__pycache__`）——项目已有 STRUCTURE 文档时以其 §1 为对比基线，没有就直接以 `ls` 现状为准
+- **空项目**（无任何内容目录）：显式输出"项目为空，globs 保持模板基线"，结束
+- **有目录**：读 [references/globs.md](references/globs.md)，按功能 3 阶段 2 **双向同步**流程产出提案（追加项 + 清理项）交用户确认，确认后写 frontmatter 并 `--check` 复核
+
+> 功能 2 update/rebuild 后置的 globs 目录同步、功能 3 阶段 2、入口③ 与本步骤同流程：目录现状为准（不限代码目录），提案必含追加 + 清理两类，基线永不参与清理。
 
 ---
 
@@ -180,10 +183,10 @@ description: >
 - **对比（`--check-meta`，纯字段比对，无 AI 参与、无随机性）**：逐 rule 条目——缺失 → 需更新；implHash 变 → 需更新（影响全部）；templateHash 变 → 需更新；均同 → **最新（即使 version 标记不同，内容未变即跳过重生成）**
 - **检测边界（指纹机制只回答"skill/模板是否变了"，不回答"组装质量"与"手工修改"）**：
   - **用户手工修改 rule**（改触发条件措辞/删节）→ 指纹不变，check 判定仍为最新、不会自动覆盖——**这是设计意图（防误覆盖）**；如需强制重生成请显式说"重建 <DOC>"
-  - **组装质量**（AI 组装漏 generation 条目/曲解字段）→ 指纹不变；落盘 `--check` 只校验 frontmatter/无 generation YAML/模板章节，**四节正文信息完整性无机器闭环**——依赖落盘时 AI 自检（见功能 1 步骤 2 硬约束）
+  - **组装质量**（AI 组装漏 generation 条目/曲解字段）→ 指纹不变；落盘 `--check` 只校验 frontmatter/无 generation YAML/模板章节，**tools/related/ask_user/flow 节信息完整性无机器闭环（notes/checks 已有条目数下限校验）**——依赖落盘时 AI 自检（见功能 1 步骤 2 硬约束）
 - **globs 扩展豁免与合并**：`--check-meta` 只比对 `version`/`implHash`/`templateHash`，**不比对 `globs` 内容**——功能 3 追加的扩展条目不触发"需更新"；`update`/`rebuild` 重生成某 rule 时必须做合并（基线以模板为准重写 + 仍存在于磁盘的扩展条目做并集保留），禁止用纯模板基线覆盖丢扩展；"重建 <DOC>"为显式重置，丢扩展并重写项目 meta 对应条目
 
-### 三种内部模式（对用户只暴露入口；check 是默认第一步）
+### 三种内部模式 + 重建单个变体（对用户只暴露入口；check 是默认第一步）
 
 | 模式                                  | 触发                    | 动作                                                                                                                                       |
 | ------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -191,6 +194,8 @@ description: >
 | **update**（按需更新）                | 用户确认更新            | 只重新生成 check 判定「需更新」的 rule（按功能 1 流程），**「最新」的绝不覆盖**；每更新一个，用 `--update-project-meta` 刷新项目 meta 条目 |
 | **rebuild**（全量重建）               | 用户显式要求全量重建    | 批量重新生成全部 rule 并重建项目 meta（首版落地或用户明确要求时才用）                                                                      |
 | **重建单个**（强制重生成某 rule）     | 用户显式说"重建 <DOC>"  | 忽略指纹直接按模板重生成该 rule（用于用户手工改坏/想重置时），重写项目 meta 对应条目                                                       |
+
+**后置必做 · globs 目录同步（本功能任何模式跑完都要做）**：`ls` 实际目录（排除 `.git/node_modules/dist/build/.venv/__pycache__`）vs `docs/common/STRUCTURE.md` §1 目录树（项目无 STRUCTURE 文档时以 `ls` 现状为准）——**有变动**即执行功能 3 阶段 2 双向同步流程（细则见阶段 2：读 [references/globs.md](references/globs.md) → 目录→文档映射 → 提案交用户确认 → 写 frontmatter → `--check` 复核）；**无变动**也必须显式输出"目录无变动，globs 无需变更"。禁止只更新 rule 内容而静默跳过本检查——rule 指纹最新但 globs 不含任何代码路径，等于只做了一半。
 
 ### 脚本命令
 
@@ -204,24 +209,28 @@ description: >
 
 > **定位**：宪法 §2.2 差异分诊（第5条）的 skill 化执行器——规则基础全部已存在（第1条 代码是唯一事实 / 第5条 四步分诊 / 第4条 主动修复 / 第7条 文档与代码同交付），本功能把它们变成**可重复调用的系统化流程**。**以代码为准修复文档，修复时遵守对应 rule**（等价于按 rule 重新生成受影响部分）。
 
-**触发**：用户手动要求——"检查文档和代码有没有漂移"（疑问 → 分诊② 只读机检）/ "以代码为准修文档" / "docs 和代码对齐"（命令 → 分诊② 对齐流水线步骤 2）。
+**触发**：用户手动要求——"检查文档和代码有没有漂移"（疑问 → 分诊② 只读机检）/ "以代码为准修文档" / "docs 和代码对齐"（命令 → 分诊② 对齐流水线步骤 2）/ "更新globs" / "globs对齐" / "目录变动" / "rule没触发"（轻量 → 只跑阶段 1 盘点 + 阶段 2 globs 自适应，跳过阶段 3-5）。
 
 ### 五阶段流程
 
 **阶段 1 · 盘点（全量扫描，不抽样）**：① 全仓目录漫游：`ls -R`（排除 `.git/node_modules/dist/build/.venv/__pycache__`），产出实际目录树 + 各顶层目录文件数；② 读 `.omo/rules/docs/` 全部 rule 的 globs → 文档清单；③ 以实际目录树为准判定每个目录"干什么"（STRUCTURE §2 只做职责解释，现状以 `ls` 为准），STRUCTURE 文档与实际不一致即记漂移；④ 每份文档标注机检点（见下表）+ 其代码扫描范围（阶段 2 映射）。本阶段输出必须含"实际顶层目录清单 + 文件数"，缺此即未完成，不得进入阶段 3。
 
-**阶段 2 · globs 自适应（代码→文档反向触发，AI 按项目现状改扩展条目）**：先读 skill [globs 语法与用法](references/globs.md)，再读 `docs/common/STRUCTURE.md` §1 目录树 + `ls` 实际目录，逐目录判定"它是干什么的"（职责见 STRUCTURE §2），产出代码→文档映射（目录/文件模式 → 对应 rule）；再逐 rule 对比"基线 globs + 已有扩展"与映射缺口，提出追加项（仅追加真实存在的路径，模式收敛到最小可用通配，如 `backend/app/models/**` 优于 `backend/**`）；**基线条目只增不减**（缺基线即异常，先补基线再谈扩展）；扩展清单随范围确认交用户确认，确认后写 rule frontmatter `globs` 并用 `--check <rule> <模板>` 复核基线子集通过。
+**阶段 2 · globs 自适应（目录现状 → globs 扩展，AI 按项目现状增删扩展条目）**：先读 skill [globs 语法与用法](references/globs.md)，再读 `docs/common/STRUCTURE.md` §1 目录树（无该文档则跳过，以 `ls` 现状为准）+ `ls` 实际目录，逐目录判定"它是干什么的"（职责见 STRUCTURE §2；**任何目录都算，不限代码**——纯文档目录/资源目录同样进入映射），产出目录→文档映射（目录/文件模式 → 对应 rule）；再逐 rule 对账"基线 globs + 已有扩展" vs 目录现状，产出**双向同步提案**——追加/清理/改名成对/基线永不清理/合并保留规则见 [references/globs.md](references/globs.md) §5；提案交用户确认，确认后写 rule frontmatter `globs` 并用 `--check <rule> <模板>` 复核基线子集通过。
+
+**本阶段为必做门槛：无论目录是否变动都必须执行并给出显式结论**——输出必须含三件套：① **目录变动结论**（`ls` 实际 vs STRUCTURE §1，无变动也要写明"目录无变动"）；② **逐 rule globs 对账表**（基线 + 已有扩展 vs 目录映射：缺口 = 待追加，死条目 = 待清理）；③ **双向同步提案（追加 + 清理）或"无需变更"结论**。三者缺一即未完成，不得进入阶段 3；禁止以"目录看起来没变"为由静默跳过本阶段。
 
 **阶段 3 · 机检**（AI 用 grep/ls/diff 按清单执行；一期无独立脚本）：
 
-| 机检点                                                 | 方法                         |
-| ------------------------------------------------------ | ---------------------------- |
-| 文档内 File:Line 引用有效性                            | 文件存在 + grep 符号存在     |
-| STRUCTURE 目录树 vs 实际目录                           | diff 目录树与 `ls -R`        |
-| openapi.yaml 端点数 vs API.md 头注释计数 vs 代码路由数 | 三方计数对比                 |
-| 交叉引用死链（文档 A 引 文档 B §X，B 无该节）          | grep 目标文档章节标题        |
-| PRODUCT 能力行 ↔ DOMAIN Action 清单双向对齐            | 交叉 grep 能力名/Action 名   |
-| DOMAIN 签名草图 vs 代码函数签名                        | grep `def`/`func` 匹配签名表 |
+| 机检点                                                                                        | 方法                                                                                                                        |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| 文档内 File:Line 引用有效性                                                                   | 文件存在 + grep 符号存在                                                                                                    |
+| STRUCTURE 目录树 vs 实际目录                                                                  | diff 目录树与 `ls -R`                                                                                                       |
+| openapi.yaml 尾注释计数 vs API.md §1 端点计数列 vs 代码路由数                                 | 三方计数对比                                                                                                                |
+| 交叉引用死链（文档 A 引 文档 B §X，B 无该节）                                                 | grep 目标文档章节标题                                                                                                       |
+| 实例头部原则块/建模方法论残留（「> 【原则】」「决策速查」「领域事件原则」「Q1-Q6」）          | grep -rnE -e '^> 【原则】' -e '决策速查' -e '领域事件原则' -e 'Q1-Q6' docs/ 应为 0                                          |
+| 目录归属口诀例外（STRUCTURE infra/integration 归属判别口诀属合法读者内容，不进全 docs/ 检查） | 建模方法论口诀只在域文档禁：docs/L2/domain/ 下域文档另查 `grep -rnE -e '对象类型判据' -e '判断口诀' docs/L2/domain/` 应为 0 |
+| PRODUCT 能力行 ↔ DOMAIN Action 清单双向对齐                                                   | 交叉 grep 能力名/Action 名                                                                                                  |
+| DOMAIN 方法签名 vs 代码函数签名                                                               | grep `def`/`func` 匹配 §3 领域操作方法详情竖表「方法签名」行                                                                |
 
 **阶段 4 · AI 语义核对（逐文档全读，不抽样）**：对每份文档，按其 rule globs（含阶段 2 扩展）列出本次已读代码文件清单，逐文件读后对照文档陈述（行为/规则/流程/约束），差异逐条记"文件:位置 / 文档陈述 vs 代码事实"；禁止抽样（只读 1-2 个代表文件即违规），禁止无 `File:Line` 佐证的"一致/无漂移"结论；输出必须含每文档"已读 N 个文件" + 文件清单，否则视为没读。
 
@@ -230,7 +239,7 @@ description: >
 - ① **先判是否为 Bug**：代码偏离文档真实意图（文档真实反映用户需求，代码写错）→ **停下问用户裁决**：用户认可才修代码；不认可则按文档为准改文档；非 Bug 才走 ②③④
 - ② 自动化优先（机检可判定的先自动处理；无自动化工具时跳过）
 - ③ 默认**以代码为准**修文档（按对应 rule 重新生成受影响节，修后跑该 rule 的 checks 验证）
-- ④ 漂移定级（低/中/高，定级决定是否单列跟踪，见宪法 第5条）
+- ④ 漂移定级：严重（影响 API 契约/用户故事验收）/轻微——严重优先修、轻微顺手修；清单一律按宪法 第8条默认记录
 
 **输出报告**：漂移清单（文件:位置 / 差异 / 判定：漂移或疑似 Bug / 处置：已修或待用户裁决）。
 
@@ -251,27 +260,27 @@ node <skill>/scripts/parse-template.mjs --check-meta <项目meta路径>       # 
 node <skill>/scripts/parse-template.mjs --update-project-meta <项目meta> <DOC> <version> <implHash> <templateHash>  # 写项目 meta 单条目（rule 落盘后用）
 ```
 
-> `<skill>` 为 skill 实际安装路径（全局 `~/.config/opencode/skills/doc-arch-rules` 或项目级 `.opencode/skills/doc-arch-rules`），可先探测：
+> `<skill>` 为 skill 实际安装路径（全局 `~/.config/opencode/skills/doc-arch-rules` 或 `~/.agents/skills/doc-arch-rules`，项目级 `.opencode/skills/doc-arch-rules`），可先探测：
 
 ```bash
-skill=$(ls -d ~/.config/opencode/skills/doc-arch-rules .opencode/skills/doc-arch-rules 2>/dev/null | head -1)  # 探测 skill 实际安装路径，供 <skill> 占位使用
+skill=$(ls -d ~/.config/opencode/skills/doc-arch-rules ~/.agents/skills/doc-arch-rules .opencode/skills/doc-arch-rules 2>/dev/null | head -1)  # 探测 skill 实际安装路径，供 <skill> 占位使用
 test -n "$skill" || echo "未找到 skill（未安装或路径不符，请手动指定 <skill>）"
 ```
 
 ## 硬性要求
 
 - **SSOT**：模板是 rule 的唯一来源；`references/templates/` 目录结构 = `.omo/rules/docs/` 目录结构
-- **globs 两阶段生命周期**：初始化（功能 1）基线逐字抄、AI 不得改；演进（功能 3 阶段 2）AI 按 STRUCTURE 目录职责追加扩展、基线只增不减；`--check` 只验基线子集，`--check-meta` 不比 globs 内容，`update`/`rebuild` 合并保留有效扩展；语法与匹配语义见 [globs 语法与用法](references/globs.md)
+- **globs 两阶段生命周期**：初始化（功能 1）基线逐字抄、AI 不得改；演进（功能 3 阶段 2，含功能 1 步骤 4 / 功能 2 update/rebuild 后置必做目录同步）AI 按 STRUCTURE 目录职责双向同步扩展——不变量：基线只增不减永不清理、扩展随磁盘现状追加与清理、无论有无变动必须显式给结论；追加/清理/改名成对/合并保留/`--check` 基线子集校验细则与语法匹配语义见 [globs 语法与用法](references/globs.md) §3/§5-§6
 - **rule 内禁止 YAML generation 原始块**：见 [组装规则（硬约束）](references/assembly.md)；generation 信息一律内联翻译为正文四节，不保留 YAML 形态
 - **引用规范**：本 skill 内部引用一律用相对路径 + Markdown 链接（`references/templates/...`），禁止 `@path`、禁止硬编码绝对路径、禁止 `./xxx` 依赖 cwd
 - **联动**：rule 触发后 AI 更新文档时按 `related` 同步关联文档；本 skill 保证 rule 正确携带 `related`；跨层引用单向向下，下层不链回上层
 - **章节重排必须重编号连续 + 批量同步引用**（rule 触发后重构文档时生效，宪法 第6条 执行细则）：重排/删除章节后**禁止保留旧章节号跳号**（如 3.3 跳 3.6）——必须重编号连续，并用 grep 批量找出所有 `§X` 引用（含下游文档/rule/deep-dives/TEST-PLAN）同步更新；**禁止留「已迁移/已删除至 X」正文占位**（违反 第6条 当前态——需保留导航时用不渲染的 HTML 注释 `<!-- ... -->`）；`.omo/plans` 与 `.omo/evidence` 属历史记录不追溯；完成判定加「全仓无指向已删章节的 §x 引用」
 - **内容收拢后原横切节必须删表改引用（第2条）**：把内容收进各域/各节后，原横切节（如全局事件清单）**禁止名义保留整表副本**——必须删表改为「各域见 §X.X」引用，否则与域内表重复违反 SSOT
-- **图规范**（rule 内容规范，rule 触发后生效）：文档中的图按模板要求用 D2 / Mermaid / ASCII，绘制规范见 CONSTITUTION §3.2
+- **图规范**（rule 内容规范，rule 触发后生效）：文档中的图按模板要求用 D2 / Mermaid / ASCII，绘制规范见 [references/diagram-spec.md](references/diagram-spec.md)（rule 图规范条款指向该文件）
 
 ## 错误处理
 
-- **模板缺失**：若用户要的 rule 不在清单（如 DATA-ARCHITECTURE），说明该模板已合并或不存在，不臆造；CONSTITUTION 无模板属正常（全局 rule 即宪法全文）
+- **模板缺失**：若用户要的 rule 不在清单（如 `FOO-BAR` 这类清单外名称），说明该模板已合并或不存在，不臆造；CONSTITUTION 无模板属正常（全局 rule 即宪法全文）
 - **rule 未触发**：检查 `.omo/rules/docs/<DOC>.md` 的 globs 是否匹配实际文档路径；确认 `.omo/` 目录存在
 - **rule 与模板不一致**：按模板重新生成，覆盖旧 rule
 - **skill meta 不存在**：先执行 `--gen-meta` 生成（功能 2 的前提）

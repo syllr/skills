@@ -14,7 +14,7 @@
 ```
 skills/
 ├── c4-container-diagram/ # 画 C4 Container Diagram skill：D2 实现 + references/（20 官方文档 + diagram-review 自研 + README 清单）
-├── doc-arch-rules/   # 文档架构规范 + omo rule 生成：references/（13 文档模板 + 14 rule 模板[CONSTITUTION rule 即宪法] + README 清单）
+├── doc-arch-rules/   # 文档架构规范 + omo rule 生成：references/（1 宪法源 + 21 文档模板[含 integration-contracts 目录 INDEX 模板；deep-dives/research 索引由主模板「索引基准」节承载] + assembly/diagram-spec/globs 规范；rule 由模板 generation 元数据生成）
 ├── gitee-comments/  # Gitee 提交评审评论 skill（单 SKILL.md）
 ├── remote-shell/    # SSH 远程执行 skill（单 SKILL.md）
 ├── score-prompt/    # prompt 质量评分 skill（单 SKILL.md）
@@ -26,14 +26,14 @@ README.md            # 面向用户的安装/技能表
 
 ## WHERE TO LOOK
 
-| 任务                         | 位置                                      | 说明                                                                                                                                            |
-| ---------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| 查看全部 skill               | `skills/`                                 | 每个子目录一个 skill                                                                                                                            |
-| 新 skill 的模板与格式规范    | `skills/skill-creator/references/`        | 含 guide / path-resolution / skill-md-format / directory-structure / script-language-guide                                                      |
-| 官方文档本地化范例           | `skills/c4-container-diagram/references/` | 20 个官方文档页 + 自研 diagram-review.md + README 清单（共 22 个 .md）                                                                          |
-| 文档架构模板 + omo rule 生成 | `skills/doc-arch-rules/references/`       | 13 个文档模板（templates/ 按 L1-L4+common 分层，CONSTITUTION 无模板）+ 14 个 rule 生成模板（rules/，CONSTITUTION rule 即宪法全文）+ README 清单 |
-| 创建新 skill                 | `npx skills init skills/<name>`           | 或读 skill-creator 流程                                                                                                                         |
-| 安装到 Agent（用户自执行）   | 见 README.md（`npx skills add ...`）      | ⚠️ 本项目只管创建/优化 skill，安装到 opencode 等 Agent 由用户自行执行，AI 不代装                                                                |
+| 任务                         | 位置                                      | 说明                                                                                                                                                                                                                                 |
+| ---------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 查看全部 skill               | `skills/`                                 | 每个子目录一个 skill                                                                                                                                                                                                                 |
+| 新 skill 的模板与格式规范    | `skills/skill-creator/references/`        | 含 guide / path-resolution / skill-md-format / directory-structure / script-language-guide                                                                                                                                           |
+| 官方文档本地化范例           | `skills/c4-container-diagram/references/` | 20 个官方文档页 + 自研 diagram-review.md + README 清单（共 22 个 .md）                                                                                                                                                               |
+| 文档架构模板 + omo rule 生成 | `skills/doc-arch-rules/references/`       | 1 个宪法源（CONSTITUTION.md）+ 21 个文档模板（templates/ 按 L0-L4+common 分层，含 integration-contracts 目录 INDEX 模板，deep-dives/research 索引由 DEEP-DIVE/RESEARCH 主模板「索引基准」节承载；rule 由模板 generation 元数据生成） |
+| 创建新 skill                 | `npx skills init skills/<name>`           | 或读 skill-creator 流程                                                                                                                                                                                                              |
+| 安装到 Agent（用户自执行）   | 见 README.md（`npx skills add ...`）      | ⚠️ 本项目只管创建/优化 skill，安装到 opencode 等 Agent 由用户自行执行，AI 不代装                                                                                                                                                     |
 
 ## SKILL 引用规范（本仓库核心约定）
 

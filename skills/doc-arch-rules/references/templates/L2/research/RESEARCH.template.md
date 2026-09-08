@@ -2,7 +2,7 @@
 title: RESEARCH — 通用调研模板
 doc_type: template
 layer: L2
-description: L2 架构层 通用调研的更新规范——新建 docs/L2/research/<name>.md 时触发，按模板 generation 元数据生成或更新该文档
+description: L2 架构层 通用调研的更新规范——新建 docs/L2/research/<name>.md 时触发（目录索引 INDEX.md 亦由本模板管理），按模板 generation 元数据生成或更新该文档
 globs:
   - "docs/L2/research/*.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
@@ -16,8 +16,9 @@ generation:
   ask_user:
     - 候选 / 维度不足 / 验证缺失时问用户
   flow: # 生成流程
+    - "**INDEX.md 判别**：globs 命中 `INDEX.md` 时，按本模板「索引基准」节维护（极简文件清单表：文件 | 说明，宪法 §3.2 目录索引约定），不生成 6 章骨架正文"
     - 扫描（自主）：候选官网 / 对比维度 + TECHNOLOGY 结论 + 目标文档
-    - 按 6+1 章生成（§1-6骨架+§7导航不计入校验）
+    - 按 6 章骨架生成（§1-6）
     - 校验：对比表与 ADR 链
   notes: # 生成注意点（怎么生成）
     - 对比表候选≥2，维度≥3（功能/性能/成本/许可证/生态）；单候选但含多维度验证（如环境预检/部署验证）亦可单列，属技术验证类调研
@@ -27,8 +28,8 @@ generation:
     - 风险合规：评估许可证/数据/vendor lock-in，填§5表并问用户合规缺口
     - 推荐链 ADR；正文不写文档演进历史（合并/改名/编号沿用等归 git log）
   checks: # 生成后反向 check
-    - "6章骨架齐全（§1-6）"
-    - "对比表候选≥2 或单候选多维度验证 / 维度≥3"
+    - "6章骨架齐全（§1-6；小体量豁免时 §4/§5 可合并为一章）"
+    - "对比表（候选≥2 且 维度≥3；单候选+多维度验证例外）"
     - "POC 存在"
     - "风险合规齐全"
     - "与 TECHNOLOGY 单链正确"
@@ -38,8 +39,8 @@ generation:
 
 > 本文档是「<项目名>」的 **RESEARCH（通用调研模板）**——L2 架构层的选型/对比/技术验证类调研文档（含内部 POC 与部署验证，第三方/自建不限）。
 > 【模板使用指引】复制为 `docs/L2/research/<kebab-name>.md`（`<kebab-name>` 用 kebab-case，如 `tech-xxx`、`competitor-yyy`），按各章节指引填写。
-> 【原则】① **调研定位**：research 承载单个选型/对比/技术验证主题的完整调研（候选/对比/验证/成本/风险/结论，含内部 POC 与部署验证），[TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) 只放一行"调研见"引用（第2条：单源原则，同一信息只在一处维护，见宪法 §2.2）；② **结论 在 TECHNOLOGY**：本调研的最终选型结论写入 TECHNOLOGY §3.1/§4，research 只做论证过程，不反向承载结论；③ **决策链**：结论链到 [ADR](../ADR.template.md)（`见 ADR-xxx`），ADR 承载决策记录；研究证据（数据来源/版本/验证环境）保留在本文附录属当前意图 G（generation，见宪法 第6条），文档演进历史（合并/改名等）归 git log；④ 图用 **Mermaid**（图规范见 references/diagram-spec.md），无元信息表、无变更记录；⑤ **小体量豁免**：候选≤2且无需成本对比时§4/§5可合并，未覆盖 POC 维度标"否+原因"即可。
-> 【章节】6 章骨架指 §1-6，§7 为相关文档导航。
+> 【原则】① **调研定位**：research 承载单个选型/对比/技术验证主题的完整调研（候选/对比/验证/成本/风险/结论，含内部 POC 与部署验证），[TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) 只放一行"调研见"引用（第2条：单源原则，同一信息只在一处维护，见宪法 §2.2）；② **结论 在 TECHNOLOGY**：本调研的最终选型结论写入 TECHNOLOGY §3.1/§4，research 只做论证过程，不反向承载结论；③ **决策链**：结论链到 [ADR](../../common/ADR.template.md)（`见 ADR-xxx`），ADR 承载决策记录；研究证据（数据来源/版本/验证环境）保留在本文附录属当前意图 G（generation，见宪法 第6条），文档演进历史（合并/改名等）归 git log；④ 图用 **Mermaid**（图规范见 references/diagram-spec.md），无元信息表、无变更记录；⑤ **小体量豁免**：候选≤2且无需成本对比时§4/§5可合并，未覆盖 POC 维度标"否+原因"即可。
+> 【章节】6 章骨架指 §1-6。
 > 【示例】全文图/表/步骤均以「技术选型」为示例，其他主题按实际替换（候选/维度/验证按主题实际）。
 
 ---
@@ -186,17 +187,20 @@ Lib-->>Dev: 返回/回调
 
 ## 6. 结论
 
-> 【指引】本节给出**推荐 + ADR 链**。推荐结论写入 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1/§4，本调研只做论证；决策记录链到 [ADR](../ADR.template.md)（`见 ADR-xxx`）。**决策规则**：各维度按主题设权重（例：功能 40% / 性能 25% / 成本 20% / 生态 15%）对候选加权打分；存在**一票否决项**（如许可证传染性、硬约束不满足）的候选直接淘汰，不参与加权；推荐 = 加权得分最高且无否决项的候选；证据不足的维度显式标注并相应扣分，不模糊带过；若全员被否决则标注【阻塞-需放宽约束】并问用户；示例权重按主题自定义，未定时问用户。
+> 【指引】本节给出**推荐 + ADR 链**。推荐结论写入 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1/§4，本调研只做论证；决策记录链到 [ADR](../../common/ADR.template.md)（`见 ADR-xxx`）。**决策规则**：各维度按主题设权重（例：功能 40% / 性能 25% / 成本 20% / 生态 15%）对候选加权打分；存在**一票否决项**（如许可证传染性、硬约束不满足）的候选直接淘汰，不参与加权；推荐 = 加权得分最高且无否决项的候选；证据不足的维度显式标注并相应扣分，不模糊带过；若全员被否决则标注【阻塞-需放宽约束】并问用户；示例权重按主题自定义，未定时问用户。
 
 - 推荐：<推荐候选 + 理由（呼应 §2 对比 / §3 POC / §4 成本 / §5 风险，按权重打分 + 注明一票否决项）>
-- 结论 ：写入 [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md) §3.1/§4
-- 决策链：见 `ADR-xxx`（[ADR](../ADR.template.md)）
+- 结论：写入 `docs/L2/TECHNOLOGY-ARCHITECTURE.md` §3.1/§4
+- 决策链：见 `ADR-NNNN`（`docs/adr/NNNN-<kebab-case>.md`）
 
 > 【指引】推荐必须可追溯到 §2-5 证据；ADR 链缺失时问用户（是否已建 ADR）。
 
 ---
 
-## 7. 相关文档
+## 索引基准（`docs/L2/research/INDEX.md`）
 
-- [TECHNOLOGY-ARCHITECTURE](../TECHNOLOGY-ARCHITECTURE.template.md)：选型结论 （§3.1/§4），调研详情在本 RESEARCH
-- [ADR](../ADR.template.md)：决策链（`见 ADR-xxx`）
+> 【指引】`docs/L2/research/INDEX.md` 为 research 目录唯一入口（宪法 §3.2 目录索引约定）：**极简形态，只有一张「文件 | 说明」表**——每篇调研一行、一句话描述（这个文件是干啥的）；目录内新增/删除/合并调研时同步本表。单列判定（候选≥2 且 维度≥3；单候选+多维度验证例外）在生成单篇时执行，INDEX 不承载判定。
+
+| 文件                   | 说明                       |
+| ---------------------- | -------------------------- |
+| [<name>.md](<name>.md) | <一句话：这个文件是干啥的> |

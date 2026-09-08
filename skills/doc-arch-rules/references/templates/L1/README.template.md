@@ -8,13 +8,14 @@ globs:
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   related: # 关联模板与联动修改
-    CONSTITUTION: 文档架构见宪法 §3.1（docs/L0/CONSTITUTION.md §3.1），文档增删需同步 README 索引
+    CONSTITUTION: 文档架构见宪法 §3.1（全局加载，无 docs/ 副本；rule 在 .omo/rules/docs/CONSTITUTION.md），文档增删需同步 README 索引
     STRUCTURE: 目录结构见它 §1，目录变化需同步 README 路径
     USER-STORY: §4.2 单故事交互（UI 结构与交互点），新增 UI 时需同步
   # 只有需要用户决策的才问（用询问工具）
   ask_user:
     - 生成时点歧义时问用户（对话生成/扫描生成），已有 README 一律重建结构但吸收有效信息
   flow: # 生成流程（分支）
+    - "**命中判别（先做）**：globs 裸名 `README.md` 经 basename 兜底可命中任意子目录同名文件——**命中路径 ≠ 项目根 `README.md` 时本模板跳过**（子目录 README 不是项目入口，不按本模板重建）"
     - 扫描项目（自主）：路径 + 已有/无 README
     - 问生成时点（对话生成 vs 项目自动生成）
     - 对话生成（代码未写）→ 与用户对话获取项目信息（一句话目标/技术栈/文档索引）→ 按模板新建
@@ -93,18 +94,18 @@ generation:
 | 我想了解       | 看哪份文档                                                            |
 | -------------- | --------------------------------------------------------------------- |
 | 应用架构       | `docs/L2/APPLICATION-ARCHITECTURE.md`                                 |
-| 领域模型       | `docs/L2/DOMAIN-MODEL.md`                                             |
+| 领域模型       | `docs/L2/domain/DOMAIN-MODEL.md`                                      |
 | 数据架构       | `docs/L2/DATA-ARCHITECTURE.md`                                        |
 | 技术架构       | `docs/L2/TECHNOLOGY-ARCHITECTURE.md`                                  |
 | Deep Dive 详情 | `docs/L2/deep-dives/INDEX.md`（索引）+ `docs/L2/deep-dives/<name>.md` |
-| 架构决策       | `docs/adr/`（ADR 索引见 README 或 docs/adr/ 目录）                    |
+| 调研           | `docs/L2/research/`（INDEX.md 索引 + `<name>.md`）                    |
 
 ### L3 契约
 
-| 我想了解                            | 看哪份文档                                                               |
-| ----------------------------------- | ------------------------------------------------------------------------ |
-| API 接口（对外提供）                | `docs/L3/API.md` + `docs/L3/openapi/`（契约 SSOT）                       |
-| 外部集成（被调用的第三方 API 文档） | `docs/L3/INTEGRATION.md` + `docs/L3/integration-contracts/`（契约 SSOT） |
+| 我想了解                            | 看哪份文档                                                              |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| API 接口（对外提供）                | `docs/L3/API.md` + `docs/L3/openapi/`（机器可读契约目录）               |
+| 外部集成（被调用的第三方 API 文档） | `docs/L3/INTEGRATION.md` + `docs/L3/integration-contracts/`（契约目录） |
 
 ### L4 交付
 
@@ -117,10 +118,10 @@ generation:
 
 > 【指引】改文档前读取 STRUCTURE.md：定位文档对应代码，防漂移。
 
-| 我想了解                    | 看哪份文档                       |
-| --------------------------- | -------------------------------- |
-| 目录结构（文档 ↔ 代码映射） | `docs/common/STRUCTURE.md`       |
-| 术语表                      | `docs/common/GLOSSARY.md`        |
-| 数据字典                    | `docs/common/DATA-DICTIONARY.md` |
-| 安全设计                    | `docs/common/SECURITY.md`        |
-| 技术债                      | `docs/common/TECHDEBT.md`        |
+| 我想了解                    | 看哪份文档                                 |
+| --------------------------- | ------------------------------------------ |
+| 目录结构（文档 ↔ 代码映射） | `docs/common/STRUCTURE.md`                 |
+| 术语表                      | `docs/common/GLOSSARY.md`                  |
+| 安全设计                    | `docs/common/SECURITY.md`                  |
+| 代码规范                    | `docs/common/CODE-GUIDE.md`                |
+| 架构决策                    | `docs/adr/INDEX.md`（唯一入口，宪法 §3.2） |

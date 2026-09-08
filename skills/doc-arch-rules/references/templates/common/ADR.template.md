@@ -17,6 +17,7 @@ generation:
     - 决策背景（Context）不清晰时 → 问用户补充
     - 备选方案（Alternatives）有遗漏时 → 问用户
   flow: # 生成流程
+    - **INDEX.md 判别**：globs 命中 docs/adr/INDEX.md 时，按正文「ADR 索引结构基准」节维护（唯一入口），不生成四段式正文
     - 扫描（自主）：读 TECHNOLOGY-ARCHITECTURE §3.1/§4 选型结论 + 目标文档 + 现有 docs/adr/ 全量（同 feature 检测：按标题/主题语义归属，同一 feature 的迭代归同一 ADR）
     - 已有 ADR → 复用旧决策有效信息，但结构按本模板重建
     - 新增 ADR 前检索同 feature 已有 ADR：存在 → 直接覆盖该 feature 的唯一 ADR（更新四段为当前决策，不新增编号，不记历史）；不存在 → 新建 NNNN 递增
@@ -24,7 +25,8 @@ generation:
     - 首次生成时落 docs/adr/TEMPLATE.md（含本模板 frontmatter + 四段 + Chain 回占位 + 状态枚举说明）供新增 ADR 复制；**TEMPLATE.md 为模板副本，不参与 ADR 计数、覆盖检索与总量收敛**（globs 匹配时跳过）
   notes: # 生成注意点（怎么生成）
     - Frontmatter 固定四键：title/doc_type/layer/status，title 与 `# ADR-NNNN — 中文名` 完全一致
-    - status 枚举：Accepted / Superseded by ADR-NNNN / Proposed（同 feature 合并时直接覆盖，不新增 Superseded 链），与 README 列表状态一致
+    - status 枚举：Accepted / Superseded by ADR-NNNN / Proposed（同 feature 合并时直接覆盖，不新增 Superseded 链）；状态两处一致（frontmatter status / 正文 ## Status）
+    - 编号唯一：`ADR-NNNN` 四位递增、无断号，与文件名 `NNNN-<kebab-case>.md` 一一对应；总量收敛：核心决策 <20，超限优先合并同 feature，仍超限问用户归档
     - 四段正文 Context/Decision/Alternatives/Consequences（Nygard 标准）——只写当前决策的 Why（为什么选 X），**不记历史**；Alternatives 必须列弃用原因
     - Chain 回：文末 `> Chain 回：<文档> §<章节>` 与 TECHNOLOGY-ARCHITECTURE §3.1/§4 双向可追溯
     - 命名：NNNN-<kebab-case>.md 四位递增，与 ADR-NNNN 编号一一对应，无断号
@@ -97,35 +99,14 @@ Accepted
 
 ---
 
-> **状态枚举说明**：`Accepted`（已采纳）/ `Superseded by ADR-NNNN`（被替代）/ `Proposed`（提议中），与 `docs/adr/README.md` 列表状态一致。
+> **状态枚举说明**：`Accepted`（已采纳）/ `Superseded by ADR-NNNN`（被替代）/ `Proposed`（提议中）。
 
 ---
 
-## ADR 索引 README（`docs/adr/README.md`）结构基准
+## ADR 索引（`docs/adr/INDEX.md`）结构基准
 
-> 【指引】`docs/adr/README.md` 为 **ADR 索引登记文档**（仿 DEPLOYMENT 模板的登记文档骨架模式）——集中登记全部 ADR，供检索与总量收敛。首次生成 ADR 时同步落此 README；新增/覆盖/替代 ADR 时同步更新本表。本 README 为 ADR 列表的唯一入口，各 ADR 正文不复制列表。
+> 【指引】`docs/adr/INDEX.md` 为 ADR 目录唯一入口（宪法 §3.2 目录索引约定）：**极简形态，只有一张「文件 | 说明」表**——每 ADR 一行、一句话描述该决策；首次生成 ADR 时同步落此 INDEX，新增/覆盖/替代 ADR 时同步更新本表，各 ADR 正文不复制列表。使用约定（编号唯一 / 状态两处一致 / 总量收敛）见本模板 generation notes。
 
-### 使用约定
-
-- **登记处**：`docs/adr/README.md` 为 ADR 索引的唯一入口——新增/覆盖/替代 ADR 只改本表，各 ADR 正文不复制列表
-- **编号唯一**：`ADR-NNNN` 四位递增、无断号，与文件名 `NNNN-<kebab-case>.md` 一一对应
-- **状态同步**：本表「状态」列与各 ADR 正文 `## Status` 及 frontmatter `status` 三处一致（`Accepted` / `Superseded by ADR-NNNN` / `Proposed`）
-- **总量收敛**：ADR 总数保持在一定范围（如核心决策 <20）；同 feature 合并覆盖是常态，达到上限优先合并既有 ADR，不新增
-
-### ADR 列表
-
-| 编号     | 决策（标题） | 状态     | 对应正文               |
-| -------- | ------------ | -------- | ---------------------- |
-| ADR-0001 | <决策名>     | Accepted | `0001-<kebab-case>.md` |
-| （补充） |              |          |                        |
-
-### 与文档的 SSOT 分工
-
-> 【指引】ADR 与各文档的**单源（SSOT）分工**——同一决策信息只在一处维护，其余引用不复制。
-
-| 信息                     | SSOT 位置                       | 说明                                                           |
-| ------------------------ | ------------------------------- | -------------------------------------------------------------- |
-| 选型结论（最终选什么）   | TECHNOLOGY-ARCHITECTURE §3.1/§4 | ADR 只记 Context/Alternatives/Consequences，结论以技术架构为准 |
-| 决策背景与权衡（为什么） | ADR（本 README 登记）           | 选型决策的 Why 与备选弃用原因，技术架构引用不复制              |
-| 决策原则                 | CONSTITUTION §1                 | ADR 只记录结论与权衡，不重复宪法原则                           |
-| 目录结构                 | STRUCTURE                       | ADR 文件位置与命名以 STRUCTURE 为准                            |
+| 文件                                         | 说明（决策一句话）                                       |
+| -------------------------------------------- | -------------------------------------------------------- |
+| [0001-<kebab-case>.md](0001-<kebab-case>.md) | <决策一句话，如「后端单体起步（Python，业务+AI 一体）」> |
