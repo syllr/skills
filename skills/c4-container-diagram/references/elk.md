@@ -1,6 +1,6 @@
 # ELK
 
-**[🔗 Gallery](/examples/elk)**
+[🔗 Gallery](/examples/elk)
 
 ELK is a mature, hierarchical layout, actively maintained by an academic research group at
 [Christian Albrechts University in

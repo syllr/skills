@@ -4,7 +4,7 @@
 
 [![skills.sh](https://skills.sh/b/syllr/skills)](https://skills.sh/syllr/skills)
 
-支持 **Claude Code**, **Cursor**, **Windsurf**, **Roo Code** 等 40+ AI 编程助手。
+支持 Claude Code, Cursor, Windsurf, Roo Code 等 40+ AI 编程助手。
 
 ## 安装
 

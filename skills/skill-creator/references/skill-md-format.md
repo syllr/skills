@@ -12,7 +12,7 @@ skill-name/
 
 ## SKILL.md 结构
 
-SKILL.md 由两部分组成：**YAML frontmatter** + **Markdown 正文**。
+SKILL.md 由两部分组成：YAML frontmatter + Markdown 正文。
 
 ### YAML Frontmatter
 
@@ -37,16 +37,16 @@ allowed-tools: Read Write Edit # 可选，空格分隔
 
 | 字段            | 说明                                                                                        |
 | --------------- | ------------------------------------------------------------------------------------------- |
-| `allowed-tools` | 允许的工具列表，**空格分隔字符串**（实验性）                                                |
+| `allowed-tools` | 允许的工具列表，空格分隔字符串（实验性）                                                |
 | `license`       | 许可证名称，或指向随 skill 附带的许可证文件                                                 |
 | `compatibility` | 环境要求（目标产品、系统包、网络访问等），1-500 字符                                        |
 | `metadata`      | 自定义元数据（author、version、category、tags 等；可含 `supportedAgents` 声明兼容的 Agent） |
 
 ### description 写法
 
-**结构**：`[做什么] + [何时触发（触发词）]`
+结构：`[做什么] + [何时触发（触发词）]`
 
-**示例**：
+示例：
 
 ```yaml
 description: >
@@ -61,7 +61,7 @@ description: >
 allowed-tools: Bash(python3:*) Read Write Grep
 ```
 
-**必须为空格分隔字符串**（`allowed-tools: Read Write Edit`），不要写成 YAML 数组或逗号分隔（如 `Read, Write` 不合规）。
+必须为空格分隔字符串（`allowed-tools: Read Write Edit`），不要写成 YAML 数组或逗号分隔（如 `Read, Write` 不合规）。
 
 工具名后面括号内列出允许的子命令（如 `Bash(python3:*)` 表示只允许 `python3` 子命令）。
 
@@ -109,11 +109,11 @@ allowed-tools: Bash(python3:*) Read Write Grep
 
 | 阶段     | 加载内容                         | Token 成本        |
 | -------- | -------------------------------- | ----------------- |
-| **发现** | 所有 Skill 的 name + description | ~100 tokens/Skill |
-| **激活** | 触发的 Skill 完整 SKILL.md       | ~5k tokens        |
-| **执行** | references 文档 + scripts 脚本   | 按需              |
+| 发现 | 所有 Skill 的 name + description | ~100 tokens/Skill |
+| 激活 | 触发的 Skill 完整 SKILL.md       | ~5k tokens        |
+| 执行 | references 文档 + scripts 脚本   | 按需              |
 
-**设计原则**：
+设计原则：
 
 - SKILL.md 正文应该简洁，详细的参考资料放 references/
 - 不要在 SKILL.md 里塞满所有细节
@@ -123,12 +123,12 @@ allowed-tools: Bash(python3:*) Read Write Grep
 
 ## 触发词设计建议
 
-1. **包含主要触发词**（2-5 个核心词）
-2. **稍微"激进"一些**，避免 undertrigger
-3. **包含同义词**，扩大触发范围
-4. **不要过度触发**，避免每次都用这个 skill
+1. 包含主要触发词（2-5 个核心词）
+2. 稍微"激进"一些，避免 undertrigger
+3. 包含同义词，扩大触发范围
+4. 不要过度触发，避免每次都用这个 skill
 
-**示例**：
+示例：
 
 ```yaml
 description: >

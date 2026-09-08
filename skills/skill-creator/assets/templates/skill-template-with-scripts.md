@@ -63,12 +63,12 @@ scripts/main.py --input <input-file> --output /tmp/result.json
 
 ## 示例
 
-**输入**: xxx
-**输出**: yyy
+输入: xxx
+输出: yyy
 
 ## 注意事项
 
 - 确保 Python 3.10+ 已安装
 - 脚本依赖的包需要提前安装
-- **调用脚本用相对路径 `scripts/xxx` 形式**（详见 [references/path-resolution.md](references/path-resolution.md)）
+- 调用脚本用相对路径 `scripts/xxx` 形式（详见 [references/path-resolution.md](references/path-resolution.md)）
 - 详细说明见 [references/script-language-guide.md](references/script-language-guide.md)

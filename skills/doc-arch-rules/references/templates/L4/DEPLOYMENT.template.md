@@ -43,9 +43,9 @@ generation:
 
 # DEPLOYMENT — 部署与发布
 
-> 本文档是「<项目名>」的 **DEPLOYMENT（部署与发布模板）**——L4 交付层的部署与发布文档（运维手册）。
+> 本文档是「<项目名>」的 DEPLOYMENT（部署与发布模板）——L4 交付层的部署与发布文档（运维手册）。
 > 【模板使用指引】复制为 `docs/L4/DEPLOYMENT.md`，按各章节指引填写；§7.6 版本发布记录为按需节（未启用时裁剪，版本标识见 §5 的 BUILD_COMMIT 机制）。
-> 【原则】① **运维手册定位**（非架构设计）：部署脚本、部署步骤、部署参数、环境配置——回答"怎么部署上线、怎么运维"；② 部署单元来自 APPLICATION-ARCHITECTURE 应用划分图；③ **按环境分章**：§4 = standalone 开发启动（进程直跑）/ §5 = dev 发布部署（全容器）——双形态的依赖关系在 §1 声明；④ 密钥管理：集中登记见 §6，不落日志、不落前端包；⑤ 图用 **D2 部署容器图**（C4，按环境分区，图规范见 references/diagram-spec.md）。
+> 【原则】① 运维手册定位（非架构设计）：部署脚本、部署步骤、部署参数、环境配置——回答"怎么部署上线、怎么运维"；② 部署单元来自 APPLICATION-ARCHITECTURE 应用划分图；③ 按环境分章：§4 = standalone 开发启动（进程直跑）/ §5 = dev 发布部署（全容器）——双形态的依赖关系在 §1 声明；④ 密钥管理：集中登记见 §6，不落日志、不落前端包；⑤ 图用 D2 部署容器图（C4，按环境分区，图规范见 references/diagram-spec.md）。
 
 ---
 
@@ -58,7 +58,7 @@ generation:
 - 部署形态：<私有化单机 / 云开发 / 容器编排 / 混合>
 - 部署方式：<如 官方基准镜像（python:3.11-slim / nginx）+ 产物挂载运行（不构建自制镜像）；或 容器镜像构建 + K8s 部署>
 
-**环境**
+环境
 
 | 环境       | 用途                           | 运行形态                                   | 状态       |
 | ---------- | ------------------------------ | ------------------------------------------ | ---------- |
@@ -66,7 +66,7 @@ generation:
 | dev        | 功能验证、集成联调、发布前回归 | 全容器：<如 产物上传 + 官方镜像挂载>（§5） | <已启用>   |
 | prod       | 线上真实流量                   | <如 全容器与 dev 同 compose、同产物流程>   | <暂未启用> |
 
-- **环境一致性（parity）**：<如 dev 运行形态与生产完全一致——同一 compose、同一产物发布流程，差异只有配置与数据>
+- 环境一致性（parity）：<如 dev 运行形态与生产完全一致——同一 compose、同一产物发布流程，差异只有配置与数据>
 - 依赖：<如 唯一依赖 = 本项目自建 <编排组>（独立 compose 运行于 <机器>，见 §3.2）。standalone 与 dev 都连它>
 - 不部署：<如 外部大模型 API（云）/ SMTP（mock）>
 - 待澄清：<如 服务器资源规格未定（见 §5.5）>
@@ -92,12 +92,12 @@ generation:
 
 | 环境                         | 用途                           | 入口                               | 配置来源                                                                                           | 依赖（数据源）                             | 运行形态                                |
 | ---------------------------- | ------------------------------ | ---------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------ | --------------------------------------- |
-| **standalone（开发者本地）** | 开发自测、联调                 | <如 http://localhost:5173 / :8000> | <如 后端：docs/L4/deployment/standalone/.env.standalone（settings.py 直读）>                       | <如 dev 机 <IP> 编排组（mysql/ragflow）>   | 进程直跑：<如 uvicorn + Vite dev>（§4） |
-| **dev（<机器>）**            | 功能验证、集成联调、发布前回归 | <如 http://<IP>:8080 / :8000>      | <如 backend：dev/.env.dev（env_file）；compose 变量：dev/.env（模板 configs/compose.env.example）> | <如 同机编排组（<业务库> / ragflow:9380）> | 全容器：官方镜像 + 产物挂载（§5）       |
+| standalone（开发者本地） | 开发自测、联调                 | <如 http://localhost:5173 / :8000> | <如 后端：docs/L4/deployment/standalone/.env.standalone（settings.py 直读）>                       | <如 dev 机 <IP> 编排组（mysql/ragflow）>   | 进程直跑：<如 uvicorn + Vite dev>（§4） |
+| dev（<机器>）            | 功能验证、集成联调、发布前回归 | <如 http://<IP>:8080 / :8000>      | <如 backend：dev/.env.dev（env_file）；compose 变量：dev/.env（模板 configs/compose.env.example）> | <如 同机编排组（<业务库> / ragflow:9380）> | 全容器：官方镜像 + 产物挂载（§5）       |
 
 ### 2.2 环境拓扑
 
-> 【指引】本图为 **C4 部署容器图**（D2，按环境分区，图规范见 references/diagram-spec.md）。用户 → 各环境应用 → 数据与外部依赖分区；外部依赖归组"外部服务"边界，与平台边界单线相连。平台分区节点与连线须与 §3 单元清单一一对应，环境分区与 §2.1 矩阵一致；外部服务分区与 §1.1「不部署」清单对应。
+> 【指引】本图为 C4 部署容器图（D2，按环境分区，图规范见 references/diagram-spec.md）。用户 → 各环境应用 → 数据与外部依赖分区；外部依赖归组"外部服务"边界，与平台边界单线相连。平台分区节点与连线须与 §3 单元清单一一对应，环境分区与 §2.1 矩阵一致；外部服务分区与 §1.1「不部署」清单对应。
 
 ```d2
 # 部署拓扑图（按环境分区 · C4 容器图）
@@ -247,7 +247,7 @@ classes: {
 | <如 Python 后端> | 服务 | <如 uvicorn 直跑（:8000，配置直读 standalone/.env）> | <如 官方 python:3.11-slim + 依赖产物 + 代码挂载（:8000）> | <如 /healthz> | <如 回退产物后 recreate> |
 | （补充）         |      |                                                      |                                                           |               |                          |
 
-> **（补充）行**：每新增一个部署单元复制一行并填全 6 列（单元数须等于 APPLICATION-ARCHITECTURE §2.2 应用数）；无补充则删去此行。启动顺序由 compose `depends_on: service_healthy` 声明，不手写。
+> （补充）行：每新增一个部署单元复制一行并填全 6 列（单元数须等于 APPLICATION-ARCHITECTURE §2.2 应用数）；无补充则删去此行。启动顺序由 compose `depends_on: service_healthy` 声明，不手写。
 
 ### 3.2 依赖服务
 
@@ -264,8 +264,8 @@ classes: {
 
 > 【指引】本章仅双形态项目需要（进程直跑形态）。单形态（全容器）项目可裁剪本章，合并至 §5 按应用展开。依赖来自 dev 机编排组时在此声明"本地不跑任何依赖容器"。
 
-> **定位**：standalone 是开发环境——<如 前端 Vite + 后端 uvicorn 开发者本地直跑>，改代码即热重载。
-> **依赖**：<如 mysql/ragflow 来自 dev 机 <IP> 编排组>，开发者本地不跑依赖容器。前提：编排组已就绪、本地可访问。
+> 定位：standalone 是开发环境——<如 前端 Vite + 后端 uvicorn 开发者本地直跑>，改代码即热重载。
+> 依赖：<如 mysql/ragflow 来自 dev 机 <IP> 编排组>，开发者本地不跑依赖容器。前提：编排组已就绪、本地可访问。
 
 ### 4.1 后端启动
 
@@ -278,9 +278,9 @@ python3 -m venv .venv
 .venv/bin/python -m uvicorn app.main:app --reload --port 8000
 ```
 
-- **配置**：<如 settings.py 直接读取 docs/L4/deployment/standalone/.env.standalone（无需复制）>
-- **依赖参数**：<如 MySQL <IP>:3306 / RAGFlow http://<IP>:9380>
-- **验证**：`curl http://localhost:8000/healthz` → `{"status":"ok"}`
+- 配置：<如 settings.py 直接读取 docs/L4/deployment/standalone/.env.standalone（无需复制）>
+- 依赖参数：<如 MySQL <IP>:3306 / RAGFlow http://<IP>:9380>
+- 验证：`curl http://localhost:8000/healthz` → `{"status":"ok"}`
 
 ### 4.2 前端启动
 
@@ -290,8 +290,8 @@ npm install
 npm run dev        # <如 Vite :5173>
 ```
 
-- **API 地址**：<如 前端兜底 http://localhost:8000/api/v1，连本地后端>
-- **访问**：<如 http://localhost:5173>
+- API 地址：<如 前端兜底 http://localhost:8000/api/v1，连本地后端>
+- 访问：<如 http://localhost:5173>
 
 ### 4.3 验证
 
@@ -313,7 +313,7 @@ npm run dev        # <如 Vite :5173>
 
 > 【指引】本章为全容器产物化发布（官方镜像+产物挂载，不构建自制镜像，或按项目形态改 K8s/云函数）。BUILD_COMMIT 机制与发布脚本是本章核心；单形态项目本章即全部署操作手册。
 
-> **定位**：dev 兼作预发环境，**运行形态与未来生产完全一致**（全容器产物化）——<如 开发者本地编译产物，经 upload 传到 dev，官方镜像挂载运行，不在 dev 装依赖>。
+> 定位：dev 兼作预发环境，运行形态与未来生产完全一致（全容器产物化）——<如 开发者本地编译产物，经 upload 传到 dev，官方镜像挂载运行，不在 dev 装依赖>。
 
 ### 5.1 形态总览
 
@@ -328,15 +328,15 @@ npm run dev        # <如 Vite :5173>
 
 > 【指引】二选一：BUILD_COMMIT（git HEAD → 容器 env，容器名即版本）或 SemVer 表。未启用 SemVer 时本节为版本标识说明，§7.6 版本发布记录裁剪。
 
-- 每次发布前，本地代码改动**先 `git commit`（无需 push）**——`BUILD_COMMIT` 取本地 HEAD 写入容器 env
-- 未提交改动不会体现在版本标识；`release-*.sh` 检测到未提交改动会**拦截**，确需强制用 `SKIP_GIT_CHECK=1`
+- 每次发布前，本地代码改动先 `git commit`（无需 push）——`BUILD_COMMIT` 取本地 HEAD 写入容器 env
+- 未提交改动不会体现在版本标识；`release-*.sh` 检测到未提交改动会拦截，确需强制用 `SKIP_GIT_CHECK=1`
 - 查 dev 当前版本：容器名即版本（`docker ps`）或 `docker inspect` 查容器 env `BUILD_COMMIT`
 
 ### 5.3 发布流程（开发者本地执行，一条龙脚本）
 
 > 【指引】发布脚本位于 docs/L4/deployment/（脚本与资产登记见 §7），列出产物/命令/做什么/何时跑；步骤按"发布前置 → 执行 → 验证"展开；数据库变更（alembic/migrate）随发布同步的在此说明。
 
-**发布脚本**（`docs/L4/deployment/`）：
+发布脚本（`docs/L4/deployment/`）：
 
 | 产物      | 发布命令（开发者本地一键） | 做什么                                                | 何时跑           |
 | --------- | -------------------------- | ----------------------------------------------------- | ---------------- |
@@ -344,7 +344,7 @@ npm run dev        # <如 Vite :5173>
 | 后端      | `./release-backend.sh`     | ①打包代码 ②编译依赖产物 → 都 upload → 覆盖 → recreate | 每次后端代码变更 |
 | （补充）  |                            |                                                       |                  |
 
-**发布步骤**：
+发布步骤：
 
 ```bash
 # 0. 前置：代码已 git commit（见 §5.2，未提交会被脚本拦截）
@@ -353,22 +353,22 @@ cd docs/L4/deployment
 ./release-backend.sh        # 后端发布
 ```
 
-**首次部署初始化数据库**（如有）：
+首次部署初始化数据库（如有）：
 
 ```bash
 docker compose -f docs/L4/deployment/dev/docker-compose.dev.yml exec backend python scripts/init_db.py
 ```
 
-**数据库变更流程**（如有，DDL/DML 随发布同步）：<如 本地 alembic revision → review → commit → 发布时自动 upgrade head，迁移失败中断>
+数据库变更流程（如有，DDL/DML 随发布同步）：<如 本地 alembic revision → review → commit → 发布时自动 upgrade head，迁移失败中断>
 
-**迁移编写铁律（沉淀位）**：
+迁移编写铁律（沉淀位）：
 
-> 【指引】本节为**迁移编写铁律的沉淀位**——按项目实际迁移工具（alembic / migrate / 手写 SQL）填充，随项目踩坑持续补充。以下为通用铁律，按项目实际改写/增删。
+> 【指引】本节为迁移编写铁律的沉淀位——按项目实际迁移工具（alembic / migrate / 手写 SQL）填充，随项目踩坑持续补充。以下为通用铁律，按项目实际改写/增删。
 
-- **① 已应用 revision 禁止再改**：已应用到任一环境的 revision 视为不可变，后续变更一律**新建 revision**（不修改已应用迁移，保证各环境迁移历史一致可回放）
-- **② 默认值用字面量**：迁移中默认值写**字面量**（如 `CURRENT_TIMESTAMP`），**禁用函数式默认值**（如 `now()` 等运行时函数），保证迁移结果可复现、可 diff
-- **③ 发布前本地自测**：发布前本地先 `upgrade head` 自测通过，再走发布流程（迁移失败不带上线）
-- **④ 发布顺序不可换**：发布顺序固定为 **覆盖代码 → 执行迁移 → recreate 容器**，不可调换；**迁移失败则中断**（不继续 recreate，避免代码与 schema 不一致）
+- ① 已应用 revision 禁止再改：已应用到任一环境的 revision 视为不可变，后续变更一律新建 revision（不修改已应用迁移，保证各环境迁移历史一致可回放）
+- ② 默认值用字面量：迁移中默认值写字面量（如 `CURRENT_TIMESTAMP`），禁用函数式默认值（如 `now()` 等运行时函数），保证迁移结果可复现、可 diff
+- ③ 发布前本地自测：发布前本地先 `upgrade head` 自测通过，再走发布流程（迁移失败不带上线）
+- ④ 发布顺序不可换：发布顺序固定为 覆盖代码 → 执行迁移 → recreate 容器，不可调换；迁移失败则中断（不继续 recreate，避免代码与 schema 不一致）
 
 ### 5.4 运维命令（在 dev 机执行）
 
@@ -388,17 +388,17 @@ docker inspect $(docker ps -q --filter "name=<backend>" | head -1) --format '{{r
 docker compose -f docs/L4/deployment/dev/docker-compose.dev.yml down
 ```
 
-**健康检查**：<如 后端 curl /healthz；前端页面 + /api 反代冒烟>
+健康检查：<如 后端 curl /healthz；前端页面 + /api 反代冒烟>
 
 ### 5.5 参数与配置文件
 
 > 【指引】backend 连接配置、compose 变量、端口、回滚、待澄清项在此聚合。
 
-- **backend 连接配置**：<如 dev/.env.dev（compose env_file）；敏感项可在部署机 dev/.env 覆盖>
-- **compose 变量**：<如 部署机把 configs/compose.env.example 复制为 compose 同目录 .env（gitignore）可覆盖端口/密钥/BUILD_COMMIT>
-- **端口**：<如 backend 8000、frontend 8080>
-- **回滚**：<如 后端回退产物并 force-recreate；前端回退 dist>
-- **待澄清**：<如 服务器资源规格未定>
+- backend 连接配置：<如 dev/.env.dev（compose env_file）；敏感项可在部署机 dev/.env 覆盖>
+- compose 变量：<如 部署机把 configs/compose.env.example 复制为 compose 同目录 .env（gitignore）可覆盖端口/密钥/BUILD_COMMIT>
+- 端口：<如 backend 8000、frontend 8080>
+- 回滚：<如 后端回退产物并 force-recreate；前端回退 dist>
+- 待澄清：<如 服务器资源规格未定>
 
 ---
 
@@ -406,7 +406,7 @@ docker compose -f docs/L4/deployment/dev/docker-compose.dev.yml down
 
 > 【指引】配置与密钥分层规范见 SECURITY §6（引用不复制）。本节只承载本项目密钥集中登记（§6.1/§6.2）与项目级密钥安全红线。
 
-**密钥管理约定（项目级红线）**：集中登记（§6.1/§6.2）；不落日志（日志脱敏默认）；不落前端包；支持轮换（改文档 + 部署配置，不触发代码变更）；\*.example 恒占位；明文不入库。载体二选一（密钥管理服务注入 / 团队约定集中登记），取值来源见 §6.1/§6.2，规范见 SECURITY §6。
+密钥管理约定（项目级红线）：集中登记（§6.1/§6.2）；不落日志（日志脱敏默认）；不落前端包；支持轮换（改文档 + 部署配置，不触发代码变更）；\*.example 恒占位；明文不入库。载体二选一（密钥管理服务注入 / 团队约定集中登记），取值来源见 §6.1/§6.2，规范见 SECURITY §6。
 
 ### 6.1 应用层密钥
 
@@ -429,9 +429,9 @@ docker compose -f docs/L4/deployment/dev/docker-compose.dev.yml down
 
 ## 7. 部署配置文件详解
 
-> 【指引】本节即**部署资产登记**（路径 + 归属 + 生效机制合一）：按 `docs/L4/deployment/` **目录树**组织，章节与目录一一对应；具体变量明细不在此重复，以文件自身为准（文件即字典：键值对+内联注释）。文件增删改同步本节；密钥取值来源统一登记 §6（明文不入库）。本节为资产登记处，§5.3 只做快速入口引用。版本发布记录为按需节，未启用时裁剪（版本标识见 §5 的 BUILD_COMMIT 机制）。
+> 【指引】本节即部署资产登记（路径 + 归属 + 生效机制合一）：按 `docs/L4/deployment/` 目录树组织，章节与目录一一对应；具体变量明细不在此重复，以文件自身为准（文件即字典：键值对+内联注释）。文件增删改同步本节；密钥取值来源统一登记 §6（明文不入库）。本节为资产登记处，§5.3 只做快速入口引用。版本发布记录为按需节，未启用时裁剪（版本标识见 §5 的 BUILD_COMMIT 机制）。
 
-**目录总览**（章节锚点）：
+目录总览（章节锚点）：
 
 ```
 docs/L4/deployment/
@@ -466,19 +466,19 @@ docs/L4/deployment/
 | 维度     | 说明                                                                                                                           |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | 环境     | dev 部署机（未来生产同用）                                                                                                     |
-| 归属     | **docker compose 变量替换**——与 7.3.2 的本质区别：`.env.dev` 进容器给应用读，这个只做 compose 文件里 `${VAR}` 的替换，不进应用 |
+| 归属     | docker compose 变量替换——与 7.3.2 的本质区别：`.env.dev` 进容器给应用读，这个只做 compose 文件里 `${VAR}` 的替换，不进应用 |
 | 生效机制 | 部署机复制为 `dev/.env`（已被 .gitignore 忽略，仅存部署机）；`docker compose` 自动读取 compose 文件同目录 `.env`               |
 
 - 内容：<如 应用宿主端口、JWT_SECRET 覆盖、BUILD_COMMIT/BUILD_TIME 版本标识（release-*.sh 自动写入，见 §5.2）>
 
 ### 7.2 `standalone/` — standalone 环境配置
 
-**`.env.standalone`**（standalone 后端配置）：
+`.env.standalone`（standalone 后端配置）：
 
 | 维度     | 说明                                                                          |
 | -------- | ----------------------------------------------------------------------------- |
 | 环境     | standalone（开发者本地进程直跑）                                              |
-| 归属应用 | backend（**前端不读它**——前端由代码兜底）                                     |
+| 归属应用 | backend（前端不读它——前端由代码兜底）                                     |
 | 生效机制 | <如 app/settings.py 直接读取本文件（改后重启生效）；容器环境无此路径自动忽略> |
 
 - 内容：<如 MySQL / RAGFlow / LLM / JWT / 应用 五个配置块，DEBUG=true>
@@ -506,13 +506,13 @@ docs/L4/deployment/
 | 归属应用 | backend（frontend 不读它）                                                                                          |
 | 生效机制 | `docker-compose.dev.yml` 的 `env_file` 注入 backend 容器；敏感项可被部署机 `dev/.env`（7.1.2）的 `environment` 覆盖 |
 
-**与 7.2 的差异**：<如 Key 类真值全部留空（只放部署机），DEBUG=false；UPLOAD_DIR 为容器内路径>
+与 7.2 的差异：<如 Key 类真值全部留空（只放部署机），DEBUG=false；UPLOAD_DIR 为容器内路径>
 
 #### 7.3.3 `ragflow/`（RAGFlow 编排收编副本，如有）
 
 | 维度 | 说明                                                                |
 | ---- | ------------------------------------------------------------------- |
-| 环境 | dev 机中间件（独立 compose，**不属于应用环境**，与 7.3.1 并行运行） |
+| 环境 | dev 机中间件（独立 compose，不属于应用环境，与 7.3.1 并行运行） |
 | 详见 | `dev/ragflow/README.md`（与现网对齐 + 应用层配置现状 + 一键重建）   |
 
 ### 7.4 发布与重建脚本（开发者本地执行，位于 `deployment/` 根）
@@ -535,16 +535,16 @@ docs/L4/deployment/
 
 ### 7.6 版本发布记录（按需，未启用时裁剪）
 
-> 【指引】版本发布记录为**按需节**（未启用 SemVer 时裁剪本节，版本标识见 §5 的 BUILD_COMMIT 机制）。启用时格式与发布流程在此节定义。
+> 【指引】版本发布记录为按需节（未启用 SemVer 时裁剪本节，版本标识见 §5 的 BUILD_COMMIT 机制）。启用时格式与发布流程在此节定义。
 
-**版本号规则（本节，按需）**：
+版本号规则（本节，按需）：
 
-- **格式**：<如 SemVer `MAJOR.MINOR.PATCH`（MAJOR=不兼容 / MINOR=新功能 / PATCH=修复）>
-- **预发布**：<如 -alpha / -beta / -rc.1>
-- **不可篡改**：已发布版本号不可修改；回滚通过新版本
+- 格式：<如 SemVer `MAJOR.MINOR.PATCH`（MAJOR=不兼容 / MINOR=新功能 / PATCH=修复）>
+- 预发布：<如 -alpha / -beta / -rc.1>
+- 不可篡改：已发布版本号不可修改；回滚通过新版本
 - 发布文档一律引用本节，不得另写
 
-**发布记录**（按需，每次发布一行）：
+发布记录（按需，每次发布一行）：
 
 | 版本号      | 日期            | 变更内容      | 环境   |
 | ----------- | --------------- | ------------- | ------ |

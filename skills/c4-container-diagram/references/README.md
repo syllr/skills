@@ -8,11 +8,11 @@
 
 | 文件                | 内容                                              | 对应官方页面         | C4 画图用途                                         |
 | ------------------- | ------------------------------------------------- | -------------------- | --------------------------------------------------- |
-| `containers.md`     | 容器嵌套、标签、父引用                            | /tour/containers/    | **核心**——多层大容器嵌套语法                        |
-| `connections.md`    | 连接语法（有向/无向/标签/引用）                   | /tour/connections/   | **核心**——容器间通信关系                            |
-| `grid-diagrams.md`  | 网格布局（grid-columns/rows/gap）                 | /tour/grid-diagrams/ | **核心**——"千层蛋糕"纵向堆叠 + 等宽分布             |
-| `elk.md`            | ELK 布局引擎                                      | /tour/elk/           | **核心**——默认推荐引擎（含 grid + 容器 width 支持） |
-| `diagram-review.md` | **本项目自研** PNG 识图自检审查清单（非官方文档） | —                    | 自检核心——macOS sips 转 PNG 后用识图工具审查        |
+| `containers.md`     | 容器嵌套、标签、父引用                            | /tour/containers/    | 核心——多层大容器嵌套语法                        |
+| `connections.md`    | 连接语法（有向/无向/标签/引用）                   | /tour/connections/   | 核心——容器间通信关系                            |
+| `grid-diagrams.md`  | 网格布局（grid-columns/rows/gap）                 | /tour/grid-diagrams/ | 核心——"千层蛋糕"纵向堆叠 + 等宽分布             |
+| `elk.md`            | ELK 布局引擎                                      | /tour/elk/           | 核心——默认推荐引擎（含 grid + 容器 width 支持） |
+| `diagram-review.md` | 本项目自研 PNG 识图自检审查清单（非官方文档） | —                    | 自检核心——macOS sips 转 PNG 后用识图工具审查        |
 
 ## 本 skill 拆分出的自研参考（来自 SKILL.md，非官方文档）
 
@@ -27,13 +27,13 @@
 | `troubleshooting.md`      | 生成前后自检流程、SVG 坐标验证、验收执行、fallback、CLI 速查                         | §7.0~§7.4 / §8                                                   |
 | `templates.md`            | ASCII 要素清单、实测模板（3 层标准/竖排/竖条/层内分区/最简骨架/产品能力架构图 §5.6） | §3 / §5                                                          |
 
-> 这些文件为**本 skill 自研**，不来自 d2lang 官方文档，更新官方本地化时**不受影响**。
+> 这些文件为本 skill 自研，不来自 d2lang 官方文档，更新官方本地化时不受影响。
 
 ## 处理说明
 
 原始 `.md` 为 Docusaurus 格式（含 `import` 组件、`<CodeBlock>` 引用、SVG 嵌入 div 等），已转换处理：
 
-- 外部 `.d2` 代码引用已**内联**为 ` ```d2 ` 代码块，可直接复制使用
+- 外部 `.d2` 代码引用已内联为 ` ```d2 ` 代码块，可直接复制使用
 - `:::info` / `:::caution` 提示块已转换为 GitHub 兼容的 `> [!NOTE]` / `> [!WARNING]`
 - 删除了 SVG 渲染占位与导航/页脚噪音
 
@@ -49,4 +49,4 @@ done
 # 随后用转换脚本（见仓库 skill 开发流程）内联代码引用
 ```
 
-> ⚠️ **`grid-diagrams.md` 尾部有本项目自研的 `grid-column-span` 禁用说明**（见 SKILL.md §6.15）——上述 `curl` 覆盖后该段会丢失，更新后需重新追加。
+> ⚠️ `grid-diagrams.md` 尾部有本项目自研的 `grid-column-span` 禁用说明（见 SKILL.md §6.15）——上述 `curl` 覆盖后该段会丢失，更新后需重新追加。

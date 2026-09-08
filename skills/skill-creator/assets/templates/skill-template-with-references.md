@@ -39,7 +39,7 @@ allowed-tools: Read Write Grep Glob
 
 ## 示例
 
-**示例 1**:
+示例 1:
 
 - 输入：xxx
 - 输出：yyy

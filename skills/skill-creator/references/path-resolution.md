@@ -2,9 +2,9 @@
 
 ## 核心规则
 
-**SKILL.md 中引用 skill 内部任何资源（scripts/、references/、assets/、templates/、examples/、data/……）时，用相对路径（相对于 skill 目录）或 Markdown 链接。**
+SKILL.md 中引用 skill 内部任何资源（scripts/、references/、assets/、templates/、examples/、data/……）时，用相对路径（相对于 skill 目录）或 Markdown 链接。
 
-依据 agentskills.io 规范，文件引用一律使用相对路径（如 `scripts/extract.py`、`[指南](references/guide.md)`）——以 skill 目录为基准，skill 安装/移动到任何位置都能正确引用自己的内部资源。**禁止 `@path` 语法**（如 `@scripts/foo.ts`）：它不是 agentskills.io 开放规范的一部分，在其他 Agent（Claude Code、Cursor、Windsurf 等）中无法识别。
+依据 agentskills.io 规范，文件引用一律使用相对路径（如 `scripts/extract.py`、`[指南](references/guide.md)`）——以 skill 目录为基准，skill 安装/移动到任何位置都能正确引用自己的内部资源。禁止 `@path` 语法（如 `@scripts/foo.ts`）：它不是 agentskills.io 开放规范的一部分，在其他 Agent（Claude Code、Cursor、Windsurf 等）中无法识别。
 
 ## 为什么不能硬编码绝对路径 / 依赖 cwd
 
@@ -26,11 +26,11 @@
 
 这三种都有问题：
 
-- **反例 1**：skill 移到项目级 `.opencode/skills/` 或插件目录后失效
-- **反例 2**：AI 调用 bash 时 cwd 不一定是 skill 目录
-- **反例 3**：依赖 AI 推断，不可靠
+- 反例 1：skill 移到项目级 `.opencode/skills/` 或插件目录后失效
+- 反例 2：AI 调用 bash 时 cwd 不一定是 skill 目录
+- 反例 3：依赖 AI 推断，不可靠
 
-**反例 4（额外禁令）：`@path` 语法**（如 `@scripts/foo.ts`）——OMO/OpenCode 的私有扩展，不符合 agentskills.io 规范，必须用相对路径或 Markdown 链接替代。
+反例 4（额外禁令）：`@path` 语法（如 `@scripts/foo.ts`）——OMO/OpenCode 的私有扩展，不符合 agentskills.io 规范，必须用相对路径或 Markdown 链接替代。
 
 ## 合规写法
 
@@ -69,7 +69,7 @@ scripts/start.sh --config assets/config/default.yaml
 
 ### 引用自定义目录
 
-相对路径对**任何**子目录都生效，不仅限于 `scripts/`、`references/`、`assets/`：
+相对路径对任何子目录都生效，不仅限于 `scripts/`、`references/`、`assets/`：
 
 ```bash
 # 模板
@@ -89,13 +89,13 @@ scripts/load.py --source data/users.csv
 ```markdown
 # 3. 执行
 
-**调用**：
+调用：
 
 \`\`\`bash
 scripts/inspect-apply.ts "<change-name>"
 \`\`\`
 
-**参数模板**：使用默认 `assets/templates/default-args.json`，如需自定义请参考 [自定义参数说明](references/custom-args.md)。
+参数模板：使用默认 `assets/templates/default-args.json`，如需自定义请参考 [自定义参数说明](references/custom-args.md)。
 ```
 
 ## 速查清单

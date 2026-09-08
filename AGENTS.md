@@ -1,13 +1,13 @@
 # PROJECT KNOWLEDGE BASE
 
-**Generated:** 2026-08-29
-**Role:** 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。**本项目只负责 skill 的开发/迭代/格式校验；将 skill 安装到 opencode 等 Agent 由用户自行执行，AI 不代装。**
+Generated: 2026-08-29
+Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。本项目只负责 skill 的开发/迭代/格式校验；将 skill 安装到 opencode 等 Agent 由用户自行执行，AI 不代装。
 
 ## OVERVIEW
 
-仓库管理一组自包含的 Agent Skills（每个 skill = 一个目录，含 `SKILL.md` + 可选 `references/`/`assets/`/`scripts/`）。核心关注点：**skill 内部资源的引用规范**（相对路径 / Markdown 链接，禁止 `@path`）与格式合规（agentskills.io 规范）。语言：中文文档。
+仓库管理一组自包含的 Agent Skills（每个 skill = 一个目录，含 `SKILL.md` + 可选 `references/`/`assets/`/`scripts/`）。核心关注点：skill 内部资源的引用规范（相对路径 / Markdown 链接，禁止 `@path`）与格式合规（agentskills.io 规范）。语言：中文文档。
 
-**职责边界**：本项目只做「创建 / 优化 / 校验」skill 三件事；**安装到 Agent（如 `npx skills add`）由用户自行执行，不属于本项目职责**，AI 不得代为安装。
+职责边界：本项目只做「创建 / 优化 / 校验」skill 三件事；安装到 Agent（如 `npx skills add`）由用户自行执行，不属于本项目职责，AI 不得代为安装。
 
 ## STRUCTURE
 
@@ -46,7 +46,7 @@ README.md            # 面向用户的安装/技能表
 ```
 
 - `references/` 引用必须用 Markdown 链接：`[显示文本](references/xxx.md)`
-- 显示文本写可读说明；目标用相对路径，**保持一级深度**（`references/xxx.md`，不要嵌套 `references/sub/xxx.md`）
+- 显示文本写可读说明；目标用相对路径，保持一级深度（`references/xxx.md`，不要嵌套 `references/sub/xxx.md`）
 
 ### 引用 scripts/ 与 assets/ —— 相对路径命令
 
@@ -73,19 +73,20 @@ scripts/render.py --template assets/templates/report.xml
 
 ## FRONTMATTER 合规清单
 
-| 字段            | 要求                                                                                                                    |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `name`          | 必填，小写连字符，与目录名一致                                                                                          |
-| `description`   | 必填，含功能 + 触发词，<1024 字符                                                                                       |
-| `license`       | 可选                                                                                                                    |
-| `metadata`      | 可选，可含 `supportedAgents: '["opencode"]'`（值需用**单引号包成字符串**；官方校验器不认 JSON 流式数组 `["opencode"]`） |
-| `allowed-tools` | 可选，**空格分隔字符串**（`Read Write Edit Bash`），支持 `Bash(git:*)` 子命令形式；**禁止 YAML 数组或逗号分隔**         |
+| 字段            | 要求                                                                                                                |
+| --------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `name`          | 必填，小写连字符，与目录名一致                                                                                      |
+| `description`   | 必填，含功能 + 触发词，<1024 字符                                                                                   |
+| `license`       | 可选                                                                                                                |
+| `metadata`      | 可选，可含 `supportedAgents: '["opencode"]'`（值需用单引号包成字符串；官方校验器不认 JSON 流式数组 `["opencode"]`） |
+| `allowed-tools` | 可选，空格分隔字符串（`Read Write Edit Bash`），支持 `Bash(git:*)` 子命令形式；禁止 YAML 数组或逗号分隔             |
 
 ## CONVENTIONS
 
 - 文档与注释全部使用中文（技术术语/命令/路径保留原文）
 - 不修改 `improve/`、`demo/`、`.omo/`、`.codegraph/` 等非 skill 目录
 - skill 目录只放 SKILL.md + references/ + assets/ + scripts/，不混入无关文件
+- 模板与生成文档禁用 `**` 加粗与 emoji：`references/templates/**` 正文及 frontmatter 不得出现 `**加粗**`（glob 通配符 `**`、目录树制表符除外）；emoji 零容忍（✅/⚠️/箭头表情等全算）；机检：`grep -rnE '\*\*[^*`]+\*\*' skills/*/references/templates/` 无输出 + 下方 NOTES 的 emoji 扫描命令无输出
 
 ## ANTI-PATTERNS（THIS PROJECT）
 
@@ -95,6 +96,7 @@ scripts/render.py --template assets/templates/report.xml
 - ❌ 在 skill 中写入真实密码、token、敏感主机信息
 - ❌ SKILL.md 中引用不存在的章节号（死引用）或指向不存在的 reference 文件
 - ❌ 改动 skill 后不同步更新 `references/README.md`（文件清单/更新命令）
+- ❌ 模板/frontmatter/生成文档中出现 `**加粗**` 或 emoji（glob `**`、目录树制表符除外）
 
 ## COMMANDS
 
@@ -119,10 +121,11 @@ uvx --from skills-ref agentskills validate ./skills/<skill-name>
 for d in skills/*/; do uvx --from skills-ref agentskills validate "$d" || echo "!! FAIL: $d"; done
 ```
 
-> ⚠️ **安装到 Agent 由用户自行执行**，AI 不代装。安装命令见 README.md（如 `npx skills add . -s '*' -a opencode`），不写进本项目工作流。
+> ⚠️ 安装到 Agent 由用户自行执行，AI 不代装。安装命令见 README.md（如 `npx skills add . -s '*' -a opencode`），不写进本项目工作流。
 
 ## NOTES
 
 - 项目约定统一由 AGENTS.md 承担；skill 格式基础规范见 [skill-md-format.md](skills/skill-creator/references/skill-md-format.md)，改 skill 前先读
 - `references/` 的官方资料可通过 `references/README.md` 的更新命令重新拉取（上游分支为 `master`）
-- 仓库未设置 CI；**合规校验用 `uvx --from skills-ref agentskills validate`**（agentskills.io 官方 skills-ref，见 COMMANDS），`npx skills check` 只查更新；改 skill 后必跑校验，若改动的是已有 skill，改前也建议跑一次作为基线（区分「既有问题」vs「本次改动引入」）
+- 仓库未设置 CI；合规校验用 `uvx --from skills-ref agentskills validate`（agentskills.io 官方 skills-ref，见 COMMANDS），`npx skills check` 只查更新；改 skill 后必跑校验，若改动的是已有 skill，改前也建议跑一次作为基线（区分「既有问题」vs「本次改动引入」）
+- 无加粗/emoji 扫描（改模板后必跑）：`grep -rnE '\*\*[^*`]+\*\*' skills/_/references/templates/`无输出；emoji 扫描`python3 -c "import glob;hit=[f'{p}:{i}' for p in glob.glob('skills/_/references/templates/**/*.md',recursive=True) for i,l in enumerate(open(p,encoding='utf-8'),1) for ch in l if '\U0001F300'<=ch<='\U0001FAFF' or 0x2705<=ord(ch)<=0x27BF];print(hit if hit else 'emoji干净')"`输出`emoji干净`

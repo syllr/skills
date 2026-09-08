@@ -17,22 +17,22 @@ generation:
     - 决策背景（Context）不清晰时 → 问用户补充
     - 备选方案（Alternatives）有遗漏时 → 问用户
   flow: # 生成流程
-    - **INDEX.md 判别**：globs 命中 docs/adr/INDEX.md 时，按正文「ADR 索引结构基准」节维护（唯一入口），不生成四段式正文
+    - INDEX.md 判别：globs 命中 docs/adr/INDEX.md 时，按正文「ADR 索引结构基准」节维护（唯一入口），不生成四段式正文
     - 扫描（自主）：读 TECHNOLOGY-ARCHITECTURE §3.1/§4 选型结论 + 目标文档 + 现有 docs/adr/ 全量（同 feature 检测：按标题/主题语义归属，同一 feature 的迭代归同一 ADR）
     - 已有 ADR → 复用旧决策有效信息，但结构按本模板重建
     - 新增 ADR 前检索同 feature 已有 ADR：存在 → 直接覆盖该 feature 的唯一 ADR（更新四段为当前决策，不新增编号，不记历史）；不存在 → 新建 NNNN 递增
     - 按模板生成：Frontmatter 四键 → 标题 → 四段正文（Context/Decision/Alternatives/Consequences）→ Chain 回 → Status
-    - 首次生成时落 docs/adr/TEMPLATE.md（含本模板 frontmatter + 四段 + Chain 回占位 + 状态枚举说明）供新增 ADR 复制；**TEMPLATE.md 为模板副本，不参与 ADR 计数、覆盖检索与总量收敛**（globs 匹配时跳过）
+    - 首次生成时落 docs/adr/TEMPLATE.md（含本模板 frontmatter + 四段 + Chain 回占位 + 状态枚举说明）供新增 ADR 复制；TEMPLATE.md 为模板副本，不参与 ADR 计数、覆盖检索与总量收敛（globs 匹配时跳过）
   notes: # 生成注意点（怎么生成）
     - Frontmatter 固定四键：title/doc_type/layer/status，title 与 `# ADR-NNNN — 中文名` 完全一致
     - status 枚举：Accepted / Superseded by ADR-NNNN / Proposed（同 feature 合并时直接覆盖，不新增 Superseded 链）；状态两处一致（frontmatter status / 正文 ## Status）
     - 编号唯一：`ADR-NNNN` 四位递增、无断号，与文件名 `NNNN-<kebab-case>.md` 一一对应；总量收敛：核心决策 <20，超限优先合并同 feature，仍超限问用户归档
-    - 四段正文 Context/Decision/Alternatives/Consequences（Nygard 标准）——只写当前决策的 Why（为什么选 X），**不记历史**；Alternatives 必须列弃用原因
+    - 四段正文 Context/Decision/Alternatives/Consequences（Nygard 标准）——只写当前决策的 Why（为什么选 X），不记历史；Alternatives 必须列弃用原因
     - Chain 回：文末 `> Chain 回：<文档> §<章节>` 与 TECHNOLOGY-ARCHITECTURE §3.1/§4 双向可追溯
     - 命名：NNNN-<kebab-case>.md 四位递增，与 ADR-NNNN 编号一一对应，无断号
     - 状态声明：正文末 `## Status` 与 frontmatter status 双写一致
-    - ADR 只对当前结果负责（快照，不记历史）：**一 feature 一 ADR，迭代直接覆盖该 ADR**（覆盖/新建规则见 flow）
-    - 总量收敛：ADR 总数应保持在一定范围（如核心决策 <20），避免 per-iteration 膨胀；同 feature 合并覆盖是常态；**达到上限时优先合并同 feature 既有 ADR（覆盖），不新增；仍超限则问用户是否拆分归档旧 ADR**
+    - ADR 只对当前结果负责（快照，不记历史）：一 feature 一 ADR，迭代直接覆盖该 ADR（覆盖/新建规则见 flow）
+    - 总量收敛：ADR 总数应保持在一定范围（如核心决策 <20），避免 per-iteration 膨胀；同 feature 合并覆盖是常态；达到上限时优先合并同 feature 既有 ADR（覆盖），不新增；仍超限则问用户是否拆分归档旧 ADR
   checks: # 生成后反向 check
     - "Frontmatter 四键齐全且 status 枚举正确"
     - "标题与 frontmatter title 一致"
@@ -46,7 +46,7 @@ generation:
 
 # ADR — 架构决策记录
 
-> 本文档是「<项目名>」的 **ADR（架构决策记录模板）**——common 贯穿层，记录架构决策的上下文、决策、备选与后果。
+> 本文档是「<项目名>」的 ADR（架构决策记录模板）——common 贯穿层，记录架构决策的上下文、决策、备选与后果。
 > 【模板使用指引】复制为 `docs/adr/NNNN-<kebab-case>.md`，按各章节指引填写。首次生成时本模板已落为 `docs/adr/TEMPLATE.md` 供复制。
 
 ---
@@ -95,17 +95,17 @@ status: "Accepted"
 
 Accepted
 
-> 【指引】与 frontmatter status 一致。**决策反转分两类**：① 同 feature 的决策更新 → 直接覆盖该 ADR 四段（status 保持 Accepted，不新增编号）；② 新决策替代旧决策且属不同 feature / 需保留旧决策痕迹 → 新建 ADR-NNNN，旧 ADR 的 status 字段改为 `Superseded by ADR-NNNN`（改旧文件 status，不删旧文件）。
+> 【指引】与 frontmatter status 一致。决策反转分两类：① 同 feature 的决策更新 → 直接覆盖该 ADR 四段（status 保持 Accepted，不新增编号）；② 新决策替代旧决策且属不同 feature / 需保留旧决策痕迹 → 新建 ADR-NNNN，旧 ADR 的 status 字段改为 `Superseded by ADR-NNNN`（改旧文件 status，不删旧文件）。
 
 ---
 
-> **状态枚举说明**：`Accepted`（已采纳）/ `Superseded by ADR-NNNN`（被替代）/ `Proposed`（提议中）。
+> 状态枚举说明：`Accepted`（已采纳）/ `Superseded by ADR-NNNN`（被替代）/ `Proposed`（提议中）。
 
 ---
 
 ## ADR 索引（`docs/adr/INDEX.md`）结构基准
 
-> 【指引】`docs/adr/INDEX.md` 为 ADR 目录唯一入口（宪法 §3.2 目录索引约定）：**极简形态，只有一张「文件 | 说明」表**——每 ADR 一行、一句话描述该决策；首次生成 ADR 时同步落此 INDEX，新增/覆盖/替代 ADR 时同步更新本表，各 ADR 正文不复制列表。使用约定（编号唯一 / 状态两处一致 / 总量收敛）见本模板 generation notes。
+> 【指引】`docs/adr/INDEX.md` 为 ADR 目录唯一入口（宪法 §3.2 目录索引约定）：极简形态，只有一张「文件 | 说明」表——每 ADR 一行、一句话描述该决策；首次生成 ADR 时同步落此 INDEX，新增/覆盖/替代 ADR 时同步更新本表，各 ADR 正文不复制列表。使用约定（编号唯一 / 状态两处一致 / 总量收敛）见本模板 generation notes。
 
 | 文件                                         | 说明（决策一句话）                                       |
 | -------------------------------------------- | -------------------------------------------------------- |
