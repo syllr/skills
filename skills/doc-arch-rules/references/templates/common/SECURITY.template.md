@@ -14,7 +14,7 @@ generation:
     DEPLOYMENT: 密钥分层与注入规范见本文件 §6（见 notes），部署文档引用不复制；密钥/回调配置同步部署
     INTEGRATION: 外部服务鉴权与密钥管理需与集成契约一致（鉴权方式/凭据存储）
     API: 接口鉴权方案需与 openapi.yaml securitySchemes 一致（引用不复制）
-    GLOSSARY: 安全术语一致
+    CODE-GUIDE: 安全术语命名一致（见其 §2 架构通用术语表）
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
     - 安全等级/合规要求有明确外部约束时（等保/行业规范）→ 问用户采用哪级基线

@@ -20,7 +20,7 @@ description: >
 
 rule 工厂（功能 1）的输入输出：
 
-- 输入：`references/templates/` 下模板（1 个全局 Rule 源 + 21 个模板，清单见 [§文件清单](#文件清单模板-ssot)）
+- 输入：`references/templates/` 下模板（1 个全局 Rule 源 + 20 个模板，清单见 [§文件清单](#文件清单模板-ssot)）
 - 输出：`.omo/rules/docs/` 下的 rule（一个模板对应一个 rule，目录结构与 `references/templates` 同构）
 - 除 DEEP-DIVE/RESEARCH/CONTRACT/ADR/DOMAIN（globs: `docs/L2/domain/*.md` 目录级通配）目录级通配，及 TEST-PLAN（globs 含 `docs/L4/testcases/*.md`）/INTEGRATION（globs 含 `docs/L3/integration-contracts/**`）主文档（TEST-PLAN 总文档 / INTEGRATION 说明书）+目录通配混合外，其余 1:1 同构；目录级模板按 globs 通配覆盖，详见表
 - 只生成 rule，不生成文档：宿主项目 `docs/**` 由 rule 触发后的 AI 按 rule 内容生成/更新
@@ -104,7 +104,7 @@ rule 工厂（功能 1）的输入输出：
 
 ## 文件清单（模板 SSOT）
 
-源文件位于 `references/templates/`：1 个全局 Rule 源（CONSTITUTION，无后缀）+ 21 个模板（.template 后缀，含 L2/domain + L2/deep-dives + L2/research + L3/integration-contracts 子目录；ADR.template.md 为 common 根下文件，无子目录）。
+源文件位于 `references/templates/`：1 个全局 Rule 源（CONSTITUTION，无后缀）+ 20 个模板（.template 后缀，含 L2/domain + L2/deep-dives + L2/research + L3/integration-contracts 子目录；ADR.template.md 为 common 根下文件，无子目录）。
 
 | 层                       | 文件                                                                                     | 类型           | rule 输出                                                                                                                                                                                               | 触发方式              |
 | ------------------------ | ---------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
@@ -127,7 +127,6 @@ rule 工厂（功能 1）的输入输出：
 | L4                       | [TEST-PLAN](references/templates/L4/TEST-PLAN.template.md)                               | 模板           | .omo/rules/docs/L4/TEST-PLAN.md（总文档模式，globs: docs/L4/TEST-PLAN.md + docs/L4/testcases/*.md）                                                                                                     | globs                 |
 | common                   | [CODE-GUIDE](references/templates/common/CODE-GUIDE.template.md)                         | 模板           | .omo/rules/docs/common/CODE-GUIDE.md                                                                                                                                                                    | globs                 |
 | common                   | [SECURITY](references/templates/common/SECURITY.template.md)                             | 模板           | .omo/rules/docs/common/SECURITY.md（贯穿所有层，密钥分层 SSOT 在 §6）                                                                                                                                   | globs                 |
-| common                   | [GLOSSARY](references/templates/common/GLOSSARY.template.md)                             | 模板           | .omo/rules/docs/common/GLOSSARY.md                                                                                                                                                                      | globs                 |
 | common                   | [STRUCTURE](references/templates/common/STRUCTURE.template.md)                           | 模板           | .omo/rules/docs/common/STRUCTURE.md                                                                                                                                                                     | globs                 |
 | common                   | [ADR](references/templates/common/ADR.template.md)                                       | 模板           | .omo/rules/docs/common/ADR.md（目录级通配，globs: docs/adr/*.md 覆盖目录下多文档，物理单 rule）                                                                                                         | globs                 |
 

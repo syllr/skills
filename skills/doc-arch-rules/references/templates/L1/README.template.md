@@ -121,7 +121,6 @@ generation:
 | 我想了解                    | 看哪份文档                                 |
 | --------------------------- | ------------------------------------------ |
 | 目录结构（文档 ↔ 代码映射） | `docs/common/STRUCTURE.md`                 |
-| 术语表                      | `docs/common/GLOSSARY.md`                  |
 | 安全设计                    | `docs/common/SECURITY.md`                  |
 | 代码规范                    | `docs/common/CODE-GUIDE.md`                |
 | 架构决策                    | `docs/adr/INDEX.md`（唯一入口，宪法 §3.2） |

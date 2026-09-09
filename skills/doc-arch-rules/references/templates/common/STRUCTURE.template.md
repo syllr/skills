@@ -110,7 +110,6 @@ generation:
 │   │   └── NNNN-<kebab-case>.md # 单篇 ADR（四位递增，与 ADR-NNNN 编号对应）
 │   └── common/ # common 层（贯穿所有层 · 全局知识）
 │       ├── STRUCTURE.md # 本文件（目录结构，文档 ↔ 代码映射）
-│       ├── GLOSSARY.md # 术语表
 │       ├── SECURITY.md # 安全设计（贯穿所有层，密钥分层见 §6）
 │       └── CODE-GUIDE.md # 代码规范（命名/签名/注释/坏味道）
 ├── backend/ # 后端代码（按 DDD 整理，固定 6 个顶层模块目录；自项目根计第 1 级）
