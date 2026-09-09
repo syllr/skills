@@ -111,7 +111,7 @@ generation:
 
 | 我想了解           | 看哪份文档                                |
 | ------------------ | ----------------------------------------- |
-| 测试计划/用例/报告 | `docs/L4/TEST-PLAN.md`                    |
+| 测试计划/用例/报告 | `docs/L4/TEST-PLAN.md` 或 `test/test-cases/`（形态依项目决策，见宪法 L4 TEST-PLAN 行） |
 | 部署与发布         | `docs/L4/DEPLOYMENT.md`（含版本发布记录） |
 
 ### common

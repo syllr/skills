@@ -61,7 +61,7 @@ generation:
 - 不用 `Manager`/`Processor`/`Info`/`Util` 等万能名，改用职责名：`Manager → Coordinator/Registry`、`Processor → Handler/Service`、`Info → Details/Summary`、`Util → 具体工具类名`
 - 不加 `I` 前缀（Java/TS）
 
-**架构通用术语（命名依据）**：
+架构通用术语（命名依据）：
 
 > 【指引】跨域架构术语的统一命名；业务术语见各域文档通用语言表。按需增行。
 

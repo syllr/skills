@@ -91,3 +91,4 @@ globs:
 - 四节正文必须覆盖 generation 全部字段信息（tools/related/ask_user/flow/notes/checks 逐条内联，related 保留"文档名+联动说明"配对）
 - 「模板」章节只放剥离 YAML frontmatter 后的 Markdown 正文（保留 `> 【指引】` 行——注意此为 rule 内生成提示，供 rule 读者（生成实例的 AI）参考，绝不写入实例文档；生成实例时按「内容纯净/三层处置」剥离）
 - rule 内禁止出现 YAML frontmatter 的 generation 原始块（`---` 内 YAML dump）；generation 信息一律以自然语言四节形式存在
+- **模板附属资产目录（仅 TEST-PLAN 模板持有）**：`references/rule-assets/test-template/`（卡模板 api-case/flow-case + 工具规范 test-tools.md + 参考实现 test-tools/）是 TEST-PLAN rule 的附属资产——生成/重建 TEST-PLAN rule 时整目录原样复制到项目 `.omo/rules/docs/L4/test-template/`（拷贝，不做占位符组装/三层处置/翻译；资产文件无 frontmatter、无 globs，规则引擎不应用，纯供 rule 触发后生成测试资产时参考）；rule「模板」章节内以相对链接 `test-template/xxx` 引用资产文件——目录不随 rule 同步即死链，故为落盘必做项；已有目录时先 diff 项目侧手工改动列给用户确认再覆盖（禁止静默覆盖）

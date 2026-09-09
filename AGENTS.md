@@ -5,7 +5,7 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 ---
 
-## 1. 这个项目是干啥的
+## 1. 项目定位与职责边界
 
 维护一组自包含的 Agent Skills（每个 skill = 一个目录，含 `SKILL.md` + 可选 `references/`/`assets/`/`scripts/`），语言：中文文档。核心能力分两类：
 
@@ -57,18 +57,19 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 ---
 
-## 3. 每个 skill 是干啥的、有啥要注意的
+## 3. 各 skill 概览与注意事项
 
 ### doc-arch-rules（meta skill）
 
-**定位**：规范工厂——①生成/更新 rule ②生成/更新 skill ③对齐流水线（rule 更新 + 路由 docs-align）④globs 轻量（路由 docs-align）。触发关键字：`init` / `生成skill` / `更新globs`；无关键字 = 对齐流水线。
+**定位**：rule 与 skill 生成器（单一功能，无关键字分诊）——从模板全量更新目标项目两类产物：①`.omo/rules/docs/` 全部 omo rule ②`.opencode/skills/` 三个域 skill（test-ops / deploy-ops / docs-align）。触发即全量同步；文档-代码对齐/漂移/globs 目录同步**完全独立**（docs-align skill 承担，本 skill 不承载不路由——用户要文档对齐、处理漂移、更新globs 时直接调 docs-align）。
 
-**结构**：`references/rule-templates/`（1 宪法源 + 21 文档模板，产物 `.omo/rules/docs/`）+ `references/skill-templates/`（test-ops / deploy-ops / docs-align 三份 SKILL.template.md，产物目标项目 `.opencode/skills/`）+ `references/assembly.md`（rule 组装 SSOT，改它 = implHash 刷新全量 rule 重生成）+ `references/globs.md`、`diagram-spec.md` + `scripts/parse-template.mjs`（解析/校验/指纹，零依赖）。
+**结构**：`references/rule-templates/`（1 宪法源 + 21 文档模板，产物 `.omo/rules/docs/`）+ `references/rule-assets/`（附属资产目录，独立于模板树——现含 `test-template/`：卡模板/工具规范/参考实现，随 TEST-PLAN rule **无脑覆盖**同步到目标项目 `.omo/rules/docs/L4/test-template/`，非模板不参与解析/指纹）+ `references/skill-templates/`（test-ops / deploy-ops / docs-align 三份 SKILL.template.md 薄壳模板，产物目标项目 `.opencode/skills/`，逐字落地）+ `references/assembly.md`（rule 组装 SSOT，改它 = implHash 刷新全量 rule 重生成）+ `references/globs.md`、`diagram-spec.md` + `scripts/parse-template.mjs`（解析/校验/指纹，零依赖）。
 
 **注意**：
 
+- 更新语义三分：rule 按版本指纹（`--check-meta` → 需更新才重生成，最新跳过）；**rule-assets/ 无脑覆盖**（资产 = skill 侧模板副本，无项目侧手工改动语义，整目录直接覆盖不询问）；skill 薄壳逐字落地（已有产物先 diff 项目侧手工改动确认再覆盖）
 - 版本指纹 `meta.json`（version/implHash/templates）——**只在用户显式要求时 `--gen-meta`**，AI 不得触碰；用户手工改过的 rule 指纹不会覆盖（设计意图）
-- 功能 3 已迁出为 docs-align skill：本 skill 只做路由；TEST-PLAN rule 存在既有漂移（对齐时豁免，仅保语义一致）
+- docs-align 相关职责（对齐流水线/globs 双向同步/漂移分诊）已完全移出本 skill——SKILL.md 不含这些流程
 - case 生成纪律（API 卡断言三源）：状态码只从 openapi `responses` 取、字段从 ErrorResponse schema 取、具体错误码实测校准（模式 `BAD_REQUEST`/`RULE_VIOLATION_R<N>`）
 
 ### c4-container-diagram
@@ -103,7 +104,9 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 ---
 
-## 4. opencode skill 机制要点（实测与源码确认）
+## 4. opencode skill 机制要点
+
+以下条目均经实测与源码确认：
 
 - `.opencode/skills/` 是**第一顺位项目级目录**（官方文档 + 源码确认），从 cwd 向上找到 git worktree 自动加载；每个 skill 自动注册为 `/<skill-name>` 斜杠命令 + agent 按 description 自动触发
 - `opencode debug skill` 的输出**不完整不可信**（漏列大量实际可用的 skill，含 doc-arch-rules 自身）——验证一律用重启会话看斜杠列表

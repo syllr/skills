@@ -54,9 +54,6 @@ const SPECIAL_TARGETS = {
   README: "README.md",
 };
 
-// 已合并/废弃的模板：不解析（当前无，DATA-ARCHITECTURE 已独立成篇，不再跳过）
-const SKIP_FILES = new Set([]);
-
 /**
  * 递归遍历目录，返回所有文件绝对路径（含子目录）。
  */
@@ -538,7 +535,6 @@ function collectTemplateHashes() {
   const files = walkDir(TEMPLATES_DIR).filter((f) => f.endsWith(".md")).sort();
   const hashes = {};
   for (const f of files) {
-    if (SKIP_FILES.has(path.basename(f))) continue;
     hashes[templateKey(f)] = sha256(fs.readFileSync(f, "utf-8"));
   }
   return hashes;
@@ -739,8 +735,6 @@ function main() {
     const files = walkDir(TEMPLATES_DIR).filter((f) => f.endsWith(".md")).sort();
     const results = [];
     for (const f of files) {
-      const filename = path.basename(f);
-      if (SKIP_FILES.has(filename)) continue;
       results.push(parseTemplateFile(f));
     }
     console.log(JSON.stringify(results, null, 2));
