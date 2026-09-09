@@ -2,12 +2,12 @@
 /**
  * doc-arch-rules 模板解析工具（Node 零依赖）
  *
- * 解析 references/templates/ 下的模板文件，输出结构化 JSON，供 AI 按 SKILL.md 流程组装 rule。
+ * 解析 references/rule-templates/ 下的模板文件，输出结构化 JSON，供 AI 按 SKILL.md 流程组装 rule。
  * 本脚本只做解析/校验，**不组装 rule**（组装由 AI 按 SKILL.md 执行流程完成）。
  *
  * 解析输出结构（每模板一个 JSON）：
  * {
- *   "file": "L2/APPLICATION-ARCHITECTURE.template.md",   // 相对 templates/ 的路径
+ *   "file": "L2/APPLICATION-ARCHITECTURE.template.md",   // 相对 rule-templates/ 的路径
  *   "layer": "L2",
  *   "doc": "APPLICATION-ARCHITECTURE",
  *   "isTemplate": true,                                   // 是否 .template 后缀（false = 全局 rule 源）
@@ -19,7 +19,7 @@
  *
  * 用法:
  *     node <skill>/scripts/parse-template.mjs <模板路径>             # 解析单个模板，stdout 输出 JSON
- *     node <skill>/scripts/parse-template.mjs --all                  # 解析 references/templates/ 下全部 .md，输出 JSON 数组
+ *     node <skill>/scripts/parse-template.mjs --all                  # 解析 references/rule-templates/ 下全部 .md，输出 JSON 数组
  *     node <skill>/scripts/parse-template.mjs --check <rule路径> <模板路径>  # 校验 rule（frontmatter 一致 + 无 generation YAML + 模板章节正文一致）
  *     node <skill>/scripts/parse-template.mjs --gen-meta [--set-version X.Y.Z]  # 生成/刷新 skill 侧 meta.json（version 递增 + 全模板 hash；用户显式触发，禁止自动钩子调用）
  *     node <skill>/scripts/parse-template.mjs --check-meta <项目meta路径>       # skill meta vs 项目 meta 逐条目对比（三态表：最新/需更新/异常；只报告）
@@ -37,7 +37,7 @@ import { createHash } from "node:crypto";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_ROOT = path.resolve(__dirname, "..");
-const TEMPLATES_DIR = path.join(SKILL_ROOT, "references", "templates");
+const TEMPLATES_DIR = path.join(SKILL_ROOT, "references", "rule-templates");
 
 // 层 -> 中文名（rule 标题用）。子目录（L2/deep-dives、L2/research）继承父层：layer 取 relDir 首段 "L2"，无需单独键。
 const LAYER_ZH = {
@@ -523,7 +523,7 @@ function sha256(text) {
 }
 
 /**
- * 模板绝对路径 -> meta key（相对 templates 目录，去 .md / .template 后缀）。
+ * 模板绝对路径 -> meta key（相对 rule-templates 目录，去 .md / .template 后缀）。
  * 例：L1/PRODUCT.template.md -> "L1/PRODUCT"；CONSTITUTION.md -> "CONSTITUTION"。
  */
 function templateKey(absPath) {

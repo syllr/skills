@@ -1,104 +1,117 @@
 # PROJECT KNOWLEDGE BASE
 
-Generated: 2026-08-29
+Generated: 2026-09-09
 Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。本项目只负责 skill 的开发/迭代/格式校验；将 skill 安装到 opencode 等 Agent 由用户自行执行，AI 不代装。
 
-## OVERVIEW
+---
 
-仓库管理一组自包含的 Agent Skills（每个 skill = 一个目录，含 `SKILL.md` + 可选 `references/`/`assets/`/`scripts/`）。核心关注点：skill 内部资源的引用规范（相对路径 / Markdown 链接，禁止 `@path`）与格式合规（agentskills.io 规范）。语言：中文文档。
+## 1. 这个项目是干啥的
 
-职责边界：本项目只做「创建 / 优化 / 校验」skill 三件事；安装到 Agent（如 `npx skills add`）由用户自行执行，不属于本项目职责，AI 不得代为安装。
+维护一组自包含的 Agent Skills（每个 skill = 一个目录，含 `SKILL.md` + 可选 `references/`/`assets/`/`scripts/`），语言：中文文档。核心能力分两类：
 
-## STRUCTURE
+- **独立能力 skill**：c4-container-diagram（画图）、gitee-comments（评审评论）、remote-shell（远程执行）、score-prompt（prompt 评分）、skill-creator（造 skill）
+- **meta skill**：doc-arch-rules——负责「生成/管理/更新 rule」与「生成/管理/更新 skill」：持有 21 个文档模板（→ 目标项目 `.omo/rules/docs/` 的 rule）与 3 个域 skill 模板（→ 目标项目 `.opencode/skills/` 的 test-ops / deploy-ops / docs-align）
 
-```
-skills/
-├── c4-container-diagram/ # 画 C4 Container Diagram skill：D2 实现 + references/（20 官方文档 + diagram-review 自研 + README 清单）
-├── doc-arch-rules/   # 文档架构规范 + omo rule 生成：references/（1 宪法源 + 21 文档模板[含 integration-contracts 目录 INDEX 模板；deep-dives/research 索引由主模板「索引基准」节承载] + assembly/diagram-spec/globs 规范；rule 由模板 generation 元数据生成）
-├── gitee-comments/  # Gitee 提交评审评论 skill（单 SKILL.md）
-├── remote-shell/    # SSH 远程执行 skill（单 SKILL.md）
-├── score-prompt/    # prompt 质量评分 skill（单 SKILL.md）
-└── skill-creator/   # 创建新 skill 的 skill：SKILL.md + references/（含 guide.md）+ assets/templates/
-improve/             # 研究笔记（非 skill，勿动）
-demo/                # doc-arch-rules 演示样例（非 skill，与 .omo/demo 配套）
-README.md            # 面向用户的安装/技能表
-```
+**关键边界**：三个域 skill（test-ops / deploy-ops / docs-align）是 **meta skill 在目标项目生成的产物，不在本仓库**——本仓库只有它们的模板（`doc-arch-rules/references/skill-templates/`）。
 
-## WHERE TO LOOK
+**职责边界**：本项目只做「创建 / 优化 / 校验」；安装到 Agent（`npx skills add`）由用户自行执行，AI 不代装。
 
-| 任务                         | 位置                                      | 说明                                                                                                                                                                                                                                 |
-| ---------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 查看全部 skill               | `skills/`                                 | 每个子目录一个 skill                                                                                                                                                                                                                 |
-| 新 skill 的模板与格式规范    | `skills/skill-creator/references/`        | 含 guide / path-resolution / skill-md-format / directory-structure / script-language-guide                                                                                                                                           |
-| 官方文档本地化范例           | `skills/c4-container-diagram/references/` | 20 个官方文档页 + 自研 diagram-review.md + README 清单（共 22 个 .md）                                                                                                                                                               |
-| 文档架构模板 + omo rule 生成 | `skills/doc-arch-rules/references/`       | 1 个宪法源（CONSTITUTION.md）+ 21 个文档模板（templates/ 按 L0-L4+common 分层，含 integration-contracts 目录 INDEX 模板，deep-dives/research 索引由 DEEP-DIVE/RESEARCH 主模板「索引基准」节承载；rule 由模板 generation 元数据生成） |
-| 创建新 skill                 | `npx skills init skills/<name>`           | 或读 skill-creator 流程                                                                                                                                                                                                              |
-| 安装到 Agent（用户自执行）   | 见 README.md（`npx skills add ...`）      | ⚠️ 本项目只管创建/优化 skill，安装到 opencode 等 Agent 由用户自行执行，AI 不代装                                                                                                                                                     |
+---
 
-## SKILL 引用规范（本仓库核心约定）
+## 2. 全仓注意事项（改任何 skill 前必读）
 
-### 引用 references/ —— Markdown 链接（相对路径）
+### 引用规范（核心约定）
 
-```markdown
-# ✅ 合规：Markdown 链接，目标为相对路径（从 skill 根目录起）
+- `references/` 引用必须用 Markdown 链接相对路径：`[显示文本](references/xxx.md)`，保持一级深度（不嵌套 `references/sub/`）
+- `scripts/`、`assets/` 调用用相对路径命令：`scripts/main.py --input data.json`
+- 禁止：`@path` 语法（agentskills.io 规范禁止）、硬编码绝对路径（安装位置一变即失效）、依赖 cwd 的 `./xxx`、让 AI「自行查找/拼路径」
+- opencode 机制（实测）：skill 激活时自动注入 **Base directory**（安装位置绝对路径），scripts/references 相对路径以其为锚——**不需要也不应该写「探测安装路径」的逻辑**
 
-详见 [布局引擎](references/layouts.md)
-```
+### frontmatter 合规
 
-- `references/` 引用必须用 Markdown 链接：`[显示文本](references/xxx.md)`
-- 显示文本写可读说明；目标用相对路径，保持一级深度（`references/xxx.md`，不要嵌套 `references/sub/xxx.md`）
+| 字段                        | 要求                                                                            |
+| --------------------------- | ------------------------------------------------------------------------------- |
+| `name`                      | 必填，小写连字符，与目录名一致（opencode 严格校验匹配）                         |
+| `description`               | 必填，含功能 + 触发词，<1024 字符                                               |
+| `license` / `compatibility` | 可选                                                                            |
+| `metadata`                  | 可选，string-to-string map（值含数组需单引号包成字符串）                        |
+| `allowed-tools`             | opencode **不识别**（权限走 `permission.skill` 配置）；写的话只能空格分隔字符串 |
 
-### 引用 scripts/ 与 assets/ —— 相对路径命令
+### 内容禁令与机检
 
-```bash
-# ✅ 合规：相对路径（从 skill 根目录起）
-scripts/main.py --input data.json
-scripts/render.py --template assets/templates/report.xml
-```
+- `references/rule-templates/**` 与 `skill-templates/**` 正文及 frontmatter 禁用 `**加粗**` 与 emoji（✅/⚠️/箭头全算；glob 通配符 `**`、目录树制表符除外）
+- 机检（改模板后必跑）：`grep -rnE '\*\*[^*`]+\*\*' skills/doc-arch-rules/references/rule-templates/`无输出 + emoji 扫描（见下方命令）输出`emoji干净`
 
-### 禁止的引用写法（ANTI-PATTERNS）
+### 校验与生效
 
-| 写法                                           | 原因                                                                     |
-| ---------------------------------------------- | ------------------------------------------------------------------------ |
-| `@scripts/foo.ts` 等 `@path` 语法              | agentskills.io 规范明确禁止，其他 Agent（Claude Code/Cursor 等）无法识别 |
-| 硬编码绝对路径 `~/.config/opencode/skills/xxx` | skill 移动到任何安装位置即失效                                           |
-| `./scripts/foo.py` 依赖 cwd                    | bash 调用时 cwd 不一定是 skill 目录                                      |
-| 让 AI "自行查找/拼路径"                        | 依赖推断，不可靠                                                         |
+- 改 skill 后必跑：`uvx --from skills-ref agentskills validate ./skills/<name>`（可执行名是 **agentskills** 不是 skills-ref；`npx skills check` 只是查更新 ≠ 合规校验）；改动已有 skill 前先跑一次作基线（区分既有问题 vs 本次引入）
+- **同步与生效**：本仓库（SSOT）改完 → `npx skills update -g` 同步安装副本（`~/.agents/skills/`）→ **重启 opencode 会话生效**——skill 列表是会话启动快照，skill 内容是激活时读取，不同步+重启就还是旧的
 
-### 长文档拆分原则（渐进式披露）
+### 目录与文档纪律
 
-- `SKILL.md` 保持精简（<500 行），放核心工作流与速查；详参按主题下沉 `references/`（SKILL.md 作 router 按需指向）。`c4-container-diagram` 已按此拆为 229 行（详见其 `references/README.md`）
-- 详细参考放 `references/`，SKILL.md 内用 Markdown 链接按需指向
-- references 文件可本地化官方资料（爬取后内联代码块、去除 Docusaurus 组件残留），使 skill 离线可用
-
-## FRONTMATTER 合规清单
-
-| 字段            | 要求                                                                                                                |
-| --------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `name`          | 必填，小写连字符，与目录名一致                                                                                      |
-| `description`   | 必填，含功能 + 触发词，<1024 字符                                                                                   |
-| `license`       | 可选                                                                                                                |
-| `metadata`      | 可选，可含 `supportedAgents: '["opencode"]'`（值需用单引号包成字符串；官方校验器不认 JSON 流式数组 `["opencode"]`） |
-| `allowed-tools` | 可选，空格分隔字符串（`Read Write Edit Bash`），支持 `Bash(git:*)` 子命令形式；禁止 YAML 数组或逗号分隔             |
-
-## CONVENTIONS
-
-- 文档与注释全部使用中文（技术术语/命令/路径保留原文）
 - 不修改 `improve/`、`demo/`、`.omo/`、`.codegraph/` 等非 skill 目录
-- skill 目录只放 SKILL.md + references/ + assets/ + scripts/，不混入无关文件
-- 模板与生成文档禁用 `**` 加粗与 emoji：`references/templates/**` 正文及 frontmatter 不得出现 `**加粗**`（glob 通配符 `**`、目录树制表符除外）；emoji 零容忍（✅/⚠️/箭头表情等全算）；机检：`grep -rnE '\*\*[^*`]+\*\*' skills/*/references/templates/` 无输出 + 下方 NOTES 的 emoji 扫描命令无输出
+- 文档与注释全部使用中文（技术术语/命令/路径保留原文）
+- skill 目录只放 SKILL.md + references/ + assets/ + scripts/，不混入无关文件；不在 skill 中写真实密码/token/敏感主机信息
+- SKILL.md 精简（<500 行）+ 渐进式披露：核心工作流在 SKILL.md，详参下沉 `references/`（Markdown 链接指向）；references 可本地化官方资料（c4-container-diagram 为范例，更新命令见其 README，上游 master）
+- SKILL.md 内禁止死引用（不存在的章节号/reference 文件）；改 skill 后同步其 `references/README.md`（如有文件清单）
 
-## ANTI-PATTERNS（THIS PROJECT）
+---
 
-- ❌ `@path` 引用语法（如 `@references/guide.md`）
-- ❌ `allowed-tools:` 写成 YAML 块数组或逗号分隔
-- ❌ `name` 与目录名不一致 / 大写 / 含下划线
-- ❌ 在 skill 中写入真实密码、token、敏感主机信息
-- ❌ SKILL.md 中引用不存在的章节号（死引用）或指向不存在的 reference 文件
-- ❌ 改动 skill 后不同步更新 `references/README.md`（文件清单/更新命令）
-- ❌ 模板/frontmatter/生成文档中出现 `**加粗**` 或 emoji（glob `**`、目录树制表符除外）
+## 3. 每个 skill 是干啥的、有啥要注意的
 
-## COMMANDS
+### doc-arch-rules（meta skill）
+
+**定位**：规范工厂——①生成/更新 rule ②生成/更新 skill ③对齐流水线（rule 更新 + 路由 docs-align）④globs 轻量（路由 docs-align）。触发关键字：`init` / `生成skill` / `更新globs`；无关键字 = 对齐流水线。
+
+**结构**：`references/rule-templates/`（1 宪法源 + 21 文档模板，产物 `.omo/rules/docs/`）+ `references/skill-templates/`（test-ops / deploy-ops / docs-align 三份 SKILL.template.md，产物目标项目 `.opencode/skills/`）+ `references/assembly.md`（rule 组装 SSOT，改它 = implHash 刷新全量 rule 重生成）+ `references/globs.md`、`diagram-spec.md` + `scripts/parse-template.mjs`（解析/校验/指纹，零依赖）。
+
+**注意**：
+
+- 版本指纹 `meta.json`（version/implHash/templates）——**只在用户显式要求时 `--gen-meta`**，AI 不得触碰；用户手工改过的 rule 指纹不会覆盖（设计意图）
+- 功能 3 已迁出为 docs-align skill：本 skill 只做路由；TEST-PLAN rule 存在既有漂移（对齐时豁免，仅保语义一致）
+- case 生成纪律（API 卡断言三源）：状态码只从 openapi `responses` 取、字段从 ErrorResponse schema 取、具体错误码实测校准（模式 `BAD_REQUEST`/`RULE_VIOLATION_R<N>`）
+
+### c4-container-diagram
+
+**定位**：用 D2 画 C4 Container Diagram（c4model.com 标准第 2 层图），Markdown 内嵌 d2 代码块渲染。
+
+**注意**：`references/` 含 20 个官方文档本地化 + 自研 diagram-review.md（共 22 个 .md，更新命令见其 README，上游 master）；SKILL.md 已按渐进式披露拆为 229 行（本仓范例）；画图前先以 ASCII 架构图与用户确认。
+
+### gitee-comments
+
+**定位**：管理 Gitee 仓库提交（commit）的评审评论——程序化记录评审意见、列未解决待办、回复线程、解决/删除。
+
+**注意**：单 SKILL.md；依赖 Gitee 仓库留痕机制（AI 与团队共用）。
+
+### remote-shell
+
+**定位**：SSH 在远程服务器执行命令，优先 `remote-shell` CLI，支持降级回退。
+
+**注意**：单 SKILL.md；远程执行规则见 `.config/opencode/rules/remote-shell-execution.md`（exit code 精确降级，禁止凭经验跳 sshpass）。
+
+### score-prompt
+
+**定位**：对任意 LLM prompt/文档跑 5 维度质量评分（Clarity/Conciseness/Actionability/Consistency/Minimal-slop）并迭代修复至目标分。
+
+**注意**：单 SKILL.md；默认目标 90 分，可 `target_score` 覆盖。
+
+### skill-creator
+
+**定位**：创建新 OpenCode Skill——`npx skills init skills/<name>` 或按其流程手写。
+
+**注意**：`references/` 含 guide / path-resolution / skill-md-format / directory-structure / script-language-guide——**改任何 skill 前先读 skill-md-format.md**；`assets/templates/` 为脚手架模板。
+
+---
+
+## 4. opencode skill 机制要点（实测与源码确认）
+
+- `.opencode/skills/` 是**第一顺位项目级目录**（官方文档 + 源码确认），从 cwd 向上找到 git worktree 自动加载；每个 skill 自动注册为 `/<skill-name>` 斜杠命令 + agent 按 description 自动触发
+- `opencode debug skill` 的输出**不完整不可信**（漏列大量实际可用的 skill，含 doc-arch-rules 自身）——验证一律用重启会话看斜杠列表
+- frontmatter 只认 name/description/license/compatibility/metadata；权限走 `permission.skill` 配置
+
+---
+
+## 5. 命令速查
 
 ```bash
 # 列出所有 skill
@@ -107,25 +120,40 @@ find skills -name "SKILL.md" | sort
 # 创建新 skill
 npx skills init skills/<skill-name>
 
-# 检查更新（只检查，不更新）
-npx skills check
-
-# 更新本机已安装的 skill（从 GitHub 拉最新覆盖本地）
-npx skills update -g -y
-
-# 校验 skill 合规性（agentskills.io 官方 skills-ref，uvx 一次性运行，不落地安装）
-# 注意：可执行名是 agentskills（不是 skills-ref）；npx skills check 只是 update 只读模式，≠合规校验
+# 合规校验（agentskills.io 官方 skills-ref，uvx 一次性运行）
 uvx --from skills-ref agentskills validate ./skills/<skill-name>
-
-# 校验全部 skill
 for d in skills/*/; do uvx --from skills-ref agentskills validate "$d" || echo "!! FAIL: $d"; done
+
+# doc-arch-rules 脚本（相对路径以 skill 激活时注入的 Base directory 为锚）
+node scripts/parse-template.mjs --all
+node scripts/parse-template.mjs --check <rule路径> <模板路径>
+node scripts/parse-template.mjs --gen-meta [--set-version X.Y.Z]      # 仅用户显式触发
+node scripts/parse-template.mjs --check-meta <项目meta路径>
+node scripts/parse-template.mjs --update-project-meta <项目meta> <DOC> <v> <h> <th>
+
+# 同步到已安装副本（用户自行执行；同步后重启 opencode 生效）
+npx skills update -g
+
+# 加粗/emoji 机检（改模板后必跑；grep 应无输出，python 应输出 emoji干净）
+grep -rnE '\*\*[^*`]+\*\*' skills/doc-arch-rules/references/rule-templates/ skills/doc-arch-rules/references/skill-templates/
+python3 -c "import glob;hit=[f'{p}:{i}' for p in glob.glob('skills/doc-arch-rules/references/*-templates/**/*.md',recursive=True) for i,l in enumerate(open(p,encoding='utf-8'),1) for ch in l if '\U0001F300'<=ch<='\U0001FAFF' or 0x2705<=ord(ch)<=0x27BF];print(hit if hit else 'emoji干净')"
 ```
 
-> ⚠️ 安装到 Agent 由用户自行执行，AI 不代装。安装命令见 README.md（如 `npx skills add . -s '*' -a opencode`），不写进本项目工作流。
+---
 
-## NOTES
+## 附：目录结构
 
-- 项目约定统一由 AGENTS.md 承担；skill 格式基础规范见 [skill-md-format.md](skills/skill-creator/references/skill-md-format.md)，改 skill 前先读
-- `references/` 的官方资料可通过 `references/README.md` 的更新命令重新拉取（上游分支为 `master`）
-- 仓库未设置 CI；合规校验用 `uvx --from skills-ref agentskills validate`（agentskills.io 官方 skills-ref，见 COMMANDS），`npx skills check` 只查更新；改 skill 后必跑校验，若改动的是已有 skill，改前也建议跑一次作为基线（区分「既有问题」vs「本次改动引入」）
-- 无加粗/emoji 扫描（改模板后必跑）：`grep -rnE '\*\*[^*`]+\*\*' skills/_/references/templates/`无输出；emoji 扫描`python3 -c "import glob;hit=[f'{p}:{i}' for p in glob.glob('skills/_/references/templates/**/*.md',recursive=True) for i,l in enumerate(open(p,encoding='utf-8'),1) for ch in l if '\U0001F300'<=ch<='\U0001FAFF' or 0x2705<=ord(ch)<=0x27BF];print(hit if hit else 'emoji干净')"`输出`emoji干净`
+```
+skills/
+├── c4-container-diagram/  # D2 画 C4 图 + references/（20 官方文档 + diagram-review + README 清单）
+├── doc-arch-rules/        # meta skill：rule/skill 生成（结构见其「skill 模板」与「文件清单」节）
+├── gitee-comments/        # Gitee 评审评论（单 SKILL.md）
+├── remote-shell/          # SSH 远程执行（单 SKILL.md）
+├── score-prompt/          # prompt 评分（单 SKILL.md）
+└── skill-creator/         # 创建新 skill + references/（guide 等五篇）+ assets/templates/
+improve/                   # 研究笔记（非 skill，勿动）
+demo/                      # doc-arch-rules 演示样例（非 skill）
+README.md                  # 面向用户的安装/技能表
+```
+
+> 生成产物去向（不在本仓库）：三个域 skill（test-ops / deploy-ops / docs-align）→ 目标项目 `.opencode/skills/`；rule → 目标项目 `.omo/rules/docs/`。
