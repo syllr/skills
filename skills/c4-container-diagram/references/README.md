@@ -6,13 +6,13 @@
 
 经过精简，仅保留画架构图实际用得到的 D2 语法参考（其余 17 个文件已删除——如 sequence_diagram/sql_table/ER 图/tala 付费引擎/CLI 完整手册等与 C4 Container 画图无关）：
 
-| 文件                | 内容                                              | 对应官方页面         | C4 画图用途                                         |
-| ------------------- | ------------------------------------------------- | -------------------- | --------------------------------------------------- |
-| `containers.md`     | 容器嵌套、标签、父引用                            | /tour/containers/    | 核心——多层大容器嵌套语法                        |
-| `connections.md`    | 连接语法（有向/无向/标签/引用）                   | /tour/connections/   | 核心——容器间通信关系                            |
-| `grid-diagrams.md`  | 网格布局（grid-columns/rows/gap）                 | /tour/grid-diagrams/ | 核心——"千层蛋糕"纵向堆叠 + 等宽分布             |
-| `elk.md`            | ELK 布局引擎                                      | /tour/elk/           | 核心——默认推荐引擎（含 grid + 容器 width 支持） |
-| `diagram-review.md` | 本项目自研 PNG 识图自检审查清单（非官方文档） | —                    | 自检核心——macOS sips 转 PNG 后用识图工具审查        |
+| 文件                | 内容                                          | 对应官方页面         | C4 画图用途                                     |
+| ------------------- | --------------------------------------------- | -------------------- | ----------------------------------------------- |
+| `containers.md`     | 容器嵌套、标签、父引用                        | /tour/containers/    | 核心——多层大容器嵌套语法                        |
+| `connections.md`    | 连接语法（有向/无向/标签/引用）               | /tour/connections/   | 核心——容器间通信关系                            |
+| `grid-diagrams.md`  | 网格布局（grid-columns/rows/gap）             | /tour/grid-diagrams/ | 核心——"千层蛋糕"纵向堆叠 + 等宽分布             |
+| `elk.md`            | ELK 布局引擎                                  | /tour/elk/           | 核心——默认推荐引擎（含 grid + 容器 width 支持） |
+| `diagram-review.md` | 本项目自研 PNG 识图自检审查清单（非官方文档） | —                    | 自检核心——macOS sips 转 PNG 后用识图工具审查    |
 
 ## 本 skill 拆分出的自研参考（来自 SKILL.md，非官方文档）
 
@@ -39,7 +39,7 @@
 
 ## 更新方式
 
-如需更新到最新版（仅保留的 5 个文件）：
+如需更新到最新版（官方本地化 4 个文件；diagram-review.md 为自研，不参与更新）：
 
 ```bash
 # 分支为 master

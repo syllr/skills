@@ -103,7 +103,7 @@ task(subagent_type="oracle", prompt="
 每次改完后：
 
 1. （无需重新读取 target_file —— oracle 每轮自动重读；如有改动，直接进入下一轮审查）
-2. 重跑 oracle（同 §3 的 task() 调用，复用 session_id 保持跨轮上下文）。具体机制：从 R0 的 `task()` 返回值中提取 `session_id` 字段（OpenCode 标准），后续 `task(subagent_type="oracle", session_id=<提取值>, prompt=...)` 调用中作为参数传入。不要省略 session_id——省略会导致 oracle 每次重审时丢失跨轮已知 findings，导致 R(N) 评分震荡。
+2. 重跑 oracle（同 §3 的 task() 调用，复用 task_id 保持跨轮上下文）。具体机制：从 R0 的 `task()` 返回值中提取续会话 id（`task_id`，值形如 `ses_...`），后续 `task(task_id="ses_...", prompt=...)` 调用中作为参数传入。不要省略 task_id——省略会导致 oracle 每次重审时丢失跨轮已知 findings，导致 R(N) 评分震荡。
 3. 解析新分数，记为 R(N)
 
 ## 4.4 循环退出条件（每轮修复前先检查）

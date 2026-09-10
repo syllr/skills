@@ -1,6 +1,7 @@
 ---
 name: remote-shell
 description: 通过 SSH 在远程服务器上执行命令、上传/下载文件。触发词：去 xxx 执行、在 xxx 上运行、连接 xxx 并执行、远程执行 xxx、在 xxx 查看 xxx、上传/下载文件到 xxx
+license: MIT
 allowed-tools: Bash
 ---
 
@@ -36,7 +37,7 @@ CLI 未安装时的提示（让用户自行执行，不代装）：
 npm install -g remote-shell-cli
 ```
 
-安装后需 `remote-shell add` 配置主机（见下文「添加主机」）。
+安装后需 `remote-shell add` 配置主机（见 [CLI 与配置参考](references/cli-reference.md)）。
 
 > ⚠️ 本 skill 不替你安装、不做任何密码/凭据处理。主机配置由 `remote-shell` CLI 承担（配置文件 `~/.config/remote-shell/hosts.json`，见下文）。
 >
@@ -112,60 +113,9 @@ remote-shell <别名> "echo $PATH"
 remote-shell --help
 ```
 
-### 添加主机
+### 主机管理（添加 / 删除 / 更新）
 
-支持交互式添加和参数化添加两种方式：
-
-```bash
-# 交互式添加（按提示输入各项信息）
-remote-shell add
-
-# 参数化添加（各项参数可组合使用）
-remote-shell add --alias <别名> --host <主机> --username <用户名> --password <密码>
-```
-
-参数说明：
-
-| 参数               | 说明                            |
-| ------------------ | ------------------------------- |
-| `--alias`          | 主机别名（必填）                |
-| `--host`           | 主机 IP 或域名（必填）          |
-| `--port`           | SSH 端口（默认 22）             |
-| `--username`       | SSH 用户名（必填）              |
-| `--password`       | SSH 密码（与私钥二选一）        |
-| `--privateKeyPath` | SSH 私钥路径（与密码二选一）    |
-| `--timeout`        | SSH 握手超时毫秒数（默认 5000） |
-
-> ⚠️ 注意：`--password`/`--privateKeyPath` 必填其一，且禁止在 skill 内容或对话中明文写入真实密码。
-
-### 删除主机
-
-```bash
-# 按别名删除
-remote-shell delete <别名>
-
-# 交互式选择删除
-remote-shell delete
-```
-
-### 更新主机
-
-支持交互式更新和参数化更新两种方式，只更新提供的字段，未提供的字段保持不变：
-
-```bash
-# 交互式更新（选择要更新的主机，按提示修改）
-remote-shell update
-
-# 按别名更新指定主机
-remote-shell update <别名>
-
-# 参数化更新（只改提供的字段；--alias 用于重命名）
-remote-shell update <别名> --alias <新别名> --port <新端口>
-```
-
-可更新字段与「添加主机」的参数表一致，只更新提供的字段：`--alias` 表示重命名，其余参数含义与「添加主机」相同（见上表）。
-
-> ⚠️ 更新凭据（`--password`/`--privateKeyPath`）时同样遵循「禁止明文写入真实密码」约定，命令在对话中展示时需遮蔽密码部分。
+添加、删除、更新主机的完整命令与参数说明见 [CLI 与配置参考](references/cli-reference.md)（含参数表与凭据处理约定）。
 
 ### 上传 / 下载文件（SFTP）
 
@@ -187,7 +137,7 @@ remote-shell upload 3070 ./model.tar.gz /root/model.tar.gz
 remote-shell download 3070 /root/logs/app.log ./app.log
 ```
 
-> 文件传输失败时按「退出码获取与降级回退机制」处理：`remote-shell` 无法连接时，可降级用 scp 重试（密码来源见下方「密码来源（本机密码表）」，命令行同样禁止回显密码）：
+> 文件传输失败时按「退出码获取与降级回退机制」处理：`remote-shell` 无法连接时，可降级用 scp 重试（密码来源见下方「密码来源」，命令行同样禁止回显密码）：
 >
 > ```bash
 > sshpass -p '<密码>' scp -o StrictHostKeyChecking=no -P <端口> <本地路径> <用户>@<主机>:<远程路径>
@@ -215,42 +165,7 @@ Available hosts:
 
 ## 配置文件
 
-### 配置文件位置
-
-默认：`~/.config/remote-shell/hosts.json`（XDG 标准）
-
-可通过 `--config <路径>` 或设置 `XDG_CONFIG_HOME` 环境变量覆盖。
-
-### 配置文件格式
-
-`hosts.json` 是一个 JSON 对象，包含 `hosts` map，每个键为主机别名，值为主机配置对象：
-
-| 字段             | 类型   | 说明                                        |
-| ---------------- | ------ | ------------------------------------------- |
-| `alias`          | string | 主机别名，用于命令中引用                    |
-| `host`           | string | 主机 IP 或域名                              |
-| `port`           | number | SSH 端口，默认 22                           |
-| `username`       | string | SSH 用户名（注意是 `username` 不是 `user`） |
-| `password`       | string | SSH 密码（与 `privateKeyPath` 二选一）      |
-| `privateKeyPath` | string | SSH 私钥路径（与 `password` 二选一）        |
-| `timeout`        | number | SSH 握手超时毫秒数，默认 5000               |
-
-示例（仅展示结构，请勿写入真实密码）：
-
-```json
-{
-  "hosts": {
-    "example-host": {
-      "alias": "example-host",
-      "host": "192.168.1.100",
-      "port": 22,
-      "username": "ubuntu",
-      "privateKeyPath": "~/.ssh/dev-key",
-      "timeout": 5000
-    }
-  }
-}
-```
+默认：`~/.config/remote-shell/hosts.json`（XDG 标准），可通过 `--config <路径>` 或 `XDG_CONFIG_HOME` 覆盖。文件位置、格式与字段说明见 [CLI 与配置参考](references/cli-reference.md)。
 
 ### 退出码获取与降级回退机制
 
@@ -262,15 +177,15 @@ remote-shell <别名> '<命令>'; echo "EXIT:$?"
 
 必须基于 exit code 精确判断是否降级——禁止"执行失败就直接切 sshpass"的经验式跳过。降级条件见下表：
 
-| exit code   | 场景                                                          | 是否降级      | 降级策略                                                                                         |
-| ----------- | ------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------ |
-| 0       | 成功执行                                                      | ❌ 不降级     | 直接返回结果给用户                                                                               |
-| 1       | 连接拒绝/主机不可达/连接丢失                                  | ✅ 降级       | 使用 sshpass 重试                                                                                |
-| 2       | SSH 握手超时                                                  | ✅ 降级       | 使用 sshpass 重试                                                                                |
-| 5       | 认证失败/配置错误                                             | ✅ 降级       | 使用 sshpass + 密码表重试                                                                        |
-| 126/127 | 权限不足/命令未找到（`remote-shell` 不在 PATH）               | ⚠️ 降级前报告 | ①向用户报告"remote-shell 不可用或权限不足"；②询问是否继续 sshpass                                |
-| 128+    | 进程被信号终止（如 SIGINT/SIGKILL，常见于命令被 Ctrl+C 中断） | ❌ 不降级     | 重新执行同一命令；仍失败则检查命令本身或主机状态；长任务建议改用 `nohup`/`screen` 在远程后台运行 |
-| 其他非以上  | 未预期的内部错误                                              | ⚠️ 谨慎降级   | ①向用户展示完整 stderr；②不等待用户回复，立即用 sshpass 重试                                 |
+| exit code  | 场景                                                          | 是否降级      | 降级策略                                                                                         |
+| ---------- | ------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------ |
+| 0          | 成功执行                                                      | ❌ 不降级     | 直接返回结果给用户                                                                               |
+| 1          | 连接拒绝/主机不可达/连接丢失                                  | ✅ 降级       | 使用 sshpass 重试                                                                                |
+| 2          | SSH 握手超时                                                  | ✅ 降级       | 使用 sshpass 重试                                                                                |
+| 5          | 认证失败/配置错误                                             | ✅ 降级       | 使用 sshpass + 密码表重试                                                                        |
+| 126/127    | 权限不足/命令未找到（`remote-shell` 不在 PATH）               | ⚠️ 降级前报告 | ①向用户报告"remote-shell 不可用或权限不足"；②询问是否继续 sshpass                                |
+| 128+       | 进程被信号终止（如 SIGINT/SIGKILL，常见于命令被 Ctrl+C 中断） | ❌ 不降级     | 重新执行同一命令；仍失败则检查命令本身或主机状态；长任务建议改用 `nohup`/`screen` 在远程后台运行 |
+| 其他非以上 | 未预期的内部错误                                              | ⚠️ 谨慎降级   | ①向用户展示完整 stderr；②不等待用户回复，立即用 sshpass 重试                                     |
 
 降级执行方式：使用 sshpass 直接 SSH 重试（连接参数与 `remote-shell list` 输出一致，密码取自本机密码表）：
 
@@ -278,7 +193,7 @@ remote-shell <别名> '<命令>'; echo "EXIT:$?"
 sshpass -p '<密码>' ssh -o StrictHostKeyChecking=no <用户>@<主机> -p <端口> '<命令>'
 ```
 
-密码来源（本机密码表）：优先读取 remote-shell 配置文件 `~/.config/remote-shell/hosts.json` 中对应主机的 `password` 字段；若该字段为空或缺失，再从用户环境的既有凭据表读取。密码只在降级时本地读取使用，禁止明文写入 skill 内容、示例或对话，不展示、不回显。
+密码来源：优先读取 remote-shell 配置文件 `~/.config/remote-shell/hosts.json` 中对应主机的 `password` 字段；若该字段为空或缺失，向用户索取（不主动检索其他凭据存储）。密码只在降级时本地读取使用，禁止明文写入 skill 内容、示例或对话，不展示、不回显。
 
 降级约束：
 
@@ -289,8 +204,8 @@ sshpass -p '<密码>' ssh -o StrictHostKeyChecking=no <用户>@<主机> -p <端�
 
 补充：命令执行错误提示：
 
-| 错误场景         | 表现                                                       | 处理方式                                               |
-| ---------------- | ---------------------------------------------------------- | ------------------------------------------------------ |
+| 错误场景     | 表现                                                       | 处理方式                                               |
+| ------------ | ---------------------------------------------------------- | ------------------------------------------------------ |
 | 命令执行超时 | 命令长时间无输出                                           | 建议使用 `timeout` 包装命令，如 `timeout 30 <command>` |
 | 主机密钥变更 | 输出类似 `WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED` | 提示用户使用 `ssh-keygen -R <host>` 清理旧密钥         |
 

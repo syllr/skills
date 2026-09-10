@@ -1,6 +1,7 @@
 ---
 name: c4-container-diagram
 description: 用 D2（d2lang.com）画容器式分层图——多层大容器纵向嵌套、每层内含若干子容器、子容器等宽均匀分布、左右居中对称、全圆角矩形的图。典型形态包括：C4 model Container Diagram（c4model.com 标准第 2 层图）、技术架构图、产品架构图、业务能力分层图、微服务架构图等——凡是"大容器套小容器、分层堆叠"的图都适用，不限于技术架构。含产品能力架构图（Product Capability Architecture Map：一张图三通道编码——布局=分层、线型=状态[实线=已实现/虚线=规划中]、颜色=优先级热力[红=核心/橙=支撑/灰=边缘]，配套图例 + 主体/竖条分栏），模板见 references/templates.md §5.6。展示系统/产品/业务的容器划分（应用、服务、数据存储、业务模块等）与容器间通信关系。Markdown 内嵌 ```d2 代码块渲染。当用户要画容器图 / 分层架构图 / 容器架构图 / 多层嵌套图 / C4 Container Diagram / 产品能力架构图 / 业务能力分层图时使用。不在此范围：流程图、时序图、ER 图、UML 类图、C4 的 Component/Code 层（组件级调用）——请用其他 skill。⚠️ 铁律：每一层嵌套（A→B→C→D）都必须为子容器显式算 width（公式见 references/layout-and-grid.md；唯一例外：单列竖条不设 width，让 ELK 自动包裹居中）。⚠️ 多板图（layers/scenarios/steps）禁用。
+license: MIT
 ---
 
 # 容器式分层图技能（C4 Container 实现 · D2）
@@ -148,7 +149,7 @@ python3 scripts/d2-workbench.py sync docs.md docs-fig1.d2 1   # 或按序号
 | D2 语法坑 / 引擎选型 / 多板·TALA 禁用 / viewBox 溢出 / `\n` 换行 / 长 label | [references/d2-syntax-cheatsheet.md](references/d2-syntax-cheatsheet.md)                                                                                                                 |
 | 生成前/后自检流程、SVG 坐标验证、验收执行、fallback、CLI 速查               | [references/troubleshooting.md](references/troubleshooting.md)                                                                                                                           |
 | ASCII 要素 / 实测模板（3 层标准·竖排·竖条·层内分区·最简骨架）               | [references/templates.md](references/templates.md)                                                                                                                                       |
-| 产品能力架构图（三通道编码 + 图例 + 多 class 叠加）                     | [references/templates.md §5.6](references/templates.md)                                                                                                                                  |
+| 产品能力架构图（三通道编码 + 图例 + 多 class 叠加）                         | [references/templates.md §5.6](references/templates.md)                                                                                                                                  |
 | 连接语法基础（边类型/标签/链式/箭头样式）                                   | [references/connections.md](references/connections.md)                                                                                                                                   |
 | 网格布局范例 / 容器形态 / ELK 引擎 / 渲染后评审清单                         | [references/grid-diagrams.md](references/grid-diagrams.md) · [containers.md](references/containers.md) · [elk.md](references/elk.md) · [diagram-review.md](references/diagram-review.md) |
 
