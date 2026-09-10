@@ -85,4 +85,4 @@ metadata:
 
 输出报告：漂移清单（文件:位置 / 差异 / 判定：漂移或疑似 bug / 处置：已修或待用户裁决）+ globs 对账三件套 + 每文档已读文件清单。
 
-边界：只检测与修复 `docs/**` 文档（rule 覆盖范围）；不修代码（疑似 bug 交用户裁决）；不自动 commit/push；`.omo/plans` 与 `.omo/evidence` 属历史记录不追溯。
+边界：只检测与修复 `docs/**` 文档（rule 覆盖范围）；不修代码（疑似 bug 交用户裁决）；不自动 commit/push；`.omo/evidence` 属历史记录不追溯。

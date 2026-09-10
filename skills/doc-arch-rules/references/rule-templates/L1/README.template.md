@@ -7,6 +7,8 @@ globs:
   - "README.md"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
+  tools:
+    - Markdown 文档索引表（L0-L4 + common 分层，一文档一行）+ 技术栈清单（只列事实）
   related: # 关联模板与联动修改
     CONSTITUTION: 文档架构见宪法 §3.1（全局加载，无 docs/ 副本；rule 在 .omo/rules/docs/CONSTITUTION.md），文档增删需同步 README 索引
     STRUCTURE: 目录结构见它 §1，目录变化需同步 README 路径

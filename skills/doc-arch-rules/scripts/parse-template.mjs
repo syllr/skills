@@ -529,7 +529,7 @@ function templateKey(absPath) {
 }
 
 /**
- * 收集全部模板 hash：{ key: sha256 }（跳过 SKIP_FILES）。
+ * 收集全部模板 hash：{ key: sha256 }。
  */
 function collectTemplateHashes() {
   const files = walkDir(TEMPLATES_DIR).filter((f) => f.endsWith(".md")).sort();
