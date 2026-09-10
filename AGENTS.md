@@ -37,6 +37,8 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 | `metadata`                  | 可选，string-to-string map（值含数组需单引号包成字符串）                        |
 | `allowed-tools`             | opencode **不识别**（权限走 `permission.skill` 配置）；写的话只能空格分隔字符串 |
 
+> `license` / `compatibility` / `metadata` / `allowed-tools` 均为可选字段，声明与否不作为合规项——各 skill 间存在差异属正常（`allowed-tools` 在 opencode 不生效，仅兼容 Claude Code 等其他 Agent）。仓库整体 license 为 MIT。
+
 ### 内容禁令与机检
 
 - `references/rule-templates/**` 与 `skill-templates/**` 正文及 frontmatter 禁用 `**加粗**` 与 emoji（✅/⚠️/箭头全算；glob 通配符 `**`、目录树制表符除外）
@@ -51,7 +53,8 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 - 不修改 `improve/`、`demo/`、`.omo/`、`.codegraph/` 等非 skill 目录
 - 文档与注释全部使用中文（技术术语/命令/路径保留原文）
-- skill 目录只放 SKILL.md + references/ + assets/ + scripts/，不混入无关文件；不在 skill 中写真实密码/token/敏感主机信息
+- **临时产物不进仓库**：截图（Playwright / 视觉 QA / 调试截图等 `*-fullpage.png`）、临时输出、中间文件一律写系统临时目录（`/tmp`、`mktemp -d` 或 `$TMPDIR`），用完即删；禁止落在仓库任何位置（含仓库根、skill 目录）。机检：`find . -maxdepth 2 \( -name '*.png' -o -name '*.jpg' -o -name '*.webp' \) -not -path './node_modules/*'` 应无输出
+- skill 目录只放 SKILL.md + references/ + assets/ + scripts/，不混入无关文件（例外：doc-arch-rules 根目录的 `meta.json` 是版本指纹 SSOT，属有意保留）；不在 skill 中写真实密码/token/敏感主机信息
 - SKILL.md 精简（<500 行）+ 渐进式披露：核心工作流在 SKILL.md，详参下沉 `references/`（Markdown 链接指向）；references 可本地化官方资料（c4-container-diagram 为范例，更新命令见其 README，上游 master）
 - SKILL.md 内禁止死引用（不存在的章节号/reference 文件）；改 skill 后同步其 `references/README.md`（如有文件清单）
 
@@ -61,9 +64,9 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 ### doc-arch-rules（meta skill）
 
-**定位**：rule 与 skill 生成器（单一功能，无关键字分诊）——从模板全量更新目标项目两类产物：①`.omo/rules/docs/` 全部 omo rule ②`.opencode/skills/` 三个域 skill（test-ops / deploy-ops / docs-align）。触发即全量同步；文档-代码对齐/漂移/globs 目录同步**完全独立**（docs-align skill 承担，本 skill 不承载不路由——用户要文档对齐、处理漂移、更新globs 时直接调 docs-align）。
+**定位**：rule 与 skill 生成器（单一功能，无关键字分诊）——从模板全量更新目标项目两类产物：①`.omo/rules/docs/` 全部 omo rule ②`.opencode/skills/` 三个域 skill（test-ops / deploy-ops / docs-align）。触发即全量同步；文档-代码对齐/漂移修复/文档初始化/globs 目录同步**完全独立**（docs-align skill 承担，本 skill 不承载不路由——用户要文档对齐、处理漂移、初始化文档、更新globs 时直接调 docs-align）。
 
-**结构**：`references/rule-templates/`（1 宪法源 + 21 文档模板，产物 `.omo/rules/docs/`）+ `references/rule-assets/`（附属资产目录，独立于模板树——现含 `test-template/`：卡模板/工具规范/参考实现，随 TEST-PLAN rule **无脑覆盖**同步到目标项目 `.omo/rules/docs/L4/test-template/`，非模板不参与解析/指纹）+ `references/skill-templates/`（test-ops / deploy-ops / docs-align 三份 SKILL.template.md 薄壳模板，产物目标项目 `.opencode/skills/`，逐字落地）+ `references/assembly.md`（rule 组装 SSOT，改它 = implHash 刷新全量 rule 重生成）+ `references/globs.md`、`diagram-spec.md` + `scripts/parse-template.mjs`（解析/校验/指纹，零依赖）。
+**结构**：`references/rule-templates/`（1 宪法源 + 21 文档模板，产物 `.omo/rules/docs/`）+ `references/rule-assets/test-asset/`（附属资产目录，独立于模板树——卡模板/工具规范/参考实现，随 TEST-PLAN rule **无脑覆盖**同步到目标项目 `.omo/rules/docs/test-asset/`，非模板不参与解析/指纹）+ `references/skill-templates/`（test-ops / deploy-ops / docs-align 三份 SKILL.template.md 薄壳模板，产物目标项目 `.opencode/skills/`，逐字落地）+ `references/assembly.md`（rule 组装 SSOT，改它 = implHash 刷新全量 rule 重生成）+ `references/globs.md`、`diagram-spec.md` + `scripts/parse-template.mjs`（解析/校验/指纹，零依赖）。
 
 **注意**：
 
@@ -76,7 +79,7 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 **定位**：用 D2 画 C4 Container Diagram（c4model.com 标准第 2 层图），Markdown 内嵌 d2 代码块渲染。
 
-**注意**：`references/` 含 20 个官方文档本地化 + 自研 diagram-review.md（共 22 个 .md，更新命令见其 README，上游 master）；SKILL.md 已按渐进式披露拆为 229 行（本仓范例）；画图前先以 ASCII 架构图与用户确认。
+**注意**：`references/` 含 4 个 D2 官方文档本地化（containers/connections/grid-diagrams/elk）+ 7 个自研参考（c4-container-spec/layout-and-grid/connection-routing/d2-syntax-cheatsheet/troubleshooting/templates/diagram-review）+ README 清单，共 12 个 .md（官方本地化更新命令见其 README，上游 master）；SKILL.md 已按渐进式披露拆为 232 行（本仓范例）；画图前先以 ASCII 架构图与用户确认。
 
 ### gitee-comments
 
@@ -88,7 +91,7 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 **定位**：SSH 在远程服务器执行命令，优先 `remote-shell` CLI，支持降级回退。
 
-**注意**：单 SKILL.md；远程执行规则见 `.config/opencode/rules/remote-shell-execution.md`（exit code 精确降级，禁止凭经验跳 sshpass）。
+**注意**：SKILL.md + `references/cli-reference.md`（CLI 主机管理/配置格式）；远程执行规则见 `.config/opencode/rules/remote-shell-execution.md`（exit code 精确降级，禁止凭经验跳 sshpass）。
 
 ### score-prompt
 
@@ -100,7 +103,7 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 **定位**：创建新 OpenCode Skill——`npx skills init skills/<name>` 或按其流程手写。
 
-**注意**：`references/` 含 guide / path-resolution / skill-md-format / directory-structure / script-language-guide——**改任何 skill 前先读 skill-md-format.md**；`assets/templates/` 为脚手架模板。
+**注意**：`references/` 含 8 篇（skill-md-format / directory-structure / path-resolution / script-language-guide + guide / api-ref / custom-args / troubleshooting 四篇写法示例，全清单见 SKILL.md 索引）——**改任何 skill 前先读 skill-md-format.md**；`assets/templates/` 含 5 个骨架 + 3 个脚本模板（清单见 SKILL.md）。
 
 ---
 
@@ -148,10 +151,10 @@ python3 -c "import glob;hit=[f'{p}:{i}' for p in glob.glob('skills/doc-arch-rule
 
 ```
 skills/
-├── c4-container-diagram/  # D2 画 C4 图 + references/（20 官方文档 + diagram-review + README 清单）
+├── c4-container-diagram/  # D2 画 C4 图 + references/（4 官方文档本地化 + 7 自研参考 + README 清单）
 ├── doc-arch-rules/        # meta skill：rule/skill 生成（结构见其「skill 模板」与「文件清单」节）
 ├── gitee-comments/        # Gitee 评审评论（单 SKILL.md）
-├── remote-shell/          # SSH 远程执行（单 SKILL.md）
+├── remote-shell/          # SSH 远程执行（SKILL.md + references/cli-reference.md）
 ├── score-prompt/          # prompt 评分（单 SKILL.md）
 └── skill-creator/         # 创建新 skill + references/（guide 等五篇）+ assets/templates/
 improve/                   # 研究笔记（非 skill，勿动）
