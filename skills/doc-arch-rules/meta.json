@@ -1,8 +1,8 @@
 {
-  "version": "0.0.5",
-  "implHash": "f6308f2e979354d0e21140b02883eb51d6a5b50900f5244626af472f3075798b",
+  "version": "0.0.6",
+  "implHash": "272fa9e1f1b55c5afa89fcf2068ff12bede7acacb00b737bf947647320699240",
   "templates": {
-    "CONSTITUTION": "f15d6570b4be19e3b60d25889b115f0730ab266db20eeaf6c15270653d7d4d42",
+    "CONSTITUTION": "2f7d5f70f5ed994dbac9e738e8906fdc368628aa7a38f72edd35429e4de46b96",
     "L1/PRODUCT": "5d399321a98ead25890973dfbf0c2603f75121982865dac9fa169fa87aa9a44c",
     "L1/README": "aedc848946425bd014e4131c71351349a42525fa88453c902158a20918abd5d0",
     "L1/USER-STORY": "78c0a63af9c3e3b64bb787dee8cf798fef5f436ccbf134bec978010a3a93f679",
@@ -24,5 +24,5 @@
     "common/SECURITY": "e53c87f33c85c0b8ac3b5f55abef591c084d904ba8afde25eb8abc3ffcbf2346",
     "common/STRUCTURE": "087a51388f07f4dd7ad83b792a9e104e8a8374cc01757206159c7f0f1bd28db5"
   },
-  "generatedAt": "2026-09-10T03:46:42.400Z"
+  "generatedAt": "2026-09-10T11:26:12.503Z"
 }
