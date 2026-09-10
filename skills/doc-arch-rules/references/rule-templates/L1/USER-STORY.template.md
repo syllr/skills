@@ -179,7 +179,7 @@ classDiagram
 - 所属旅程阶段：§4.1 总旅程的「创作」阶段（触点：进入工具页 → 完成创作）
 - 交互时序：§4.2.A 单故事时序图（细粒度系统交互）
 - 关联功能：能力 <能力_生成类>（PRODUCT §2.1）+ Action `<Action_生成>`（domain/ 各域文档）
-- 验收（业务 AC）：在此定义；技术验收在测试资产（docs TEST-PLAN 或 test/test-cases，形态依项目决策）
+- 验收（业务 AC）：在此定义；技术验收在测试资产（docs TEST-PLAN 或 docs/test/test-cases，形态依项目决策）
 - 业务规则：每日免费次数限制；生成内容需 AIGC 标识（见合规文档）
 
 ---

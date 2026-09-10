@@ -2,9 +2,9 @@
 title: TEST-PLAN — 测试计划与测试资产规范
 doc_type: template
 layer: L4
-description: 测试资产（test/ 目录）维护规范——测试工具与测试用例的生成/更新。编辑 test/test-tools/ 或 test/test-cases/ 下文件时触发；规范两类用例卡（API 接口卡按领域实体分组、FLOW 流程卡按 USER-STORY 场景分组）的生成与测试工具契约执行。可选用例承载形态：docs 文档（TEST-PLAN 总文档 + testcases/）或 test/ 资产目录——本项目以 test/ 资产形态落地（不生成 docs/L4/TEST-PLAN.md 文档）。
+description: 测试资产（docs/test/ 目录）维护规范——测试工具与测试用例的生成/更新。编辑 docs/test/test-tools/ 或 docs/test/test-cases/ 下文件时触发；规范两类用例卡（API 接口卡按领域实体分组、FLOW 流程卡按 USER-STORY 场景分组）的生成与测试工具契约执行。可选用例承载形态：docs 文档（TEST-PLAN 总文档 + testcases/）或 test/ 资产目录——本项目以 test/ 资产形态落地（不生成 docs/L4/TEST-PLAN.md 文档）。
 globs:
-  - "test/**"
+  - "docs/test/**"
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   tools:
@@ -16,14 +16,14 @@ generation:
     API/openapi: docs/L3/openapi/——接口契约，用例「接口/期望结果」的信息源；端点/x-action 变化需同步受影响 API 卡
     PRODUCT: docs/L1/PRODUCT.md——能力状态；待规划能力不建端点不落用例卡
     DEPLOYMENT: docs/L4/DEPLOYMENT.md——环境矩阵/密钥/种子账号来源
-    测试工具: test/test-tools/——工具命令/退出码/.env（用例卡执行通道，工具语法解释归工具 README 不落卡）
+    测试工具: docs/test/test-tools/——工具命令/退出码/.env（用例卡执行通道，工具语法解释归工具 README 不落卡）
   ask_user:
     - 新领域实体/用户故事场景对应目录划分不清晰 → 问用户
   flow:
-    - 扫描（自主）：读 USER-STORY（场景）+ domain 文档（实体/聚合）+ openapi（端点/operationId/schema）+ 测试工具（test-tools README）+ 现有 test/test-cases/
+    - 扫描（自主）：读 USER-STORY（场景）+ domain 文档（实体/聚合）+ openapi（端点/operationId/schema）+ 测试工具（test-tools README）+ 现有 docs/test/test-cases/
     - 已有用例 → 参考旧用例有效信息；AI 判断本次是新增还是更新（可合并则合并更新，需拆则新增 Case/卡）——判断有歧义时问用户拍板
     - 按模板生成：用例卡头（API=接口+业务对象 / FLOW=USER-STORY 场景+主入口 URL）→ Case N 五段（前置条件/执行流程/期望结果/数据对账/数据清理）
-    - 落盘 test/test-cases/api/<实体>/ 或 flow/<场景>/
+    - 落盘 docs/test/test-cases/api/<实体>/ 或 flow/<场景>/
   notes:
     - 可重复性：Case 前置自包含（造数据 → 被测操作），禁止复用既有数据；有数据场景先建后查、无数据场景唯一标识；每个 Case 自清理
     - 命令完整性：每条命令完整可执行（全字段字面量参数）；禁止「公共部分+差异」拼图、禁止占位参数描述
@@ -53,7 +53,7 @@ test/
     └── flow/<USER-STORY 场景>/   # FLOW 卡按用户故事场景分组
 ```
 
-> 可选形态：测试计划与用例可承载为 docs 总文档 + testcases/（原文档形态）或 test/ 资产目录（本模板基准形态）——项目以 test/ 资产落地时生成上述结构，不生成 docs 测试计划文档。本 rule 的附属资产目录 `test-template/`（卡模板/工具规范/参考实现）随 rule 生成同步复制到 `.omo/rules/docs/L4/test-template/`——生成测试工具与用例卡时以项目本地该目录为模板来源（下方相对链接均指向它），目录缺失时按同目录 rule 重新生成。
+> 可选形态：测试计划与用例可承载为 docs 总文档 + testcases/（原文档形态）或 docs/test/ 资产目录（本模板基准形态）——项目以 docs/test/ 资产落地时生成上述结构，不生成 docs 测试计划文档。本 rule 的附属资产目录 `test-asset/`（卡模板/工具规范/参考实现）随 rule 生成同步复制到 `.omo/rules/docs/test-asset/`（rule 同级上层的资产目录）——生成测试工具与用例卡时以项目本地该目录为模板来源（相对链接以 `../test-asset/` 指向它），目录缺失时按同目录 rule 重新生成。
 
 ## 测试工具架构与生成原则
 
@@ -71,11 +71,11 @@ test-tools 是 AI 测试执行的基础设施（小型测试项目）——测�
 
 ### 工具统一契约（所有工具一致）
 
-stdout 只输出一行 JSON；退出码 0=成功/1=断言对账失败/2=参数错/3=网络/4=数据层/10=配置错；连接参数走 `test/test-tools/.env`（host 不写死，命令行注入优先）；fail-fast 契约校验（输入键必须 ∈ 被测契约声明，契约外键发送前报错）；校验/对账类只读红线（非只读拒绝）；数据清理受控（按测试标识级联删 + 事务回滚）；工具内部不依赖 curl 等裸系统命令；契约变更运行时适配（不硬编码端点清单）。
+stdout 只输出一行 JSON；退出码 0=成功/1=断言对账失败/2=参数错/3=网络/4=数据层/10=配置错；连接参数走 `docs/test/test-tools/.env`（host 不写死，命令行注入优先）；fail-fast 契约校验（输入键必须 ∈ 被测契约声明，契约外键发送前报错）；校验/对账类只读红线（非只读拒绝）；数据清理受控（按测试标识级联删 + 事务回滚）；工具内部不依赖 curl 等裸系统命令；契约变更运行时适配（不硬编码端点清单）。
 
 ### 命令形态原则
 
-参数名只在需要选择/歧义时存在（对账工具裸收 SQL 语句，无 `--sql` 包装；契约直调用 `--operation` 选接口）；多通道参数显式拆分（`--path/--query/--header/--body/--form`），不做自动归位的隐晦分拣；工具语法解释归 test/test-tools/README，不写入用例卡。
+参数名只在需要选择/歧义时存在（对账工具裸收 SQL 语句，无 `--sql` 包装；契约直调用 `--operation` 选接口）；多通道参数显式拆分（`--path/--query/--header/--body/--form`），不做自动归位的隐晦分拣；工具语法解释归 docs/test/test-tools/README，不写入用例卡。
 
 ### 生成原则（新增工具时的行为规范）
 
@@ -85,12 +85,12 @@ stdout 只输出一行 JSON；退出码 0=成功/1=断言对账失败/2=参数�
 2. 参考模板与既有同类生成，不现想——以既有工具（目录结构/契约/fail-fast/只读处理）为样板扩展 `tools/<name>.mjs`；不重新设计架构、不照搬外部项目
 3. 遵守统一契约与命令形态；配套登记（README 工具清单 + package.json scripts 别名 + .env.example 新连接参数）
 
-## 用例卡模板与工具参考（生成时以项目本地 test-template/ 为源，复制骨架仅替换业务值）
+## 用例卡模板与工具参考（生成时以项目本地 test-asset/ 为源，复制骨架仅替换业务值）
 
-- API 卡模板：[test-template/api-case.md](test-template/api-case.md)——复制为 `test/test-cases/api/<领域实体>/API-<模块>-<序号>.md`
-- FLOW 卡模板：[test-template/flow-case.md](test-template/flow-case.md)——复制为 `test/test-cases/flow/<场景>/FLOW-<模块>-<序号>.md`
-- 测试工具规范：[test-template/test-tools.md](test-template/test-tools.md)——test/ 下测试工具集的目录结构/统一契约/命令形态/纪律基准；内含「何时新增工具 vs 修改既有工具」决策
-- 工具参考实现：[test-template/test-tools/](test-template/test-tools/)——完整工具实现样板（tools/{api,webmcp,db,ragflow,_util}.mjs + package.json + README + .env.example）；写新工具/改工具时的代码级参考（参考其模式与契约，含项目特定值按被测系统替换，不直接复制当成品）
+- API 卡模板：[test-asset/api-case.md](test-asset/api-case.md)——复制为 `docs/test/test-cases/api/<领域实体>/API-<模块>-<序号>.md`
+- FLOW 卡模板：[test-asset/flow-case.md](test-asset/flow-case.md)——复制为 `docs/test/test-cases/flow/<场景>/FLOW-<模块>-<序号>.md`
+- 测试工具规范：[test-asset/test-tools.md](test-asset/test-tools.md)——test/ 下测试工具集的目录结构/统一契约/命令形态/纪律基准；内含「何时新增工具 vs 修改既有工具」决策
+- 工具参考实现：[test-asset/test-tools/](test-asset/test-tools/)——完整工具实现样板（tools/{api,webmcp,db,ragflow,_util}.mjs + package.json + README + .env.example）；写新工具/改工具时的代码级参考（参考其模式与契约，含项目特定值按被测系统替换，不直接复制当成品）
 
 生成/更新卡时复制对应模板文件骨架（头 + Case N 五段），将占位符替换为目标业务值；格式细节（占位语义/纪律）以卡模板内注释与下方硬性要求为准。
 

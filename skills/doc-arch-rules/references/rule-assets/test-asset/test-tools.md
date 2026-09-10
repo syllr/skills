@@ -4,7 +4,7 @@ test-tools 是 AI 测试执行的基础设施（一个小型测试项目）—�
 
 ## 1. 定位与边界（为什么是"小测试项目"）
 
-- 唯一执行入口：测试用例（test/test-cases/）的所有操作只能经 test-tools 执行——不允许绕过（不写 curl、不裸 SQL、不用其它通道直连被测系统）
+- 唯一执行入口：测试用例（docs/test/test-cases/）的所有操作只能经 test-tools 执行——不允许绕过（不写 curl、不裸 SQL、不用其它通道直连被测系统）
 - 用例必须调工具：case 命令 = 工具调用；工具是 AI 测试执行器与被测系统之间的唯一连接层
 - 工具只取证据/执行操作，断言由 AI 判断：工具不内置断言逻辑
 - 自身可独立演进（工具是代码资产，有依赖/版本/测试），故按小型项目管理
@@ -48,7 +48,7 @@ test-tools 是 AI 测试执行的基础设施（一个小型测试项目）—�
 遇新工具需求（被测系统引入 Redis/Kafka/新存储/新中间件，或新前端/新契约域）：
 
 1. 分类归属判断：新工具是操作类还是校验类？——模拟用户操作/契约直调 → 参考 ①② 类既有工具；数据校验对账 → 参考 ③ 类既有工具（如 DB 工具）
-2. 参考模板与既有同类生成，不现想：以本架构 + `test/test-tools/` 下既有同类工具为样板扩展新 `tools/<name>.mjs`；不要重新设计架构、不要照搬外部项目
+2. 参考模板与既有同类生成，不现想：以本架构 + `docs/test/test-tools/` 下既有同类工具为样板扩展新 `tools/<name>.mjs`；不要重新设计架构、不要照搬外部项目
 3. 遵守统一契约（§3）+ 命令形态（§4）
 4. 配套登记：README 工具清单表 + `package.json` scripts 别名 + `.env.example`（新连接参数）
 5. 工具语法/参数在工具 README 说明（不落用例卡）
@@ -56,7 +56,7 @@ test-tools 是 AI 测试执行的基础设施（一个小型测试项目）—�
 ## 6. 目录结构与维护
 
 ```
-test/test-tools/
+docs/test/test-tools/
 ├── tools/                    # 工具实现（Node .mjs：跨平台零编译）
 │   ├── webmcp.mjs            # ① 前端工具（浏览器驱动，统一入口）
 │   ├── api.mjs               # ② 后端契约直调
@@ -73,4 +73,4 @@ test/test-tools/
 
 ## 7. 参考实现（完整工具集模板）
 
-同目录 `test-tools/` 为完整参考实现（Node .mjs：api/db/webmcp/ragflow/_util + package.json + README + .env.example）——生成/扩展工具时以它为样板：复制到目标项目 `test/test-tools/`，按被测系统替换 `.env` 值；新增校验类工具参照 db.mjs/ragflow.mjs 的只读+清理模式扩展。契约源路径（如 docs/L3/openapi）为 doc-arch 通用结构，随项目沿用。
+同目录 `test-tools/` 为完整参考实现（Node .mjs：api/db/webmcp/ragflow/_util + package.json + README + .env.example）——生成/扩展工具时以它为样板：复制到目标项目 `docs/test/test-tools/`，按被测系统替换 `.env` 值；新增校验类工具参照 db.mjs/ragflow.mjs 的只读+清理模式扩展。契约源路径（如 docs/L3/openapi）为 doc-arch 通用结构，随项目沿用。

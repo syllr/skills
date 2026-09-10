@@ -17,16 +17,16 @@ meta skill：把本仓库持有的模板（rule 模板 + skill 模板）同步�
 | 产物                                           | 来源（SSOT）                                          | 落位（目标项目）                           | 更新语义                                                                                                                                           |
 | ---------------------------------------------- | ----------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | omo rule（CONSTITUTION + 21 模板）             | `references/rule-templates/`                          | `.omo/rules/docs/`（目录结构与模板树同构） | **按版本指纹**：`--check-meta` 对比 → 需更新的才重生成，最新的跳过；"重建 <DOC>" 强制重生成单个                                                    |
-| TEST-PLAN 附属资产目录                         | `references/rule-assets/test-template/`               | `.omo/rules/docs/L4/test-template/`        | **无脑覆盖**：资产 = skill 侧模板副本（卡模板/工具规范/参考实现），无项目侧手工改动语义——随 TEST-PLAN rule 生成/更新整目录原样复制，不做 diff 询问 |
+| TEST-PLAN 附属资产目录                         | `references/rule-assets/test-asset/`               | `.omo/rules/docs/test-asset/`        | **无脑覆盖**：资产 = skill 侧模板副本（卡模板/工具规范/参考实现），是**参考模板层**——每次全量同步整目录原样复制（必做项，不判 TEST-PLAN 指纹是否最新），不做 diff 询问；它参考生成的 `docs/test/` 业务产物（test-tools/test-cases）是**产物层**，按用户业务需求生成，同步时绝不覆盖、不改写 |
 | 域 skill（test-ops / deploy-ops / docs-align） | `references/skill-templates/<name>/SKILL.template.md` | `.opencode/skills/<name>/SKILL.md`         | **薄壳模板逐字落地**（不探测上下文、无占位符填充）；已有产物 diff 项目侧手工改动列给用户确认后再覆盖                                               |
 
 **不承载（完全独立）**：文档-代码对齐/漂移修复/globs 目录同步由 **docs-align skill** 承担——用户需要对齐文档、处理漂移、更新globs 时直接调 docs-align，不经本 skill、本 skill 不路由。docs/** 文档本体也不由本 skill 生成——rule 落位后，宿主项目 docs/** 由 rule 触发后的 AI 按 rule 内容生成/更新。
 
 rule 工厂的输入输出：
 
-- 输入：`references/rule-templates/` 下模板（1 个全局 Rule 源 + 20 个模板，清单见 [§文件清单](#文件清单模板-ssot)）；TEST-PLAN 附属资产源在 `references/rule-assets/test-template/`（独立于模板树的资产目录，见功能 1 步骤 3）
+- 输入：`references/rule-templates/` 下模板（1 个全局 Rule 源 + 20 个模板，清单见 [§文件清单](#文件清单模板-ssot)）；TEST-PLAN 附属资产源在 `references/rule-assets/test-asset/`（独立于模板树的资产目录，见功能 1 步骤 3）
 - 输出：`.omo/rules/docs/` 下的 rule（一个模板对应一个 rule，目录结构与 `references/rule-templates` 同构）
-- 除 DEEP-DIVE/RESEARCH/CONTRACT/ADR/DOMAIN（globs: `docs/L2/domain/*.md` 目录级通配）目录级通配，及 TEST-PLAN（globs: test/**）主文档 + **附属资产目录**（test-template/，见产物表）混合、INTEGRATION（globs 含 `docs/L3/integration-contracts/**`）主文档（说明书）+目录通配混合外，其余 1:1 同构；目录级模板按 globs 通配覆盖，详见表
+- 除 DEEP-DIVE/RESEARCH/CONTRACT/ADR/DOMAIN（globs: `docs/L2/domain/*.md` 目录级通配）目录级通配，及 TEST-PLAN（globs: docs/test/**）主文档 + **附属资产目录**（test-asset/，见产物表）混合、INTEGRATION（globs 含 `docs/L3/integration-contracts/**`）主文档（说明书）+目录通配混合外，其余 1:1 同构；目录级模板按 globs 通配覆盖，详见表
 - 只生成 rule，不生成文档：宿主项目 `docs/**` 由 rule 触发后的 AI 按 rule 内容生成/更新
 
 两种文件模式：
@@ -40,7 +40,7 @@ rule 工厂的输入输出：
 
 本 skill 无关键字分诊——用户手动调用即**全量同步两类产物**（rule + 三 skill）。默认一次调用完成：
 
-1. **rule 更新**（功能 2 → 功能 1）：`--check-meta` 摸底 → 重生成「需更新」的 rule（含 TEST-PLAN 附属资产目录**无脑覆盖**）→ `--update-project-meta` 刷新项目 meta 条目
+1. **rule 更新**（功能 2 → 功能 1）：`--check-meta` 摸底 → 重生成「需更新」的 rule + TEST-PLAN 附属资产目录**无脑覆盖**（必做独立步骤，不判 TEST-PLAN 指纹——rule 判最新跳过资产照常覆盖）→ `--update-project-meta` 刷新项目 meta 条目
 2. **skill 更新**（功能 3）：三份薄壳模板逐字落地（已有产物先 diff 项目侧改动确认再覆盖）
 3. **报告**：更新了哪些 rule / 哪些 skill、跳过哪些（指纹最新）、项目侧待确认项
 
@@ -75,7 +75,7 @@ rule 工厂的输入输出：
 | L3/integration-contracts | [CONTRACT](references/rule-templates/L3/integration-contracts/CONTRACT.template.md)           | 模板           | .omo/rules/docs/L3/integration-contracts/CONTRACT.md（目录级通配，globs: docs/L3/integration-contracts/** 覆盖目录下多契约文件，物理单 rule，一服务一契约，字段 SSOT；命中 INDEX.md 由 INDEX 模板处理） | globs                 |
 | L3/integration-contracts | [INDEX](references/rule-templates/L3/integration-contracts/INDEX.template.md)                 | 模板           | .omo/rules/docs/L3/integration-contracts/INDEX.md（目录唯一入口：文件清单，宪法 §3.2 目录索引约定）                                                                                                     | globs                 |
 | L4                       | [DEPLOYMENT](references/rule-templates/L4/DEPLOYMENT.template.md)                             | 模板           | .omo/rules/docs/L4/DEPLOYMENT.md（globs: docs/L4/DEPLOYMENT.md；部署资产登记于 §7，文件本体不移动）                                                                                                     | globs                 |
-| L4                       | [TEST-PLAN](references/rule-templates/L4/TEST-PLAN.template.md)                               | 模板           | .omo/rules/docs/L4/TEST-PLAN.md（rule，测试资产规范，globs: test/**）+ 同目录 test-template/（附属资产目录：卡模板/工具规范/参考实现——随 rule 同步复制，不生成 docs 测试计划文档）                      | globs                 |
+| L4                       | [TEST-PLAN](references/rule-templates/L4/TEST-PLAN.template.md)                               | 模板           | .omo/rules/docs/L4/TEST-PLAN.md（rule，测试资产规范，globs: docs/test/**）+ 同目录 test-asset/（附属资产目录：卡模板/工具规范/参考实现——随 rule 同步复制，不生成 docs 测试计划文档）                      | globs                 |
 | common                   | [CODE-GUIDE](references/rule-templates/common/CODE-GUIDE.template.md)                         | 模板           | .omo/rules/docs/common/CODE-GUIDE.md                                                                                                                                                                    | globs                 |
 | common                   | [SECURITY](references/rule-templates/common/SECURITY.template.md)                             | 模板           | .omo/rules/docs/common/SECURITY.md（贯穿所有层，密钥分层 SSOT 在 §6）                                                                                                                                   | globs                 |
 | common                   | [STRUCTURE](references/rule-templates/common/STRUCTURE.template.md)                           | 模板           | .omo/rules/docs/common/STRUCTURE.md                                                                                                                                                                     | globs                 |
@@ -115,7 +115,7 @@ rule 工厂的输入输出：
 ### 步骤 3：落盘校验
 
 - 批量写入 `.omo/rules/docs/<路径>`（CONSTITUTION.md 在根；其余在 `<层>/<DOC>.md`，含 `L2/deep-dives/DEEP-DIVE.md` + `L2/research/RESEARCH.md`）
-- **附属资产目录同步（TEST-PLAN 专属，无脑覆盖）**：TEST-PLAN 模板带附属资产目录 `references/rule-assets/test-template/`（卡模板 api-case/flow-case + 工具规范 test-tools.md + 参考实现 test-tools/）——生成/重建 TEST-PLAN rule 时整目录**无脑覆盖**复制到项目 `.omo/rules/docs/L4/test-template/`（原样拷贝，不做占位符组装/翻译、不做 diff 询问；资产 = skill 侧模板副本，无项目侧手工改动语义，直接覆盖）；rule 正文「模板」章节以相对链接 `test-template/xxx` 引用资产文件，目录缺失即死链
+- **附属资产目录同步（TEST-PLAN 专属，无脑覆盖）**：TEST-PLAN 模板带附属资产目录 `references/rule-assets/test-asset/`（卡模板 api-case/flow-case + 工具规范 test-tools.md + 参考实现 test-tools/）——**每次全量同步整目录无脑覆盖**复制到项目 `.omo/rules/docs/test-asset/`（必做项，不判 TEST-PLAN 指纹是否最新——rule 判定跳过资产照常覆盖；原样拷贝，不做占位符组装/翻译、不做 diff 询问；资产 = skill 侧模板副本，无项目侧手工改动语义，直接覆盖）；rule 正文「模板」章节以相对链接 `test-asset/xxx` 引用资产文件，目录缺失即死链
 - rule 落盘校验（本步骤对象）：frontmatter 中 `description`/`alwaysApply` 与模板 omo 一致，`globs` 含模板基线全部条目（允许含 globs 目录同步追加的扩展条目，`--check` 只判基线子集、不禁扩展）；rule 内不含 `generation:` YAML 块；「模板」章节正文与模板正文一致——用 `--check <rule> <模板>` 逐 rule 复核（批量用 `--all` 解析全部模板拿清单后循环调用）
 - globs 基线（组装期不可改）：生成 rule 时 `globs` 逐字抄模板基线，AI 不得删除/改写基线条目；扩展条目不在此组装——由 docs-align skill 的 globs 双向同步统一增删（本 skill 不做目录同步）；update/rebuild 重生成时做合并（基线以模板为准重写 + 仍存在于磁盘的扩展条目做并集保留），详见功能 2
 
