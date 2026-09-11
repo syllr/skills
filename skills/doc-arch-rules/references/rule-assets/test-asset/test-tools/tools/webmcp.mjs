@@ -29,6 +29,7 @@ const USAGE = `用法：
   --url      base URL（默认取 WEBMCP_URL）
   --headed   有头模式（默认无头；人工旁观时用）
   --connect  连接已运行的 Chrome（默认自动启动独立实例）
+  --step-delay 步间停留毫秒（默认：--headed 时 1500，无头 0——有头人工旁观时用，让每步结果可见）
   --list     只枚举页面注册的工具后退出
 
 环境变量：WEBMCP_TIMEOUT_MS（工具单步超时，默认 30000）
@@ -48,6 +49,7 @@ const PAGE_URL = (() => {
   return base
 })()
 const STEP_TIMEOUT = Number(env('WEBMCP_TIMEOUT_MS', '30000'))
+const STEP_DELAY = Number(args['step-delay'] ?? (args.headed ? 1500 : 0))
 const toolsDir = dirname(fileURLToPath(import.meta.url))
 const testToolsDir = resolve(toolsDir, '..')
 const PROFILE_DIR = join(testToolsDir, '.webmcp-profile')
@@ -164,7 +166,9 @@ try {
 
   const results = []
   let failed = false
+  let stepIndex = 0
   for (const step of seq) {
+    if (stepIndex++ > 0 && STEP_DELAY > 0) await new Promise((r) => setTimeout(r, STEP_DELAY))
     if (!step || typeof step.name !== 'string') {
       results.push({ name: String(step?.name ?? '(invalid)'), error: '步骤缺 name' })
       failed = true

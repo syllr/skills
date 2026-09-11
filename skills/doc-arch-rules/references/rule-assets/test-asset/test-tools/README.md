@@ -81,7 +81,8 @@ npm run webmcp -- --seq '[
 ]'
 # → {"ok":true,"results":[{"name":"login","ms":436,"result":{...}},{"name":"create_project","ms":130,"result":{"projectCode":"XM-..."}}]}
 
-npm run webmcp -- --seq '[...]' --headed      # 有头模式（人工旁观）
+npm run webmcp -- --seq '[...]' --headed      # 有头模式（人工旁观；步间默认停留 1500ms，每步结果可见）
+npm run webmcp -- --seq '[...]' --step-delay 2000   # 自定义步间停留毫秒（无头默认 0=不停留）
 npm run webmcp -- --seq '[...]' --url http://localhost:5173   # 指定目标页面
 ```
 
