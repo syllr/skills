@@ -8,49 +8,49 @@ globs:
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   tools:
-    - ASCII 目录树（§1，文本可 diff、任何渲染器显示）
+    - "ASCII 目录树（§1，文本可 diff、任何渲染器显示）"
   scan: # 生成前自主扫描（不依赖用户）
-    - 扫描项目实际目录：前端/后端是否分离、各自内部层级现状（对照 §2 六个后端顶层模块目录是否已存在/命名差异）
-    - 扫描 APPLICATION-ARCHITECTURE：应用划分、模块归属，目录树需与之对应
-    - 扫描技术栈（package.json/go.mod/pom.xml 等）：判断语言/框架，目录命名与分层按该语言/框架规范柔性适配
-    - 扫描 docs/ 现有子树（L1-L4 + common）与宪法 §3.1 分层是否一致
+    - "扫描项目实际目录：前端/后端是否分离、各自内部层级现状（对照 §2 六个后端顶层模块目录是否已存在/命名差异）"
+    - "扫描 APPLICATION-ARCHITECTURE：应用划分、模块归属，目录树需与之对应"
+    - "扫描技术栈（package.json/go.mod/pom.xml 等）：判断语言/框架，目录命名与分层按该语言/框架规范柔性适配"
+    - "扫描 docs/ 现有子树（L1-L4 + common）与宪法 §3.1 分层是否一致"
   related: # 关联模板与联动修改
-    CONSTITUTION: 文档分层规则见它 §3.1，规则变更需同步 docs/ 子树目录；代码分层概念（controller/service/infra 等）不重复其规则
-    APPLICATION-ARCHITECTURE: 应用划分见 APPLICATION-ARCHITECTURE，代码目录（前端/后端、模块归属）需与之对应
-    L3/API: controller 的 api 代码来源——从 openapi.yaml schema 生成，controller 目录与 API 文档联动
-    PRODUCT: 功能见 PRODUCT，功能目录增删需同步；PRODUCT 标「待规划」的功能不加实现目录/模块目录（case A：待规划在实现视图不建模，仅 PRODUCT 保留标注）
-    DEEP-DIVES: 高复杂度单列详情（2/4 阈值：T1 跨模块交互≥3 / T2 永久参数≥5 / T3 精度分层≥3 / T4 坑位≥5，命中任意 2 个即单列，判定归 rule 生成时执行），目录树需含 deep-dives/ 分支（L2 根不反向引用，发现入口为 deep-dives/INDEX.md）
-    RESEARCH: 调研详情（候选≥2 且 维度≥3，单候选+多维验证例外；目录索引见 research/INDEX.md（宪法 §3.2 目录索引约定），判定归 rule 生成时执行（准入判定见宪法 §3.1 research 行）；TECHNOLOGY-ARCHITECTURE.md 为选型结论沉淀处），目录树需含 research/ 分支
+    CONSTITUTION: "文档分层规则见它 §3.1，规则变更需同步 docs/ 子树目录；代码分层概念（controller/service/infra 等）不重复其规则"
+    APPLICATION-ARCHITECTURE: "应用划分见 APPLICATION-ARCHITECTURE，代码目录（前端/后端、模块归属）需与之对应"
+    L3/API: "controller 是契约来源（其路由/schema 导出契约），controller 目录与 API 文档联动"
+    PRODUCT: "功能见 PRODUCT，功能目录增删需同步；PRODUCT 标「待规划」的功能不加实现目录/模块目录（case A：待规划在实现视图不建模，仅 PRODUCT 保留标注）"
+    DEEP-DIVES: "高复杂度单列详情（2/4 阈值：T1 跨模块交互≥3 / T2 永久参数≥5 / T3 精度分层≥3 / T4 坑位≥5，命中任意 2 个即单列，判定归 rule 生成时执行），目录树需含 deep-dives/ 分支（L2 根不反向引用，发现入口为 deep-dives/INDEX.md）"
+    RESEARCH: "调研详情（候选≥2 且 维度≥3，单候选+多维验证例外；目录索引见 research/INDEX.md（宪法 §3.2 目录索引约定），判定归 rule 生成时执行（准入判定见宪法 §3.1 research 行）；TECHNOLOGY-ARCHITECTURE.md 为选型结论沉淀处），目录树需含 research/ 分支"
     # common 角色：本文档是「改任何文档前」的必读项（定位文档对应代码，防漂移）
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
-    - 目录与定义漂移（文件内容与 §2 定义不匹配）时，是新建目录还是调整定义/扩定义 → 问用户
-    - reference 目录只读，任何修改前必须询问用户确认
-    - controller 的 api 代码生成方式有歧义（如从 schema 生成 vs 手写、生成到哪个目录/语言）→ 问用户
-    - 目录组织有争议时（如某些文件放哪）→ 问用户
+    - "目录与定义漂移（文件内容与 §2 定义不匹配）时，是新建目录还是调整定义/扩定义 → 问用户"
+    - "reference 目录只读，任何修改前必须询问用户确认"
+    - "controller 与契约的对应关系有歧义（如契约导出方式、导出到哪个路径/语言框架）→ 问用户"
+    - "目录组织有争议时（如某些文件放哪）→ 问用户"
   flow: # 生成流程
-    - 按 scan 结果执行（扫描清单见上）
-    - 已有 STRUCTURE → 参考旧文档有效信息，但结构按本模板重建
-    - 按模板生成：§1 目录树（ASCII）→ §2 目录职责说明（逐一说明每个顶层模块目录干什么/职责/约束）→ §3 组织原则（含漂移处理）→ §4 变更与漂移记录
-    - §2 必须对每个顶层模块目录说清「干什么、有什么作用、职责是什么」，reference 标注只读、controller 标注由 API.md schema 生成
-    - §3 阐述组织原则（自项目根计最多四级/DDD/前后端分离/语言框架柔性）与漂移处理（新建 vs 调整的判断）
-    - 结合项目现状扫描结果 + 询问用户 → 迭代出本项目的过渡规范（transitional spec），允许与模板有差异但需显性记录差异及理由
+    - "按 scan 结果执行（扫描清单见上）"
+    - "已有 STRUCTURE → 参考旧文档有效信息，但结构按本模板重建"
+    - "按模板生成：§1 目录树（ASCII）→ §2 目录职责说明（逐一说明每个顶层模块目录干什么/职责/约束）→ §3 组织原则（含漂移处理）→ §4 变更与漂移记录"
+    - "§2 必须对每个顶层模块目录说清「干什么、有什么作用、职责是什么」，reference 标注只读、controller 标注为契约来源（路由/schema 导出契约）"
+    - "§3 阐述组织原则（自项目根计最多四级/DDD/前后端分离/语言框架柔性）与漂移处理（新建 vs 调整的判断）"
+    - "结合项目现状扫描结果 + 询问用户 → 迭代出本项目的过渡规范（transitional spec），允许与模板有差异但需显性记录差异及理由"
   notes: # 生成注意点（怎么生成）
-    - 代码与 docs 位置以 STRUCTURE 为准（README/AGENTS 引用此处不重复）；本文件 §1/§2 的目录职责判定是功能 3 阶段 2 globs 自适应的输入（代码→文档映射按此推导）
-    - common 角色：STRUCTURE 是「文档 ↔ 代码」映射——改任何文档前，通过本文档定位其对应代码，再读代码核对漂移（文档与代码可能不一致，读代码防漂移）
-    - 分层规则见宪法 §3.1（docs/ 子树遵守该分层但不重复规则）
-    - 目录随功能与架构确定后落地（功能见 PRODUCT，架构见 APPLICATION-ARCHITECTURE）
-    - 目录组织原则（自项目根计最多四级/DDD/前后端分离/语言框架柔性）见 §3
-    - 后端固定 6 个顶层模块目录（backend/ 下 controller/service/infra/integration/reference/test，自项目根计为二级），职责见 §2
-    - 任何顶层模块目录都应在文档中说清「干什么、有什么作用、职责是什么」（见 §2）
-    - controller 层与 L3/API.md 联动：从 openapi.yaml schema 生成对应 api 代码（见 §2）
-    - 第4条 差异主动修复：校验 rule 覆盖文档与实际文件的漂移项，不存在即修复；deep-dives 目录中性收纳技术与业务 Deep Dive
-    - research 目录中性收纳技术/竞品调研，与 deep-dives 并列同为 L2 子目录
+    - "代码与 docs 位置以 STRUCTURE 为准（README/AGENTS 引用此处不重复）；本文件 §1/§2 的目录职责判定是功能 3 阶段 2 globs 自适应的输入（代码→文档映射按此推导）"
+    - "common 角色：STRUCTURE 是「文档 ↔ 代码」映射——改任何文档前，通过本文档定位其对应代码，再读代码核对漂移（文档与代码可能不一致，读代码防漂移）"
+    - "分层规则见宪法 §3.1（docs/ 子树遵守该分层但不重复规则）"
+    - "目录随功能与架构确定后落地（功能见 PRODUCT，架构见 APPLICATION-ARCHITECTURE）"
+    - "目录组织原则（自项目根计最多四级/DDD/前后端分离/语言框架柔性）见 §3"
+    - "后端固定 6 个顶层模块目录（backend/ 下 controller/service/infra/integration/reference/test，自项目根计为二级），职责见 §2"
+    - "任何顶层模块目录都应在文档中说清「干什么、有什么作用、职责是什么」（见 §2）"
+    - "controller 层与 L3/API.md 联动：controller 是契约来源——其路由/schema 导出 openapi 产物（见 §2）"
+    - "第4条 差异主动修复：校验 rule 覆盖文档与实际文件的漂移项，不存在即修复；deep-dives 目录中性收纳技术与业务 Deep Dive"
+    - "research 目录中性收纳技术/竞品调研，与 deep-dives 并列同为 L2 子目录"
   checks: # 生成后反向 check
     - "目录树与 宪法 文档分层一致（L0-L4 + common 层），README/AGENTS 引用的路径与目录树一致"
     - "PRODUCT 标「待规划」的功能无实现目录/模块目录（待规划在实现视图不建模）"
-    - "每个顶层模块目录都有职责说明（干什么/作用/约束），`reference` 标注只读、`controller` 标注由 `API.md` schema 生成"
-    - "`reference` 未被直接修改（任何改动前已询问用户）；`controller` 与 `L3/API.md` 一致性（api 代码与 `openapi.yaml` schema 对齐）"
+    - "每个顶层模块目录都有职责说明（干什么/作用/约束），`reference` 标注只读、`controller` 标注为契约来源（路由/schema 导出契约）"
+    - "`reference` 未被直接修改（任何改动前已询问用户）；`controller` 与 `L3/API.md` 一致性（契约由 controller 代码导出，导出产物与代码对齐）"
     - "漂移处理有说明（新建 vs 调整的判断 + 用户确认）且漂移项已校验"
     - "`L2/deep-dives` 目录说明存在（含 2/4 阈值判定）"
     - "`L2/research` 目录说明存在（候选≥2 且 维度≥3（单候选+多维验证例外）/POC/对比表/ADR链 已校验）"
@@ -60,7 +60,7 @@ generation:
 
 > 本文档是「<项目名>」的 STRUCTURE（目录结构模板）——common 层的目录结构文档（文档 ↔ 代码映射）。
 > 【模板使用指引】复制为 `docs/common/STRUCTURE.md`，按各章节指引填写。
-> 【原则】① 代码与 docs 位置 = STRUCTURE（README/AGENTS 引用此处不重复）——分层规则 = 宪法 §3.1（docs/ 怎么分层在宪法，STRUCTURE 只落地 docs/ 子树）；② 文档 ↔ 代码映射：改文档前读本文档定位对应代码，读代码核对漂移（第4条 差异主动修复）；③ 目录随功能与架构确定后落地（功能见 PRODUCT，架构见 APPLICATION-ARCHITECTURE）；④ reference 只读——见 §2（backend/reference/ 与根级 reference/ 行）；⑤ controller 关联 L3/API.md——controller 层从 openapi.yaml schema 生成对应 api 代码；⑥ 图用 ASCII 目录树（文本可 diff、任何渲染器显示）。其余生成注意点见 frontmatter `generation.notes`（本文档不重复）
+> 【原则】① 代码与 docs 位置 = STRUCTURE（README/AGENTS 引用此处不重复）——分层规则 = 宪法 §3.1（docs/ 怎么分层在宪法，STRUCTURE 只落地 docs/ 子树）；② 文档 ↔ 代码映射：改文档前读本文档定位对应代码，读代码核对漂移（第4条 差异主动修复）；③ 目录随功能与架构确定后落地（功能见 PRODUCT，架构见 APPLICATION-ARCHITECTURE）；④ reference 只读——见 §2（backend/reference/ 与根级 reference/ 行）；⑤ controller 关联 L3/API.md——controller 是契约来源，契约由 controller 代码导出；⑥ 图用 ASCII 目录树（文本可 diff、任何渲染器显示）。其余生成注意点见 frontmatter `generation.notes`（本文档不重复）
 
 ---
 
@@ -113,7 +113,7 @@ generation:
 │       ├── SECURITY.md # 安全设计（贯穿所有层，密钥分层见 §6）
 │       └── CODE-GUIDE.md # 代码规范（命名/签名/注释/坏味道）
 ├── backend/ # 后端代码（按 DDD 整理，固定 6 个顶层模块目录；自项目根计第 1 级）
-│   ├── controller/ # api 接入层（承接 API 契约，由 L3/API.md 的 openapi.yaml schema 生成）
+│   ├── controller/ # api 接入层（契约来源：路由/schema 导出 L3/API.md 的 openapi 产物）
 │   │   └── user/ # 按领域/模块分组（三级）
 │   │       └── <X>Controller.java
 │   ├── service/ # 领域层（Domain，业务核心）
@@ -150,14 +150,14 @@ generation:
 
 | 路径                   | 干什么                           | 职责                                                                                             | 典型内容                                   | 约束                                                                                         |
 | ---------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| `backend/controller/`  | api 接入层，承接 API 契约        | 接收请求、参数校验、调用 service、组装响应；不承载业务逻辑                                       | Controller/Handler/路由                    | 由 L3/API.md 的 openapi.yaml schema 生成对应 api 代码，与契约对齐                            |
+| `backend/controller/`  | api 接入层，承接 API 契约        | 接收请求、参数校验、调用 service、组装响应；不承载业务逻辑                                       | Controller/Handler/路由                    | controller 是契约来源：路由/schema 导出 L3/API.md 的 openapi 产物，导出产物与代码对齐        |
 | `backend/service/`     | 领域层（Domain），业务核心       | 承载业务规则、领域逻辑、事务边界；被 controller 调用                                             | Service/领域服务/用例                      | 业务核心，不依赖具体框架细节                                                                 |
 | `backend/infra/`       | 基础支撑层（基础设施、通用支撑） | 数据库/缓存/消息等基础设施、通用工具、配置                                                       | <Z>Config/Redis/通用工具类                 | 支撑性代码，不承载业务                                                                       |
 | `backend/integration/` | 接入层（对接外部系统/三方）      | 对接外部系统/三方服务的客户端与适配                                                              | <Y>Client/第三方 SDK 封装                  | 与 infra 区分：infra 是内部基础设施，integration 是对外集成                                  |
-| `backend/reference/`   | 引用参考（只读）                 | 参考别的项目文档/代码，供查阅                                                                    | 参考文档/示例代码                          | 只读，修改任何内容前必须询问用户，不能直接改                                             |
+| `backend/reference/`   | 引用参考（只读）                 | 参考别的项目文档/代码，供查阅                                                                    | 参考文档/示例代码                          | 只读，修改任何内容前必须询问用户，不能直接改                                                 |
 | `backend/test/`        | 测试                             | 各类测试（单元/接口/旅程）                                                                       | Test/测试夹具                              | 与被测对象对应                                                                               |
 | `frontend/`            | 前端代码                         | 前端页面/组件/状态                                                                               | pages/components/store                     | 与后端分离，结构见 APPLICATION-ARCHITECTURE                                                  |
-| `reference/`（根级）   | 项目级引用参考（只读）           | 跨前后端共享的参考文档/代码，供查阅                                                              | 参考文档/示例代码                          | 只读，修改任何内容前必须询问用户，不能直接改；与 `backend/reference/`（后端内引用）区分  |
+| `reference/`（根级）   | 项目级引用参考（只读）           | 跨前后端共享的参考文档/代码，供查阅                                                              | 参考文档/示例代码                          | 只读，修改任何内容前必须询问用户，不能直接改；与 `backend/reference/`（后端内引用）区分      |
 | `docs/L2/deep-dives/`  | 高复杂度 Deep Dive 详情          | deep-dives/INDEX.md 为索引（文件清单），L2 根不反向引用（发现入口 deep-dives/INDEX.md）          | 单篇 Deep Dive（如 inference-pipeline.md） | kebab-case 命名；File:Line 链代码；单列判定 2/4 阈值，归 rule 生成时执行                     |
 | `docs/L2/domain/`      | 领域模型（总文档 + 一域一文）    | 总文档 DOMAIN-MODEL.md 兼索引（§3 域文档清单表），各域文档收拢实体/约束/领域操作/状态机/本域事件 | DOMAIN-MODEL.md + <域>.md                  | 总文档例外不设 INDEX.md（宪法 §3.2）；域文档 kebab-case；物理存储映射归 DATA-ARCHITECTURE §5 |
 | `docs/L2/research/`    | 第三方技术/竞品调研详情          | research/INDEX.md 为索引（宪法 §3.2），TECHNOLOGY-ARCHITECTURE.md 为选型结论沉淀处               | INDEX.md + 单篇调研（如 tech-xxx.md）      | kebab-case 命名；候选≥2 且 维度≥3（单候选+多维验证例外）；对比表；POC；ADR 链                |
@@ -218,8 +218,8 @@ infra     integration
 >
 > infra 与 integration：`backend/` 下顶层平级的模块目录（自项目根计为二级，支撑层拆两个目录）：两者同属支撑层、平级、不是上下级，都依赖 `service/<域>/domain`、互不包含。区别只在管什么：判断标准 = 资源归谁管：
 >
-> | 目录                         | 管什么           | 谁维护           | 例子                                                           |
-> | ---------------------------- | ---------------- | ---------------- | -------------------------------------------------------------- |
+> | 目录                     | 管什么       | 谁维护       | 例子                                                           |
+> | ------------------------ | ------------ | ------------ | -------------------------------------------------------------- |
 > | infra/（基础设施）       | 内部资源     | 自己运维管理 | 数据库（DB）、缓存（Redis）、消息队列、文件存储                |
 > | integration/（外部集成） | 外部系统对接 | 别人提供服务 | <外部_支付A>、<外部_支付B>、第三方 AI（<外部_AI>/<组件_识别>） |
 >
