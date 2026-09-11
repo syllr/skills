@@ -8,31 +8,31 @@ globs:
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   tools:
-    - Mermaid flowchart（§2.1 C4 Context 图，图规范见 references/diagram-spec.md）
-    - D2 容器图（§2.2 应用划分图，图规范见 references/diagram-spec.md）
+    - "Mermaid flowchart（§2.1 C4 Context 图，图规范见 references/diagram-spec.md）"
+    - "D2 容器图（§2.2 应用划分图，图规范见 references/diagram-spec.md）"
   related: # 关联模板与联动修改
-    PRODUCT: 能力清单见它 §2.2，能力增删需同步应用模块（能力→聚合映射见 domain/ 各域文档，入口 DOMAIN-MODEL §3，不在此重复）；PRODUCT 标「待规划」的能力不加应用模块（待规划能力在实现视图不建模，仅 PRODUCT 保留标注）
-    TECHNOLOGY-ARCHITECTURE: 应用划分见 §2.2，技术架构按应用描述需引用
-    DOMAIN-MODEL: 领域聚合归属领域，能力→聚合映射见 domain/ 各域文档（应用架构不重复）
-    DEPLOYMENT: 部署单元来自应用划分，应用增减需同步部署
-    DEEP-DIVES: 高复杂度详情下沉 deep-dives/，同一信息只在一处维护；本文档不反向引用 deep-dives（发现入口为 deep-dives/INDEX.md）
+    PRODUCT: "能力清单见它 §2.2，能力增删需同步应用模块（能力→聚合映射见 domain/ 各域文档，入口 DOMAIN-MODEL §3，不在此重复）；PRODUCT 标「待规划」的能力不加应用模块（待规划能力在实现视图不建模，仅 PRODUCT 保留标注）"
+    TECHNOLOGY-ARCHITECTURE: "应用划分见 §2.2，技术架构按应用描述需引用"
+    DOMAIN-MODEL: "领域聚合归属领域，能力→聚合映射见 domain/ 各域文档（应用架构不重复）"
+    DEPLOYMENT: "部署单元来自应用划分，应用增减需同步部署"
+    DEEP-DIVES: "高复杂度详情下沉 deep-dives/，同一信息只在一处维护；本文档不反向引用 deep-dives（发现入口为 deep-dives/INDEX.md）"
   # 需要用户决策的才问（无歧义则不问）
   ask_user:
-    - 应用划分（几个应用/前端后端边界）有争议时 → 问用户确认
-    - 是否需单列 deep-dives 有争议时 → 问用户
+    - "应用划分（几个应用/前端后端边界）有争议时 → 问用户确认"
+    - "是否需单列 deep-dives 有争议时 → 问用户"
   flow: # 生成流程
-    - 扫描（自主）：读能力图 + 领域模型 + 目标文档
-    - 已有 APPLICATION-ARCHITECTURE → 参考旧文档有效信息，但结构按本模板重建
-    - 按模板生成：§1 系统概述 → §2.1 Context 图 → §2.2 应用划分图（应用/容器/外部系统/用户层）→ §3 模块划分（应用内模块，能力→聚合映射见 domain/ 各域文档 不重复）
-    - 检查是否命中 deep-dives 收敛标准（单列判定 2/4 阈值：跨模块交互≥3 / 永久参数≥5 / 精度分层≥3 / 坑位≥5，命中 2 项即单列），命中则详情下沉 deep-dives/（本文档留精简正文）
+    - "扫描（自主）：读能力图 + 领域模型 + 目标文档"
+    - "已有 APPLICATION-ARCHITECTURE → 参考旧文档有效信息，但结构按本模板重建"
+    - "按模板生成：§1 系统概述 → §2.1 Context 图 → §2.2 应用划分图（应用/容器/外部系统/用户层）→ §3 模块划分（应用内模块，能力→聚合映射见 domain/ 各域文档 不重复）"
+    - "检查是否命中 deep-dives 收敛标准（单列判定 2/4 阈值：跨模块交互≥3 / 永久参数≥5 / 精度分层≥3 / 坑位≥5，命中 2 项即单列），命中则详情下沉 deep-dives/（本文档留精简正文）"
   notes: # 生成注意点（怎么生成）
-    - §2.2 应用划分四分类（C4 语义）：「应用[应用]」= 承载业务逻辑的主体（前端/API）；「容器[容器]」= 应用依赖的资源、你拥有并负责（数据库/对象存储/缓存等，System Boundary 内）；「外部系统[外部]」= 第三方服务、不拥有只消费（大模型 API/SMTP/业务数据源/他团队提供的服务，Boundary 外）；「用户层[Person]」= 上下文展示（系统用户角色）
+    - "§2.2 应用划分四分类（C4 语义）：「应用[应用]」= 承载业务逻辑的主体（前端/API）；「容器[容器]」= 应用依赖的资源、你拥有并负责（数据库/对象存储/缓存等，System Boundary 内）；「外部系统[外部]」= 第三方服务、不拥有只消费（大模型 API/SMTP/业务数据源/他团队提供的服务，Boundary 外）；「用户层[Person]」= 上下文展示（系统用户角色）"
     - "资源归谁管判别（容器 vs 外部系统，与 STRUCTURE §3.1 infra/integration「坏了找谁修」一致）：自己运维管理 → 容器（Boundary 内）；别人提供服务（他团队/第三方）→ 外部系统（Boundary 外）"
     - "Person 位置规范：用户层 [Person] 为「上下文物件展示（不参与系统边界）」——可画在左主体顶部（阅读布局）或 Boundary 外（严格 C4），二选一明确即可，不强制"
-    - §3 模块划分：应用内模块按知识域划分（不按能力）；模块命名以 §2.2 应用划分图为基准（防一物多名，宪法通用语言贯穿）；能力→领域/聚合映射见 domain/ 各域文档（入口 DOMAIN-MODEL §3），应用架构不重复该映射
-    - 不写实现细节（类/接口/表结构在代码）
-    - 图规范见 references/diagram-spec.md（Context 用 flowchart，应用划分用 D2）
-    - 瘦身约束：保留 §2.1 Context 图 + §2.2 应用划分图；§3.1 模块表不重复建表、兼作索引，详情命中 deep-dives 判定时下沉；File:Line 链代码；环境与部署参数见 DEPLOYMENT（L4 部署与发布），单向提及不复制
+    - "§3 模块划分：应用内模块按知识域划分（不按能力）；模块命名以 §2.2 应用划分图为基准（防一物多名，宪法通用语言贯穿）；能力→领域/聚合映射见 domain/ 各域文档（入口 DOMAIN-MODEL §3），应用架构不重复该映射"
+    - "不写实现细节（类/接口/表结构在代码）"
+    - "图规范见 references/diagram-spec.md（Context 用 flowchart，应用划分用 D2）"
+    - "瘦身约束：保留 §2.1 Context 图 + §2.2 应用划分图；§3.1 模块表不重复建表、兼作索引，详情命中 deep-dives 判定时下沉；File:Line 链代码；环境与部署参数见 DEPLOYMENT（L4 部署与发布），单向提及不复制"
   checks: # 生成后反向 check
     - "[ ] §2.2 应用划分图分四类（应用[应用]/容器[容器]/外部[外部]/用户层[Person]），无「依赖」笼统类"
     - "[ ] 容器=你拥有并负责（Boundary 内）；外部系统=别人提供服务（Boundary 外）——判别正确，无容器/外部混淆"

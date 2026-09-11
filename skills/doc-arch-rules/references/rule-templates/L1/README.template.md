@@ -8,24 +8,24 @@ globs:
 # 生成提示词（元信息 · 仅模板持有，实例不含本块）
 generation:
   tools:
-    - Markdown 文档索引表（L0-L4 + common 分层，一文档一行）+ 技术栈清单（只列事实）
+    - "Markdown 文档索引表（L0-L4 + common 分层，一文档一行）+ 技术栈清单（只列事实）"
   related: # 关联模板与联动修改
-    CONSTITUTION: 文档架构见宪法 §3.1（全局加载，无 docs/ 副本；rule 在 .omo/rules/docs/CONSTITUTION.md），文档增删需同步 README 索引
-    STRUCTURE: 目录结构见它 §1，目录变化需同步 README 路径
-    USER-STORY: §4.2 单故事交互（UI 结构与交互点），新增 UI 时需同步
+    CONSTITUTION: "文档架构见宪法 §3.1（全局加载，无 docs/ 副本；rule 在 .omo/rules/docs/CONSTITUTION.md），文档增删需同步 README 索引"
+    STRUCTURE: "目录结构见它 §1，目录变化需同步 README 路径"
+    USER-STORY: "§4.2 单故事交互（UI 结构与交互点），新增 UI 时需同步"
   # 只有需要用户决策的才问（用询问工具）
   ask_user:
-    - 生成时点歧义时问用户（对话生成/扫描生成），已有 README 一律重建结构但吸收有效信息
+    - "生成时点歧义时问用户（对话生成/扫描生成），已有 README 一律重建结构但吸收有效信息"
   flow: # 生成流程（分支）
     - "命中判别（先做）：globs 裸名 `README.md` 经 basename 兜底可命中任意子目录同名文件——命中路径 ≠ 项目根 `README.md` 时本模板跳过（子目录 README 不是项目入口，不按本模板重建）"
-    - 扫描项目（自主）：路径 + 已有/无 README
-    - 问生成时点（对话生成 vs 项目自动生成）
-    - 对话生成（代码未写）→ 与用户对话获取项目信息（一句话目标/技术栈/文档索引）→ 按模板新建
-    - 项目自动生成（代码已写）→ 扫描项目（代码/文档/配置）→ 按模板生成
-    - 已有 README → 融入旧 README 的有效信息（历史/背景/已知决策），但结构按本模板重建
+    - "扫描项目（自主）：路径 + 已有/无 README"
+    - "问生成时点（对话生成 vs 项目自动生成）"
+    - "对话生成（代码未写）→ 与用户对话获取项目信息（一句话目标/技术栈/文档索引）→ 按模板新建"
+    - "项目自动生成（代码已写）→ 扫描项目（代码/文档/配置）→ 按模板生成"
+    - "已有 README → 融入旧 README 的有效信息（历史/背景/已知决策），但结构按本模板重建"
   notes: # 生成注意点
-    - 技术栈只列事实，理由记 ADR
-    - 索引与 STRUCTURE 一致，含 deep-dives（L2/deep-dives/INDEX.md 索引 + <name>.md 详情）
+    - "技术栈只列事实，理由记 ADR"
+    - "索引与 STRUCTURE 一致，含 deep-dives（L2/deep-dives/INDEX.md 索引 + <name>.md 详情）"
   checks: # 生成后反向 check
     - "README 定位正确（是什么+技术栈+索引，无冗余内容）"
     - "文档索引与实际文档一致（L0-L4 + common 层，路径正确）"
