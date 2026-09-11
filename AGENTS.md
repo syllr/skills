@@ -18,16 +18,37 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 ---
 
-## 2. 全仓注意事项（改任何 skill 前必读）
+## 2. 约定与约束（改任何 skill 前必读）
 
-### 引用规范（核心约定）
+> 本仓全部全局硬约定/约束集中于此。上方为目录（C1-C9），细则顺次展开；skill 专属约束见 §3。
+
+| #   | 约定                                                                                                   | 检查方式                |
+| --- | ------------------------------------------------------------------------------------------------------ | ----------------------- |
+| C1  | 引用用相对 Markdown 链接；禁 `@path`/绝对路径/依赖 cwd 的 `./`；scripts/references 相对 Base directory | grep（见 C1）           |
+| C2  | 模板正文链接以「生成后 rule 在目标项目中的位置」为基准（目标侧）；skill 自身文档用 skill 侧            | 目标项目内校验（见 C2） |
+| C3  | frontmatter 合规（name 与目录名一致、description 含功能+触发词 <1024）                                 | `agentskills validate`  |
+| C4  | 模板正文及 frontmatter 禁加粗与 emoji                                                                  | grep + python（见 C4）  |
+| C5  | generation 块：字符串全双引号 / 列表项 4 空格扁平（禁嵌套）/ 无孤儿行                                  | python（见 C5）         |
+| C6  | 改 skill 必跑 validate；改后 `npx skills update -g` + 重启生效                                         | 命令（见 C6）           |
+| C7  | 非 skill 目录勿动；临时产物进 /tmp；skill 目录只放规定文件                                             | find 机检（见 C7）      |
+| C8  | SKILL.md <500 行 + 渐进式披露 + 禁死引用                                                               | 人工（见 C8）           |
+| C9  | 文档与注释全中文                                                                                       | 人工（见 C9）           |
+
+### C1 引用路径与 Base directory
 
 - `references/` 引用必须用 Markdown 链接相对路径：`[显示文本](references/xxx.md)`，保持一级深度（不嵌套 `references/sub/`）
 - `scripts/`、`assets/` 调用用相对路径命令：`scripts/main.py --input data.json`
 - 禁止：`@path` 语法（agentskills.io 规范禁止）、硬编码绝对路径（安装位置一变即失效）、依赖 cwd 的 `./xxx`、让 AI「自行查找/拼路径」
 - opencode 机制（实测）：skill 激活时自动注入 **Base directory**（安装位置绝对路径），scripts/references 相对路径以其为锚——**不需要也不应该写「探测安装路径」的逻辑**
 
-### frontmatter 合规
+### C2 链接基准（模板正文 = 目标侧）
+
+- 模板正文（会逐字复制进目标 rule）里的相对链接，一律以**生成后 rule 在目标项目中的位置**为基准（目标侧）；扩展名用目标真实文件名——rule 用 `.md`（不是 `.template.md`），资产用真实相对路径（如 `../test-asset/...`）
+- skill 自身文档（`SKILL.md` / `references/README.md` / `assembly.md` / `globs.md` 等，不进入目标项目）里的链接仍以该文件自身位置为基准（skill 侧）
+- 范例：模板 `L4/TEST-PLAN.template.md` → 产物 `.omo/rules/docs/L4/TEST-PLAN.md`；正文写 `[test-asset/api-case.md](../test-asset/api-case.md)`（解析为 `.omo/rules/docs/test-asset/api-case.md`）；跨 rule 写 `[API](../../L3/API.md)`（来自 `L2/deep-dives/DEEP-DIVE.md`）
+- 检查方式：模板正文链接**不在 skill 本地校验**（目标侧产物），在目标项目内校验；skill 侧文档链接可本地校验
+
+### C3 frontmatter 合规
 
 | 字段                        | 要求                                                                            |
 | --------------------------- | ------------------------------------------------------------------------------- |
@@ -39,24 +60,81 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 > `license` / `compatibility` / `metadata` / `allowed-tools` 均为可选字段，声明与否不作为合规项——各 skill 间存在差异属正常（`allowed-tools` 在 opencode 不生效，仅兼容 Claude Code 等其他 Agent）。仓库整体 license 为 MIT。
 
-### 内容禁令与机检
+### C4 内容禁令与机检
 
 - `references/rule-templates/**` 与 `skill-templates/**` 正文及 frontmatter 禁用 `**加粗**` 与 emoji（✅/⚠️/箭头全算；glob 通配符 `**`、目录树制表符除外）
 - 机检（改模板后必跑）：`grep -rnE '\*\*[^*`]+\*\*' skills/doc-arch-rules/references/rule-templates/`无输出 + emoji 扫描（见下方命令）输出`emoji干净`
 
-### 校验与生效
+### C5 模板 generation 块格式
+
+- `references/rule-templates/**` frontmatter 的 `generation` 块内，**所有字符串一律用双引号包裹**：`tools` / `ask_user` / `flow` / `notes` / `checks` 的每个列表项 + `related` 的每个值，不论是否含特殊字符（统一格式，不靠 YAML 直觉判断）
+- 值内含 ASCII `"` 或 `\` 必须转义（`\"` / `\\`）——解析器 `scripts/parse-template.mjs` 对双引号值走 `JSON.parse`，未转义会破坏内容
+- 列表项一律 4 空格扁平，禁止嵌套子项——嵌套在 YAML 中非法（block sequence 不能直接跟子序列，编辑器报 `Invalid child element in a block sequence`），且解析器 `parseGeneration` 本就把子项拍平成同级；要分组就把组标题也作为一条列出
+- generation 块内不得有无 key 的孤儿行（解析器 `parseGeneration` 会静默丢弃，标准 YAML 也报错）
+- 机检（改模板后必跑，作用域限定 frontmatter 的 generation 块）：
+
+```bash
+python3 - <<'PY'
+import glob, re
+bad = []
+for p in glob.glob('skills/doc-arch-rules/references/rule-templates/**/*.md', recursive=True):
+    L = open(p, encoding='utf-8').read().split('\n')
+    if not L or L[0] != '---':
+        continue
+    try:
+        e = L.index('---', 1)
+    except ValueError:
+        continue
+    ing = False
+    for i in range(1, e):
+        ln = L[i]
+        if re.match(r'^generation:\s*$', ln):
+            ing = True
+            continue
+        if ing and re.match(r'^[a-zA-Z_]+:', ln) and not ln.startswith(' '):
+            break
+        if not ing:
+            continue
+        if ln.strip() == '' or re.match(r'^\s*#', ln):
+            continue
+        if re.match(r'^  [a-z_]+:', ln):
+            continue
+        m = re.match(r'^( *)- (.*)$', ln)
+        if m:
+            if len(m.group(1)) != 4:
+                bad.append(f'{p}:{i + 1} 列表项非 4 空格（禁止嵌套）: {ln.strip()[:30]}')
+            elif not m.group(2).startswith('"'):
+                bad.append(f'{p}:{i + 1} 列表项未引号')
+            continue
+        m2 = re.match(r'^(    [^:#]+: )(\s*)(.*)$', ln)
+        if m2:
+            if not m2.group(3).startswith('"'):
+                bad.append(f'{p}:{i + 1} related 值未引号')
+            continue
+        bad.append(f'{p}:{i + 1} 孤儿行: {ln.strip()[:40]}')
+print(bad if bad else 'generation 引号干净')
+PY
+```
+
+### C6 校验与生效
 
 - 改 skill 后必跑：`uvx --from skills-ref agentskills validate ./skills/<name>`（可执行名是 **agentskills** 不是 skills-ref；`npx skills check` 只是查更新 ≠ 合规校验）；改动已有 skill 前先跑一次作基线（区分既有问题 vs 本次引入）
 - **同步与生效**：本仓库（SSOT）改完 → `npx skills update -g` 同步安装副本（`~/.agents/skills/`）→ **重启 opencode 会话生效**——skill 列表是会话启动快照，skill 内容是激活时读取，不同步+重启就还是旧的
 
-### 目录与文档纪律
+### C7 目录与文件纪律
 
 - 不修改 `improve/`、`demo/`、`.omo/`、`.codegraph/` 等非 skill 目录
-- 文档与注释全部使用中文（技术术语/命令/路径保留原文）
 - **临时产物不进仓库**：截图（Playwright / 视觉 QA / 调试截图等 `*-fullpage.png`）、临时输出、中间文件一律写系统临时目录（`/tmp`、`mktemp -d` 或 `$TMPDIR`），用完即删；禁止落在仓库任何位置（含仓库根、skill 目录）。机检：`find . -maxdepth 2 \( -name '*.png' -o -name '*.jpg' -o -name '*.webp' \) -not -path './node_modules/*'` 应无输出
 - skill 目录只放 SKILL.md + references/ + assets/ + scripts/，不混入无关文件（例外：doc-arch-rules 根目录的 `meta.json` 是版本指纹 SSOT，属有意保留）；不在 skill 中写真实密码/token/敏感主机信息
+
+### C8 SKILL.md 精简与渐进式披露
+
 - SKILL.md 精简（<500 行）+ 渐进式披露：核心工作流在 SKILL.md，详参下沉 `references/`（Markdown 链接指向）；references 可本地化官方资料（c4-container-diagram 为范例，更新命令见其 README，上游 master）
 - SKILL.md 内禁止死引用（不存在的章节号/reference 文件）；改 skill 后同步其 `references/README.md`（如有文件清单）
+
+### C9 中文文档与注释
+
+- 文档与注释全部使用中文（技术术语/命令/路径保留原文）
 
 ---
 
