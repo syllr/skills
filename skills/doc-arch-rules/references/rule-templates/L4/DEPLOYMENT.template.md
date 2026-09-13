@@ -301,6 +301,8 @@ npm run dev        # <如 Vite :5173>
 | 登录     | `curl -X POST http://localhost:8000/api/v1/auth/login -H "Content-Type: application/json" -d '{"username":"admin","password":"<pwd>"}'` | 返回 token        |
 | 页面     | 浏览器 http://localhost:5173                                                                                                            | 登录后进入工作台  |
 
+> 本表为部署验证通道（由 deploy-ops 执行，属宪法 §2.4 范围豁免——部署期健康检查/冒烟不强制走 test-tools）。
+
 ### 4.4 种子凭据（如有）
 
 | 用户名 | 凭据来源（见 §6.1 SEED_PASSWORD 行） | 角色   | 说明                             |

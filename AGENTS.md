@@ -1,6 +1,6 @@
 # PROJECT KNOWLEDGE BASE
 
-Generated: 2026-09-09
+Generated: 2026-09-09（2026-09-14 同步）
 Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。本项目只负责 skill 的开发/迭代/格式校验；将 skill 安装到 opencode 等 Agent 由用户自行执行，AI 不代装。
 
 ---
@@ -10,9 +10,9 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 维护一组自包含的 Agent Skills（每个 skill = 一个目录，含 `SKILL.md` + 可选 `references/`/`assets/`/`scripts/`），语言：中文文档。核心能力分两类：
 
 - **独立能力 skill**：c4-container-diagram（画图）、gitee-comments（评审评论）、remote-shell（远程执行）、score-prompt（prompt 评分）、skill-creator（造 skill）
-- **meta skill**：doc-arch-rules——负责「生成/管理/更新 rule」与「生成/管理/更新 skill」：持有 21 个文档模板（→ 目标项目 `.omo/rules/docs/` 的 rule）与 5 个域 skill 模板（→ 目标项目 `.opencode/skills/` 的 test-ops / deploy-ops / docs-align / test-tools / contract-export）
+- **meta skill**：doc-arch-rules——负责「生成/管理/更新 rule」与「生成/管理/更新 skill」：持有 19 个文档模板（→ 目标项目 `.omo/rules/docs/` 的 rule）与 5 个域 skill 模板（→ 目标项目 `.opencode/skills/` 的 test-ops / deploy-ops / docs-align / test-tools / contract-export）
 
-**关键边界**：五个域 skill（test-ops / deploy-ops / docs-align / test-tools / contract-export）是 **meta skill 在目标项目生成的产物，不在本仓库**——本仓库只有它们的模板（`doc-arch-rules/references/skill-templates/`）。其中 deploy-ops（执行+资产生成维护）、test-tools 与 contract-export 是多文件模板（SKILL.template.md + references/ + assets/ 参考实现），test-ops / docs-align 为薄壳单文件。
+**关键边界**：五个域 skill（test-ops / deploy-ops / docs-align / test-tools / contract-export）是 **meta skill 在目标项目生成的产物，不在本仓库**——本仓库只有它们的模板（`doc-arch-rules/references/skill-templates/`）。其中 deploy-ops（执行+资产生成维护）、test-tools、contract-export 与 test-ops（自持用例卡规范 + 卡模板）是多文件模板（SKILL.template.md + references/ + assets/），docs-align 为薄壳单文件。
 
 **职责边界**：本项目只做「创建 / 优化 / 校验」；安装到 Agent（`npx skills add`）由用户自行执行，AI 不代装。
 
@@ -43,9 +43,9 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 
 ### C2 链接基准（模板正文 = 目标侧）
 
-- 模板正文（会逐字复制进目标 rule）里的相对链接，一律以**生成后 rule 在目标项目中的位置**为基准（目标侧）；扩展名用目标真实文件名——rule 用 `.md`（不是 `.template.md`），资产用真实相对路径（如 `../test-asset/...`）
+- 模板正文（会逐字复制进目标 rule）里的相对链接，一律以**生成后 rule 在目标项目中的位置**为基准（目标侧）；扩展名用目标真实文件名——rule 用 `.md`（不是 `.template.md`），附属资产用真实相对路径
 - skill 自身文档（`SKILL.md` / `references/README.md` / `assembly.md` / `globs.md` 等，不进入目标项目）里的链接仍以该文件自身位置为基准（skill 侧）
-- 范例：模板 `L4/TEST-PLAN.template.md` → 产物 `.omo/rules/docs/L4/TEST-PLAN.md`；正文写 `[test-asset/api-case.md](../test-asset/api-case.md)`（解析为 `.omo/rules/docs/test-asset/api-case.md`）；跨 rule 写 `[API](../../L3/API.md)`（来自 `L2/deep-dives/DEEP-DIVE.md`）
+- 范例：模板 `L2/domain/DOMAIN-MODEL.template.md` → 产物 `.omo/rules/docs/L2/domain/DOMAIN-MODEL.md`；跨 rule 写 `[API](../../L3/API.md)`（来自 `L2/domain/DOMAIN-MODEL.md`）
 - 检查方式：模板正文链接**不在 skill 本地校验**（目标侧产物），在目标项目内校验；skill 侧文档链接可本地校验
 
 ### C3 frontmatter 合规
@@ -63,7 +63,7 @@ Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。�
 ### C4 内容禁令与机检
 
 - `references/rule-templates/**` 与 `skill-templates/**` 正文及 frontmatter 禁用 `**加粗**` 与 emoji（✅/⚠️/箭头全算；glob 通配符 `**`、目录树制表符除外）
-- 机检（改模板后必跑）：`grep -rnE '\*\*[^*`]+\*\*' skills/doc-arch-rules/references/rule-templates/`无输出 + emoji 扫描（见下方命令）输出`emoji干净`
+- 机检（改模板后必跑）：`grep -rnE '\*\*[^*`]+\*\*' skills/doc-arch-rules/references/rule-templates/ skills/doc-arch-rules/references/skill-templates/`无输出 + emoji 扫描（见下方命令）输出`emoji干净`
 
 ### C5 模板 generation 块格式
 
@@ -144,15 +144,15 @@ PY
 
 **定位**：rule 与 skill 生成器（单一功能，无关键字分诊）——从模板全量更新目标项目两类产物：①`.omo/rules/docs/` 全部 omo rule ②`.opencode/skills/` 五个域 skill（test-ops / deploy-ops / docs-align / test-tools / contract-export）。触发即全量同步；文档-代码对齐/漂移修复/文档初始化/globs 目录同步**完全独立**（docs-align skill 承担，本 skill 不承载不路由——用户要文档对齐、处理漂移、初始化文档、更新globs 时直接调 docs-align）。
 
-**结构**：`references/rule-templates/`（1 宪法源 + 21 文档模板，产物 `.omo/rules/docs/`）+ `references/rule-assets/test-asset/`（附属资产目录，独立于模板树——仅用例卡模板 api-case/flow-case，随 TEST-PLAN rule **镜像同步**到目标项目 `.omo/rules/docs/test-asset/`，非模板不参与解析/指纹）+ `references/skill-templates/`（test-ops / docs-align 两份 SKILL.template.md 薄壳模板 + deploy-ops 多文件模板〔SKILL.template.md + references/ 资产与多环境约定、发布流水线 + assets/reference-impl/ 脚本/compose/.env 骨架〕+ test-tools 多文件模板〔SKILL.template.md + references/ 架构规范 + assets/reference-impl/ 参考实现〕+ contract-export 多文件模板〔SKILL.template.md + references/ 引导映射与执行方法论 + assets/reference-impl/ 导出/拆分脚本〕，产物目标项目 `.opencode/skills/`，整目录落地）+ `references/assembly.md`（rule 组装 SSOT，改它 = implHash 刷新全量 rule 重生成）+ `references/globs.md`、`diagram-spec.md` + `scripts/parse-template.mjs`（解析/校验/指纹，零依赖）。
+**结构**：`references/rule-templates/`（1 宪法源 + 19 文档模板，产物 `.omo/rules/docs/`；目录结构与模板树同构）+ `references/skill-templates/`（test-ops 多文件模板〔SKILL.template.md + references/case-writing.md 用例卡规范 + assets/case-templates/ 用例卡模板 api-case/flow-case〕+ docs-align 薄壳 SKILL.template.md + deploy-ops 多文件〔SKILL.template.md + references/ 资产与多环境约定、发布流水线 + assets/reference-impl/ 脚本/compose/.env 骨架〕+ test-tools 多文件〔SKILL.template.md + references/ 架构规范 + assets/reference-impl/ 参考实现〕+ contract-export 多文件〔SKILL.template.md + references/ 引导映射与执行方法论 + assets/reference-impl/ 导出/拆分脚本〕，产物目标项目 `.opencode/skills/`，整目录落地）+ `references/assembly.md`（rule 组装 SSOT，改它 = implHash 刷新全量 rule 重生成）+ `references/globs.md`、`diagram-spec.md` + `scripts/parse-template.mjs`（解析/校验/指纹/孤儿清理，零依赖）。
 
 **注意**：
 
-- 更新语义三分：rule 按版本指纹（`--check-meta` → 需更新才重生成，最新跳过）；**rule-assets/ 镜像同步**（资产 = skill 侧模板副本，无项目侧手工改动语义，整目录镜像：先列目标多余项随报告删除）；skill 整目录落地（薄壳单文件逐字复制 / deploy-ops、test-tools、contract-export 整目录复制；已有产物先逐文件 diff 项目侧手工改动确认再覆盖）
+- 更新语义：rule 按版本指纹（`--check-meta` → 需更新才重生成，最新跳过）；**孤儿 rule 清理**（`--prune`：模板已删/改名/迁移的残留 rule + 空目录 + 项目 meta 孤儿条目，落盘同批必做）；skill 整目录落地（薄壳单文件逐字复制 / test-ops、deploy-ops、test-tools、contract-export 整目录复制；已有产物先逐文件 diff 项目侧手工改动确认再覆盖）
 - 版本指纹 `meta.json`（version/implHash/templates）——**只在用户显式要求时 `--gen-meta`**，AI 不得触碰；用户手工改过的 rule 指纹不会覆盖（设计意图）
 - docs-align 相关职责（对齐流水线/globs 双向同步/漂移分诊）已完全移出本 skill——SKILL.md 不含这些流程
-- case 生成纪律（API 卡断言三源）：状态码只从 openapi `responses` 取、字段从 ErrorResponse schema 取、具体错误码实测校准（模式 `BAD_REQUEST`/`RULE_VIOLATION_R<N>`）
-- 测试工具集（架构规范/参考实现/生成维护执行）已独立为第四个域 skill `test-tools`——原 `rule-assets/test-asset/test-tools*` 已迁入 `references/skill-templates/test-tools/`（`references/test-tools.md` + `assets/reference-impl/`）；TEST-PLAN rule 与 test-ops 改为按名引用该 skill
+- 用例（卡片）规范与用例管理已归 test-ops skill（`references/case-writing.md`：卡结构五段/写卡规范含断言三源/机检/资产结构/关联联动；DoD 草稿晋升机制）；本 skill 只生成/更新 rule，不承载用例流程
+- 测试工具集（架构规范/参考实现/生成维护执行/调用）已独立为第四个域 skill `test-tools`（`references/test-tools.md` + `assets/reference-impl/`）；用例规范归 test-ops skill，两者分别承载宪法 §2.3（用例唯一入口）与 §2.4（系统访问唯一入口）
 - API 契约导出已独立为第五个域 skill `contract-export`——L3/API rule 保留导出规范正文（说明书四要素），skill 只读 `docs/L3/API.md` §2 命令执行（引导/导出/机检/门禁落盘），命令 SSOT 不复制进 skill
 - 部署资产（脚本/compose/多环境 .env）生成维护已并入 `deploy-ops`（由薄壳升级为多文件）——执行部分读 DEPLOYMENT.md §5.3/§4 照做，资产生成/维护按 references/deploy-assets.md 约定（环境名以 §2.1 为唯一词表），参考骨架在 assets/reference-impl/
 
@@ -217,6 +217,7 @@ node scripts/parse-template.mjs --check <rule路径> <模板路径>
 node scripts/parse-template.mjs --gen-meta [--set-version X.Y.Z]      # 仅用户显式触发
 node scripts/parse-template.mjs --check-meta <项目meta路径>
 node scripts/parse-template.mjs --update-project-meta <项目meta> <DOC> <v> <h> <th>
+node scripts/parse-template.mjs --prune <rulesDir> <项目meta>           # 清理孤儿 rule + 项目 meta 孤儿条目
 
 # 同步到已安装副本（用户自行执行；同步后重启 opencode 生效）
 npx skills update -g

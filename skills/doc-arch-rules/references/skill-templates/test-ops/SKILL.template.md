@@ -9,9 +9,9 @@ metadata:
 
 # test-ops — 测试用例执行与用例管理（testcase ops）
 
-AI 既是测试执行器，也是用例库的维护者。本 skill 以**分诊**进入：执行用例 / 管理正式用例 / 处理 DoD 草稿用例。
+AI 既是测试执行器，也是用例库的维护者。本 skill 以分诊进入：执行用例 / 管理正式用例 / 处理 DoD 草稿用例。
 
-**本 skill 是测试用例的唯一入口**：任何形式的用例（单元 / 接口 / 流程 / 集成）都只能经本 skill 触发与管理（新增 / 更新 / 删除 / 执行）——AI 不得自动创建任何用例；新增一律先落 DoD 草稿、经用户认可后晋升（宪法「用例唯一入口」条款）。用例卡结构与写卡规范由本 skill 自持（[references/case-writing.md](references/case-writing.md)：资产结构/卡结构五段/写卡规范/机检/关联联动），卡模板在 [assets/case-templates/](assets/case-templates/)。测试工具用法现场读实例 `docs/test/test-tools/README.md`（工具集生成/维护/调用归 test-tools skill）。本 skill 另承载：执行编排、测试记录机制、DoD 草稿与晋升机制。
+本 skill 是测试用例的唯一入口：任何形式的用例（单元 / 接口 / 流程 / 集成）都只能经本 skill 触发与管理（新增 / 更新 / 删除 / 执行）——AI 不得自动创建任何用例；新增一律先落 DoD 草稿、经用户认可后晋升（宪法「用例唯一入口」条款）。用例卡结构与写卡规范由本 skill 自持（[references/case-writing.md](references/case-writing.md)：资产结构/卡结构五段/写卡规范/机检/关联联动），卡模板在 [assets/case-templates/](assets/case-templates/)。测试工具用法现场读实例 `docs/test/test-tools/README.md`（工具集生成/维护/调用归 test-tools skill）。本 skill 另承载：执行编排、测试记录机制、DoD 草稿与晋升机制。
 
 ## 分诊（进入第一件事）
 
@@ -21,7 +21,7 @@ AI 既是测试执行器，也是用例库的维护者。本 skill 以**分诊**
 | 2 正式用例管理 | 更新用例 / 删除用例 / 改用例 / 用例维护                                | §2   |
 | 3 DoD 草稿用例 | 新功能验证 / 改动验证（bug fix）/ 调研性验证 / ad-hoc / 临时用例 / DoD | §3   |
 
-> **新增正式用例不在 §2 直写**：任何新增（新场景 / 新分支）都先落 DoD 草稿，经验证与用户认可后晋升（§3）——因为新增的用例本身需要先被测试过。
+> 新增正式用例不在 §2 直写：任何新增（新场景 / 新分支）都先落 DoD 草稿，经验证与用户认可后晋升（§3）——因为新增的用例本身需要先被测试过。
 
 ## 1. 执行用例
 
@@ -41,15 +41,15 @@ AI 既是测试执行器，也是用例库的维护者。本 skill 以**分诊**
 
 1. 定位：正式用例在 `docs/test/test-cases/`（api/<领域实体>/ 与 flow/<USER-STORY 场景>/，目录分组与卡结构见 [references/case-writing.md](references/case-writing.md)）
 2. 明确动作后执行（卡结构与写卡规范见 [references/case-writing.md](references/case-writing.md)）：
-   - **更新**：按 [references/case-writing.md](references/case-writing.md) 修改卡内容（头 + Case N 五段：前置条件/执行流程/期望结果/数据对账/数据清理）
-   - **删除**：删除卡文件（不留孤儿文件）
-   - **新增**：不在此直写 → 转 §3（先落 DoD 草稿，验证后晋升）
+   - 更新：按 [references/case-writing.md](references/case-writing.md) 修改卡内容（头 + Case N 五段：前置条件/执行流程/期望结果/数据对账/数据清理）
+   - 删除：删除卡文件（不留孤儿文件）
+   - 新增：不在此直写 → 转 §3（先落 DoD 草稿，验证后晋升）
 3. 改完校验：按 [references/case-writing.md](references/case-writing.md) §4 机检（结构机检：头 + Case N 五段齐全 / 内容机检：无占位参数、无悬空 § 引用 / 目录机检：卡在对应实体/场景目录 / 清理机检：造数据卡含三态清理）
 4. 汇报：改动清单（更新/删除）+ 机检结果
 
 ## 3. DoD 草稿用例（ad-hoc：新建 / 执行 / 晋升）
 
-定位：DoD 用例是 **ad-hoc 草稿**——为一次具体验证而生，不纳入正式用例库；使命完成后由用户决定是否**晋升**（晋升 = 对正式用例做一次变更）。
+定位：DoD 用例是 ad-hoc 草稿——为一次具体验证而生，不纳入正式用例库；使命完成后由用户决定是否晋升（晋升 = 对正式用例做一次变更）。
 
 ### 3.1 何时建
 
@@ -70,12 +70,12 @@ AI 既是测试执行器，也是用例库的维护者。本 skill 以**分诊**
 
 ### 3.4 使命完成与晋升（核心机制）
 
-1. 使命完成 = 结论成立且**用户确认**（验证通过 / 调研完成 / 改动已确认）→ **询问用户是否晋升为正式用例**——不问不晋升；DoD 可以长期只是草稿
+1. 使命完成 = 结论成立且用户确认（验证通过 / 调研完成 / 改动已确认）→ 询问用户是否晋升为正式用例——不问不晋升；DoD 可以长期只是草稿
 2. 用户认可晋升 → 分析该 DoD 覆盖的场景 / 分支，在正式用例库定位归属：
-   - **已有对应用例** → 更新：把该分支的测试逻辑合并进既有用例（本质是一次用例变更）
-   - **无对应用例** → 新增：按 [references/case-writing.md](references/case-writing.md) 落正式用例卡
+   - 已有对应用例 → 更新：把该分支的测试逻辑合并进既有用例（本质是一次用例变更）
+   - 无对应用例 → 新增：按 [references/case-writing.md](references/case-writing.md) 落正式用例卡
 3. 晋升动作（正式用例卡的落盘位置与结构）一律遵守 [references/case-writing.md](references/case-writing.md)
-4. 晋升完成后询问用户 DoD 草稿如何处置（删除 / 保留）；**不晋升的 DoD 默认保留草稿**，清理需用户确认（不主动清理）
+4. 晋升完成后询问用户 DoD 草稿如何处置（删除 / 保留）；不晋升的 DoD 默认保留草稿，清理需用户确认（不主动清理）
 5. 汇报：晋升结果（合并进哪张正式用例 / 新建哪张）+ 草稿处置
 
 > 多数 DoD 可能永远是草稿——不自动晋升、不主动清理；晋升与否是用户决策。
@@ -108,8 +108,8 @@ AI 既是测试执行器，也是用例库的维护者。本 skill 以**分诊**
 
 ## 边界
 
-- **本 skill 是测试用例的唯一入口**：用例卡结构与写卡规范由本 skill 自持（references/case-writing.md）；新增/更新/删除/执行一律经本 skill，AI 不得自动创建任何用例（新增一律经 DoD 晋升）
+- 本 skill 是测试用例的唯一入口：用例卡结构与写卡规范由本 skill 自持（references/case-writing.md）；新增/更新/删除/执行一律经本 skill，AI 不得自动创建任何用例（新增一律经 DoD 晋升）
 - **DoD 草稿在 `.omo/`（过程态）**：不入正式库、不被正式用例体系引用、不随代码提交；晋升后才进 `docs/test/test-cases/`
-- **工具实现与调用归 test-tools skill**：本 skill 只做执行编排（环境/顺序/策略/记录），不实现工具、不绕过工具直连被测系统
+- 工具实现与调用归 test-tools skill：本 skill 只做执行编排（环境/顺序/策略/记录），不实现工具、不绕过工具直连被测系统
 - 用例执行的环境权威在 DEPLOYMENT（§2.1 环境矩阵 / §6/§7 变量）；`.env.<环境名>` 是其副本
 - 不生成业务代码、不自动 commit/push
