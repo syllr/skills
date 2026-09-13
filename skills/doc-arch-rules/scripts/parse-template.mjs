@@ -57,6 +57,17 @@ const SPECIAL_TARGETS = {
 /**
  * 递归遍历目录，返回所有文件绝对路径（含子目录）。
  */
+function walkDirs(dir) {
+  const results = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      const full = path.join(dir, entry.name);
+      results.push(full, ...walkDirs(full));
+    }
+  }
+  return results;
+}
+
 function walkDir(dir) {
   const results = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -687,6 +698,80 @@ function updateProjectMeta(projectMetaPath, doc, version, implHash, templateHash
   console.log(`OK 项目 meta 已更新: ${doc}（version=${version}）`);
 }
 
+/**
+ * --prune <rulesDir> <projectMeta>：以当前模板清单为准清理孤儿 rule。
+ * 期望 rule 路径由模板文件路径推导（<层>/<DOC>.template.md → <层>/<DOC>.md；CONSTITUTION.md 在根）。
+ * 删除 rulesDir 下所有非期望文件（保留 meta.json）+ 清除项目 meta 中对应的孤儿条目 + 清理空目录。
+ * 只作用于 rule 目录，绝不触碰项目 docs/ 用户文档。
+ */
+function pruneRules(rulesDir, projectMetaPath) {
+  if (!rulesDir || !fs.existsSync(rulesDir)) {
+    console.error(`错误: rule 目录不存在 ${rulesDir || "(未提供)"}`);
+    process.exit(1);
+  }
+  // 期望集合（来自模板）
+  const expected = new Set();
+  const expectedKeys = new Set();
+  for (const f of walkDir(TEMPLATES_DIR).filter((x) => x.endsWith(".md"))) {
+    const rel = path.relative(TEMPLATES_DIR, f);
+    let ruleRel;
+    if (rel === "CONSTITUTION.md") ruleRel = "CONSTITUTION.md";
+    else if (rel.endsWith(".template.md")) ruleRel = rel.replace(/\.template\.md$/, ".md");
+    else continue;
+    expected.add(ruleRel);
+    expectedKeys.add(ruleRel.replace(/\.md$/, ""));
+  }
+  // 实际文件
+  const actual = walkDir(rulesDir).filter((f) => path.basename(f) !== "meta.json" && !path.basename(f).startsWith("."));
+  const orphans = actual.filter((f) => !expected.has(path.relative(rulesDir, f)));
+  // 删除孤儿文件
+  const removed = [];
+  for (const f of orphans) {
+    const rel = path.relative(rulesDir, f);
+    fs.rmSync(f);
+    removed.push(rel);
+  }
+  // 清理空目录（自底向上，保留 rulesDir 自身）
+  const dirs = walkDirs(rulesDir).sort((a, b) => b.length - a.length);
+  const removedDirs = [];
+  for (const d of dirs) {
+    if (path.resolve(d) === path.resolve(rulesDir)) continue;
+    try {
+      if (fs.existsSync(d) && fs.readdirSync(d).length === 0) {
+        fs.rmdirSync(d);
+        removedDirs.push(path.relative(rulesDir, d));
+      }
+    } catch { /* 忽略 */ }
+  }
+  // 清理项目 meta 孤儿条目
+  const removedMeta = [];
+  if (projectMetaPath && fs.existsSync(projectMetaPath)) {
+    try {
+      const meta = JSON.parse(fs.readFileSync(projectMetaPath, "utf-8"));
+      if (meta.rules && typeof meta.rules === "object") {
+        for (const key of Object.keys(meta.rules)) {
+          if (!expectedKeys.has(key)) {
+            delete meta.rules[key];
+            removedMeta.push(key);
+          }
+        }
+        fs.writeFileSync(projectMetaPath, `${JSON.stringify(meta, null, 2)}\n`, "utf-8");
+      }
+    } catch (e) {
+      console.error(`警告: 项目 meta 清理失败（${projectMetaPath}）：${e.message}`);
+    }
+  }
+  // 报告
+  console.log(`期望 rule ${expected.size} 个 / 实际文件 ${actual.length} 个`);
+  if (removed.length === 0 && removedDirs.length === 0 && removedMeta.length === 0) {
+    console.log("无孤儿 rule，目录与模板一致");
+    return;
+  }
+  if (removed.length) console.log(`删除孤儿 rule（${removed.length}）：\n  - ${removed.join("\n  - ")}`);
+  if (removedDirs.length) console.log(`清理空目录（${removedDirs.length}）：${removedDirs.join(", ")}`);
+  if (removedMeta.length) console.log(`清除项目 meta 孤儿条目（${removedMeta.length}）：${removedMeta.join(", ")}`);
+}
+
 function main() {
   const args = process.argv.slice(2);
 
@@ -695,6 +780,18 @@ function main() {
   if (genIdx !== -1) {
     const setIdx = args.indexOf("--set-version");
     genMeta(setIdx !== -1 ? args[setIdx + 1] : undefined);
+    return;
+  }
+
+  // --prune <rulesDir> <projectMeta>：清理孤儿 rule（模板已删/改名/迁移的残留）并同步清项目 meta 条目
+  const pruneIdx = args.indexOf("--prune");
+  if (pruneIdx !== -1) {
+    const [rd, pm] = [args[pruneIdx + 1], args[pruneIdx + 2]];
+    if (!rd) {
+      console.error("错误: --prune 需要 <rulesDir> [项目meta路径] 参数");
+      process.exit(1);
+    }
+    pruneRules(rd, pm);
     return;
   }
 

@@ -101,10 +101,12 @@ generation:
 │   │   └── integration-contracts/ # 外部服务契约（一服务一份，kebab-case）
 │   │       └── <service>.md # 单服务契约（如 llm-api.md / vector-service.md，字段见契约文件）
 │   ├── L4/ # 交付层（Deliver）
-│   │   ├── TEST-PLAN.md # 测试计划（三层入口/RTM/落库矩阵/用例索引）+ 报告
-│   │   ├── testcases/ # AI 可执行测试用例声明（FLOW-*.md 三件套 / API-*.md 执行卡；TEST-PLAN §5.2/§5.3 索引表兼入口，总文档例外不设 INDEX）
 │   │   ├── DEPLOYMENT.md # 部署与发布说明书（含 §7 资产登记）
 │   │   └── deployment/ # 部署资产目录（compose/scripts/.env 等，文件本体即运行位置）
+│   ├── test/ # 测试资产（规范归 test-ops skill：用例卡/工具集/执行台账）
+│   │   ├── test-tools/ # 测试工具集（bash 宿主 CLI；架构/生成/维护归 test-tools skill）
+│   │   ├── test-cases/ # 测试用例卡（api/<领域实体>/ 与 flow/<USER-STORY 场景>/）
+│   │   └── test-records/ # 测试执行记录（问题台账）
 │   ├── adr/ # 架构决策记录（common 贯穿层，一 feature 一 ADR）
 │   │   ├── INDEX.md # 索引：ADR 列表（唯一入口，宪法 §3.2）
 │   │   └── NNNN-<kebab-case>.md # 单篇 ADR（四位递增，与 ADR-NNNN 编号对应）

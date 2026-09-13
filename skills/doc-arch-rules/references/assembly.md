@@ -91,4 +91,3 @@ globs:
 - 四节正文必须覆盖 generation 全部字段信息（tools/related/ask_user/flow/notes/checks 逐条内联，related 保留"文档名+联动说明"配对）
 - 「模板」章节只放剥离 YAML frontmatter 后的 Markdown 正文（保留 `> 【指引】` 行——注意此为 rule 内生成提示，供 rule 读者（生成实例的 AI）参考，绝不写入实例文档；生成实例时按「内容纯净/三层处置」剥离）
 - rule 内禁止出现 YAML frontmatter 的 generation 原始块（`---` 内 YAML dump）；generation 信息一律以自然语言四节形式存在
-- 模板附属资产目录（仅 TEST-PLAN 模板持有）：`references/rule-assets/test-asset/`（用例卡模板 api-case/flow-case）是 TEST-PLAN rule 的附属资产——每次全量同步整目录**镜像**到项目 `.omo/rules/docs/test-asset/`（不判 TEST-PLAN 指纹是否最新，无条件覆盖）：先列目标目录多余项（模板已删、目标残留的旧文件，如迁移前残留的 test-tools.md/test-tools/）→ 随同步报告展示并删除，保持目标与模板一致、不留旧的第二 SSOT；拷贝不做占位符组装/三层处置/翻译；资产文件无 frontmatter、无 globs，规则引擎不应用，纯供 rule 触发后生成测试资产时参考——test-asset 是参考模板层，它参考生成的 docs/test/ 业务产物是产物层，同步时绝不覆盖；非已知模板文件的删除项需先列清单让用户确认。rule「模板」章节内以相对链接 `test-asset/xxx` 引用资产文件——目录不随 rule 同步即死链，故为落盘必做项。测试工具集不在 test-asset 内——归 test-tools skill（`.opencode/skills/test-tools/`）承载

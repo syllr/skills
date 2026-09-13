@@ -4,7 +4,7 @@
 // 用法：
 //   node tools/db.mjs -- "SELECT project_code, current_stage FROM audit_project WHERE project_code LIKE 'TEST-%'"
 // 环境变量：
-//   DB_HOST / DB_PORT / DB_USER / DB_PASS / DB_NAME（测试库连接参数，见 TEST-PLAN §3.3）
+//   DB_HOST / DB_PORT / DB_USER / DB_PASS / DB_NAME（测试库连接参数，见 DEPLOYMENT §6 与 .env）
 
 import mysql from 'mysql2/promise'
 import { EXIT, done, requireEnv, env, parseArgs, helpIfRequested } from './_util.mjs'
@@ -44,7 +44,7 @@ const cleanupCode = typeof args.cleanup === 'string' ? args.cleanup : undefined
 if (cleanupCode !== undefined) {
   const code = String(cleanupCode)
   if (!/^[A-Za-z0-9-]{1,64}$/.test(code)) done(EXIT.USAGE, { ok: false, error: '--cleanup 参数须为项目编码（字母数字-，≤64）' })
-  const host0 = requireEnv('DB_HOST', '测试库地址，见 TEST-PLAN §3.3')
+  const host0 = requireEnv('DB_HOST', '测试库地址，见 DEPLOYMENT §6 与 .env')
   const conn0 = await mysql.createConnection({ host: host0, port: Number(env('DB_PORT', '3306')), user: requireEnv('DB_USER'), password: requireEnv('DB_PASS'), database: requireEnv('DB_NAME'), connectTimeout: 10000 })
   try {
     const [[proj]] = await conn0.query('SELECT project_id, project_code FROM audit_project WHERE project_code = ?', [code])
@@ -76,7 +76,7 @@ if (!/^(SELECT|SHOW|DESCRIBE|DESC|EXPLAIN|WITH)\b/.test(trimmed)) {
   done(EXIT.ASSERT_FAIL, { ok: false, error: `非只读语句被拒绝：${trimmed.slice(0, 60)}（仅放行 SELECT/SHOW/DESCRIBE/EXPLAIN/WITH）` })
 }
 
-const host = requireEnv('DB_HOST', '测试库地址，见 TEST-PLAN §3.3')
+const host = requireEnv('DB_HOST', '测试库地址，见 DEPLOYMENT §6 与 .env')
 const user = requireEnv('DB_USER')
 const pass = requireEnv('DB_PASS')
 const database = requireEnv('DB_NAME')

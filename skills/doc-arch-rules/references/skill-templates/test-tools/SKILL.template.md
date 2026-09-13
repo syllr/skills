@@ -4,7 +4,6 @@ description: 测试工具集（test-tools）的变更与调用——为被测项
 license: UNLICENSED
 metadata:
   audience: ai-test-tooling
-  rule-source: .omo/rules/docs/L4/TEST-PLAN.md
   generated-by: doc-arch-rules
 ---
 
@@ -74,5 +73,5 @@ metadata:
 - 环境权威在 DEPLOYMENT：环境清单读 §2.1、变量读 §6/§7；`.env.<环境名>` 是其副本，不一致以 DEPLOYMENT 为准
 - 只读 DEPLOYMENT：本 skill 不修改 `docs/L4/DEPLOYMENT.md` 本体（改文档归 DEPLOYMENT rule）
 - 环境纪律：一次调用绑定一个环境，每条命令必带 `--env`；未知环境会 fail-fast（不回退默认）
-- 用例卡的编排执行归 test-ops；用例卡结构与写卡规范归 TEST-PLAN rule
+- 用例卡的编排执行与写卡规范归 test-ops skill（测试用例唯一入口；规范见其 references/case-writing.md）
 - 不生成业务代码、不自动 commit/push

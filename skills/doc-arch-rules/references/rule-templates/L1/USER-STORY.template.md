@@ -14,7 +14,7 @@ generation:
   related: # 关联模板与联动修改
     BUSINESS: "功能状态见它 §3.1，新故事需联动补能力"
     DOMAIN-MODEL(Action): "故事关联 Action，新故事需联动建 Action"
-    TEST-PLAN: "测试场景来源，新故事需联动补流程测试用例"
+    测试资产: "测试场景来源，新故事需联动补流程测试用例（test-ops skill）"
     # 图规范见 references/diagram-spec.md（rule 组装时由通用条款承载）
     # 需要用户决策的才问（无歧义则不问）
   ask_user:
@@ -31,14 +31,14 @@ generation:
     - "故事分系统内/系统外两类：系统内故事（角色在系统内完成）画三泳道时序图（§4.2.A），用 Connextra + Given-When-Then AC + 关联；系统外故事（角色无系统入口，如线下用户）无 Action、不画时序图，用 flowchart（§3.B 定义，§4.2.B 引用）表达「在系统外做了什么、是什么流程」，用 Connextra + 外部流程 + 驱动/支撑的系统内环节"
     - "故事用 Connextra 三段式（As a… I want… So that…）+ 验收标准（Given-When-Then）——仅系统内故事写 AC；系统外故事断言无 AC"
     - "AC 用 Given/When/Then 英文术语引导（Given <前置>，When <动作>，Then <结果>），不用\"给定/当/那么\"中文翻译"
-    - "AC 覆盖验收主路径；§4.2 时序图分支（重新生成/退回/跳过/失败）为交互细节展开，测试按需覆盖，不等同于 AC（避免下游 TEST-PLAN 误判\"时序图有分支而 AC 没有=覆盖缺口\"）"
+    - "AC 覆盖验收主路径；§4.2 时序图分支（重新生成/退回/跳过/失败）为交互细节展开，测试按需覆盖，不等同于 AC（避免下游测试资产误判\"时序图有分支而 AC 没有=覆盖缺口\"）"
     - "内容条目不加顺序编号（无 US-N/场景 N/AC-N/验收点 N）——增删不引发重编号，引用时描述内容"
     - "功能状态见 BUSINESS §3.1，此处不重复"
     - "整体/跨角色业务主线（含业务主线图）见 BUSINESS §2.2；本文 §4 只画单角色旅程（§4.1 每角色一张）与单故事时序，不重复整体主线"
     - "只写意图 + 边界，不写实现细节"
-    - "故事 AC（业务验收）在此定义；技术验收/测试用例在 TEST-PLAN，引用不复制"
+    - "故事 AC（业务验收）在此定义；技术验收/测试用例在测试资产（test-ops skill），引用不复制"
     - "本模板特化写法约束（通用原则见 SKILL 内容纯净）：正文不逐字重复「AC 在此定义」声明、「1:N 顿号分隔」「<角色>无系统入口」——正文精简提及（如「验收（业务 AC）：在此定义」），规范由 rule 定义"
-    - "Conciseness 标准：L1 用户故事是面向人的独立可读单元（下游 TEST-PLAN 按故事追溯、开发按故事取 Action），允许适度重复保证单故事自包含——标准放宽于 LLM prompt，不要按 LLM prompt 过度收紧"
+    - "Conciseness 标准：L1 用户故事是面向人的独立可读单元（下游测试资产按故事追溯、开发按故事取 Action），允许适度重复保证单故事自包含——标准放宽于 LLM prompt，不要按 LLM prompt 过度收紧"
     - "图源约定：§1.2 角色关系图用 Mermaid classDiagram（direction LR/TD、关系类型、职责写入成员区），§4 旅程/交互图用 Mermaid sequenceDiagram/flowchart——画法见 references/diagram-spec.md，实例正文只留「本图为X图」标注"
     - "§4 硬性要求：三泳道（用户+<页面名>(UI)+系统）+ 完整链路（用户→UI→系统→UI→用户）+ SYSTEM 不含 UI——违反即不合格，归 rule 完成判定校验；正文可保留一句话精简提及（三角色+完整链路），不抄逐条，sequenceDiagram 语法表达规则表仅存在于 rule（4.2.A.1 示例即示范），实例正文不得复制该表"
     - "图类型与分层边界：§4.2.A 单故事时序图三泳道语法、L1↔L2/L3 黑盒展开位置（SYSTEM 内部由 L2/L3 展开）归 rule，正文精简提及"
@@ -180,7 +180,7 @@ classDiagram
 - 所属旅程阶段：§4.1 总旅程的「创作」阶段（触点：进入工具页 → 完成创作）
 - 交互时序：§4.2.A 单故事时序图（细粒度系统交互）
 - 关联功能：能力 <能力_生成类>（BUSINESS §3.1）+ Action `<Action_生成>`（domain/ 各域文档）
-- 验收（业务 AC）：在此定义；技术验收在测试资产（docs TEST-PLAN 或 docs/test/test-cases，形态依项目决策）
+- 验收（业务 AC）：在此定义；技术验收在测试资产（docs/test/test-cases，归 test-ops skill）
 - 业务规则：每日免费次数限制；生成内容需 AIGC 标识（见合规文档）
 
 ---
