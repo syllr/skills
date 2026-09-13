@@ -13,8 +13,8 @@ generation:
     - "不使用接口清单表/Action 映射表/能力映射表/字段表"
   related: # 关联模板与联动修改
     DOMAIN-MODEL: "业务语义在 domain/ 各域文档（领域操作 Action 为接口来源；领域事件为下游消费依据），新 Action 需联动出接口；接口契约以代码导出产物为准，与域文档字段语义对齐"
-    APPLICATION-ARCHITECTURE: "应用/模块划分在它 §2.2/§3.1，接口归属应用需与之一致（能力→Action 对应见 PRODUCT §2.2「对应 Action」列，省略时按语义推断；Action→聚合归属见域文档 §1/§3；不在应用架构重复）"
-    PRODUCT: "能力清单见它 §2.2，接口覆盖能力需与之一致；PRODUCT 标「待规划」的能力不建端点（case A：代码不建路由，导出产物不留 tag/paths/stub）"
+    APPLICATION-ARCHITECTURE: "应用/模块划分在它 §2.2/§3.1，接口归属应用需与之一致（能力→Action 对应见 BUSINESS §3.2「对应 Action」列，省略时按语义推断；Action→聚合归属见域文档 §1/§3；不在应用架构重复）"
+    BUSINESS: "能力清单见它 §3.2，接口覆盖能力需与之一致；BUSINESS 标「待规划」的能力不建端点（case A：代码不建路由，导出产物不留 tag/paths/stub）"
     INTEGRATION: "互补（Inbound vs Outbound），接口变化需同步外部集成"
     DEPLOYMENT: "接口上线需同步部署"
   # 需要用户决策的才问（无歧义则不问）
@@ -26,10 +26,10 @@ generation:
     - "前置第一步：探测/确认「代码 + 语言框架」——扫描项目后端代码与技术栈（package.json/go.mod/pom.xml/pyproject.toml/requirements.txt 等）确定语言框架；契约不能脱离代码凭空手写，必须先定位代码"
     - "有后端代码 → 代码是 SSOT：按语言框架导出 OpenAPI——FastAPI `app.openapi()` / `fastapi-openapi-cli`；Spring springdoc 插件；Go huma / `swag init`；NestJS `@nestjs/swagger`；TS tsoa / zod-to-openapi；Django `manage.py spectacular`；Flask `flask openapi write`"
     - "无后端代码 → 与用户确定接口定义，在代码中建立接口（路由 + 请求/响应 schema/DTO，业务逻辑可后补），再按语言框架导出契约（接口定义与实现解耦，先定义接口不影响后续补业务逻辑）"
-    - "扫描（自主）：读导出的 openapi 产物 + 代码路由/schema + domain/ 各域文档（全部 Actions）+ APPLICATION-ARCHITECTURE §2.2/§3.1 + PRODUCT §2.2 + 目标文档"
+    - "扫描（自主）：读导出的 openapi 产物 + 代码路由/schema + domain/ 各域文档（全部 Actions）+ APPLICATION-ARCHITECTURE §2.2/§3.1 + BUSINESS §3.2 + 目标文档"
     - "定位文档模式：契约以代码导出的 openapi 产物为准；API.md 是说明书（不重复接口清单/字段），承载「契约导出与维护规范 + CI 防漂移」"
     - "已有 API → 参考旧文档有效信息，但结构按本模板重建为说明书模式；删除原接口清单/接口详情章节；迁移为导出产物结构 + 语言框架导出命令 + CI pipeline + 协议支持表"
-    - "二部图校验：a) 每个接口向上追溯到 PRODUCT §2.2 至少一个能力；b) 该能力承载的聚合至少含一个 Action 与接口语义对应（双向对齐；能力→Action 对应见 PRODUCT §2.2「对应 Action」列，省略时按语义推断；Action→聚合归属见域文档 §1/§3）"
+    - "二部图校验：a) 每个接口向上追溯到 BUSINESS §3.2 至少一个能力；b) 该能力承载的聚合至少含一个 Action 与接口语义对应（双向对齐；能力→Action 对应见 BUSINESS §3.2「对应 Action」列，省略时按语义推断；Action→聚合归属见域文档 §1/§3）"
     - "按模板生成：§1 导出产物文件结构 → §2 从代码导出契约（仅写探测/选定语言框架的导出命令，不写其他语言）→ §3 维护规范 → §4 CI 防漂移 pipeline → §5 协议支持表"
   notes: # 生成注意点（怎么生成）
     - "代码是 SSOT，契约（openapi 产物）是从代码导出的产物——禁止「先手写 yaml、再由 yaml 生成代码」的反向流程（方向反了即悬空 $ref 与漂移的根因）"
@@ -44,7 +44,7 @@ generation:
     - "接口来自领域操作（Action），与 domain/ 各域文档一一对应（用于校验覆盖完整性，不写入正文表）"
     - "接口按 endpoint（方法+路径）标识，不用顺序编号"
     - "只写说明书四要素，技术契约细节在导出产物"
-    - "PRODUCT 待规划能力不建端点（case A）：PRODUCT 标「待规划」的能力，代码不建路由、导出产物不留 tag/paths/stub——仅 PRODUCT 保留待规划标注"
+    - "BUSINESS 待规划能力不建端点（case A）：BUSINESS 标「待规划」的能力，代码不建路由、导出产物不留 tag/paths/stub——仅 BUSINESS 保留待规划标注"
     - "导出产物与代码同步（本模板约定，与 case A 同族）：代码路由/schema 变化后重新导出，产物随之更新；删除端点在代码移除并在 yaml 注释留痕指向 ADR 记录原因（如「auth 路由已随 <能力> 待规划移除，见 ADR-NNNN」），保证代码与导出产物一致可机检"
     - "CI 防漂移 pipeline 硬约束：第 5 步契约导出漂移检测的导出命令与 diff 目标必须为同一语言框架产物，禁止跨语言混用；第 3 步 bundle 允许失败（仅打包）"
   checks: # 生成后反向 check
@@ -53,9 +53,9 @@ generation:
     - "接口尚未定义时，已先在代码中定义接口（路由 + 请求/响应 schema/DTO，业务逻辑后补）再导出契约"
     - "接口契约与代码导出的 openapi 产物一致（无字段漂移：API.md 引用与导出产物节点逐项对得上）"
     - "接口覆盖 domain/ 各域文档全部 Action（1 Action 可对应 1+ 接口，无遗漏）"
-    - "每个接口可追溯到 PRODUCT §2.2 至少一个能力，能力承载的聚合含对应 Action（能力→Action 对应见 PRODUCT §2.2「对应 Action」列，省略时按语义推断；Action→聚合归属见域文档 §1/§3）"
-    - "接口来源能力在 PRODUCT §2.2 能力清单存在且能力状态已确认"
-    - "PRODUCT 标「待规划」的能力无端点（代码无路由、导出产物无 stub/tag/paths）"
+    - "每个接口可追溯到 BUSINESS §3.2 至少一个能力，能力承载的聚合含对应 Action（能力→Action 对应见 BUSINESS §3.2「对应 Action」列，省略时按语义推断；Action→聚合归属见域文档 §1/§3）"
+    - "接口来源能力在 BUSINESS §3.2 能力清单存在且能力状态已确认"
+    - "BUSINESS 标「待规划」的能力无端点（代码无路由、导出产物无 stub/tag/paths）"
     - "导出产物与代码一致（重新导出后 git diff 无差异；删除端点已在代码移除并指向 ADR）"
     - "导出产物结构符合 §1（导出默认单文件；多文件拆分由导出+拆分脚本生成，无手工维护的悬空 $ref）"
     - "字段级契约不与 domain/ 各域文档 业务语义冲突"
@@ -99,6 +99,8 @@ generation:
 ## 2. 从代码导出契约
 
 > 【指引】目标语言框架确定：前置探测项目后端代码与技术栈（package.json/go.mod/pom.xml/pyproject.toml/requirements.txt 等）→ 探测到用该语言框架；无代码时与用户讨论接口定义与实现方案并确认框架。生成时只保留选定语言框架小节，删除其他小节（实例文档只写最终语言的导出命令）。导出命令以仓库根为 cwd；命令调整（路径/输出文件名/包名）后须同步更新本节与 §4 step5。
+
+> 【指引】本节是导出命令的规范 SSOT（文档侧）。导出/拆分的可执行实现落项目脚本（如 FastAPI `backend/scripts/export_openapi.py`），执行编排由 `contract-export` skill 承担（读本节命令执行，不复制命令文本）——写新工具/改导出流程时，规范改本节、实现改项目脚本。
 
 > 【指引】以下为各语言框架导出命令参考（模板持有，生成时选用一种后删除其他）。每框架仅列：依赖 / 导出 / 产物 三行 + 官网链接；产物路径须与 §4 step5 diff 目标一致。
 
@@ -160,7 +162,7 @@ generation:
 - L4 测试用例（API 卡/FLOW 卡）断言三源（状态码取 `responses`、字段取响应 schema、错误码实测）一律以代码导出的契约为准
 - API.md 不手抄字段；查契约看导出产物
 - 协议：默认 HTTP/REST（OpenAPI 3.1），gRPC/WebSocket/私有协议占位待启用
-- operation 机检元数据：每个 operation 必带 `x-action` 标注来源 Action（对应 domain/ 各域文档 §3 领域操作）、`x-capability` 标注归属能力（对应 PRODUCT §2.2）——这些扩展在代码里声明（如 FastAPI `openapi_extra` / Pydantic `json_schema_extra`），随导出进入契约，不手工改 yaml
+- operation 机检元数据：每个 operation 必带 `x-action` 标注来源 Action（对应 domain/ 各域文档 §3 领域操作）、`x-capability` 标注归属能力（对应 BUSINESS §3.2）——这些扩展在代码里声明（如 FastAPI `openapi_extra` / Pydantic `json_schema_extra`），随导出进入契约，不手工改 yaml
 - 豁免映射：无领域 Action 的端点（如认证/系统支撑类）取单值 capability 标注 `x-capability`（如 `x-capability: auth` / `x-capability: system`），`x-action` 可省略或标注 `x-action: system`，保证每个 operation 至少可追溯到能力
 - 路径参数约定：路径参数原型格式不硬编码 `pattern`（避免与具体实现耦合），仅以 `description` 标注参数语义/约束，校验规则下沉代码 schema（随接口导出）
 

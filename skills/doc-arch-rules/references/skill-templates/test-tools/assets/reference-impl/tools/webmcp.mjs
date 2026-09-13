@@ -11,7 +11,7 @@
 //   npm run webmcp -- --seq '[...]' --headed        # 有头（人工旁观）
 //   npm run webmcp -- --seq '[...]' --connect http://127.0.0.1:9333   # 连接已运行的 Chrome
 
-import { EXIT, done, env, parseArgs, helpIfRequested } from './_util.mjs'
+import { EXIT, done, env, parseArgs, helpIfRequested, RESOLVED_ENV } from './_util.mjs'
 import { loadDotEnv } from './_util.mjs'
 
 loadDotEnv(import.meta.url)
@@ -32,7 +32,7 @@ const USAGE = `用法：
   --step-delay 步间停留毫秒（默认：--headed 时 1500，无头 0——有头人工旁观时用，让每步结果可见）
   --list     只枚举页面注册的工具后退出
 
-环境变量：WEBMCP_TIMEOUT_MS（工具单步超时，默认 30000）
+环境变量：--env <环境名>（选择 .env.<环境名>，且浏览器 profile 按环境隔离 .webmcp-profile-<环境名>；无则由 TEST_ENV 指定，再回落到 .env）；WEBMCP_TIMEOUT_MS（工具单步超时，默认 30000）
 退出码：0=序列全部成功；1=任一工具业务失败；2=参数错误；3=浏览器/页面连接失败；10=配置错误（Chrome 缺失/flag 未生效）`
 
 helpIfRequested(process.argv.slice(2), USAGE)
@@ -40,7 +40,7 @@ helpIfRequested(process.argv.slice(2), USAGE)
 const args = parseArgs(process.argv.slice(2))
 
 const PAGE_URL = (() => {
-  const base = typeof args.url === 'string' ? args.url : env('WEBMCP_URL', 'http://192.168.1.225:8080')
+  const base = typeof args.url === 'string' ? args.url : env('WEBMCP_URL', 'http://localhost:8080')
   // --path 指定页面路径（如 /projects/new）；host 走 base（.env WEBMCP_URL）
   if (typeof args.path === 'string') {
     if (!args.path.startsWith('/')) done(EXIT.USAGE, { ok: false, error: '--path 必须以 / 开头（页面路径，如 /projects/new）' })
@@ -52,7 +52,8 @@ const STEP_TIMEOUT = Number(env('WEBMCP_TIMEOUT_MS', '30000'))
 const STEP_DELAY = Number(args['step-delay'] ?? (args.headed ? 1500 : 0))
 const toolsDir = dirname(fileURLToPath(import.meta.url))
 const testToolsDir = resolve(toolsDir, '..')
-const PROFILE_DIR = join(testToolsDir, '.webmcp-profile')
+// profile 按环境隔离（避免跨环境登录态串用）：--env dev → .webmcp-profile-dev；无环境 → .webmcp-profile
+const PROFILE_DIR = join(testToolsDir, RESOLVED_ENV ? `.webmcp-profile-${RESOLVED_ENV}` : '.webmcp-profile')
 
 const require = createRequire(import.meta.url)
 let chromium

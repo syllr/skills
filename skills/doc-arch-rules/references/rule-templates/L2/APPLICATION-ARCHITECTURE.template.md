@@ -11,7 +11,7 @@ generation:
     - "Mermaid flowchart（§2.1 C4 Context 图，图规范见 references/diagram-spec.md）"
     - "D2 容器图（§2.2 应用划分图，图规范见 references/diagram-spec.md）"
   related: # 关联模板与联动修改
-    PRODUCT: "能力清单见它 §2.2，能力增删需同步应用模块（能力→聚合映射见 domain/ 各域文档，入口 DOMAIN-MODEL §3，不在此重复）；PRODUCT 标「待规划」的能力不加应用模块（待规划能力在实现视图不建模，仅 PRODUCT 保留标注）"
+    BUSINESS: "能力清单见它 §3.2，能力增删需同步应用模块（能力→聚合映射见 domain/ 各域文档，入口 DOMAIN-MODEL §3，不在此重复）；BUSINESS 标「待规划」的能力不加应用模块（待规划能力在实现视图不建模，仅 BUSINESS 保留标注）"
     TECHNOLOGY-ARCHITECTURE: "应用划分见 §2.2，技术架构按应用描述需引用"
     DOMAIN-MODEL: "领域聚合归属领域，能力→聚合映射见 domain/ 各域文档（应用架构不重复）"
     DEPLOYMENT: "部署单元来自应用划分，应用增减需同步部署"
@@ -39,7 +39,7 @@ generation:
     - "[ ] 用户层 Person 角色 == §2.1 Context 图用户角色（一致性）；图例含 [Person]"
     - "[ ] §3.1 应用内模块按知识域划分（非能力 1:1 别名）；模块命名 == §2.2 应用划分图模块命名（防一物多名）"
     - "[ ] 无 §3.2 能力→聚合映射节（见 domain/ 各域文档，入口 DOMAIN-MODEL §3，不重复）"
-    - "[ ] PRODUCT 标「待规划」的能力无对应应用模块/层节点（实现视图不建模，仅 PRODUCT 保留标注）"
+    - "[ ] BUSINESS 标「待规划」的能力无对应应用模块/层节点（实现视图不建模，仅 BUSINESS 保留标注）"
     - "[ ] Context 图标注为 C4 Context 图"
     - "[ ] 应用划分图标注为 C4 容器图"
     - "[ ] 无 `详见 deep-dives/` 反向链路（L2 根不引用 deep-dives，导航经 deep-dives/INDEX.md）"

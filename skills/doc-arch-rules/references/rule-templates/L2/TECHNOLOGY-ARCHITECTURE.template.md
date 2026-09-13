@@ -11,7 +11,7 @@ generation:
     - "D2 容器图（§1 技术分层图，图规范见 references/diagram-spec.md）"
   related: # 关联模板与联动修改
     APPLICATION-ARCHITECTURE: "应用清单见它 §2.2，技术架构按应用描述（应用/容器/外部系统分类一致）"
-    PRODUCT: "功能清单见它 §2，技术架构不重列功能"
+    BUSINESS: "功能清单见它 §3，技术架构不重列功能"
     DOMAIN-MODEL: "技术选型需与领域模型一致（领域聚合/实体/状态机见 domain/ 各域文档）"
     DATA-ARCHITECTURE: "领域→存储映射索引与物理形态见它 §5；存储选型理由/容量性能预期在本文档 §3.1，它只写存什么/怎么存"
     DEPLOYMENT: "技术栈影响部署，选型变化需同步部署方式"

@@ -1,0 +1,11 @@
+# test-tools 本地文件（一律不入库）
+# 环境变量文件（含凭据）：每个环境一份 .env.<env>，.env 为默认环境
+.env
+.env.*
+!.env.example
+# 契约 bundle 缓存（api 工具自动生成）
+.cache/
+# WebMCP 浏览器 profile（含登录态；按环境隔离）
+.webmcp-profile/
+.webmcp-profile-*/
+node_modules/

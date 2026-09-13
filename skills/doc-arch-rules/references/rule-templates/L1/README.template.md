@@ -87,7 +87,7 @@ generation:
 | 我想了解      | 看哪份文档                   |
 | ------------- | ---------------------------- |
 | 项目入口/索引 | 本文件（README）             |
-| 产品规格全景  | `docs/L1/PRODUCT.md`         |
+| 业务与产品全景 | `docs/L1/BUSINESS.md`        |
 | 用户故事      | `docs/L1/USER-STORY.md`      |
 | UI/交互       | `docs/L1/USER-STORY.md` §4.2 |
 

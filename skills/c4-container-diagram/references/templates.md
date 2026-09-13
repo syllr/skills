@@ -275,7 +275,7 @@ vars: { d2-config: { layout-engine: elk } }
 
 ## 5.6 产品能力架构图（Product Capability Architecture Map）
 
-> 适用：产品能力分层图——在一张图里同时表达「能力在哪层、做到哪一步、先做哪个」。它是容器式分层图的高频应用，比标准 C4 容器图多一个维度：三通道编码（见下方「编码规则」）。已实测（enterprise-ai-hub PRODUCT 能力图，v0.8.1 + ELK）。
+> 适用：产品能力分层图——在一张图里同时表达「能力在哪层、做到哪一步、先做哪个」。它是容器式分层图的高频应用，比标准 C4 容器图多一个维度：三通道编码（见下方「编码规则」）。已实测（enterprise-ai-hub BUSINESS 能力图，v0.8.1 + ELK）。
 >
 > 三通道编码（SSOT）：一张图用 3 个视觉通道叠加，每个通道表达一种语义：
 >
@@ -289,7 +289,7 @@ vars: { d2-config: { layout-engine: elk } }
 >
 > 多 class 安全边界（铁律 §4.8 第 5 条的精确化）：多 class 合法当且仅当 `module` 类不携带 fill/stroke 填充类的冲突样式（见 c4-container-spec §4.8）。若多个类的 `fill`/`stroke` 各自独立且叠加（颜色由哪个 class 决定不明确），才触发 int64 溢出。本项目约定：`module` 只带 `border-radius`+`stroke-width`，fill 由热力类（`core`/`support`/`edge`）或节点 `style.fill` 提供，状态类 `planned` 只带 `stroke-dash`。这样多 class 安全。⚠️ 不要给 2 个以上 class 各自写独立的 `fill`（会溢出，见 d2-syntax-cheatsheet §6.16）。
 >
-> 图例：图底部放图例容器（线型表 + 颜色表 + 入口说明），读者一眼读懂状态与优先级。SSOT：状态与优先级是产品层信息，唯一事实源在 PRODUCT §2（架构图 + 能力清单表），其它文档引用不复制。
+> 图例：图底部放图例容器（线型表 + 颜色表 + 入口说明），读者一眼读懂状态与优先级。SSOT：状态与优先级是产品层信息，唯一事实源在 BUSINESS §3（架构图 + 能力清单表），其它文档引用不复制。
 >
 > 布局：符合 [§5.4 左右分栏 + 贯穿竖条](#54-左右分栏--贯穿竖条)——外层 `grid-columns: 2`（左主体 + 右竖条）；左主体 `grid-rows:1; grid-columns:1` 纵向堆叠入口层+业务能力层；右竖条是共享业务服务层（不设 width，ELK 自动包裹居中）。业务能力层内可再分能力域分区（网格嵌套，见 §5.5），各分区内子容器 width 按 layout-and-grid §6.13 公式算。
 
@@ -367,4 +367,4 @@ classes: {
 }
 ```
 
-> ⚠️ 复制时注意：`审计项目管理` 分区内的 9 个能力（c1~c9）只是示例，替换为项目自己的能力清单；每个能力节点的 `[core; planned]` / `[support; planned]` 类按实际优先级与状态调整（核心=红 core / 支撑=橙 support / 边缘=灰 edge；已实现去掉 `planned`）。节点数要与 PRODUCT §2.2 能力清单表行数一一对应（一个能力一行，一能力多 Action 在表格里顿号并列）。
+> ⚠️ 复制时注意：`审计项目管理` 分区内的 9 个能力（c1~c9）只是示例，替换为项目自己的能力清单；每个能力节点的 `[core; planned]` / `[support; planned]` 类按实际优先级与状态调整（核心=红 core / 支撑=橙 support / 边缘=灰 edge；已实现去掉 `planned`）。节点数要与 BUSINESS §3.2 能力清单表行数一一对应（一个能力一行，一能力多 Action 在表格里顿号并列）。

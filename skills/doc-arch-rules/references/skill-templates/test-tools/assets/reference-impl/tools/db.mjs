@@ -18,7 +18,7 @@ const USAGE = `用法：
 示例：
   node tools/db.mjs -- "SELECT project_code, current_stage FROM audit_project WHERE project_code LIKE 'TEST-%'"
 
-环境变量：DB_HOST、DB_PORT（默认 3306）、DB_USER、DB_PASS、DB_NAME
+环境变量：--env <环境名>（选择 .env.<环境名>；无则由 TEST_ENV 指定，再回落到 .env）；DB_HOST、DB_PORT（默认 3306）、DB_USER、DB_PASS、DB_NAME
 只读限制：仅放行 SELECT/SHOW/DESCRIBE/EXPLAIN/WITH 开头；UPDATE/DELETE/INSERT/DDL 一律拒绝（退出码 1）
 退出码：0=查询成功（含空结果）；1=语句被拒（非只读）或对账不匹配；2=参数错误；4=连接/查询失败；10=配置错误`
 

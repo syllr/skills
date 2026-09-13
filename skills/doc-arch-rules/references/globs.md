@@ -20,8 +20,8 @@ globs:
 ## 2. 四种写法（解析脚本都认）
 
 ```yaml
-globs: "docs/L1/PRODUCT.md" # 单串
-globs: "docs/L1/PRODUCT.md, docs/L1/USER-STORY.md" # 逗号分隔
+globs: "docs/L1/BUSINESS.md" # 单串
+globs: "docs/L1/BUSINESS.md, docs/L1/USER-STORY.md" # 逗号分隔
 globs: ["docs/L2/deep-dives/*.md"] # 内联数组（推荐）
 globs: # 多行列表（推荐，条目多时用）
   - "docs/L2/domain/DOMAIN-MODEL.md"

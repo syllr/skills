@@ -49,17 +49,17 @@ const USAGE = `用法：
   --token      可选，Bearer token（缺省读环境变量 API_TOKEN）
   --list       列出契约全部 operationId 后退出
 
-环境变量：API_BASE（可选，覆盖契约 servers 默认值）；API_TOKEN（可选）；HTTP_TIMEOUT_MS（可选，默认 30000）
+环境变量：--env <环境名>（选择 .env.<环境名>；无则由 TEST_ENV 指定，再回落到 .env）；API_BASE（可选，覆盖契约 servers 默认值）；API_TOKEN（可选）；HTTP_TIMEOUT_MS（可选，默认 30000）
 退出码：0=2xx 成功；1=HTTP 非 2xx（业务失败）；2=参数错误；3=网络失败；10=配置/契约错误`
 
 helpIfRequested(process.argv.slice(2), USAGE)
 
 const args = parseArgs(process.argv.slice(2))
 
-// ---------- 路径定位：tools/api.mjs → test-tools/ → 仓库根 ----------
+// ---------- 路径定位：tools/api.mjs → test-tools/ → docs/test/ → docs/ → 仓库根 ----------
 const toolsDir = dirname(fileURLToPath(import.meta.url))
 const testToolsDir = resolve(toolsDir, '..')
-const repoRoot = resolve(testToolsDir, '../..')
+const repoRoot = resolve(testToolsDir, '../../..')
 const SPEC_MAIN = join(repoRoot, 'docs', 'L3', 'openapi', 'openapi.yaml')
 const SPEC_DIR = join(repoRoot, 'docs', 'L3', 'openapi')
 const CACHE_DIR = join(testToolsDir, '.cache')

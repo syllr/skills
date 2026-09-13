@@ -18,7 +18,7 @@ generation:
     CONSTITUTION: "文档分层规则见它 §3.1，规则变更需同步 docs/ 子树目录；代码分层概念（controller/service/infra 等）不重复其规则"
     APPLICATION-ARCHITECTURE: "应用划分见 APPLICATION-ARCHITECTURE，代码目录（前端/后端、模块归属）需与之对应"
     L3/API: "controller 是契约来源（其路由/schema 导出契约），controller 目录与 API 文档联动"
-    PRODUCT: "功能见 PRODUCT，功能目录增删需同步；PRODUCT 标「待规划」的功能不加实现目录/模块目录（case A：待规划在实现视图不建模，仅 PRODUCT 保留标注）"
+    BUSINESS: "功能见 BUSINESS，功能目录增删需同步；BUSINESS 标「待规划」的功能不加实现目录/模块目录（case A：待规划在实现视图不建模，仅 BUSINESS 保留标注）"
     DEEP-DIVES: "高复杂度单列详情（2/4 阈值：T1 跨模块交互≥3 / T2 永久参数≥5 / T3 精度分层≥3 / T4 坑位≥5，命中任意 2 个即单列，判定归 rule 生成时执行），目录树需含 deep-dives/ 分支（L2 根不反向引用，发现入口为 deep-dives/INDEX.md）"
     RESEARCH: "调研详情（候选≥2 且 维度≥3，单候选+多维验证例外；目录索引见 research/INDEX.md（宪法 §3.2 目录索引约定），判定归 rule 生成时执行（准入判定见宪法 §3.1 research 行）；TECHNOLOGY-ARCHITECTURE.md 为选型结论沉淀处），目录树需含 research/ 分支"
     # common 角色：本文档是「改任何文档前」的必读项（定位文档对应代码，防漂移）
@@ -39,7 +39,7 @@ generation:
     - "代码与 docs 位置以 STRUCTURE 为准（README/AGENTS 引用此处不重复）；本文件 §1/§2 的目录职责判定是功能 3 阶段 2 globs 自适应的输入（代码→文档映射按此推导）"
     - "common 角色：STRUCTURE 是「文档 ↔ 代码」映射——改任何文档前，通过本文档定位其对应代码，再读代码核对漂移（文档与代码可能不一致，读代码防漂移）"
     - "分层规则见宪法 §3.1（docs/ 子树遵守该分层但不重复规则）"
-    - "目录随功能与架构确定后落地（功能见 PRODUCT，架构见 APPLICATION-ARCHITECTURE）"
+    - "目录随功能与架构确定后落地（功能见 BUSINESS，架构见 APPLICATION-ARCHITECTURE）"
     - "目录组织原则（自项目根计最多四级/DDD/前后端分离/语言框架柔性）见 §3"
     - "后端固定 6 个顶层模块目录（backend/ 下 controller/service/infra/integration/reference/test，自项目根计为二级），职责见 §2"
     - "任何顶层模块目录都应在文档中说清「干什么、有什么作用、职责是什么」（见 §2）"
@@ -48,7 +48,7 @@ generation:
     - "research 目录中性收纳技术/竞品调研，与 deep-dives 并列同为 L2 子目录"
   checks: # 生成后反向 check
     - "目录树与 宪法 文档分层一致（L0-L4 + common 层），README/AGENTS 引用的路径与目录树一致"
-    - "PRODUCT 标「待规划」的功能无实现目录/模块目录（待规划在实现视图不建模）"
+    - "BUSINESS 标「待规划」的功能无实现目录/模块目录（待规划在实现视图不建模）"
     - "每个顶层模块目录都有职责说明（干什么/作用/约束），`reference` 标注只读、`controller` 标注为契约来源（路由/schema 导出契约）"
     - "`reference` 未被直接修改（任何改动前已询问用户）；`controller` 与 `L3/API.md` 一致性（契约由 controller 代码导出，导出产物与代码对齐）"
     - "漂移处理有说明（新建 vs 调整的判断 + 用户确认）且漂移项已校验"
@@ -60,7 +60,7 @@ generation:
 
 > 本文档是「<项目名>」的 STRUCTURE（目录结构模板）——common 层的目录结构文档（文档 ↔ 代码映射）。
 > 【模板使用指引】复制为 `docs/common/STRUCTURE.md`，按各章节指引填写。
-> 【原则】① 代码与 docs 位置 = STRUCTURE（README/AGENTS 引用此处不重复）——分层规则 = 宪法 §3.1（docs/ 怎么分层在宪法，STRUCTURE 只落地 docs/ 子树）；② 文档 ↔ 代码映射：改文档前读本文档定位对应代码，读代码核对漂移（第4条 差异主动修复）；③ 目录随功能与架构确定后落地（功能见 PRODUCT，架构见 APPLICATION-ARCHITECTURE）；④ reference 只读——见 §2（backend/reference/ 与根级 reference/ 行）；⑤ controller 关联 L3/API.md——controller 是契约来源，契约由 controller 代码导出；⑥ 图用 ASCII 目录树（文本可 diff、任何渲染器显示）。其余生成注意点见 frontmatter `generation.notes`（本文档不重复）
+> 【原则】① 代码与 docs 位置 = STRUCTURE（README/AGENTS 引用此处不重复）——分层规则 = 宪法 §3.1（docs/ 怎么分层在宪法，STRUCTURE 只落地 docs/ 子树）；② 文档 ↔ 代码映射：改文档前读本文档定位对应代码，读代码核对漂移（第4条 差异主动修复）；③ 目录随功能与架构确定后落地（功能见 BUSINESS，架构见 APPLICATION-ARCHITECTURE）；④ reference 只读——见 §2（backend/reference/ 与根级 reference/ 行）；⑤ controller 关联 L3/API.md——controller 是契约来源，契约由 controller 代码导出；⑥ 图用 ASCII 目录树（文本可 diff、任何渲染器显示）。其余生成注意点见 frontmatter `generation.notes`（本文档不重复）
 
 ---
 
@@ -76,7 +76,7 @@ generation:
 ├── AGENTS.md # 项目知识库（规范/结构/参考索引，根目录）
 ├── docs/
 │   ├── L1/ # 产品层（What · 业务架构）
-│   │   ├── PRODUCT.md # 产品规格全景（能力分层 + 状态）
+│   │   ├── BUSINESS.md # 业务与产品全景（业务全景 + 能力分层 + 状态）
 │   │   └── USER-STORY.md # 用户故事（需求源头 + 旅程 + 交互）
 │   ├── L2/ # 架构层（How-Structure）
 │   │   ├── APPLICATION-ARCHITECTURE.md # 应用架构（应用划分 + 模块）

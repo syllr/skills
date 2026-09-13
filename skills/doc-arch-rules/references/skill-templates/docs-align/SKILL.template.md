@@ -48,7 +48,7 @@ metadata:
 | 交叉引用死链（文档 A 引 文档 B §X，B 无该节）                                                 | grep 目标文档章节标题                                                                |
 | 实例头部原则块/建模方法论残留（「> 【原则】」「决策速查」「领域事件原则」「Q1-Q6」）          | `grep -rnE -e '^> 【原则】' -e '决策速查' -e '领域事件原则' -e 'Q1-Q6' docs/` 应为 0 |
 | 目录归属口诀例外（STRUCTURE infra/integration 归属判别口诀属合法读者内容，不进全 docs/ 检查） | 建模方法论口诀只在域文档禁：docs/L2/domain/ 下域文档另查对象类型判据/判断口诀应为 0  |
-| PRODUCT 能力行与 DOMAIN Action 清单双向对齐                                                   | 交叉 grep 能力名/Action 名                                                           |
+| BUSINESS 能力行与 DOMAIN Action 清单双向对齐                                                   | 交叉 grep 能力名/Action 名                                                           |
 | DOMAIN 方法签名 vs 代码函数签名                                                               | grep `def`/`func` 匹配 §3 领域操作方法详情竖表「方法签名」行                         |
 
 ### 阶段 4 · AI 语义核对（逐文档全读，不抽样）

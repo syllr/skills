@@ -13,7 +13,7 @@ generation:
     - "Mermaid stateDiagram-v2（§4 本域状态机，每有状态对象一个）"
   related: # 关联模板与联动修改
     DOMAIN-MODEL: "总文档（业务域概述/划分/跨聚合服务/契约落地/Mapper）在 docs/L2/domain/DOMAIN-MODEL.md；本域文档须在总文档 §3 域文档清单表登记"
-    PRODUCT: "业务能力见 PRODUCT §2，功能变化需联动本域建模；PRODUCT 能力状态是建模边界（case A，完整定义见总文档 notes）"
+    BUSINESS: "业务能力见 BUSINESS §3，功能变化需联动本域建模；BUSINESS 能力状态是建模边界（case A，完整定义见总文档 notes）"
     APPLICATION-ARCHITECTURE: "模块划分在它 §3.1，本域领域对象需映射到模块"
     DEEP-DIVES: "高复杂度专题详情在 deep-dives/，deep-dive 只整合引用本文档，不做任何概念的 SSOT"
   # 需要用户决策的才问（无歧义则不问）

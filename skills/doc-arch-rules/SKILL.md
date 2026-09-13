@@ -2,7 +2,7 @@
 name: doc-arch-rules
 description: >
   文档架构规则与域 skill 生成器（meta skill）——从模板生成/更新目标项目两类产物：①.omo/rules/docs/ 下全部 omo rule（L0-L4 + common 分层，模板 → rule，含 TEST-PLAN 附属资产目录同步）；
-  ②.opencode/skills/ 下三个域 skill（test-ops / deploy-ops / docs-align，薄壳模板逐字落地）。触发即全量更新——rule 按版本指纹按需更新（meta.json 对比判定，避免 AI 随机性无差别覆盖），TEST-PLAN 附属资产目录（rule-assets 同步源）无脑覆盖，skill 覆盖前 diff 项目侧手工改动；
+  ②.opencode/skills/ 下五个域 skill（test-ops / deploy-ops / docs-align / test-tools / contract-export，薄壳模板逐字落地，多文件模板整目录落地）。触发即全量更新——rule 按版本指纹按需更新（meta.json 对比判定，避免 AI 随机性无差别覆盖），TEST-PLAN 附属资产目录（rule-assets 同步源）镜像同步，skill 覆盖前 diff 项目侧手工改动；
   可单指变体（"重建 <DOC>"强制重生成单个 rule）。
   文档-代码对齐/漂移修复/文档初始化/globs 目录同步职责完全独立（docs-align skill 承担），本 skill 不承载不路由——需要文档对齐、处理漂移、初始化文档、更新globs 时直接调 docs-align。
   仅用户手动调用时触发，不自动触发；操作 .omo/rules/docs/ 与 .opencode/skills/，不生成业务代码、不直接改 docs/ 文档。
@@ -15,11 +15,11 @@ license: MIT
 
 meta skill：把本仓库持有的模板（rule 模板 + skill 模板）同步为目标项目可被规则引擎/opencode 消费的产物。**单一功能 = 生成/更新两类产物**（触发即全量同步，见「何时使用」）：
 
-| 产物                                           | 来源（SSOT）                                          | 落位（目标项目）                           | 更新语义                                                                                                                                                                                                                                                                                    |
-| ---------------------------------------------- | ----------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| omo rule（CONSTITUTION + 21 模板）             | `references/rule-templates/`                          | `.omo/rules/docs/`（目录结构与模板树同构） | **按版本指纹**：`--check-meta` 对比 → 需更新的才重生成，最新的跳过；"重建 <DOC>" 强制重生成单个                                                                                                                                                                                             |
-| TEST-PLAN 附属资产目录                         | `references/rule-assets/test-asset/`                  | `.omo/rules/docs/test-asset/`              | **无脑覆盖**：资产 = skill 侧模板副本（卡模板/工具规范/参考实现），是**参考模板层**——每次全量同步整目录原样复制（必做项，不判 TEST-PLAN 指纹是否最新），不做 diff 询问；它参考生成的 `docs/test/` 业务产物（test-tools/test-cases）是**产物层**，按用户业务需求生成，同步时绝不覆盖、不改写 |
-| 域 skill（test-ops / deploy-ops / docs-align） | `references/skill-templates/<name>/SKILL.template.md` | `.opencode/skills/<name>/SKILL.md`         | **薄壳模板逐字落地**（不探测上下文、无占位符填充）；已有产物 diff 项目侧手工改动列给用户确认后再覆盖                                                                                                                                                                                        |
+| 产物                                                                          | 来源（SSOT）                                               | 落位（目标项目）                           | 更新语义                                                                                                                                                                                                                                                                                                                                                          |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| omo rule（CONSTITUTION + 21 模板）                                            | `references/rule-templates/`                               | `.omo/rules/docs/`（目录结构与模板树同构） | **按版本指纹**：`--check-meta` 对比 → 需更新的才重生成，最新的跳过；"重建 <DOC>" 强制重生成单个                                                                                                                                                                                                                                                                   |
+| TEST-PLAN 附属资产目录                                                        | `references/rule-assets/test-asset/`                       | `.omo/rules/docs/test-asset/`              | **镜像同步**：资产 = skill 侧模板副本（用例卡模板 api-case/flow-case），是**参考模板层**——每次全量同步整目录镜像（必做项，不判 TEST-PLAN 指纹是否最新）：先列目标多余项（模板已删的旧文件）随报告删除，保持目标与模板一致、不留旧的第二 SSOT；它参考生成的 `docs/test/` 业务产物（test-tools/test-cases）是**产物层**，按用户业务需求生成，同步时绝不覆盖、不改写 |
+| 域 skill（test-ops / deploy-ops / docs-align / test-tools / contract-export） | `references/skill-templates/<name>/`（薄壳单文件或整目录） | `.opencode/skills/<name>/`                 | **整目录落地**（test-ops/docs-align 为薄壳单文件逐字落地；deploy-ops / test-tools / contract-export 为多文件模板：SKILL.template.md→SKILL.md + references/ + assets/ 原样复制，不探测上下文、无占位符填充）；已有产物逐文件 diff 项目侧手工改动列给用户确认后再覆盖                                                                                               |
 
 **不承载（完全独立）**：文档-代码对齐/漂移修复/文档初始化/globs 目录同步由 **docs-align skill** 承担——用户需要对齐文档、处理漂移、初始化文档、更新globs 时直接调 docs-align，不经本 skill、本 skill 不路由。docs/** 文档本体也不由本 skill 生成——项目无 docs/ 时由 docs-align 的初始化分支按 rule 从代码建文档，已有文档的维护由 rule 触发后的 AI 按 rule 内容生成/更新。
 
@@ -39,16 +39,16 @@ rule 工厂的输入输出：
 
 ## 何时使用（仅手动触发，触发即全量）
 
-本 skill 无关键字分诊——用户手动调用即**全量同步两类产物**（rule + 三 skill）。默认一次调用完成：
+本 skill 无关键字分诊——用户手动调用即**全量同步两类产物**（rule + 五 skill）。默认一次调用完成：
 
 1. **rule 更新**（功能 2 → 功能 1）：`--check-meta` 摸底 → 重生成「需更新」的 rule + TEST-PLAN 附属资产目录**无脑覆盖**（必做独立步骤，不判 TEST-PLAN 指纹——rule 判最新跳过资产照常覆盖）→ `--update-project-meta` 刷新项目 meta 条目
-2. **skill 更新**（功能 3）：三份薄壳模板逐字落地（已有产物先 diff 项目侧改动确认再覆盖）
+2. **skill 更新**（功能 3）：五份 skill 模板落地（薄壳单文件逐字复制；deploy-ops / test-tools / contract-export 多文件整目录复制；已有产物逐文件 diff 项目侧改动确认再覆盖）
 3. **报告**：更新了哪些 rule / 哪些 skill、跳过哪些（指纹最新）、项目侧待确认项
 
 变体（显式需求时）：
 
 - "重建 <DOC>"：忽略指纹强制重生成单个 rule（用户手工改坏/想重置时用）
-- 目标项目无 `.omo/rules/docs/`（首次落地）→ 全量生成 rule（无指纹可对比）+ 生成三 skill（前置校验 rule 已生成）
+- 目标项目无 `.omo/rules/docs/`（首次落地）→ 全量生成 rule（无指纹可对比）+ 生成五 skill（前置校验 rule 已生成）
 - 目标项目无 `.opencode/skills/<name>` → 直接生成该 skill（无 diff 询问）
 
 > 需要对齐 docs/ 文档与代码、处理漂移、生成/初始化文档、更新globs？——**直接调 docs-align skill**，本 skill 不做这些。
@@ -62,7 +62,7 @@ rule 工厂的输入输出：
 | ------------------------ | --------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
 | CONSTITUTION             | [CONSTITUTION](references/rule-templates/CONSTITUTION.md)（无后缀）                           | 全局 Rule 源   | .omo/rules/docs/CONSTITUTION.md                                                                                                                                                                         | alwaysApply           |
 | L1                       | [README](references/rule-templates/L1/README.template.md)                                     | 模板           | .omo/rules/docs/L1/README.md                                                                                                                                                                            | globs（根 README.md） |
-| L1                       | [PRODUCT](references/rule-templates/L1/PRODUCT.template.md)                                   | 模板           | .omo/rules/docs/L1/PRODUCT.md                                                                                                                                                                           | globs                 |
+| L1                       | [BUSINESS](references/rule-templates/L1/BUSINESS.template.md)                                 | 模板           | .omo/rules/docs/L1/BUSINESS.md                                                                                                                                                                          | globs                 |
 | L1                       | [USER-STORY](references/rule-templates/L1/USER-STORY.template.md)                             | 模板           | .omo/rules/docs/L1/USER-STORY.md                                                                                                                                                                        | globs                 |
 | L2                       | [APPLICATION-ARCHITECTURE](references/rule-templates/L2/APPLICATION-ARCHITECTURE.template.md) | 模板           | .omo/rules/docs/L2/APPLICATION-ARCHITECTURE.md                                                                                                                                                          | globs                 |
 | L2/domain                | [DOMAIN-MODEL](references/rule-templates/L2/domain/DOMAIN-MODEL.template.md)                  | 模板（总文档） | .omo/rules/docs/L2/domain/DOMAIN-MODEL.md（globs: docs/L2/domain/DOMAIN-MODEL.md，总文档兼域文档索引，domain/ 不设 INDEX.md——宪法 §3.2 总文档例外）                                                     | globs                 |
@@ -76,7 +76,7 @@ rule 工厂的输入输出：
 | L3/integration-contracts | [CONTRACT](references/rule-templates/L3/integration-contracts/CONTRACT.template.md)           | 模板           | .omo/rules/docs/L3/integration-contracts/CONTRACT.md（目录级通配，globs: docs/L3/integration-contracts/** 覆盖目录下多契约文件，物理单 rule，一服务一契约，字段 SSOT；命中 INDEX.md 由 INDEX 模板处理） | globs                 |
 | L3/integration-contracts | [INDEX](references/rule-templates/L3/integration-contracts/INDEX.template.md)                 | 模板           | .omo/rules/docs/L3/integration-contracts/INDEX.md（目录唯一入口：文件清单，宪法 §3.2 目录索引约定）                                                                                                     | globs                 |
 | L4                       | [DEPLOYMENT](references/rule-templates/L4/DEPLOYMENT.template.md)                             | 模板           | .omo/rules/docs/L4/DEPLOYMENT.md（globs: docs/L4/DEPLOYMENT.md；部署资产登记于 §7，文件本体不移动）                                                                                                     | globs                 |
-| L4                       | [TEST-PLAN](references/rule-templates/L4/TEST-PLAN.template.md)                               | 模板           | .omo/rules/docs/L4/TEST-PLAN.md（rule，测试资产规范，globs: docs/test/**）+ 同目录 test-asset/（附属资产目录：卡模板/工具规范/参考实现——随 rule 同步复制，不生成 docs 测试计划文档）                    | globs                 |
+| L4                       | [TEST-PLAN](references/rule-templates/L4/TEST-PLAN.template.md)                               | 模板           | .omo/rules/docs/L4/TEST-PLAN.md（rule，测试资产规范，globs: docs/test/**）+ 同目录 test-asset/（附属资产目录：用例卡模板 api-case/flow-case——随 rule 同步复制，不生成 docs 测试计划文档）               | globs                 |
 | common                   | [CODE-GUIDE](references/rule-templates/common/CODE-GUIDE.template.md)                         | 模板           | .omo/rules/docs/common/CODE-GUIDE.md                                                                                                                                                                    | globs                 |
 | common                   | [SECURITY](references/rule-templates/common/SECURITY.template.md)                             | 模板           | .omo/rules/docs/common/SECURITY.md（贯穿所有层，密钥分层 SSOT 在 §6）                                                                                                                                   | globs                 |
 | common                   | [STRUCTURE](references/rule-templates/common/STRUCTURE.template.md)                           | 模板           | .omo/rules/docs/common/STRUCTURE.md                                                                                                                                                                     | globs                 |
@@ -86,15 +86,17 @@ rule 工厂的输入输出：
 
 ## skill 模板（功能 3 的 SSOT）
 
-源文件位于 `references/skill-templates/<name>/SKILL.template.md`（独立树，不与文档模板混置——两者产物与结构不同：文档模板 → `.omo/rules/docs/` rule，skill 模板 → `.opencode/skills/<name>/SKILL.md`）：
+源文件位于 `references/skill-templates/<name>/`（独立树，不与文档模板混置——两者产物与结构不同：文档模板 → `.omo/rules/docs/` rule，skill 模板 → `.opencode/skills/<name>/`）。薄壳类为单文件 `<name>/SKILL.template.md`；多文件类（deploy-ops / test-tools / contract-export）为整目录 `SKILL.template.md` + `references/` + `assets/`：
 
-| skill 模板                                                            | 产物（目标项目）                       | 职责                                                                                                                                    |
-| --------------------------------------------------------------------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| [test-ops](references/skill-templates/test-ops/SKILL.template.md)     | `.opencode/skills/test-ops/SKILL.md`   | 测试用例执行器 runner（环境确认、范围确认、依赖排序、策略确认、按需部署经 deploy-ops、按序执行；写/更新用例归 TEST-PLAN rule）          |
-| [deploy-ops](references/skill-templates/deploy-ops/SKILL.template.md) | `.opencode/skills/deploy-ops/SKILL.md` | 部署运维薄壳（读 DEPLOYMENT.md：环境确认、commit 询问、按文档执行与报告，不复制命令与环境信息）                                         |
-| [docs-align](references/skill-templates/docs-align/SKILL.template.md) | `.opencode/skills/docs-align/SKILL.md` | 文档对齐与漂移处理执行器（分诊：对齐代码和文档〔含 globs 轻量子模式〕/ 解决漂移消费 .omo/drift/ 清单 / 文档初始化按 rule 从代码建文档） |
+| skill 模板                                                                      | 产物（目标项目）                       | 职责                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [test-ops](references/skill-templates/test-ops/SKILL.template.md)               | `.opencode/skills/test-ops/SKILL.md`   | 测试用例执行器 runner（环境确认、范围确认、依赖排序、策略确认、按需部署经 deploy-ops、按序执行；写/更新用例归 TEST-PLAN rule）                                                                                           |
+| [deploy-ops](references/skill-templates/deploy-ops/SKILL.template.md)           | `.opencode/skills/deploy-ops/`         | 部署执行 + 资产生成维护（整目录：SKILL.md + references/deploy-assets.md 资产与多环境约定 + references/release-mechanics.md 发布流水线 + assets/reference-impl/ 脚本/compose/.env 骨架；读 DEPLOYMENT.md 执行与生成资产） |
+| [docs-align](references/skill-templates/docs-align/SKILL.template.md)           | `.opencode/skills/docs-align/SKILL.md` | 文档对齐与漂移处理执行器（分诊：对齐代码和文档〔含 globs 轻量子模式〕/ 解决漂移消费 .omo/drift/ 清单 / 文档初始化按 rule 从代码建文档）                                                                                  |
+| [test-tools](references/skill-templates/test-tools/SKILL.template.md)           | `.opencode/skills/test-tools/`         | 测试工具集生成/维护/执行（整目录：SKILL.md + references/test-tools.md 架构规范 + assets/reference-impl/ 参考实现；工具集中介 AI 直接查数据/对账）                                                                        |
+| [contract-export](references/skill-templates/contract-export/SKILL.template.md) | `.opencode/skills/contract-export/`    | L3 Inbound API 契约导出执行器（整目录：SKILL.md + references/bootstrap.md 框架形态映射 + references/export-mechanics.md 执行方法论 + assets/reference-impl/ 导出/拆分脚本模板；引导 + 导出 + 机检 + 门禁落盘）           |
 
-模板结构：完整 SKILL.md（frontmatter + 正文）。模板为薄壳（编排流程纪律），不持有项目实例内容——命令/工具/环境信息一律指向项目文档 SSOT（DEPLOYMENT.md / TEST-PLAN rule / test-tools README），执行时现场读；生成时前置校验 rule 存在性（`.omo/rules/docs/`）。frontmatter 的 `metadata.generated-by: doc-arch-rules` 标注溯源。name 固定（职责级，跨项目同名）；description 通用。
+模板结构：薄壳类为完整 SKILL.md（frontmatter + 正文），不持有项目实例内容——命令/工具/环境信息一律指向项目文档 SSOT（DEPLOYMENT.md / TEST-PLAN rule / API.md / test-tools README），执行时现场读；多文件类（deploy-ops / test-tools / contract-export）除 SKILL.md 外还持 `references/` 与 `assets/`（参考实现代码/脚本）——同样是通用模板（含项目特定样例值处标注按被测系统替换），非运行实例。生成时前置校验 rule 存在性（`.omo/rules/docs/`）。frontmatter 的 `metadata.generated-by: doc-arch-rules` 标注溯源。name 固定（职责级，跨项目同名）；description 通用。
 
 ## 功能 1：生成 rule（执行流程：AI 主流程）
 
@@ -115,7 +117,7 @@ rule 工厂的输入输出：
 ### 步骤 3：落盘校验
 
 - 批量写入 `.omo/rules/docs/<路径>`（CONSTITUTION.md 在根；其余在 `<层>/<DOC>.md`，含 `L2/deep-dives/DEEP-DIVE.md` + `L2/research/RESEARCH.md`）
-- **附属资产目录同步（TEST-PLAN 专属，无脑覆盖）**：TEST-PLAN 模板带附属资产目录 `references/rule-assets/test-asset/`（卡模板 api-case/flow-case + 工具规范 test-tools.md + 参考实现 test-tools/）——**每次全量同步整目录无脑覆盖**复制到项目 `.omo/rules/docs/test-asset/`（必做项，不判 TEST-PLAN 指纹是否最新——rule 判定跳过资产照常覆盖；原样拷贝，不做占位符组装/翻译、不做 diff 询问；资产 = skill 侧模板副本，无项目侧手工改动语义，直接覆盖）；rule 正文「模板」章节以相对链接 `test-asset/xxx` 引用资产文件，目录缺失即死链
+- **附属资产目录同步（TEST-PLAN 专属，镜像同步）**：TEST-PLAN 模板带附属资产目录 `references/rule-assets/test-asset/`（用例卡模板 api-case/flow-case）——**每次全量同步整目录镜像**到项目 `.omo/rules/docs/test-asset/`（必做项，不判 TEST-PLAN 指纹是否最新——rule 判定跳过资产照常覆盖；原样拷贝，不做占位符组装/翻译；资产 = skill 侧模板副本，无项目侧手工改动语义）；**镜像语义**：先列目标目录多余项（模板已删、目标残留的旧文件）→ 随同步报告展示并删除（如迁移前的 test-tools.md/test-tools/ 残留），保证目标与模板一致、不留旧的第二 SSOT；删除项若非已知模板文件需先列清单让用户确认；rule 正文「模板」章节以相对链接 `test-asset/xxx` 引用资产文件，目录缺失即死链
 - rule 落盘校验（本步骤对象）：frontmatter 中 `description`/`alwaysApply` 与模板 omo 一致，`globs` 含模板基线全部条目（允许含 globs 目录同步追加的扩展条目，`--check` 只判基线子集、不禁扩展）；rule 内不含 `generation:` YAML 块；「模板」章节正文与模板正文一致——用 `--check <rule> <模板>` 逐 rule 复核（批量用 `--all` 解析全部模板拿清单后循环调用）
 - globs 基线（组装期不可改）：生成 rule 时 `globs` 逐字抄模板基线，AI 不得删除/改写基线条目；扩展条目不在此组装——由 docs-align skill 的 globs 双向同步统一增删（本 skill 不做目录同步）；update/rebuild 重生成时做合并（基线以模板为准重写 + 仍存在于磁盘的扩展条目做并集保留），详见功能 2
 
@@ -162,19 +164,20 @@ rule 工厂的输入输出：
 
 ### 触发与范围
 
-全量更新时三份一并落地（随「何时使用」主流程）；产物落目标项目 `.opencode/skills/<name>/SKILL.md`。skill 无指纹机制（模板薄壳逐字落地，是否覆盖靠产物 diff 判定）。
+全量更新时四份一并落地（随「何时使用」主流程）；产物落目标项目 `.opencode/skills/<name>/`。skill 无指纹机制（模板落地，是否覆盖靠产物 diff 判定）。
 
 ### 生成流程
 
 1. **前置校验**：目标项目应已生成 rule（`.omo/rules/docs/` 存在）——skill 正文引用 rule 作为规则源；未生成时提示先跑 rule 更新
-2. **逐字落地**：读模板逐字复制（薄壳无占位符、无【实例化】标记行、不探测项目上下文）
-3. **落盘**：`.opencode/skills/<name>/SKILL.md`（frontmatter `metadata.generated-by: doc-arch-rules` 溯源）
-4. **验证**：frontmatter name 与目录名一致；`--check`/内容抽查模板正文与产物一致
-5. **报告**：生成/更新清单 + 项目侧需重启 opencode 生效提醒
+2. **整目录落地**：遍历模板目录 `references/skill-templates/<name>/`——`SKILL.template.md` → 产物 `SKILL.md`，其余条目（`references/`、`assets/` 等）保持相对目录结构原样复制（薄壳类只有 SKILL.template.md 单文件；多文件类如 test-tools 含 references/assets）。薄壳无占位符、无【实例化】标记行、不探测项目上下文
+3. **落盘**：`.opencode/skills/<name>/`（frontmatter `metadata.generated-by: doc-arch-rules` 溯源）
+4. **验证**：frontmatter name 与目录名一致；薄壳类抽查模板正文与产物一致，多文件类核对目录结构与模板同构
+5. **报告**：生成/更新清单 + 项目侧重启 opencode 生效提醒
 
 ### 更新与覆盖规则
 
-- 已有产物重生成前：diff 现产物与新版模板逐字结果，**项目侧手工改动列出来让用户确认**（保留合并或覆盖），禁止静默覆盖
+- 已有产物重生成前：逐文件 diff 现产物与新版模板落地结果，**项目侧手工改动列出来让用户确认**（保留合并或覆盖），禁止静默覆盖
+- 多文件类逐文件三态处置：模板新增文件 → 复制并报告；两侧同名 → diff（有项目侧改动列出确认）；**模板已删的文件 → 列入「待确认删除」，不静默删**（skill 产物可能被项目改过，与 test-asset 镜像语义不同）
 - 模板更新：改 `references/skill-templates/` 后用户显式 `--gen-meta` bump（与文档模板同纪律）；项目侧重生成走本功能
 - 边界：本功能只写 `.opencode/skills/`；不修改目标项目业务代码；不自动 commit
 
@@ -198,7 +201,7 @@ node scripts/parse-template.mjs --update-project-meta <项目meta> <DOC> <versio
 ## 硬性要求
 
 - SSOT：模板是 rule 的唯一来源；`references/rule-templates/` 目录结构 = `.omo/rules/docs/` 目录结构
-- skill 模板 SSOT：`references/skill-templates/<name>/SKILL.template.md` 是 `.opencode/skills/<name>/SKILL.md` 的唯一来源，逐字落地；模板为薄壳（编排流程纪律），不持有项目实例内容（命令/工具/环境信息指向项目文档 SSOT）；产物 frontmatter 必含 `metadata.generated-by: doc-arch-rules` 溯源
+- skill 模板 SSOT：`references/skill-templates/<name>/` 是 `.opencode/skills/<name>/` 的唯一来源，整目录落地（`SKILL.template.md` → `SKILL.md`，其余条目原样复制）；薄壳类（test-ops/docs-align）为单文件、不持有项目实例内容（命令/工具/环境信息指向项目文档 SSOT）；多文件类（deploy-ops / test-tools / contract-export）另持 references/ 与 assets/（参考实现/脚本）——同为通用模板（项目特定样例值按被测系统替换），非运行实例；产物 frontmatter 必含 `metadata.generated-by: doc-arch-rules` 溯源
 - globs 两阶段生命周期：初始化（功能 1 组装）基线逐字抄、AI 不得改；演进（目录同步/扩展增删）由 docs-align skill 承担（按 STRUCTURE 目录职责双向同步——不变量：基线只增不减永不清理、扩展随磁盘现状追加与清理；语法匹配语义见 [globs 语法与用法](references/globs.md)）——本 skill 重生成 rule 时只做合并（基线以模板为准 + 磁盘仍存在的扩展条目并集保留），不做目录盘点
 - rule 内禁止 YAML generation 原始块：见 [组装规则（硬约束）](references/assembly.md)；generation 信息一律内联翻译为正文四节，不保留 YAML 形态
 - 引用规范：本 skill 内部引用一律用相对路径 + Markdown 链接（`references/rule-templates/...`），禁止 `@path`、禁止硬编码绝对路径、禁止 `./xxx` 依赖 cwd
@@ -216,13 +219,15 @@ node scripts/parse-template.mjs --update-project-meta <项目meta> <DOC> <versio
 - 项目 meta 缺失/条目缺失：check 按全部 rule「未知版本 → 需更新」处理（兜底旧版手工生成的 rule）
 - rule 文件缺失（meta 有条目但 `.omo/rules/docs/<DOC>.md` 不存在）：check 判「需更新（文件缺失）」——按模板重新生成该 rule
 - check 退出码 2：skill meta 缺失或参数错误，先修配置再重跑
-- skill 产物已存在且含项目侧手工改动（功能 3）：diff 列出改动让用户确认保留合并或覆盖，禁止静默覆盖
+- skill 产物已存在且含项目侧手工改动（功能 3）：逐文件 diff 列出改动让用户确认保留合并或覆盖，禁止静默覆盖
 - skill 模板缺失（功能 3 要求清单外名称）：说明该 skill 模板未建，不臆造；可按 [skill 模板]（references/skill-templates/）既有模板的形态新建模板后再生成
+- test-asset 目录残留旧资产（如 test-tools.md/test-tools/）：镜像同步列出多余项并删除；删除非已知模板文件前先让用户确认
 
 ## 维护
 
 - 版本维护（用户显式触发，禁止自动化）：修改 SKILL.md / templates / scripts 后，由用户显式要求时执行 `--gen-meta`（递增 version + 刷新 implHash/templates 指纹）——push/commit 与版本更新无耦合（没 bump = 没发布，详见功能 2 版本指纹说明）；禁止以 git hook / 文件监听等形式自动 bump，未被授权时 AI 不得触碰 meta.json。版本变更与内容改动作为同一批改动提交（是否 commit/push 由用户显式指令）
 - 模板更新：修改 `references/rule-templates/` 下文件后，用户显式要求时 bump 版本（`--gen-meta`）；项目侧按功能 2 check → update 按需重生成受影响 rule
 - 新增文档类型：在 `references/rule-templates/<层>/` 加文件（无后缀=全局 rule；.template 后缀=模板，支持子目录如 `L2/deep-dives/`、`L2/research/`），重新生成对应 rule，更新本文件清单表与 meta
-- skill 模板维护：新增/修改 `references/skill-templates/<name>/SKILL.template.md` 后，用户显式要求时 bump 版本（`--gen-meta`）；目标项目侧跑本 skill 全量更新即重生成三份产物（覆盖前按错误处理规则 diff 确认）
+- TEST-PLAN 附属资产目录同步（功能 1 步骤 3）：镜像同步到项目 `.omo/rules/docs/test-asset/`——先列目标多余项（模板已删的旧文件，如迁移前残留的 test-tools.md/test-tools/）随报告删除，保持目标与模板一致；只作用于该资产目录，绝不触碰 `docs/test/` 业务产物
+- skill 模板维护：新增/修改 `references/skill-templates/<name>/` 后，用户显式要求时 bump 版本（`--gen-meta`）；目标项目侧跑本 skill 全量更新即重生成五份产物（覆盖前按错误处理规则逐文件 diff 确认）
 - 脚本维护：脚本只做解析/校验/指纹（omo 五键 + generation 六字段 + 剥离 frontmatter + meta 生成/对比），模板缺 `description` 或 `alwaysApply`/`globs` 时报错退出（不兜底）；配置（`LAYER_ZH`/`SPECIAL_TARGETS`/`SKIP_FILES`）在脚本顶部。脚本为 Node 零依赖（手写 YAML 解析，复刻 omo parser-yaml.ts，不引入 npm 包）

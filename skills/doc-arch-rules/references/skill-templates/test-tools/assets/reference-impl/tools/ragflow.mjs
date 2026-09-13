@@ -6,7 +6,7 @@
 //   node tools/ragflow.mjs docs --name '<库名>'                       # 某知识库的文档列表
 //   node tools/ragflow.mjs chunks --name '<库名>' --doc-id <id>       # 某文档的 chunks（对账切片是否入库）
 // 环境变量：
-//   RAGFLOW_BASE_URL（必填）如 http://192.168.1.225:9380/api/v1
+//   RAGFLOW_BASE_URL（必填）如 http://localhost:9380/api/v1
 //   RAGFLOW_API_KEY （必填）Bearer key
 
 import { EXIT, done, requireEnv, parseArgs, helpIfRequested } from './_util.mjs'
@@ -19,12 +19,12 @@ const USAGE = `用法：
   node tools/ragflow.mjs docs --name <知识库名>
   node tools/ragflow.mjs chunks --name <知识库名> --doc-id <文档ID>
 
-环境变量：RAGFLOW_BASE_URL（必填，如 http://192.168.1.225:9380/api/v1）；RAGFLOW_API_KEY（必填）
+环境变量：--env <环境名>（选择 .env.<环境名>；无则由 TEST_ENV 指定，再回落到 .env；放在子命令之后，如 datasets --env dev）；RAGFLOW_BASE_URL（必填，如 http://localhost:9380/api/v1）；RAGFLOW_API_KEY（必填）
 退出码：0=成功；1=业务失败（库/文档不存在、chunks 为空等对账断言）；2=参数错误；3=网络失败；10=配置错误`
 
 helpIfRequested(process.argv.slice(2), USAGE)
 
-const base = requireEnv('RAGFLOW_BASE_URL', '如 http://192.168.1.225:9380/api/v1')
+const base = requireEnv('RAGFLOW_BASE_URL', '如 http://localhost:9380/api/v1')
 const key = requireEnv('RAGFLOW_API_KEY', 'RAGFlow 的 API key，见 DEPLOYMENT §6.2')
 
 // 子命令是位置参数（datasets/docs/chunks），先剥离，剩余 -- 选项交给 parseArgs

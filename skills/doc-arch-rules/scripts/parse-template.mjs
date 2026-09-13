@@ -521,7 +521,7 @@ function sha256(text) {
 
 /**
  * 模板绝对路径 -> meta key（相对 rule-templates 目录，去 .md / .template 后缀）。
- * 例：L1/PRODUCT.template.md -> "L1/PRODUCT"；CONSTITUTION.md -> "CONSTITUTION"。
+ * 例：L1/BUSINESS.template.md -> "L1/BUSINESS"；CONSTITUTION.md -> "CONSTITUTION"。
  */
 function templateKey(absPath) {
   const rel = path.relative(TEMPLATES_DIR, absPath).replace(/\.md$/, "");
