@@ -1,247 +1,132 @@
-# PROJECT KNOWLEDGE BASE
+# Agent Skills 仓库指令
 
-Generated: 2026-09-09（2026-09-14 同步）
-Role: 创建与优化 Agent Skills 的仓库（vercel-labs/skills 生态）。本项目只负责 skill 的开发/迭代/格式校验；将 skill 安装到 opencode 等 Agent 由用户自行执行，AI 不代装。
+本仓库维护一组可复用的 Agent Skill。当前可执行入口是各 Skill 目录、验证命令，以及 `project-scaffold` 的 Node 安装器；仓库根目录没有统一的构建、测试或包管理入口。
 
----
+## 当前结构
 
-## 1. 项目定位与职责边界
-
-维护一组自包含的 Agent Skills（每个 skill = 一个目录，含 `SKILL.md` + 可选 `references/`/`assets/`/`scripts/`），语言：中文文档。核心能力分两类：
-
-- **独立能力 skill**：c4-container-diagram（画图）、gitee-comments（评审评论）、remote-shell（远程执行）、score-prompt（prompt 评分）、skill-creator（造 skill）
-- **meta skill**：doc-arch-rules——负责「生成/管理/更新 rule」与「生成/管理/更新 skill」：持有 19 个文档模板（→ 目标项目 `.omo/rules/docs/` 的 rule）与 5 个域 skill 模板（→ 目标项目 `.opencode/skills/` 的 test-ops / deploy-ops / docs-align / test-tools / contract-export）
-
-**关键边界**：五个域 skill（test-ops / deploy-ops / docs-align / test-tools / contract-export）是 **meta skill 在目标项目生成的产物，不在本仓库**——本仓库只有它们的模板（`doc-arch-rules/references/skill-templates/`）。其中 deploy-ops（执行+资产生成维护）、test-tools、contract-export 与 test-ops（自持用例卡规范 + 卡模板）是多文件模板（SKILL.template.md + references/ + assets/），docs-align 为薄壳单文件。
-
-**职责边界**：本项目只做「创建 / 优化 / 校验」；安装到 Agent（`npx skills add`）由用户自行执行，AI 不代装。
-
----
-
-## 2. 约定与约束（改任何 skill 前必读）
-
-> 本仓全部全局硬约定/约束集中于此。上方为目录（C1-C9），细则顺次展开；skill 专属约束见 §3。
-
-| #   | 约定                                                                                                   | 检查方式                |
-| --- | ------------------------------------------------------------------------------------------------------ | ----------------------- |
-| C1  | 引用用相对 Markdown 链接；禁 `@path`/绝对路径/依赖 cwd 的 `./`；scripts/references 相对 Base directory | grep（见 C1）           |
-| C2  | 模板正文链接以「生成后 rule 在目标项目中的位置」为基准（目标侧）；skill 自身文档用 skill 侧            | 目标项目内校验（见 C2） |
-| C3  | frontmatter 合规（name 与目录名一致、description 含功能+触发词 <1024）                                 | `agentskills validate`  |
-| C4  | 模板正文及 frontmatter 禁加粗与 emoji                                                                  | grep + python（见 C4）  |
-| C5  | generation 块：字符串全双引号 / 列表项 4 空格扁平（禁嵌套）/ 无孤儿行                                  | python（见 C5）         |
-| C6  | 改 skill 必跑 validate；改后 `npx skills update -g` + 重启生效                                         | 命令（见 C6）           |
-| C7  | 非 skill 目录勿动；临时产物进 /tmp；skill 目录只放规定文件                                             | find 机检（见 C7）      |
-| C8  | SKILL.md <500 行 + 渐进式披露 + 禁死引用                                                               | 人工（见 C8）           |
-| C9  | 文档与注释全中文                                                                                       | 人工（见 C9）           |
-
-### C1 引用路径与 Base directory
-
-- `references/` 引用必须用 Markdown 链接相对路径：`[显示文本](references/xxx.md)`，保持一级深度（不嵌套 `references/sub/`）
-- `scripts/`、`assets/` 调用用相对路径命令：`scripts/main.py --input data.json`
-- 禁止：`@path` 语法（agentskills.io 规范禁止）、硬编码绝对路径（安装位置一变即失效）、依赖 cwd 的 `./xxx`、让 AI「自行查找/拼路径」
-- opencode 机制（实测）：skill 激活时自动注入 **Base directory**（安装位置绝对路径），scripts/references 相对路径以其为锚——**不需要也不应该写「探测安装路径」的逻辑**
-
-### C2 链接基准（模板正文 = 目标侧）
-
-- 模板正文（会逐字复制进目标 rule）里的相对链接，一律以**生成后 rule 在目标项目中的位置**为基准（目标侧）；扩展名用目标真实文件名——rule 用 `.md`（不是 `.template.md`），附属资产用真实相对路径
-- skill 自身文档（`SKILL.md` / `references/README.md` / `assembly.md` / `globs.md` 等，不进入目标项目）里的链接仍以该文件自身位置为基准（skill 侧）
-- 范例：模板 `L2/domain/DOMAIN-MODEL.template.md` → 产物 `.omo/rules/docs/L2/domain/DOMAIN-MODEL.md`；跨 rule 写 `[API](../../L3/API.md)`（来自 `L2/domain/DOMAIN-MODEL.md`）
-- 检查方式：模板正文链接**不在 skill 本地校验**（目标侧产物），在目标项目内校验；skill 侧文档链接可本地校验
-
-### C3 frontmatter 合规
-
-| 字段                        | 要求                                                                            |
-| --------------------------- | ------------------------------------------------------------------------------- |
-| `name`                      | 必填，小写连字符，与目录名一致（opencode 严格校验匹配）                         |
-| `description`               | 必填，含功能 + 触发词，<1024 字符                                               |
-| `license` / `compatibility` | 可选                                                                            |
-| `metadata`                  | 可选，string-to-string map（值含数组需单引号包成字符串）                        |
-| `allowed-tools`             | opencode **不识别**（权限走 `permission.skill` 配置）；写的话只能空格分隔字符串 |
-
-> `license` / `compatibility` / `metadata` / `allowed-tools` 均为可选字段，声明与否不作为合规项——各 skill 间存在差异属正常（`allowed-tools` 在 opencode 不生效，仅兼容 Claude Code 等其他 Agent）。仓库整体 license 为 MIT。
-
-### C4 内容禁令与机检
-
-- `references/rule-templates/**` 与 `skill-templates/**` 正文及 frontmatter 禁用 `**加粗**` 与 emoji（✅/⚠️/箭头全算；glob 通配符 `**`、目录树制表符除外）
-- 机检（改模板后必跑）：`grep -rnE '\*\*[^*`]+\*\*' skills/doc-arch-rules/references/rule-templates/ skills/doc-arch-rules/references/skill-templates/`无输出 + emoji 扫描（见下方命令）输出`emoji干净`
-
-### C5 模板 generation 块格式
-
-- `references/rule-templates/**` frontmatter 的 `generation` 块内，**所有字符串一律用双引号包裹**：`tools` / `ask_user` / `flow` / `notes` / `checks` 的每个列表项 + `related` 的每个值，不论是否含特殊字符（统一格式，不靠 YAML 直觉判断）
-- 值内含 ASCII `"` 或 `\` 必须转义（`\"` / `\\`）——解析器 `scripts/parse-template.mjs` 对双引号值走 `JSON.parse`，未转义会破坏内容
-- 列表项一律 4 空格扁平，禁止嵌套子项——嵌套在 YAML 中非法（block sequence 不能直接跟子序列，编辑器报 `Invalid child element in a block sequence`），且解析器 `parseGeneration` 本就把子项拍平成同级；要分组就把组标题也作为一条列出
-- generation 块内不得有无 key 的孤儿行（解析器 `parseGeneration` 会静默丢弃，标准 YAML 也报错）
-- 机检（改模板后必跑，作用域限定 frontmatter 的 generation 块）：
-
-```bash
-python3 - <<'PY'
-import glob, re
-bad = []
-for p in glob.glob('skills/doc-arch-rules/references/rule-templates/**/*.md', recursive=True):
-    L = open(p, encoding='utf-8').read().split('\n')
-    if not L or L[0] != '---':
-        continue
-    try:
-        e = L.index('---', 1)
-    except ValueError:
-        continue
-    ing = False
-    for i in range(1, e):
-        ln = L[i]
-        if re.match(r'^generation:\s*$', ln):
-            ing = True
-            continue
-        if ing and re.match(r'^[a-zA-Z_]+:', ln) and not ln.startswith(' '):
-            break
-        if not ing:
-            continue
-        if ln.strip() == '' or re.match(r'^\s*#', ln):
-            continue
-        if re.match(r'^  [a-z_]+:', ln):
-            continue
-        m = re.match(r'^( *)- (.*)$', ln)
-        if m:
-            if len(m.group(1)) != 4:
-                bad.append(f'{p}:{i + 1} 列表项非 4 空格（禁止嵌套）: {ln.strip()[:30]}')
-            elif not m.group(2).startswith('"'):
-                bad.append(f'{p}:{i + 1} 列表项未引号')
-            continue
-        m2 = re.match(r'^(    [^:#]+: )(\s*)(.*)$', ln)
-        if m2:
-            if not m2.group(3).startswith('"'):
-                bad.append(f'{p}:{i + 1} related 值未引号')
-            continue
-        bad.append(f'{p}:{i + 1} 孤儿行: {ln.strip()[:40]}')
-print(bad if bad else 'generation 引号干净')
-PY
-```
-
-### C6 校验与生效
-
-- 改 skill 后必跑：`uvx --from skills-ref agentskills validate ./skills/<name>`（可执行名是 **agentskills** 不是 skills-ref；`npx skills check` 只是查更新 ≠ 合规校验）；改动已有 skill 前先跑一次作基线（区分既有问题 vs 本次引入）
-- **同步与生效**：本仓库（SSOT）改完 → `npx skills update -g` 同步安装副本（`~/.agents/skills/`）→ **重启 opencode 会话生效**——skill 列表是会话启动快照，skill 内容是激活时读取，不同步+重启就还是旧的
-
-### C7 目录与文件纪律
-
-- 不修改 `improve/`、`demo/`、`.omo/`、`.codegraph/` 等非 skill 目录
-- **临时产物不进仓库**：截图（Playwright / 视觉 QA / 调试截图等 `*-fullpage.png`）、临时输出、中间文件一律写系统临时目录（`/tmp`、`mktemp -d` 或 `$TMPDIR`），用完即删；禁止落在仓库任何位置（含仓库根、skill 目录）。机检：`find . -maxdepth 2 \( -name '*.png' -o -name '*.jpg' -o -name '*.webp' \) -not -path './node_modules/*'` 应无输出
-- skill 目录只放 SKILL.md + references/ + assets/ + scripts/，不混入无关文件（例外：doc-arch-rules 根目录的 `meta.json` 是版本指纹 SSOT，属有意保留）；不在 skill 中写真实密码/token/敏感主机信息
-
-### C8 SKILL.md 精简与渐进式披露
-
-- SKILL.md 精简（<500 行）+ 渐进式披露：核心工作流在 SKILL.md，详参下沉 `references/`（Markdown 链接指向）；references 可本地化官方资料（c4-container-diagram 为范例，更新命令见其 README，上游 master）
-- SKILL.md 内禁止死引用（不存在的章节号/reference 文件）；改 skill 后同步其 `references/README.md`（如有文件清单）
-
-### C9 中文文档与注释
-
-- 文档与注释全部使用中文（技术术语/命令/路径保留原文）
-
----
-
-## 3. 各 skill 概览与注意事项
-
-### doc-arch-rules（meta skill）
-
-**定位**：rule 与 skill 生成器（单一功能，无关键字分诊）——从模板全量更新目标项目两类产物：①`.omo/rules/docs/` 全部 omo rule ②`.opencode/skills/` 五个域 skill（test-ops / deploy-ops / docs-align / test-tools / contract-export）。触发即全量同步；文档-代码对齐/漂移修复/文档初始化/globs 目录同步**完全独立**（docs-align skill 承担，本 skill 不承载不路由——用户要文档对齐、处理漂移、初始化文档、更新globs 时直接调 docs-align）。
-
-**结构**：`references/rule-templates/`（1 宪法源 + 19 文档模板，产物 `.omo/rules/docs/`；目录结构与模板树同构）+ `references/skill-templates/`（test-ops 多文件模板〔SKILL.template.md + references/case-writing.md 用例卡规范 + assets/case-templates/ 用例卡模板 api-case/flow-case〕+ docs-align 薄壳 SKILL.template.md + deploy-ops 多文件〔SKILL.template.md + references/ 资产与多环境约定、发布流水线 + assets/reference-impl/ 脚本/compose/.env 骨架〕+ test-tools 多文件〔SKILL.template.md + references/ 架构规范 + assets/reference-impl/ 参考实现〕+ contract-export 多文件〔SKILL.template.md + references/ 引导映射与执行方法论 + assets/reference-impl/ 导出/拆分脚本〕，产物目标项目 `.opencode/skills/`，整目录落地）+ `references/assembly.md`（rule 组装 SSOT，改它 = implHash 刷新全量 rule 重生成）+ `references/globs.md`、`diagram-spec.md` + `scripts/parse-template.mjs`（解析/校验/指纹/孤儿清理，零依赖）。
-
-**注意**：
-
-- 更新语义：rule 按版本指纹（`--check-meta` → 需更新才重生成，最新跳过）；**孤儿 rule 清理**（`--prune`：模板已删/改名/迁移的残留 rule + 空目录 + 项目 meta 孤儿条目，落盘同批必做）；skill 整目录落地（薄壳单文件逐字复制 / test-ops、deploy-ops、test-tools、contract-export 整目录复制；已有产物先逐文件 diff 项目侧手工改动确认再覆盖）
-- 版本指纹 `meta.json`（version/implHash/templates）——**只在用户显式要求时 `--gen-meta`**，AI 不得触碰；用户手工改过的 rule 指纹不会覆盖（设计意图）
-- docs-align 相关职责（对齐流水线/globs 双向同步/漂移分诊）已完全移出本 skill——SKILL.md 不含这些流程
-- 用例（卡片）规范与用例管理已归 test-ops skill（`references/case-writing.md`：卡结构五段/写卡规范含断言三源/机检/资产结构/关联联动；DoD 草稿晋升机制）；本 skill 只生成/更新 rule，不承载用例流程
-- 测试工具集（架构规范/参考实现/生成维护执行/调用）已独立为第四个域 skill `test-tools`（`references/test-tools.md` + `assets/reference-impl/`）；用例规范归 test-ops skill，两者分别承载宪法 §2.3（用例唯一入口）与 §2.4（系统访问唯一入口）
-- API 契约导出已独立为第五个域 skill `contract-export`——L3/API rule 保留导出规范正文（说明书四要素），skill 只读 `docs/L3/API.md` §2 命令执行（引导/导出/机检/门禁落盘），命令 SSOT 不复制进 skill
-- 部署资产（脚本/compose/多环境 .env）生成维护已并入 `deploy-ops`（由薄壳升级为多文件）——执行部分读 DEPLOYMENT.md §5.3/§4 照做，资产生成/维护按 references/deploy-assets.md 约定（环境名以 §2.1 为唯一词表），参考骨架在 assets/reference-impl/
-
-### c4-container-diagram
-
-**定位**：用 D2 画 C4 Container Diagram（c4model.com 标准第 2 层图），Markdown 内嵌 d2 代码块渲染。
-
-**注意**：`references/` 含 4 个 D2 官方文档本地化（containers/connections/grid-diagrams/elk）+ 7 个自研参考（c4-container-spec/layout-and-grid/connection-routing/d2-syntax-cheatsheet/troubleshooting/templates/diagram-review）+ README 清单，共 12 个 .md（官方本地化更新命令见其 README，上游 master）；SKILL.md 已按渐进式披露拆为 232 行（本仓范例）；画图前先以 ASCII 架构图与用户确认。
-
-### gitee-comments
-
-**定位**：管理 Gitee 仓库提交（commit）的评审评论——程序化记录评审意见、列未解决待办、回复线程、解决/删除。
-
-**注意**：单 SKILL.md；依赖 Gitee 仓库留痕机制（AI 与团队共用）。
-
-### remote-shell
-
-**定位**：SSH 在远程服务器执行命令，优先 `remote-shell` CLI，支持降级回退。
-
-**注意**：SKILL.md + `references/cli-reference.md`（CLI 主机管理/配置格式）；远程执行规则见 `.config/opencode/rules/remote-shell-execution.md`（exit code 精确降级，禁止凭经验跳 sshpass）。
-
-### score-prompt
-
-**定位**：对任意 LLM prompt/文档跑 5 维度质量评分（Clarity/Conciseness/Actionability/Consistency/Minimal-slop）并迭代修复至目标分。
-
-**注意**：单 SKILL.md；默认目标 90 分，可 `target_score` 覆盖。
-
-### skill-creator
-
-**定位**：创建新 OpenCode Skill——`npx skills init skills/<name>` 或按其流程手写。
-
-**注意**：`references/` 含 8 篇（skill-md-format / directory-structure / path-resolution / script-language-guide + guide / api-ref / custom-args / troubleshooting 四篇写法示例，全清单见 SKILL.md 索引）——**改任何 skill 前先读 skill-md-format.md**；`assets/templates/` 含 5 个骨架 + 3 个脚本模板（清单见 SKILL.md）。
-
----
-
-## 4. opencode skill 机制要点
-
-以下条目均经实测与源码确认：
-
-- `.opencode/skills/` 是**第一顺位项目级目录**（官方文档 + 源码确认），从 cwd 向上找到 git worktree 自动加载；每个 skill 自动注册为 `/<skill-name>` 斜杠命令 + agent 按 description 自动触发
-- `opencode debug skill` 的输出**不完整不可信**（漏列大量实际可用的 skill，含 doc-arch-rules 自身）——验证一律用重启会话看斜杠列表
-- frontmatter 只认 name/description/license/compatibility/metadata；权限走 `permission.skill` 配置
-
----
-
-## 5. 命令速查
-
-```bash
-# 列出所有 skill
-find skills -name "SKILL.md" | sort
-
-# 创建新 skill
-npx skills init skills/<skill-name>
-
-# 合规校验（agentskills.io 官方 skills-ref，uvx 一次性运行）
-uvx --from skills-ref agentskills validate ./skills/<skill-name>
-for d in skills/*/; do uvx --from skills-ref agentskills validate "$d" || echo "!! FAIL: $d"; done
-
-# doc-arch-rules 脚本（相对路径以 skill 激活时注入的 Base directory 为锚）
-node scripts/parse-template.mjs --all
-node scripts/parse-template.mjs --check <rule路径> <模板路径>
-node scripts/parse-template.mjs --gen-meta [--set-version X.Y.Z]      # 仅用户显式触发
-node scripts/parse-template.mjs --check-meta <项目meta路径>
-node scripts/parse-template.mjs --update-project-meta <项目meta> <DOC> <v> <h> <th>
-node scripts/parse-template.mjs --prune <rulesDir> <项目meta>           # 清理孤儿 rule + 项目 meta 孤儿条目
-
-# 同步到已安装副本（用户自行执行；同步后重启 opencode 生效）
-npx skills update -g
-
-# 加粗/emoji 机检（改模板后必跑；grep 应无输出，python 应输出 emoji干净）
-grep -rnE '\*\*[^*`]+\*\*' skills/doc-arch-rules/references/rule-templates/ skills/doc-arch-rules/references/skill-templates/
-python3 -c "import glob;hit=[f'{p}:{i}' for p in glob.glob('skills/doc-arch-rules/references/*-templates/**/*.md',recursive=True) for i,l in enumerate(open(p,encoding='utf-8'),1) for ch in l if '\U0001F300'<=ch<='\U0001FAFF' or 0x2705<=ord(ch)<=0x27BF];print(hit if hit else 'emoji干净')"
-```
-
----
-
-## 附：目录结构
-
-```
+```text
 skills/
-├── c4-container-diagram/  # D2 画 C4 图 + references/（4 官方文档本地化 + 7 自研参考 + README 清单）
-├── doc-arch-rules/        # meta skill：rule/skill 生成（结构见其「skill 模板」与「文件清单」节）
-├── gitee-comments/        # Gitee 评审评论（单 SKILL.md）
-├── remote-shell/          # SSH 远程执行（SKILL.md + references/cli-reference.md）
-├── score-prompt/          # prompt 评分（单 SKILL.md）
-└── skill-creator/         # 创建新 skill + references/（guide 等五篇）+ assets/templates/
-improve/                   # 研究笔记（非 skill，勿动）
-demo/                      # doc-arch-rules 演示样例（非 skill）
-README.md                  # 面向用户的安装/技能表
+├── c4-container-diagram/       # D2/C4 容器图
+├── gitee-comments/             # Gitee 评审评论
+├── project-scaffold/           # 项目脚手架（项目宪法 + 文档操作/域执行 Skill 模板）
+├── remote-shell/               # 远程命令执行
+├── score-prompt/               # Prompt/文档评分
+└── skill-creator/              # 创建和维护 Skill
 ```
 
-> 生成产物去向（不在本仓库）：五个域 skill（test-ops / deploy-ops / docs-align / test-tools / contract-export）→ 目标项目 `.opencode/skills/`；rule → 目标项目 `.omo/rules/docs/`。
+`skills/project-scaffold/references/skill-templates/` 是安装目标模板，全部不是本仓库的活动 Skill，分两类：
+
+- 文档操作 skill（13，每份文档一个，前缀 `docs-`）：`docs-business` / `docs-application-architecture` / `docs-data-architecture` / `docs-technology-architecture` / `docs-domain` / `docs-deep-dives` / `docs-research` / `docs-inbound` / `docs-outbound` / `docs-deployment` / `docs-structure` / `docs-code-guide` / `docs-changes`；
+- 域执行 skill（5）：`test-ops` / `deploy-ops` / `docs-align` / `tools` / `contract-export`。
+
+旧的 `skills/doc-arch-rules/`、`.omo/rules/docs/` 生成器和 `meta.json` 已退休，不要恢复或重新引用它们。`project-scaffold` 的 `--migrate` 只用于检测目标项目中的旧布局。
+
+## 当前初始化入口
+
+`project-scaffold` 目前仍是 Skill，不是 npm 插件。执行安装器时必须从仓库根传入目标项目根：
+
+```bash
+# 只读检查，不写文件
+node skills/project-scaffold/scripts/install.mjs --check --project-root <path>
+
+# 安装缺失项、更新 AGENTS 管理区块
+node skills/project-scaffold/scripts/install.mjs --apply --project-root <path>
+
+# 显式覆盖冲突项
+node skills/project-scaffold/scripts/install.mjs --apply --force --project-root <path>
+
+# 检测旧布局；只有 --apply 才删除目标项目的旧 .omo/rules/docs
+node skills/project-scaffold/scripts/install.mjs --migrate --project-root <path>
+node skills/project-scaffold/scripts/install.mjs --migrate --apply --project-root <path>
+```
+
+安装器行为：
+
+- `references/agents-templates/AGENTS.md` 安装到目标项目根 `AGENTS.md`（「项目宪法」章节），当前 1 个文件；
+- `references/skill-templates/<name>/` 整目录复制到目标项目 `.opencode/skills/<name>/`；
+- `SKILL.template.md` 在目标项目安装时改名为 `SKILL.md`；
+- AGENTS 管理区块标记为 `<!-- project-scaffold:begin -->` 与 `<!-- project-scaffold:end -->`；
+- 已有管理区块时只替换区块，区块外内容保留；
+- 无管理区块或 Skill 内容冲突时默认不覆盖，只有 `--force` 才覆盖；
+- 安装器只写固定资产路径，不写业务文档正文、业务代码或 Git 状态。
+
+## `project-init` 产品目标
+
+目标是把这套能力演进为类似 OpenCode 原生 `/init` 的项目初始化入口：
+
+```text
+/project-init（或最终确定的等价命令）
+→ 分析项目
+→ 生成项目宪法（根 AGENTS.md）
+→ 安装 Skill 集（文档操作 + 域执行）
+→ 处理冲突、旧布局和迁移
+```
+
+设计约束：
+
+- 目标是“项目宪法 + 文档操作 Skill + 域执行 Skill”的完整项目基础架构，不只是文档模板；
+- 如果改成 OpenCode 插件，参考 `oh-my-openagent` 的 `init-deep`：插件通过 `config` hook 注册内置 Skill/Command，Agent 展开指令后分析项目并生成项目宪法；
+- 当前尚未实现 `/project-init` 或插件入口；不要把设计目标写成当前可用命令；
+- 插件化时保留 `install-core.mjs` 作为确定性文件操作核心，增加打包/Command/工具外壳，不要重写模板和冲突语义；
+- 目标是让 Agent 根据项目事实生成/更新项目宪法与各文档 skill 管辖的文档；不要把固定模板误当成最终项目事实；
+- 命令名、是否覆盖 `/init`、是否兼容 OMO 的 `/init-deep`，在实现前必须明确并做冲突检测。
+
+## 修改 Skill 的硬约束
+
+### 目录与引用
+
+- 引用使用相对 Markdown 链接；禁止 `@path`、硬编码绝对路径和依赖当前工作目录的 `./`；
+- Skill 激活后以 OpenCode 注入的 Base directory 为锚点，调用 `scripts/` 和 `references/` 不自行探测安装路径；
+- 模板正文中的相对链接按复制到目标项目后的文件位置校验；Skill 自身文档按 Skill 目录位置校验；
+- Skill 目录只保留 `SKILL.md` 以及必要的 `references/`、`assets/`、`scripts/`；不把临时产物、截图、构建输出或真实凭据写入仓库。
+
+### Frontmatter
+
+- `name` 必填，使用小写 kebab-case，且必须与目录名一致；
+- `description` 必填，包含功能和触发词，长度小于 1024 字符；
+- `license`、`compatibility`、`metadata`、`allowed-tools` 是可选字段；`allowed-tools` 在 OpenCode 不负责权限控制。
+
+格式细节见 [skill-creator 的格式规范](skills/skill-creator/references/skill-md-format.md)。
+
+### 模板内容
+
+- `project-scaffold/references/agents-templates/` 与 `references/skill-templates/` 中的 Markdown 不使用加粗正文或 emoji；
+- 保持模板为通用资产，不写真实项目名、密码、Token、主机或环境专属值；
+- `SKILL.md` 控制在 500 行以内，核心工作流放在正文，细节下沉到 `references/`；
+- 所有文档、注释和面向用户的说明使用中文，技术术语、命令和路径保留原文。
+
+## 验证命令
+
+修改 Skill 后至少运行对应验证：
+
+```bash
+# 单个 Skill 合规校验
+uvx --from skills-ref agentskills validate ./skills/<skill-name>
+
+# project-scaffold 安装器测试（零依赖，测试只使用系统临时目录）
+node --test skills/project-scaffold/scripts/install.test.mjs
+
+# Node 语法检查
+node --check skills/project-scaffold/scripts/install-core.mjs
+node --check skills/project-scaffold/scripts/install-cli.mjs
+node --check skills/project-scaffold/scripts/install.mjs
+
+# 逐个校验所有 Skill
+for d in skills/*/; do uvx --from skills-ref agentskills validate "$d" || exit 1; done
+```
+
+安装器测试覆盖首次安装、幂等、AGENTS 管理区块、Skill 冲突、敏感信息拒绝和旧布局迁移。临时项目必须使用 `/tmp` 或 `mktemp -d`，测试后清理。
+
+## 校验与生效
+
+- 改动已有 Skill 前先记录一次 `agentskills validate` 基线，以区分既有问题和本次引入的问题；
+- 本仓库是 Skill 源文件 SSOT；安装到 Agent、更新本机副本和提交 Git 由用户显式执行，AI 不代装、不自动 commit/push；
+- 用户同步已安装副本后需要重启 OpenCode 会话，Skill 列表和激活内容才会刷新。
+
+## 维护原则
+
+- 不修改 `improve/`、`demo/`、`.omo/`、`.codegraph/` 等非 Skill 目录；
+- 改动模板时同步更新对应 `SKILL.md` 的文件清单、链接和使用说明；
+- 发现文档与脚本冲突时，以可执行脚本、配置和测试为准，再更新文档；
+- 新增/删除 Skill 模板时同时更新 `references/skill-templates/`、`install-core.mjs` 的 `SKILL_NAMES`、安装器测试与 `SKILL.md` 资产表；新增/删除文档操作 skill 还要同步根 `AGENTS.md` 的 Skill 路由表；
+- 任何会改变项目文件的行为都必须先有明确的 check/apply/force/migrate 边界，不能静默覆盖。

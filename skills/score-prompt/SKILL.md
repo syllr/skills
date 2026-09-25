@@ -1,11 +1,6 @@
 ---
 name: score-prompt
 description: 对任意 LLM prompt / 文档（markdown、YAML、JSON、TOML）跑 5 维度质量评分（Clarity/Conciseness/Actionability/Consistency/Minimal-slop）并迭代修复至目标分数，默认目标 90 分，可用 target_score 参数覆盖（例 target_score=95）。当用户想校验并改进 LLM 面向的 prompt、指令或 skill 质量时使用。
-license: MIT
-metadata:
-  author: openspec-omo-bridge
-  version: "1.0"
-  supportedAgents: '["opencode"]'
 ---
 
 # 1. 输入解析

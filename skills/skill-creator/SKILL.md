@@ -3,8 +3,6 @@ name: skill-creator
 description: >
   创建新的 OpenCode Skill。当用户提到"创建一个 skill"、"新建 skill"、"帮我写一个 skill"、
   "制作 skill"、"skill 创建"、"我要做个技能"时使用此技能。
-license: MIT
-allowed-tools: Read Write Edit Bash Glob Grep skill task websearch webfetch
 ---
 
 # Skill Creator

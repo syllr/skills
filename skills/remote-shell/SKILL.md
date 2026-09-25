@@ -1,8 +1,6 @@
 ---
 name: remote-shell
 description: 通过 SSH 在远程服务器上执行命令、上传/下载文件。触发词：去 xxx 执行、在 xxx 上运行、连接 xxx 并执行、远程执行 xxx、在 xxx 查看 xxx、上传/下载文件到 xxx
-license: MIT
-allowed-tools: Bash
 ---
 
 # remote-shell
