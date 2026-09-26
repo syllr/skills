@@ -4,7 +4,7 @@ description: >
   项目文档体系引导器（引导器 skill）——把本仓库持有的两类模板资产安装到目标项目的固定路径：
   ① 项目宪法（references/agents-templates/AGENTS.md，安装到项目根 AGENTS.md）；
   ② 全部 Skill（references/skill-templates/**，安装到项目级 .opencode/skills/：A 类纯文档 docs-* 10 个 + B 类文档资产 *-ops 5 个 + C 类编排 align-docs 1 个）。
-  提供检查/安装/更新/迁移：--check 只报告四态、--apply 安装缺失并刷新受管区块与受管 frontmatter 键（区块外用户内容保留）、--force 覆盖无标记区冲突项、--migrate 检测旧 .omo/rules/docs 布局并给迁移指引；区块外与无标记区绝不覆盖，根 AGENTS.md 冲突必须显式处理。
+  提供检查/安装/更新：--check 只报告四态、--apply 安装缺失并刷新受管区块与受管 frontmatter 键（区块外用户内容保留）、--force 覆盖无标记区冲突项；区块外与无标记区绝不覆盖，根 AGENTS.md 冲突必须显式处理。
   本 skill 只安装项目宪法与 Skill 资产，不生成业务文档（docs/** 正文），不负责文档-代码对齐/漂移处理/文档初始化/目录同步（归 align-docs skill）。
   仅用户手动调用时触发，不自动触发。
   触发词：初始化项目文档体系、安装项目宪法、安装文档 skill、安装 project-doc、bootstrap 文档、生成域 skill、安装域 skill、project-scaffold、项目文档引导、文档体系落地、更新文档指引。
@@ -15,8 +15,7 @@ description: >
 ## 定位
 
 引导器 skill：把本仓库持有的两类模板资产，一次性安装到目标项目的固定路径，让目标项目获得「根 AGENTS.md 项目宪法 + A 类纯文档
-Skill + B 类文档资产 Skill + C 类编排器」。产物落在目标项目内（项目级，不写全局），不生成业务文档，不生成旧式
-`.omo/rules/docs/` 规则。
+Skill + B 类文档资产 Skill + C 类编排器」。产物落在目标项目内（项目级，不写全局），不生成业务文档。
 
 | 资产     | 来源（SSOT）                                | 落位（目标项目）           | 性质                   |
 |----------|---------------------------------------------|----------------------------|------------------------|
@@ -29,7 +28,6 @@ Skill + B 类文档资产 Skill + C 类编排器」。产物落在目标项目�
   `docs-*` skill 生成/维护。
 - 文档-代码对齐、漂移处理、文档初始化、旧文档清理与融合全部归 `align-docs` skill（编排器）；需要时直接调 `align-docs`，本 skill
   不承载、不路由。
-- 不生成旧式 `.omo/rules/docs/` 规则；该路径仅作为「旧布局迁移检测」对象出现（见「旧布局迁移检测」）。
 
 ## 何时使用（仅手动触发）
 
@@ -37,7 +35,6 @@ Skill + B 类文档资产 Skill + C 类编排器」。产物落在目标项目�
 
 1. 首次 bootstrap：目标项目尚无项目宪法与 Skill 集 → `--check` 摸底 → `--apply` 安装。
 2. 增量检查/更新：目标项目已有部分资产 → `--check` 报四态 → 按需 `--apply`（冲突项显式处理）。
-3. 旧体系迁移：目标项目存在 `.omo/rules/docs/` → `--migrate` 给迁移指引。
 
 变体：
 
@@ -94,7 +91,8 @@ Skill + B 类文档资产 Skill + C 类编排器」。产物落在目标项目�
 | [align-docs](references/skill-templates/align-docs/SKILL.template.md) | 文档编排器：对齐 / 解决漂移 / 文档初始化 / 旧文档清理与融合，按 L0→L1→…→common 调用各 A 类与 B 类 skill | 薄壳单文件（SKILL.md） |
 
 落地规则：`SKILL.template.md` → 目标 `SKILL.md`：frontmatter 按「键」管理，安装器只覆盖模板定义的 `name` /
-`description`，用户新增键保留；正文包进受管区块（区块外为用户内容）。其余条目（`references/`、`assets/`）保持相对目录结构原样复制，按字节比对，冲突不覆盖。模板为通用形态（不含项目实例内容），项目特定值在执行时现场读项目文档。
+`description`，用户新增键保留；正文包进受管区块（区块外为用户内容）。其余条目
+（`references/`、`assets/`）保持相对目录结构原样复制，按字节比对，冲突不覆盖。模板为通用形态（不含项目实例内容），项目特定值在执行时现场读项目文档。
 
 ## 安装器接口（`scripts/install.mjs`）
 
@@ -104,18 +102,15 @@ Skill + B 类文档资产 Skill + C 类编排器」。产物落在目标项目�
 node scripts/install.mjs --check --project-root <项目根>              # 只报告，不写盘（默认模式）
 node scripts/install.mjs --apply --project-root <项目根>              # 安装缺失项 + 更新无冲突项
 node scripts/install.mjs --apply --force --project-root <项目根>     # 覆盖冲突项（含根 AGENTS.md）
-node scripts/install.mjs --migrate --project-root <项目根>           # 检测旧 .omo/rules/docs/ 布局
-node scripts/install.mjs --migrate --apply --project-root <项目根>    # 显式删除检测到的旧 .omo/rules/docs/
 ```
 
-| 模式              | 动作                                                                                                                             | 是否写盘            |
-|-------------------|----------------------------------------------------------------------------------------------------------------------------------|---------------------|
-| `--check`（默认） | 逐资产报告四态：缺失 / 已存在 / 最新 / 冲突；并检测旧布局                                                                        | 否                  |
-| `--apply`         | 创建缺失项；替换 AGENTS.md / SKILL.md 受管区块（区块外保留）；合并受管 frontmatter 键；其余 Skill 文件一致跳过、冲突跳过并列差异 | 是（仅无冲突项）    |
-| `--force`         | 需与 `--apply` 联用：覆盖无标记区冲突项（无管理区块的 AGENTS.md / SKILL.md、其余 Skill 文件内容不一致，执行前必须用户确认）      | 是                  |
-| `--migrate`       | 检测 `.omo/rules/docs/` 旧布局；仅与 `--apply` 联用时删除该旧布局                                                                | 仅 `--apply` 会删除 |
+| 模式              | 动作                                                                                                                             | 是否写盘         |
+|-------------------|----------------------------------------------------------------------------------------------------------------------------------|------------------|
+| `--check`（默认） | 逐资产报告四态：缺失 / 已存在 / 最新 / 冲突                                                                                      | 否               |
+| `--apply`         | 创建缺失项；替换 AGENTS.md / SKILL.md 受管区块（区块外保留）；合并受管 frontmatter 键；其余 Skill 文件一致跳过、冲突跳过并列差异 | 是（仅无冲突项） |
+| `--force`         | 需与 `--apply` 联用：覆盖无标记区冲突项（无管理区块的 AGENTS.md / SKILL.md、其余 Skill 文件内容不一致，执行前必须用户确认）      | 是               |
 
-退出码：`0` 全部就绪且无冲突 / `1` 存在待处理项（缺失 / 冲突 / 旧布局）/ `2` 参数或路径错误。
+退出码：`0` 全部就绪且无冲突 / `1` 存在待处理项（缺失 / 冲突）/ `2` 参数或路径错误。
 
 `scripts/install.mjs` 的 `--check` 计划是安装前默认动作；只有用户明确要求应用时才使用 `--apply`，冲突覆盖还必须额外显式使用
 `--force`。
@@ -173,13 +168,6 @@ node scripts/install.mjs --migrate --apply --project-root <项目根>    # 显�
 
 `align-docs` 为薄壳单文件（仅 `SKILL.md`）；其余为多文件（`SKILL.md` + `references/` + `assets/`）。
 
-## 旧布局迁移检测
-
-- 目标项目若存在 `.omo/rules/docs/`（旧式文档规则布局），安装器会在 `--check` / `--migrate` 中报告旧布局。
-- `--migrate` 只检测并报告；只有用户明确执行 `--migrate --apply` 时，安装器才删除该旧布局。
-- 删除前必须由用户确认旧布局已不再需要；安装器不修改旧布局中的业务文档内容。
-- 迁移完成后重跑 `--apply` 安装项目宪法与 Skill 集。
-
 ## align-docs 边界
 
 - 文档-代码对齐、漂移处理、文档初始化、旧文档清理与融合，全部归 `align-docs` skill（编排器，按 L0→L1→…→common 调用各 `docs-*`
@@ -224,13 +212,12 @@ find <项目根>/.opencode/skills -maxdepth 1 -mindepth 1 -type d | sort
 - `scripts/install.mjs` 不存在：按本文件表格手工安装（见「安装器接口」末段），不臆造脚本参数。
 - 目标路径冲突（AGENTS.md 已存在 / Skill 文件不同）：默认不覆盖，列出差异让用户定（保留 / `--force` 覆盖 / 手工合并），禁止静默覆盖。
 - 根 AGENTS.md 已存在但无管理区块：必须显式处理——先展示模板与现状差异，等用户决定；含管理区块时 `--apply` 只刷新区块，区块外不动。
-- 旧 `.omo/rules/docs/` 存在：报「旧布局」，给迁移指引，不自动删。
 - 目标项目无 `.opencode/` 目录：`--apply` 创建 `.opencode/skills/` 后安装全部 Skill。
 - 模板缺 `name` 或目录名与 `name` 不符：校验失败，先修模板再安装。
 
 ## 硬性要求
 
-- 单一功能：安装两类资产（项目宪法 + Skill 集），不生成业务文档、不生成旧式 `.omo/rules/docs/` 规则。
+- 单一功能：安装两类资产（项目宪法 + Skill 集），不生成业务文档。
 - 固定路径：项目宪法落项目根 `AGENTS.md`；Skill 落 `.opencode/skills/<name>/`（项目级，不写全局）。
 - 冲突保护：区块外与无标记区绝不静默覆盖；受管区块内按我方地盘更新。
 - 项目级生效：安装到目标项目根 AGENTS.md 与 `.opencode/skills/`；OpenCode 需重启会话生效。

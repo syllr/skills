@@ -204,7 +204,7 @@ OpenCode 实际扫描 6+ 个位置,后发现的同名 skill 覆盖先发现的�
 - ❌ "项目级 → 用户级"需要 deploy:错。两者是平行的两个路径,选哪个就直接写到哪个,不需要二次复制。
 - ❌ "全局 skill 必须先写项目级再升级":错。直接写 `~/.config/opencode/skills/<name>/` 就是最终位置。
 - ❌ "改名/移动 skill 需要重新安装":错。纯文件模型,移动后自动生效。
-- ❌ "同名 skill 会冲突报错":错。OMO 静默覆盖,后发现的优先。这是隐藏陷阱:创建前应检查目标路径是否已有同名 skill(用 `ls ~/.config/opencode/skills/<name> 2>/dev/null` 或 `ls <project>/.opencode/skills/<name> 2>/dev/null`)。
+- ❌ "同名 skill 会冲突报错":错。同名时静默覆盖,后发现的优先。这是隐藏陷阱:创建前应检查目标路径是否已有同名 skill(用 `ls ~/.config/opencode/skills/<name> 2>/dev/null` 或 `ls <project>/.opencode/skills/<name> 2>/dev/null`)。
 
 ### 同名覆盖规则(高层级覆盖低层级)
 

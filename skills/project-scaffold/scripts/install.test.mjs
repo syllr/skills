@@ -18,12 +18,10 @@ import {
     AGENTS_TEMPLATE_DIR,
     BEGIN_MARKER,
     END_MARKER,
-    LEGACY_RULES_REL,
     SKILL_NAMES,
     SKILL_TEMPLATE_DIR,
     skillTemplateRel,
     applyInstall,
-    detectMigration,
     detectSensitive,
     planInstall,
     renderManaged,
@@ -155,8 +153,6 @@ test("首次安装：AGENTS 全部新建且带管理区块，skill 整目录复�
     assert.ok(fs.existsSync(path.join(skillRoot, "deploy-ops", "assets", "reference-impl", "configs", ".env.example")));
     assert.ok(fs.existsSync(path.join(skillRoot, "deploy-ops", "assets", "reference-impl", "docker-compose.<env>.yml")));
 
-    // 不生成 .omo/rules/agents
-    assert.ok(!fs.existsSync(path.join(root, ".omo", "rules", "agents")));
 });
 
 // ---------------------------------------------------------------------------
@@ -315,41 +311,4 @@ test("SKILL.md 区块保留：替换受管区块，保留区块外内容与用�
     // 再次 plan → unchanged（幂等）
     const report2 = planInstall({projectRoot: root});
     assert.equal(report2.skills.find((s) => s.name === "deploy-ops").files.find((f) => f.targetRel === "SKILL.md").status, "unchanged");
-});
-
-// ---------------------------------------------------------------------------
-// 迁移检测
-// ---------------------------------------------------------------------------
-
-test("migrate 检测：识别旧 .omo/rules/docs 且默认不删除", (t) => {
-    const root = makeTmp(t);
-    const oldDir = path.join(root, LEGACY_RULES_REL);
-    fs.mkdirSync(oldDir, {recursive: true});
-    fs.writeFileSync(path.join(oldDir, "CONSTITUTION.md"), "# 旧 rule\n", "utf-8");
-
-    // 检测
-    assert.deepEqual(detectMigration({projectRoot: root}), {oldDir, exists: true});
-
-    // 未启用 --migrate：仅报告，willDelete=false
-    const report = planInstall({projectRoot: root});
-    assert.equal(report.migration.exists, true);
-    assert.equal(report.migration.willDelete, false);
-
-    // 启用 --migrate 但仅计划：willDelete=true，但不写
-    const planMigrate = planInstall({projectRoot: root, migrate: true});
-    assert.equal(planMigrate.migration.willDelete, true);
-    assert.ok(fs.existsSync(path.join(oldDir, "CONSTITUTION.md")), "计划阶段不得删除");
-
-    // apply 但未启用 --migrate：不删除
-    const applied = planInstall({projectRoot: root});
-    applied.mode = "apply";
-    applyInstall(applied);
-    assert.ok(fs.existsSync(oldDir), "未启用 --migrate 时不得删除旧目录");
-});
-
-test("migrate 检测：无旧目录时 exists=false", (t) => {
-    const root = makeTmp(t);
-    const report = planInstall({projectRoot: root});
-    assert.equal(report.migration.exists, false);
-    assert.equal(report.migration.willDelete, false);
 });

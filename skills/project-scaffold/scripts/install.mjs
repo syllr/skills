@@ -13,10 +13,9 @@
  *   默认 / --check   只读计划：扫描并输出将要做什么，不写任何文件（退出码 0=无冲突，1=有冲突/被拒）
  *   --apply          应用计划（安全）：创建缺失文件、替换 AGENTS.md/SKILL.md 受管区块、合并受管 frontmatter 键
  *   --force          显式覆盖无标记区冲突（AGENTS.md/SKILL.md 无管理区块 / skill 文件内容不一致），默认不覆盖
- *   --migrate        迁移旧 .omo/rules/docs：check 输出迁移报告；仅配合 --apply 时才真正删除
  *
  * 用法（项目根一律经 --project-root <path> 传入，无位置参数）：
- *   node scripts/install.mjs --project-root <path> [--check|--apply] [--force] [--migrate] [--verbose]
+ *   node scripts/install.mjs --project-root <path> [--check|--apply] [--force] [--verbose]
  *
  * 实现拆分为零依赖模块：核心逻辑 install-core.mjs，命令行/展示 install-cli.mjs；本文件仅作入口。
  */

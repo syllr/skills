@@ -23,10 +23,10 @@ skills/
   `docs-deep-dives` / `docs-research` / `docs-structure` / `docs-code-guide` / `docs-changes`；
 - B 类 · 文档 + 资产（5，后缀 `-ops`）：一个能力域一个 skill，同时管辖说明书、资产与该域的执行动作。`inbound-ops` /
   `outbound-ops` / `deploy-ops` / `test-ops` / `tools-ops`；
-- C · 编排（1）：`align-docs`，只调度 A / B 类，不生产任何层次产物。
+- C · 编排（1）：`align-docs`，只调度 A / B 类，不生产任何层次文档或资产；只自持 `docs/drift/` 过程态清单。
 
-旧的 `skills/doc-arch-rules/`、`.omo/rules/docs/` 生成器和 `meta.json` 已退休，不要恢复或重新引用它们。`project-scaffold` 的
-`--migrate` 只用于检测目标项目中的旧布局。
+旧的 `skills/doc-arch-rules/` 与其 `meta.json` 已退休，不要恢复或重新引用它们。过程态产物一律落在 `docs/` 内：变更在
+`docs/changes/`、漂移清单在 `docs/drift/`、DoD 草稿在 `docs/test/do-drafts/`；安装器不再做旧布局迁移检测。
 
 ## 当前初始化入口
 
@@ -42,9 +42,6 @@ node skills/project-scaffold/scripts/install.mjs --apply --project-root <path>
 # 显式覆盖冲突项
 node skills/project-scaffold/scripts/install.mjs --apply --force --project-root <path>
 
-# 检测旧布局；只有 --apply 才删除目标项目的旧 .omo/rules/docs
-node skills/project-scaffold/scripts/install.mjs --migrate --project-root <path>
-node skills/project-scaffold/scripts/install.mjs --migrate --apply --project-root <path>
 ```
 
 安装器行为：
@@ -72,12 +69,11 @@ node skills/project-scaffold/scripts/install.mjs --migrate --apply --project-roo
 设计约束：
 
 - 目标是“项目宪法 + A 类纯文档 Skill + B 类文档资产 Skill + C 类编排器”的完整项目基础架构，不只是文档模板；
-- 如果改成 OpenCode 插件，参考 `oh-my-openagent` 的 `init-deep`：插件通过 `config` hook 注册内置 Skill/Command，Agent
-  展开指令后分析项目并生成项目宪法；
+- 如果改成 OpenCode 插件，用 `config` hook 注册内置 Skill/Command，Agent 展开指令后分析项目并生成项目宪法；
 - 当前尚未实现 `/project-init` 或插件入口；不要把设计目标写成当前可用命令；
 - 插件化时保留 `install-core.mjs` 作为确定性文件操作核心，增加打包/Command/工具外壳，不要重写模板和冲突语义；
 - 目标是让 Agent 根据项目事实生成/更新项目宪法与各文档 skill 管辖的文档；不要把固定模板误当成最终项目事实；
-- 命令名、是否覆盖 `/init`、是否兼容 OMO 的 `/init-deep`，在实现前必须明确并做冲突检测。
+- 命令名、是否覆盖 `/init`、是否与其他初始化命令冲突，在实现前必须明确并做冲突检测。
 
 ## 修改 Skill 的硬约束
 
@@ -134,9 +130,9 @@ for d in skills/*/; do uvx --from skills-ref agentskills validate "$d" || exit 1
 
 ## 维护原则
 
-- 不修改 `improve/`、`demo/`、`.omo/`、`.codegraph/` 等非 Skill 目录；
+- 不修改 `improve/`、`demo/`、`.codegraph/` 等非 Skill 目录；
 - 改动模板时同步更新对应 `SKILL.md` 的文件清单、链接和使用说明；
 - 发现文档与脚本冲突时，以可执行脚本、配置和测试为准，再更新文档；
 - 新增/删除 Skill 模板时同时更新 `references/skill-templates/<分组>/`、`install-core.mjs` 的 `SKILL_GROUPS`、安装器测试与
   `SKILL.md` 资产表；新增/删除 A 类 skill 还要同步根 `AGENTS.md` 的 Skill 路由表；
-- 任何会改变项目文件的行为都必须先有明确的 check/apply/force/migrate 边界，不能静默覆盖。
+- 任何会改变项目文件的行为都必须先有明确的 check/apply/force 边界，不能静默覆盖。

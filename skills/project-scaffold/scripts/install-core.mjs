@@ -61,8 +61,6 @@ export function skillTemplateRel(name) {
 /** 受管区块标记（AGENTS.md 与 SKILL.md 共用，成对出现，标记之间为受管内容）。 */
 export const BEGIN_MARKER = "<!-- project-scaffold:begin -->";
 export const END_MARKER = "<!-- project-scaffold:end -->";
-/** 旧 rule 目录相对项目根的路径（迁移检测对象）。 */
-export const LEGACY_RULES_REL = path.join(".omo", "rules", "docs");
 
 // ---------------------------------------------------------------------------
 // 敏感信息拒绝检查（简单启发式）
@@ -381,12 +379,6 @@ function planSkillMd({rel, targetRel, src, target, buf, force}) {
     return {...base, status: "update", frontmatter: mergedFm, before: managed.before, after: managed.after};
 }
 
-/** 检测旧 .omo/rules/docs 迁移对象。 */
-export function detectMigration({projectRoot}) {
-    const oldDir = path.join(projectRoot, LEGACY_RULES_REL);
-    return {oldDir, exists: fs.existsSync(oldDir)};
-}
-
 /**
  * 生成完整安装计划（只读，不写文件）。
  * 返回结构化报告，供打印与测试断言。
@@ -395,25 +387,22 @@ export function planInstall(opts) {
     const {
         projectRoot,
         force = false,
-        migrate = false,
         skillNames = SKILL_NAMES,
         agentsTemplateDir = AGENTS_TEMPLATE_DIR,
         skillTemplateDir = SKILL_TEMPLATE_DIR,
     } = opts;
     const agents = planAgents({projectRoot, templateDir: agentsTemplateDir, force});
     const skills = skillNames.map((name) => planSkill({projectRoot, name, templateDir: skillTemplateDir, force}));
-    const migration = detectMigration({projectRoot});
-    migration.willDelete = migrate && migration.exists;
-    return {projectRoot, force, migrate, agents, skills, migration};
+    return {projectRoot, force, agents, skills};
 }
 
 // ---------------------------------------------------------------------------
 // 应用
 // ---------------------------------------------------------------------------
 
-/** 应用计划：写文件 + 可选迁移删除。返回更新后的报告（含 applied 标记）。 */
+/** 应用计划：写文件。返回更新后的报告（含 applied 标记）。 */
 export function applyInstall(report) {
-    const applied = {agents: 0, skills: 0, migrationDeleted: false};
+    const applied = {agents: 0, skills: 0};
     for (const item of report.agents) {
         if (item.status === "create" || item.status === "overwrite") {
             fs.mkdirSync(path.dirname(item.target), {recursive: true});
@@ -441,11 +430,6 @@ export function applyInstall(report) {
                 applied.skills += 1;
             }
         }
-    }
-    if (report.migrate && report.migration.exists) {
-        fs.rmSync(report.migration.oldDir, {recursive: true, force: true});
-        report.migration.deleted = true;
-        applied.migrationDeleted = true;
     }
     report.applied = applied;
     return report;

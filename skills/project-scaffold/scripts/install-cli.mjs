@@ -5,7 +5,7 @@
  * 核心逻辑全部委托 install-core.mjs；本文件只做 I/O 与展示。
  *
  * 用法：
- *   node scripts/install.mjs --project-root <path> [--check|--apply] [--force] [--migrate] [--verbose]
+ *   node scripts/install.mjs --project-root <path> [--check|--apply] [--force] [--verbose]
  *
  * 零依赖：只用 Node 内置模块（node:fs / node:path），不引入任何 npm 包。
  */
@@ -32,7 +32,6 @@ export function printReport(report, counts, log = console.log) {
     log(`=== project-scaffold 安装器（${mode}）===`);
     log(`目标项目根：${report.projectRoot}`);
     if (report.force) log("--force 已启用（显式覆盖冲突）");
-    if (report.migrate) log("--migrate 已启用（迁移旧 .omo/rules/docs）");
     log("");
 
     log(`[AGENTS] ${report.agents.length} 个模板`);
@@ -53,16 +52,6 @@ export function printReport(report, counts, log = console.log) {
     }
     log("");
 
-    if (report.migration.exists) {
-        const action = report.migrate ? (report.mode === "apply" ? "删除" : "待删除（--apply 生效）") : "仅报告（未启用 --migrate）";
-        log(`[迁移] 检测到旧 rule 目录：${path.relative(report.projectRoot, report.migration.oldDir) || report.migration.oldDir}`);
-        log(`  ${action}`);
-        if (report.migration.deleted) log("  已删除");
-    } else {
-        log("[迁移] 未检测到旧 .omo/rules/docs");
-    }
-    log("");
-
     log(
         `汇总：新建 ${counts.create} / 更新受管区 ${counts.update} / 未变化 ${counts.unchanged} / ` +
         `冲突 ${counts.conflict} / 覆盖 ${counts.overwrite} / 拒绝 ${counts.rejected}`,
@@ -73,19 +62,18 @@ export function printReport(report, counts, log = console.log) {
 }
 
 /** 用法文本。 */
-export const USAGE = `用法：node scripts/install.mjs --project-root <path> [--check|--apply] [--force] [--migrate] [--verbose]
+export const USAGE = `用法：node scripts/install.mjs --project-root <path> [--check|--apply] [--force] [--verbose]
 
   --project-root <path>  目标项目根目录（必填，须为已存在目录）
   --check                只读计划（默认行为，不写任何文件）
   --apply                应用计划（安全写入；创建缺失文件、替换 AGENTS.md / SKILL.md 受管区块、更新受管 frontmatter 键）
   --force                显式覆盖冲突（AGENTS.md 无管理区块 / skill 文件内容不一致）
-  --migrate              迁移旧 .omo/rules/docs（check 输出迁移报告；仅配合 --apply 时删除）
   --verbose              计划中列出未变化文件
   -h, --help             显示本帮助`;
 
 /** 解析命令行参数（必需项一律经 --project-root <path> 传入，无位置参数）。 */
 export function parseArgs(argv) {
-    const opts = {projectRoot: null, mode: "check", force: false, migrate: false, verbose: false, help: false};
+    const opts = {projectRoot: null, mode: "check", force: false, verbose: false, help: false};
     for (let i = 0; i < argv.length; i += 1) {
         const a = argv[i];
         if (a === "--project-root") {
@@ -99,8 +87,6 @@ export function parseArgs(argv) {
             opts.mode = "apply";
         } else if (a === "--force") {
             opts.force = true;
-        } else if (a === "--migrate") {
-            opts.migrate = true;
         } else if (a === "--verbose") {
             opts.verbose = true;
         } else if (a === "-h" || a === "--help") {
@@ -121,7 +107,7 @@ export function run(opts, {log = console.log} = {}) {
     if (!fs.existsSync(projectRoot) || !fs.statSync(projectRoot).isDirectory()) {
         throw new Error(`--project-root 不是已存在目录：${projectRoot}`);
     }
-    const report = planInstall({projectRoot, force: opts.force, migrate: opts.migrate});
+    const report = planInstall({projectRoot, force: opts.force});
     report.mode = opts.mode;
     report.verbose = opts.verbose;
     if (opts.mode === "apply") {

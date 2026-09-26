@@ -1,6 +1,7 @@
 # syllr Custom Agent Skills
 
-个人自定义 [Agent Skills](https://github.com/vercel-labs/skills) 技能集合，适配 [skills.sh](https://skills.sh/) 生态系统，基于 `npx skills` 命令管理。
+个人自定义 [Agent Skills](https://github.com/vercel-labs/skills) 技能集合，适配 [skills.sh](https://skills.sh/) 生态系统，基于
+`npx skills` 命令管理。
 
 [![skills.sh](https://skills.sh/b/syllr/skills)](https://skills.sh/syllr/skills)
 
@@ -60,14 +61,14 @@ npx skills update -p
 npx skills update -g -y
 ```
 
-> `update`（别名 `upgrade`）会从 GitHub 仓库拉取最新版本并覆盖本机已安装的 skill。若本机技能是手动复制而非 `npx skills add` 安装的，`update` 可能无法识别，需重新执行 `add` 命令覆盖安装。
+> `update`（别名 `upgrade`）会从 GitHub 仓库拉取最新版本并覆盖本机已安装的 skill。若本机技能是手动复制而非 `npx skills add`
+> 安装的，`update` 可能无法识别，需重新执行 `add` 命令覆盖安装。
 
 ## 可用技能
 
 | 技能                                                 | 描述                                                                                                                                                                                                                                      |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [c4-container-diagram](skills/c4-container-diagram/) | 用 D2（d2lang.com）画 C4 Container Diagram（[c4model.com](https://c4model.com/diagrams/container) 标准第 2 层图）——展示系统级容器划分、容器间通信关系、多层大容器纵向堆叠。Markdown 内嵌 d2 代码块渲染；画图前先以 ASCII 架构图与用户确认 |
-| [doc-arch-rules](skills/doc-arch-rules/)             | 文档架构规范（L0-L4 + common 分层）+ omo rule 生成——为具体项目生成 .omo/rules/ rule，使 AI 修改 docs 下文档时按模板 generation 元数据自动更新                                                                                             |
 | [gitee-comments](skills/gitee-comments/)             | 管理 Gitee 仓库提交（commit）的评审评论——程序化记录评审意见、列出未解决待办、回复线程、解决/删除评论；适合 AI 与团队成员共用一套留痕机制                                                                                                  |
 | [remote-shell](skills/remote-shell/)                 | 通过 SSH 在远程服务器上执行命令，优先使用 remote-shell CLI 并支持降级回退                                                                                                                                                                 |
 | [score-prompt](skills/score-prompt/)                 | 对任意 LLM prompt / 文档跑 5 维度质量评分（Clarity/Conciseness/Actionability/Consistency/Minimal-slop）并迭代修复至目标分数                                                                                                               |

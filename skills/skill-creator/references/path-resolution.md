@@ -30,7 +30,7 @@ SKILL.md 中引用 skill 内部任何资源（scripts/、references/、assets/�
 - 反例 2：AI 调用 bash 时 cwd 不一定是 skill 目录
 - 反例 3：依赖 AI 推断，不可靠
 
-反例 4（额外禁令）：`@path` 语法（如 `@scripts/foo.ts`）——OMO/OpenCode 的私有扩展，不符合 agentskills.io 规范，必须用相对路径或 Markdown 链接替代。
+反例 4（额外禁令）：`@path` 语法（如 `@scripts/foo.ts`）——部分 Agent 工具的私有扩展，不符合 agentskills.io 规范，必须用相对路径或 Markdown 链接替代。
 
 ## 合规写法
 

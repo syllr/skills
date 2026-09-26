@@ -18,7 +18,9 @@ skill 自持（[references/case-writing.md](references/case-writing.md)：资产
 - 唯一入口：任何形式的用例（单元 / 接口 / 流程 / 集成）的新增 / 更新 / 删除 / 执行只经本 skill。
 - 不做：项目工具集（`docs/tools/`）的生成与调用归 `tools-ops` skill；跨文档对齐与漂移归 `align-docs` skill。
 -
-自持：用例卡结构、写卡规范（[references/case-writing.md](references/case-writing.md)、[assets/case-templates/](assets/case-templates/)）与执行台账（`docs/test/test-records/`）由本 skill 自持。
+
+自持：用例卡结构、写卡规范（[references/case-writing.md](references/case-writing.md)、
+[assets/case-templates/](assets/case-templates/)）与执行台账（`docs/test/test-records/`）由本 skill 自持。
 
 ## 分诊（进入第一件事）
 
@@ -47,7 +49,7 @@ skill 自持（[references/case-writing.md](references/case-writing.md)：资产
    与对账证据），按步骤 4 策略处理失败
 8. 问题记录：执行中发现以下任一问题 → 即时落测试记录（见下）：用例卡问题（断言无契约支撑 / 命令形态错 / 路径过时 / 前置缺失 /
    表述与实测不符）、被测代码问题（接口行为与契约不符 / 数据落位异常 / 边界未处理）、工具问题（tools 缺陷，修工具走 tools-ops
-   skill）、环境问题（部署/网络/服务不稳定）。属文档-代码漂移的转记 `.omo/drift/`（由 align-docs 处置）
+   skill）、环境问题（部署/网络/服务不稳定）。属文档-代码漂移的转记 `docs/drift/`（由 align-docs 处置）
 9. 汇报：pass/fail 清单 + 对账证据 + 测试记录问题清单（按类型分组）+ 失败定位
 
 > 环境纪律：一次执行绑定一个环境（步骤 1 确认），每条工具命令必带 `--env <env>`（漏带会落到默认 `.env`）；需在多环境跑则按环境分别起执行。环境名以
@@ -78,7 +80,7 @@ skill 自持（[references/case-writing.md](references/case-writing.md)：资产
 
 ### 3.2 落盘与形态
 
-- 位置：`.omo/testcase/<YYYYMMDD-HHmmss>-<短名>.md`（过程态，不入正式用例库、不被正式用例体系引用）
+- 位置：`docs/test/do-drafts/<YYYYMMDD-HHmmss>-<短名>.md`（过程态，入库跟踪；不入正式用例库、不被正式用例体系引用）
 - 轻量形态（不必用完整用例卡结构）：目标（为什么测）/ 操作（怎么做）/ 期望（成功判据）/ 证据（实测输出）
 - 单文件一条 DoD；命名体现验证主题
 
@@ -131,7 +133,8 @@ skill 自持（[references/case-writing.md](references/case-writing.md)：资产
 
 - 本 skill 是测试用例的唯一入口：用例卡结构与写卡规范由本 skill 自持（references/case-writing.md）；新增/更新/删除/执行一律经本
   skill，AI 不得自动创建任何用例（新增一律经 DoD 晋升）
-- **DoD 草稿在 `.omo/`（过程态）**：不入正式库、不被正式用例体系引用、不随代码提交；晋升后才进 `docs/test/test-cases/`
+- **DoD 草稿在 `docs/test/do-drafts/`（过程态）**：与 `docs/changes/`、`docs/drift/`
+  同性质——入库跟踪、使命完成后由用户决定删除或保留；不入正式库、不被正式用例体系引用；晋升后才进 `docs/test/test-cases/`
 - 工具实现与调用归 tools-ops skill：本 skill 只做执行编排（环境/顺序/策略/记录），不实现工具、不绕过工具直连被测系统
 - 用例执行的环境权威在 DEPLOYMENT（§2.1 环境矩阵 / §6/§7 变量）；`.env.<环境名>` 是其副本
 - 不生成业务代码、不自动 commit/push
