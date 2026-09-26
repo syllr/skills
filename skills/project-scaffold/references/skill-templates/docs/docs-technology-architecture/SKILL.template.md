@@ -1,6 +1,6 @@
 ---
 name: docs-technology-architecture
-description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的 skill——读取现有文档与上层应用架构、按骨架生成、联动更新、交付前校验。覆盖技术架构总览（技术分层 D2 容器图，左主体分层 + 右侧外部系统竖条）、前端与后端选型及版本兼容、存储选型明细（容量 / 性能预期 / 理由）、基础设施与外部依赖、非功能约束；每个选型给备选与弃用原因。联动应用架构、数据架构、部署、调研。生成下层前先读上层产物，跨文档编排归 align-docs。触发词：生成技术架构、更新技术架构、重建技术架构、技术选型、技术栈、技术分层图、非功能约束、TECHNOLOGY-ARCHITECTURE、选型理由、技术架构漂移。代码改动触发更新：框架 / 依赖 / 版本升级、数据库或中间件选型变化、基础设施变化时，更新本文档。
+description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的 skill——读取现有文档与领域模型及代码事实、按骨架生成、联动更新、交付前校验。覆盖技术架构总览（技术分层 D2 容器图，左主体分层 + 右侧外部系统竖条）、前端与后端选型及版本兼容、存储选型明细（容量 / 性能预期 / 理由）、基础设施与外部依赖、非功能约束；每个选型给备选与弃用原因。联动应用架构、数据架构、部署、调研。生成下层前先读上层产物，跨文档编排归 align-docs。触发词：生成技术架构、更新技术架构、重建技术架构、技术选型、技术栈、技术分层图、非功能约束、TECHNOLOGY-ARCHITECTURE、选型理由、技术架构漂移。代码改动触发更新：框架 / 依赖 / 版本升级、数据库或中间件选型变化、基础设施变化时，更新本文档。
 ---
 
 # docs-technology-architecture — L2 技术架构文档
@@ -15,14 +15,14 @@ description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的
 ## 读取
 
 1. 读取现有 docs/L2/TECHNOLOGY-ARCHITECTURE.md，提取仍然有效且有来源支撑的选型、版本和约束。
-2. 读取 docs/L2/APPLICATION-ARCHITECTURE.md 的应用划分、docs/L2/domain/ 各域文档，以及存储相关结论。
+2. 读取 docs/L2/domain/ 各域文档与技术栈相关代码事实；技术选型先于应用划分确定，不以应用划分为输入。
 3. 更新时读取发生变化的调研、部署、集成和代码事实，发现来源缺失或冲突时先核实，不臆造。
 4. 跨文档生成顺序与漂移清账交由 align-docs skill 编排，本 skill 只处理管辖文档。
 
 ## 生成流程
 
 1. 生成前先读 [文档模板](assets/TEMPLATE.md)，按其中标题、编号和层级写入目标文档。
-2. 以应用划分、领域模型、存储结论、调研材料和代码事实填充模板，不复制旧文档中的失效结论。
+2. 以领域模型、调研材料和代码事实填充模板，不复制旧文档中的失效结论。
 3. 每项技术选型都写出备选、弃用原因和一句话依据；版本、基础设施和非功能约束须能追溯到来源。
 4. 技术分层图使用 D2 容器图并按 c4-container-diagram skill 绘制：左主体承载展现、接入、服务、数据四层技术组件，右侧承载外部系统；容器节点
    label 使用「技术栈 + 职责」两段式，层间只画展现 → 接入 → 服务 → 数据三根调用线，外部系统不画连线；D2 图保留图名、视角、用途和边界注释。
@@ -44,8 +44,7 @@ description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的
 
 ## 联动
 
-- docs/L2/APPLICATION-ARCHITECTURE.md 的应用划分以其 §2.2 为准，应用内模块清单以其 §3.1 为准；本文档按应用描述技术栈但不重列，由
-  docs-application-architecture skill 维护。
+- 技术选型以本文档为准，`docs-application-architecture` 的应用划分须与之一致；本文档不按应用罗列技术栈，也不引用应用划分作为选型依据。
 - docs/L1/BUSINESS.md 的功能清单以其 §3 为准，功能、能力归属和状态不在本文档复制，由 docs-business skill 维护。
 - docs/L2/domain/ 各域文档的技术约束须与领域模型一致，由 docs-domain skill 维护。
 - docs/L2/DATA-ARCHITECTURE.md 承载领域到存储的映射与表或集合级物理形态，由 docs-data-architecture skill
@@ -75,7 +74,8 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 
 - 容器与外部系统按责任边界区分：自行运维管理的是系统内容器，由他人或第三方提供的是边界外外部系统；外部依赖只放右侧，不混入主分层。
 - 不复制应用清单、应用内模块清单、功能清单、能力归属或状态，不写表或集合级字段定义。
-- 部署单元、环境与部署参数归 docs/deployment/DEPLOYMENT.md；单元测试写法归 test-ops skill；调研详情归 docs/common/research/ 各调研文档。
+- 部署单元、环境与部署参数归 docs/deployment/DEPLOYMENT.md；单元测试写法归 test-ops skill；调研详情归 docs/common/research/
+  各调研文档。
 - 同一信息只在一处维护；跨层引用单向向下，同级协作引用允许；删除或迁移章节后不留已迁移或已删除占位正文。
 - 文档不设「相关文档」聚合链接章。
 - 只负责 docs/L2/TECHNOLOGY-ARCHITECTURE.md，不生成业务代码，不自动 commit 或 push，不改动源文档之外的业务文件；发现文档与代码冲突时以代码为准修正文档。

@@ -23,9 +23,9 @@ skill 各自管一份文档的读取 / 生成 / 更新 / 校验（管辖关系�
 |---------------|---------------------------------------------------------|---------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|-------------------------------|
 | L1            | `docs/L1/BUSINESS.md`                                   | 业务定位、业务全景（角色 / 主线 / 模式 / 对象流转 / 系统边界 / 关系图）、产品能力、用户故事与旅程 | 代码 + 用户访谈（无文档上游）                                                                                 | docs-business                 |
 | L2            | `docs/L2/domain/`（`DOMAIN-MODEL.md` + 每域 `{域}.md`） | 业务域、聚合实体、领域操作、状态机、领域事件                                                      | `BUSINESS.md`                                                                                                 | docs-domain                   |
-| L2            | `docs/L2/APPLICATION-ARCHITECTURE.md`                   | 应用划分与应用内模块划分                                                                          | `BUSINESS.md`、`domain/`                                                                                      | docs-application-architecture |
+| L2            | `docs/L2/APPLICATION-ARCHITECTURE.md`                   | 应用划分与应用内模块划分                                                                          | `BUSINESS.md`、`domain/`、`TECHNOLOGY-ARCHITECTURE.md`、`DATA-ARCHITECTURE.md`                                | docs-application-architecture |
 | L2            | `docs/L2/DATA-ARCHITECTURE.md`                          | 数据资产分类、存储拓扑、数据血缘、物理存储形态                                                    | `domain/`、`TECHNOLOGY-ARCHITECTURE.md` §3.1                                                                  | docs-data-architecture        |
-| L2            | `docs/L2/TECHNOLOGY-ARCHITECTURE.md`                    | 技术选型与理由、技术分层、基础设施、非功能约束                                                    | `APPLICATION-ARCHITECTURE.md`、`domain/`                                                                      | docs-technology-architecture  |
+| L2            | `docs/L2/TECHNOLOGY-ARCHITECTURE.md`                    | 技术选型与理由、技术分层、基础设施、非功能约束                                                    | `domain/`、代码与技术栈事实                                                                                   | docs-technology-architecture  |
 | L3            | `docs/L3/STRUCTURE.md`                                  | 目录结构与文档 ↔ 代码映射                                                                         | `APPLICATION-ARCHITECTURE.md`、`INBOUND.md`、`BUSINESS.md`                                                    | docs-structure                |
 | 链外·契约     | `docs/contracts/INBOUND.md`                             | 导出产物结构、导出命令、维护规范、CI 防漂移 pipeline、协议支持表、端点计数                        | `BUSINESS.md`、`APPLICATION-ARCHITECTURE.md`、`domain/`、`DATA-ARCHITECTURE.md`                               | inbound-ops                   |
 | 链外·契约     | `docs/contracts/OUTBOUND.md`                            | 外部服务总览、逐服务概览与契约状态、契约文件目录                                                  | `BUSINESS.md`、`domain/`、`APPLICATION-ARCHITECTURE.md`、`DATA-ARCHITECTURE.md`、`TECHNOLOGY-ARCHITECTURE.md` | outbound-ops                  |
@@ -71,8 +71,8 @@ L3，再沿链向上逐层判定该层事实是否随之变化。链上不另设
 
 1. 缺口盘点：按「文档与资产清单」列目标文档，判定 存在 / 缺失 / 空壳；已存在的不重建，只补缺口；缺口清单交用户确认范围。
 2. 信息源定级：逐份标注来源——代码派生（L2 架构 / L3 目录）或用户访谈（L1 业务定位、产品能力、用户故事）。代码推不出的一律按访谈处理。
-3. 顺序铁律：严格沿链 L1 → L2 → L3 串行；L2 内部序为 domain → 应用架构 → 技术架构 → 数据架构 → deep-dives / research（后两者读
-   L3 契约，收尾时生成）。禁止跳层、乱序、并行。列「文档 / skill / 上游 / 信息源 / 顺序」清单交用户确认后动手。
+3. 顺序铁律：严格沿链 L1 → L2 → L3 串行；L2 内部序为 domain → 技术架构 → 数据架构 → 应用架构，`common/`
+   的跨层专题在链走完后回看。禁止跳层、乱序、并行。列「文档 / skill / 上游 / 信息源 / 顺序」清单交用户确认后动手。
 4. 逐份生成：生成某份前先读其上游已落盘产物作为输入，再调该文档的管辖 skill 写 `docs/<路径>`，按该 skill
    的完成判定验证；谈定一份写一份，不积压。
 5. 收尾：调 `docs-structure` 同步目录树与根 `AGENTS.md` §3 路由表（新增文档补行、已删文档清行），再跑 §2 的全量对齐。
@@ -91,7 +91,7 @@ L3，再沿链向上逐层判定该层事实是否随之变化。链上不另设
 
 1. 起点必是 L3：先读 `docs/L3/STRUCTURE.md` 定位改动落在哪个目录 / 文件，该文档与实际不一致即先改它。目录没变也要写明结论。
 2. 逐层判定，不跳层：每层给出「要改 / 不要改」与依据；判定「要改」就调该层 skill 改完，按该 skill 完成判定验证，再走上一层。
-3. L2 内部按 domain → 应用架构 → 技术架构 → 数据架构 顺序判定；`common/` 的深潜与调研在链走完后回看（跨层专题，任何一层变了都要看）。
+3. L2 内部按 domain → 技术架构 → 数据架构 → 应用架构 顺序判定；`common/` 的深潜与调研在链走完后回看（跨层专题，任何一层变了都要看）。
    链外的契约文档（`docs/contracts/`）不进本流程：它由 `inbound-ops` / `outbound-ops` 按各自的上游变化自行更新，链上某层变了要改契约时由该层
    skill 在联动里指明。
 4. 链外产物不参与层间传播：`docs/tools/TOOLS.md` 随部署域的环境与变量更新；`docs/test/` 由 `test-ops` 自行管理，其断言依据可回查

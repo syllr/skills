@@ -1,6 +1,6 @@
 ---
 name: docs-application-architecture
-description: 维护 L2 应用架构文档 docs/L2/APPLICATION-ARCHITECTURE.md 的 skill——读取现有文档与上层产物、按骨架生成、联动更新、交付前校验。覆盖系统概述、C4 系统上下文图、应用划分图（应用/容器/外部系统/用户层四分类）、应用内模块划分表。联动 L1 业务、技术架构、领域模型、部署。生成下层前先读上层产物，跨文档编排归 align-docs。触发词：生成应用架构、更新应用架构、重建应用架构、应用划分、应用依赖、模块划分、APPLICATION-ARCHITECTURE、C4 容器图、应用架构漂移。代码改动触发更新：应用 / 容器 / 模块增删、应用边界或依赖变化、后端服务拆分或合并时，更新本文档。
+description: 维护 L2 应用架构文档 docs/L2/APPLICATION-ARCHITECTURE.md 的 skill——读取现有文档与上层产物、按骨架生成、联动更新、交付前校验。覆盖系统概述、C4 系统上下文图、应用划分图（应用/容器/外部系统/用户层四分类）、应用内模块划分表。联动 L1 业务、L2 技术架构与数据架构、领域模型、部署。生成下层前先读上层产物，跨文档编排归 align-docs。触发词：生成应用架构、更新应用架构、重建应用架构、应用划分、应用依赖、模块划分、APPLICATION-ARCHITECTURE、C4 容器图、应用架构漂移。代码改动触发更新：应用 / 容器 / 模块增删、应用边界或依赖变化、后端服务拆分或合并时，更新本文档。
 ---
 
 # docs-application-architecture — L2 应用架构文档
@@ -15,7 +15,8 @@ description: 维护 L2 应用架构文档 docs/L2/APPLICATION-ARCHITECTURE.md �
 ## 读取
 
 1. 读取现有 docs/L2/APPLICATION-ARCHITECTURE.md，提取仍然有效且有来源支撑的信息。
-2. 读取 docs/L1/BUSINESS.md §3.2 的能力清单与状态，以及 docs/L2/domain/ 各域文档的领域模型。
+2. 读取 docs/L1/BUSINESS.md §3.2 的能力清单与状态、docs/L2/domain/ 各域文档的领域模型，以及
+   docs/L2/TECHNOLOGY-ARCHITECTURE.md 的技术栈选型与 docs/L2/DATA-ARCHITECTURE.md 的存储形态——应用划分须同时满足三者。
 3. 更新时读取发生变化的关联产物和代码；发现来源缺失或冲突时先核实，不臆造。
 4. 跨文档生成顺序与漂移清账交由 align-docs skill 编排，本 skill 只处理管辖文档。
 
@@ -45,7 +46,7 @@ description: 维护 L2 应用架构文档 docs/L2/APPLICATION-ARCHITECTURE.md �
 
 - docs/L1/BUSINESS.md 的能力清单以 §3.2 为准；能力增删时同步应用模块，标为「待规划」的能力不增加应用模块，文档由
   docs-business skill 维护。
-- docs/L2/TECHNOLOGY-ARCHITECTURE.md 按应用描述技术栈，应用划分以本文档为准，由 docs-technology-architecture skill 维护。
+- docs/L2/TECHNOLOGY-ARCHITECTURE.md 给出技术栈选型，本文档的应用划分须与之一致且不违反其技术约束；技术选型的依据不含本文档的应用划分。
 - docs/L2/domain/ 各域文档承载领域聚合与能力到聚合的映射，由 docs-domain skill 维护，本文档只引用不复制。
 - docs/deployment/DEPLOYMENT.md 的部署单元来自应用划分，应用增减时由 deploy-ops skill 同步部署文档。
 - 接口契约归 docs/contracts/INBOUND.md 与 docs/contracts/OUTBOUND.md，由 inbound-ops 与 outbound-ops skill 维护。
