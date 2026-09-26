@@ -64,35 +64,35 @@ Skill + B 类文档资产 Skill + C 类编排器」。产物落在目标项目�
 | [docs-data-architecture](references/skill-templates/docs/docs-data-architecture/SKILL.template.md)               | docs/L2/DATA-ARCHITECTURE.md        |
 | [docs-technology-architecture](references/skill-templates/docs/docs-technology-architecture/SKILL.template.md)   | docs/L2/TECHNOLOGY-ARCHITECTURE.md  |
 | [docs-domain](references/skill-templates/docs/docs-domain/SKILL.template.md)                                     | docs/L2/domain/                     |
-| [docs-deep-dives](references/skill-templates/docs/docs-deep-dives/SKILL.template.md)                             | docs/common/deep-dives/                 |
-| [docs-research](references/skill-templates/docs/docs-research/SKILL.template.md)                                 | docs/common/research/                   |
-| [docs-structure](references/skill-templates/docs/docs-structure/SKILL.template.md)                               | docs/L3/STRUCTURE.md            |
-| [docs-code-guide](references/skill-templates/docs/docs-code-guide/SKILL.template.md)                             | docs/common/CODE-GUIDE.md           |
+| [docs-deep-dives](references/skill-templates/docs/docs-deep-dives/SKILL.template.md)                             | docs/L2/deep-dives/                 |
+| [docs-research](references/skill-templates/docs/docs-research/SKILL.template.md)                                 | docs/L2/research/                   |
+| [docs-structure](references/skill-templates/docs/docs-structure/SKILL.template.md)                               | docs/L3/STRUCTURE.md                |
+| [docs-code-guide](references/skill-templates/docs/docs-code-guide/SKILL.template.md)                             | docs/L3/CODE-GUIDE.md               |
 | [docs-changes](references/skill-templates/docs/docs-changes/SKILL.template.md)                                   | docs/changes/                       |
 
 ### B 类 · 文档 + 资产（`*-ops`，共 5 个）
 
 一个能力域一个 skill，同时管辖该域的说明书、资产与执行动作，并在自己的完成判定里保证三者一致。
 
-| Skill 模板                                                                    | 能力域               | 说明书                       | 资产                                            | 形态                                    |
-|-------------------------------------------------------------------------------|----------------------|------------------------------|-------------------------------------------------|-----------------------------------------|
-| [inbound-ops](references/skill-templates/ops/inbound-ops/SKILL.template.md)   | L3 Inbound 契约      | docs/contracts/INBOUND.md           | docs/contracts/openapi/                                | 多文件（SKILL + references/ + assets/） |
-| [outbound-ops](references/skill-templates/ops/outbound-ops/SKILL.template.md) | L3 Outbound 外部集成 | docs/contracts/OUTBOUND.md          | docs/contracts/outbound-contracts/                     | 多文件（SKILL + references/ + assets/） |
-| [deploy-ops](references/skill-templates/ops/deploy-ops/SKILL.template.md)     | L3 部署              | docs/deployment/DEPLOYMENT.md        | docs/deployment/                             | 多文件（SKILL + references/ + assets/） |
-| [test-ops](references/skill-templates/ops/test-ops/SKILL.template.md)         | 测试                 | 用例卡写卡规范（skill 自持） | docs/test/test-cases/ + docs/test/test-records/ | 多文件（SKILL + references/ + assets/） |
-| [tools-ops](references/skill-templates/ops/tools-ops/SKILL.template.md)       | 系统访问通道         | docs/tools/TOOLS.md          | docs/tools/（Node CLI）                         | 多文件（SKILL + references/ + assets/） |
+| Skill 模板                                                                    | 能力域               | 说明书                        | 资产                                            | 形态                                    |
+|-------------------------------------------------------------------------------|----------------------|-------------------------------|-------------------------------------------------|-----------------------------------------|
+| [inbound-ops](references/skill-templates/ops/inbound-ops/SKILL.template.md)   | L3 Inbound 契约      | docs/contracts/INBOUND.md     | docs/contracts/openapi/                         | 多文件（SKILL + references/ + assets/） |
+| [outbound-ops](references/skill-templates/ops/outbound-ops/SKILL.template.md) | L3 Outbound 外部集成 | docs/contracts/OUTBOUND.md    | docs/contracts/outbound-contracts/              | 多文件（SKILL + references/ + assets/） |
+| [deploy-ops](references/skill-templates/ops/deploy-ops/SKILL.template.md)     | L3 部署              | docs/deployment/DEPLOYMENT.md | docs/deployment/                                | 多文件（SKILL + references/ + assets/） |
+| [test-ops](references/skill-templates/ops/test-ops/SKILL.template.md)         | 测试                 | 用例卡写卡规范（skill 自持）  | docs/test/test-cases/ + docs/test/test-records/ | 多文件（SKILL + references/ + assets/） |
+| [tools-ops](references/skill-templates/ops/tools-ops/SKILL.template.md)       | 系统访问通道         | docs/tools/TOOLS.md           | docs/tools/（Node CLI）                         | 多文件（SKILL + references/ + assets/） |
 
 ### C · 编排（`align-docs`，共 1 个）
 
 只调度 A / B 类，不生产任何层次产物。
 
-| Skill 模板                                                            | 职责                                                                                                    | 形态                   |
-|-----------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|------------------------|
-| [align-docs](references/skill-templates/align-docs/SKILL.template.md) | 文档编排器：对齐 / 解决漂移 / 文档初始化 / 旧文档清理与融合，按 L0→L1→…→common 调用各 A 类与 B 类 skill | 薄壳单文件（SKILL.md） |
+| Skill 模板                                                            | 职责                                                                                              | 形态                   |
+|-----------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|------------------------|
+| [align-docs](references/skill-templates/align-docs/SKILL.template.md) | 文档编排器：对齐 / 解决漂移 / 文档初始化 / 旧文档清理与融合，按 L1→L2→L3 调用各 A 类与 B 类 skill | 薄壳单文件（SKILL.md） |
 
 落地规则：`SKILL.template.md` → 目标 `SKILL.md`：frontmatter 按「键」管理，安装器只覆盖模板定义的 `name` /
-`description`，用户新增键保留；正文包进受管区块（区块外为用户内容）。其余条目
-（`references/`、`assets/`）保持相对目录结构原样复制，按字节比对，冲突不覆盖。模板为通用形态（不含项目实例内容），项目特定值在执行时现场读项目文档。
+`description`，用户新增键保留；正文包进受管区块（区块外为用户内容）。其余条目（`references/`、`assets/`）保持
+相对目录结构原样复制，按字节比对，冲突不覆盖。模板为通用形态（不含项目实例内容），项目特定值在执行时现场读项目文档。
 
 ## 安装器接口（`scripts/install.mjs`）
 
@@ -170,7 +170,7 @@ node scripts/install.mjs --apply --force --project-root <项目根>     # 覆盖
 
 ## align-docs 边界
 
-- 文档-代码对齐、漂移处理、文档初始化、旧文档清理与融合，全部归 `align-docs` skill（编排器，按 L0→L1→…→common 调用各 `docs-*`
+- 文档-代码对齐、漂移处理、文档初始化、旧文档清理与融合，全部归 `align-docs` skill（编排器，按 L1→L2→L3 调用各 `docs-*`
   skill）。
 - 用户需要「对齐文档与代码 / 处理漂移 / 初始化 docs / 同步目录」时直接调 `align-docs`——本 skill 不承载、不路由、不做这些事。
 - 边界一句话：本 skill 只「安装资产」，`align-docs` 才「按资产指引维护文档」。

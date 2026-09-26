@@ -1,13 +1,13 @@
 ---
 name: docs-deep-dives
-description: 维护系统级问题深潜文档（docs/common/deep-dives）：每篇 kebab-case 单篇，覆盖读取、生成、更新、校验。每篇 deep-dive 回答一个系统级问题，按 4 章骨架展开（应用级时序图、应用内部流程、领域实体状态流转、涉及接口），内容跨越 L1-L3。触发词：写深潜、更新 deep-dive、deep-dive、系统级问题、端到端流程、全链路时序、状态流转专题、高复杂度详情下沉。代码改动触发更新：跨应用调用链、领域事件或状态流转变化时，更新对应深潜单篇。
+description: 维护系统级问题深潜文档（docs/L2/deep-dives）：每篇 kebab-case 单篇，覆盖读取、生成、更新、校验。每篇 deep-dive 回答一个系统级问题，按 4 章骨架展开（应用级时序图、应用内部流程、领域实体状态流转、涉及接口），内容跨越 L1-L3。触发词：写深潜、更新 deep-dive、deep-dive、系统级问题、端到端流程、全链路时序、状态流转专题、高复杂度详情下沉。代码改动触发更新：跨应用调用链、领域事件或状态流转变化时，更新对应深潜单篇。
 ---
 
 # docs-deep-dives — 系统级问题深潜文档
 
 ## 定位与管辖文档
 
-本 skill 负责 docs/common/deep-dives/ 下的系统级问题单篇。单篇回答一个具体系统级问题，层归属为 L2，内容可跨越
+本 skill 负责 docs/L2/deep-dives/ 下的系统级问题单篇。单篇回答一个具体系统级问题，层归属为 L2，内容可跨越
 L1-L3；目录内不设索引文件，单篇清单由引用方文档承担。
 
 生成或更新任何产物前，先读取 [assets/TEMPLATE.md](assets/TEMPLATE.md)，按其中对应产物的骨架写入；本文件不重复目标文档的章节结构。跨层文档编排和漂移处理由
@@ -61,7 +61,7 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 
 ## 边界
 
-- 只维护 docs/common/deep-dives/ 下的单篇；其他文档由对应 docs-* skill 维护，跨文档编排归 align-docs skill。
+- 只维护 docs/L2/deep-dives/ 下的单篇；其他文档由对应 docs-* skill 维护，跨文档编排归 align-docs skill。
 - 一篇单篇只回答一个具体系统级问题，不承载整个平台的全量功能说明。
 - 禁止自创应用、实体、事件、状态或接口；代码细节使用 File:Line 引用，外部契约和对外接口分别引用 outbound-ops 与 inbound-ops。
 - 图示与参与者层级遵循模板规定，不越级展开。

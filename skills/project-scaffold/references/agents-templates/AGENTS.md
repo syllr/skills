@@ -5,13 +5,12 @@
 
 ## 1. 文档体系与目录架构
 
-文档按 L0-L3 + common 分层。是否在链上只有一条判据：产物里有没有资产。纯文档（只有面向人读的
-.md）在链上，有资产（可执行脚本、compose、契约文件、机器可读契约、用例卡）的文档与其资产同处一个链外目录。
+文档只有链内与链外两种归属，判据是产物里有没有资产。链内是分层的当前态描述，只有面向人读的 .md，按 L1 → L2 → L3
+编号；链外是有资产的产物域（有资产的文档与其资产同处一个目录）以及过程态台账。
 
-链上只有一条 L1 → L2 → L3，两个遍历方向：生成自上而下 L1 → L2 → L3（生成某层前先读上一层已落盘产物，本层完成才进下一层）；变更自下而上
+链内只有一条 L1 → L2 → L3，两个遍历方向：生成自上而下 L1 → L2 → L3（生成某层前先读上一层已落盘产物，本层完成才进下一层）；变更自下而上
 L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上判定该层事实是否随之变化，要改就调该层 skill 改）。L3 是事实起点，L1
-是抽象结论。`docs/contracts/`、`docs/deployment/`、`docs/test/`、`docs/tools/` 是链外产物域，`docs/changes/`、`docs/drift/`
-是过程态台账。各文档的读取 / 生成 / 更新走对应 skill（见 §3）。
+是抽象结论。各文档的读取 / 生成 / 更新走对应 skill（见 §3）。
 
 ```
 项目根/
@@ -23,19 +22,18 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
     │   ├── APPLICATION-ARCHITECTURE.md   应用架构
     │   ├── DATA-ARCHITECTURE.md          数据架构
     │   ├── TECHNOLOGY-ARCHITECTURE.md    技术架构
-    │   └── domain/          领域模型：DOMAIN-MODEL.md + 一域一文
+    │   ├── domain/          领域模型：DOMAIN-MODEL.md + 一域一文
+    │   ├── deep-dives/      系统级问题深潜：每问题一单篇
+    │   └── research/        选型 / 对比 / 验证调研：每主题一单篇
     ├── L3/                  事实层（变更起点）
-    │   └── STRUCTURE.md     目录结构与文档 ↔ 代码映射
+    │   ├── STRUCTURE.md     目录结构与文档 ↔ 代码映射
+    │   └── CODE-GUIDE.md    代码规范
     ├── contracts/          契约：INBOUND.md + openapi/ · OUTBOUND.md + outbound-contracts/
     ├── deployment/         部署：DEPLOYMENT.md + 部署资产（脚本 / compose / 多环境 .env）
-    ├── test/                测试：test-cases/ 用例卡 + test-records/ 执行台账 + do-drafts/ 草稿
+    ├── test/                测试：do-drafts/ 草稿 → test-cases/ 正式用例卡（晋级）→ test-records/ 执行台账
     ├── tools/               项目工具集：TOOLS.md（说明书）+ Node CLI（AI 访问系统的唯一通道）
     ├── changes/             变更规划：每变更一单篇（过程态，完成后删除）
     ├── drift/               漂移清单：每文档一份（过程态，全部清账后删除）
-    └── common/              贯穿层（跨层专题，链上各层变化后回看）
-        ├── deep-dives/      系统级问题深潜：每问题一单篇
-        ├── research/        选型 / 对比 / 验证调研：每主题一单篇
-        └── CODE-GUIDE.md    代码规范
 ```
 
 ---
@@ -46,8 +44,7 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
 
 - 代码是唯一事实：文档与注释是代码的投影，与代码冲突时改文档 / 注释，不改代码；代码与代码的冲突由 Git 历史裁决。
 - 同一信息只在一个文档维护，其他文档引用不复制；发现重复即归并到唯一源，其余改为引用。
-- 可点击导航链接只允许上层指向下层（L0 / L1 可链 L2 / L3，下层不链回上层）；下层引用上层内容只做精简文字提及（如「见
-  §X」）。
+- 可点击导航链接只允许上层指向下层（L0 / L1 可链 L2 / L3，下层不链回上层）；下层引用上层内容只做精简文字提及（如「见 §X」）。
 - 差异主动修复：执行任何操作（读取 / 变更）时发现文档 / 注释与代码有差异，即主动修复文档 / 注释（不影响运行，无需用户授权）。
 
 ### 2.2 文档与注释当前态
@@ -103,30 +100,31 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
 
 ## 3. Skill 路由（三类）
 
-Skill 分三类，命名即类型：
+Skill 分三类，命名即类型，类型后标注链内 / 链外归属：
 
-- A 类 · 纯文档（前缀 `docs-`）：产物只有面向人读的说明书，没有资产、状态机与门禁；删掉文档不影响项目行为。
-- B 类 · 文档 + 资产（后缀 `-ops`）：一个能力域一个 skill，同时管辖该域的说明书、资产与执行动作，并保证三者一致。
-- C · 编排（`align-docs`）：只调度 A / B 类，不生产任何层次文档或资产；只自持 `docs/drift/` 过程态清单。
+- A 类 · 纯文档（前缀 `docs-`）：产物只有面向人读的说明书，没有资产、状态机与门禁；删掉文档不影响项目行为。A·链内 9 个分属 L1 /
+  L2 / L3，A·链外 1 个是过程态变更单篇 `docs-changes/`。
+- B 类 · 文档 + 资产（后缀 `-ops`）：一个能力域一个 skill，同时管辖该域的说明书、资产与执行动作，并保证三者一致；全部 B·链外。
+- C · 编排（`align-docs`）：只调度 A / B 类，不生产任何层次文档或资产；只自持 `docs/drift/` 过程态清单，C·链外。
 
-| Skill                         | 类型 | 管辖文档                            | 管辖资产                                                               |
-|-------------------------------|------|-------------------------------------|------------------------------------------------------------------------|
-| docs-business                 | A    | docs/L1/BUSINESS.md                 | —                                                                      |
-| docs-application-architecture | A    | docs/L2/APPLICATION-ARCHITECTURE.md | —                                                                      |
-| docs-data-architecture        | A    | docs/L2/DATA-ARCHITECTURE.md        | —                                                                      |
-| docs-technology-architecture  | A    | docs/L2/TECHNOLOGY-ARCHITECTURE.md  | —                                                                      |
-| docs-domain                   | A    | docs/L2/domain/                     | —                                                                      |
-| docs-deep-dives               | A    | docs/common/deep-dives/             | —                                                                      |
-| docs-research                 | A    | docs/common/research/               | —                                                                      |
-| docs-structure                | A    | docs/L3/STRUCTURE.md                | —                                                                      |
-| docs-code-guide               | A    | docs/common/CODE-GUIDE.md           | —                                                                      |
-| docs-changes                  | A    | docs/changes/                       | —                                                                      |
-| inbound-ops                   | B    | docs/contracts/INBOUND.md           | docs/contracts/openapi/                                                |
-| outbound-ops                  | B    | docs/contracts/OUTBOUND.md          | docs/contracts/outbound-contracts/                                     |
-| deploy-ops                    | B    | docs/deployment/DEPLOYMENT.md       | docs/deployment/                                                       |
-| test-ops                      | B    | 用例卡写卡规范（本 skill 自持）     | docs/test/test-cases/ + docs/test/test-records/ + docs/test/do-drafts/ |
-| tools-ops                     | B    | docs/tools/TOOLS.md                 | docs/tools/（Node CLI）                                                |
-| align-docs                    | C    | docs/drift/（过程态清单，自持）     | —                                                                      |
+| Skill                         | 类型   | 管辖文档                                                                            | 管辖资产                            |
+|-------------------------------|--------|-------------------------------------------------------------------------------------|-------------------------------------|
+| docs-business                 | A·链内 | docs/L1/BUSINESS.md                                                                 | —                                   |
+| docs-application-architecture | A·链内 | docs/L2/APPLICATION-ARCHITECTURE.md                                                 | —                                   |
+| docs-data-architecture        | A·链内 | docs/L2/DATA-ARCHITECTURE.md                                                        | —                                   |
+| docs-technology-architecture  | A·链内 | docs/L2/TECHNOLOGY-ARCHITECTURE.md                                                  | —                                   |
+| docs-domain                   | A·链内 | docs/L2/domain/                                                                     | —                                   |
+| docs-deep-dives               | A·链内 | docs/L2/deep-dives/                                                                 | —                                   |
+| docs-research                 | A·链内 | docs/L2/research/                                                                   | —                                   |
+| docs-structure                | A·链内 | docs/L3/STRUCTURE.md                                                                | —                                   |
+| docs-code-guide               | A·链内 | docs/L3/CODE-GUIDE.md                                                               | —                                   |
+| docs-changes                  | A·链外 | docs/changes/                                                                       | —                                   |
+| inbound-ops                   | B·链外 | docs/contracts/INBOUND.md                                                           | docs/contracts/openapi/             |
+| outbound-ops                  | B·链外 | docs/contracts/OUTBOUND.md                                                          | docs/contracts/outbound-contracts/  |
+| deploy-ops                    | B·链外 | docs/deployment/DEPLOYMENT.md                                                       | docs/deployment/                    |
+| test-ops                      | B·链外 | docs/test/test-cases/（正式用例卡）+ docs/test/do-drafts/（DoD 草稿），写卡规范自持 | docs/test/test-records/（执行台账） |
+| tools-ops                     | B·链外 | docs/tools/TOOLS.md                                                                 | docs/tools/（Node CLI）             |
+| align-docs                    | C·链外 | docs/drift/（过程态清单，自持）                                                     | —                                   |
 
 ## 4. 通用纪律
 

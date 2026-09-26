@@ -27,7 +27,7 @@ description: 维护 L2 数据架构文档 docs/L2/DATA-ARCHITECTURE.md 的 skill
    c4-container-diagram skill 绘制，D2 图保留图名、视角、用途和边界注释。
 4. 实例正文只写业务内容，不写模板指引、占位符、编码约定、工具说明、SSOT 标签或治理套话，不使用加粗和 emoji；模板未定义的
    frontmatter、状态、影响层等元信息不补写。
-5. 跨模块交互、永久参数、精度分层、坑位四类复杂度中命中两项时，将详情下沉到 docs/common/deep-dives/，由 docs-deep-dives skill
+5. 跨模块交互、永久参数、精度分层、坑位四类复杂度中命中两项时，将详情下沉到 docs/L2/deep-dives/，由 docs-deep-dives skill
    生成或维护；本文档只保留精简正文，不反向引用 deep-dives。
 6. 存储选型或业务数据与技术数据的划分确有歧义时，询问用户确认。
 7. 完成后执行联动更新和完成判定。
@@ -49,7 +49,7 @@ description: 维护 L2 数据架构文档 docs/L2/DATA-ARCHITECTURE.md 的 skill
 - docs/contracts/OUTBOUND.md 与集成契约文档中的外部数据资产、字段术语和数据来源须与本文档一致，集成文档由 outbound-ops skill 维护。
 - 应用划分归 docs/L2/APPLICATION-ARCHITECTURE.md，由 docs-application-architecture skill 维护；部署单元与环境参数归
   docs/deployment/DEPLOYMENT.md，由 deploy-ops skill 维护；接口契约归 docs/contracts/INBOUND.md，由 inbound-ops skill 维护。
-- 下沉到 docs/common/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
+- 下沉到 docs/L2/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
 
 ## 完成判定
 

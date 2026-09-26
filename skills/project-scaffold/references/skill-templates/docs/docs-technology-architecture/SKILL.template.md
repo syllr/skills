@@ -29,7 +29,7 @@ description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的
 5. 实例正文只写业务内容，不写模板指引、占位符、编码约定、工具说明、SSOT 标签或治理套话，不使用加粗和 emoji；模板未定义的
    frontmatter、状态、影响层等元信息不补写。
 6. 跨模块交互、永久参数、精度分层、坑位四类复杂度中命中两项，或选型总行数与单节行数同时超限时，将详情下沉到
-   docs/common/deep-dives/，由 docs-deep-dives skill 生成或维护；本文档只保留精简正文，不反向引用 deep-dives。
+   docs/L2/deep-dives/，由 docs-deep-dives skill 生成或维护；本文档只保留精简正文，不反向引用 deep-dives。
 7. 框架、数据库、AI 供应商等关键选型或是否单列 deep-dives 确有歧义时，询问用户确认。
 8. 完成后执行联动更新和完成判定。
 
@@ -52,8 +52,8 @@ description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的
 - docs/deployment/DEPLOYMENT.md 的部署方式须与技术栈一致，由 deploy-ops skill 维护；docs/contracts/OUTBOUND.md 的外部系统对接由
   outbound-ops skill 维护。
 - 单元测试清单与写法规范由 test-ops skill 维护，本文档不定义单元测试框架、覆盖率或命名。
-- docs/common/research/ 各调研文档承载调研详情，选型结论在本文档对应选型章节索引，由 docs-research skill 维护。
-- 下沉到 docs/common/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
+- docs/L2/research/ 各调研文档承载调研详情，选型结论在本文档对应选型章节索引，由 docs-research skill 维护。
+- 下沉到 docs/L2/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
 
 ## 完成判定
 
@@ -74,7 +74,7 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 
 - 容器与外部系统按责任边界区分：自行运维管理的是系统内容器，由他人或第三方提供的是边界外外部系统；外部依赖只放右侧，不混入主分层。
 - 不复制应用清单、应用内模块清单、功能清单、能力归属或状态，不写表或集合级字段定义。
-- 部署单元、环境与部署参数归 docs/deployment/DEPLOYMENT.md；单元测试写法归 test-ops skill；调研详情归 docs/common/research/
+- 部署单元、环境与部署参数归 docs/deployment/DEPLOYMENT.md；单元测试写法归 test-ops skill；调研详情归 docs/L2/research/
   各调研文档。
 - 同一信息只在一处维护；跨层引用单向向下，同级协作引用允许；删除或迁移章节后不留已迁移或已删除占位正文。
 - 文档不设「相关文档」聚合链接章。
