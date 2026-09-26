@@ -74,7 +74,9 @@ tools 是 AI 测试执行的基础设施（一个小型测试项目）——测�
 判断口诀：一个工具 = 一个职责域（前端操作 / 后端契约 / 某数据落位校验）。新职责域 → 新增；域内演进 → 修改。新增后登记（README
 工具清单 + package.json scripts 别名 + .env.example）。
 
-## 6. 目录结构与维护
+## 6. 资产声明：目录结构与维护
+
+本节是 `docs/tools/` 预期资产的唯一来源：目录层级、文件命名与旧资产检出都在这里定义。
 
 ```
 docs/tools/
@@ -93,7 +95,17 @@ docs/tools/
 - 分发 = 拷贝目录 + 一次依赖安装（无编译产物）
 - 环境 host 变更只改对应 `.env.<环境名>`（工具与用例卡不感知）；环境名以 DEPLOYMENT §2.1 环境矩阵为准
 
-## 6.5 多环境
+### 6.1 旧资产检出
+
+每次工具集变更或对齐时逐项核对磁盘与本节结构：
+
+- 预期有而磁盘无：缺工具实现或缺环境副本，按 §1 补齐。
+- 磁盘有而预期外：`tools/` 下不属于 `_util.mjs` 与已登记工具的文件、已删除工具的残留、环境矩阵里已不存在的 `.env.<环境名>`
+  ，均为旧资产，提示用户确认后删除；不因为 `TOOLS.md` 还列着它而保留。
+- 工具改名或合并：旧文件名必须删除，`TOOLS.md` 清单与全仓调用点同步更新，旧名残留为零。
+- `.env` 缺键：与 DEPLOYMENT §6/§7 不一致时以 DEPLOYMENT 为准，按 §1 对齐副本，不在本 skill 改 DEPLOYMENT.md 本体。
+
+### 6.2 多环境
 
 - 环境与变量的权威在 DEPLOYMENT：环境清单读 §2.1 环境矩阵、取值读 §6/§7；`.env.<环境名>` 是 tools 侧的副本，不一致以
   DEPLOYMENT 为准（对齐由 SKILL §1 执行，本 skill 不改 DEPLOYMENT.md 本体）
@@ -105,5 +117,5 @@ docs/tools/
 
 本 skill 的 `assets/reference-impl/` 为完整参考实现（Node .mjs：api/db/webmcp/ragflow/_util + package.json + README +
 .env.example + .gitignore）——生成/扩展工具时以它为样板：复制到目标项目 `docs/tools/`，按被测系统替换 `.env.<环境名>`
-值（环境名同步 DEPLOYMENT §2.1）；新增校验类工具参照 db.mjs/ragflow.mjs 的只读+清理模式扩展。契约源路径（如 docs/contracts/openapi）为
-doc-arch 通用结构，随项目沿用。
+值（环境名同步 DEPLOYMENT §2.1）；新增校验类工具参照 db.mjs/ragflow.mjs 的只读+清理模式扩展。契约源路径（如
+docs/contracts/openapi）为 doc-arch 通用结构，随项目沿用。

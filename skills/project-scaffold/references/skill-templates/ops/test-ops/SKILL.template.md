@@ -9,7 +9,8 @@ AI 既是测试执行器，也是用例库的维护者。本 skill 以分诊进�
 
 本 skill 是测试用例的唯一入口：任何形式的用例（单元 / 接口 / 流程 / 集成）都只能经本 skill 触发与管理（新增 / 更新 / 删除 /
 执行）——AI 不得自动创建任何用例；新增一律先落 DoD 草稿、经用户认可后晋升（根 AGENTS.md §2.6 用例唯一入口）。用例卡结构与写卡规范由本
-skill 自持（[references/case-writing.md](references/case-writing.md)：资产结构/卡结构五段/写卡规范/机检/关联联动），卡模板在
+skill 自持（[references/test-assets.md](references/test-assets.md) 管资产结构与旧资产检出，
+[references/case-writing.md](references/case-writing.md)：资产结构/卡结构五段/写卡规范/机检/关联联动），卡模板在
 [assets/case-templates/](assets/case-templates/)。测试工具用法现场读实例
 `docs/tools/TOOLS.md`（工具集生成/维护/调用归 tools-ops skill）。本 skill 另承载：执行编排、测试记录机制、DoD 草稿与晋升机制。
 
@@ -21,6 +22,16 @@ skill 自持（[references/case-writing.md](references/case-writing.md)：资产
 
 自持：用例卡结构、写卡规范（[references/case-writing.md](references/case-writing.md)、
 [assets/case-templates/](assets/case-templates/)）与执行台账（`docs/test/test-records/`）由本 skill 自持。
+
+## 读取
+
+1. 读 [references/test-assets.md](references/test-assets.md) 确认 `docs/test/` 的预期资产集与本次动作的落点位置。
+2. 读 `docs/L1/BUSINESS.md` 的用户故事与旅程、`docs/L2/domain/` 的领域模型，确认被测场景与领域实体。
+3. 读 `docs/contracts/INBOUND.md` 与 `docs/contracts/openapi/`，确认接口调用面、状态码与响应 schema——断言基准以此为准。
+4. 读 `docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵与 §6/§7 变量，确认本次执行用的环境。
+5. 读 `docs/tools/TOOLS.md` 与 `docs/tools/.env.<环境名>`，确认工具用法、退出码与环境选择。
+6. 读本 skill 与 [references/case-writing.md](references/case-writing.md)，确认写卡规范与机检口径。
+7. 源缺失或冲突时先核实，不臆造接口、实体或环境；缺什么报什么，不自行补默认值。
 
 ## 分诊（进入第一件事）
 
@@ -129,10 +140,28 @@ skill 自持（[references/case-writing.md](references/case-writing.md)：资产
 - 每条必须有证据（契约位置、实测输出、日志片段）——无证据不记
 - 问题修复后更新状态（不删记录，保留台账）
 
+## 完成判定
+
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 Mermaid 或 ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、不补写 frontmatter）见根
+`AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
+
+- `docs/test/` 磁盘内容与 [references/test-assets.md](references/test-assets.md) §1
+  预期资产集逐项对应：无缺失项，已删除的领域实体或用户故事场景无残留用例目录。
+- 每张用例卡为「头 + Case N」结构且五段齐全（前置条件 / 执行流程 / 期望结果 / 数据对账 /
+  数据清理），卡内无占位参数描述、无指向已删文档的 § 引用。
+- 卡文件落在对应实体或场景目录，目录名与 `docs/L2/domain/` 的实体名或 `docs/L1/BUSINESS.md` 的场景名一致。
+- 全部命令走 `docs/tools/` 的工具通道（api / db / webmcp / ragflow），无 curl、无裸 SQL、无裸命令。
+- 断言三源可回溯：状态码取自 `docs/contracts/openapi/` 的 `responses`，字段取自 schema，错误码值为实测校准；依据失效时交
+  `inbound-ops` 修契约，不在本 skill 改契约。
+- 造数据的 Case 含三态清理，且环境 host 不写死（走工具 `.env`）。
+- 执行的被测版本已绑定；每条问题有证据（契约位置、实测输出或日志片段）与状态枚举；台账只增不删。
+- `do-drafts/` 中的草稿未被正式用例库引用；晋升后的草稿处置已交用户决定，未被自动清理。
+
 ## 边界
 
-- 本 skill 是测试用例的唯一入口：用例卡结构与写卡规范由本 skill 自持（references/case-writing.md）；新增/更新/删除/执行一律经本
-  skill，AI 不得自动创建任何用例（新增一律经 DoD 晋升）
+- 本 skill 是测试用例的唯一入口：资产结构与旧资产检出由 references/test-assets.md 自持，用例卡结构与写卡规范由
+  references/case-writing.md 自持；新增/更新/删除/执行一律经本 skill，AI 不得自动创建任何用例（新增一律经 DoD 晋升）
 - DoD 草稿在 `docs/test/do-drafts/`（过程态）：与 `docs/changes/`、`docs/drift/`
   同性质——使命完成后由用户决定删除或保留；不入正式库、不被正式用例体系引用；晋升后才进 `docs/test/test-cases/`
 - 工具实现与调用归 tools-ops skill：本 skill 只做执行编排（环境/顺序/策略/记录），不实现工具、不绕过工具直连被测系统

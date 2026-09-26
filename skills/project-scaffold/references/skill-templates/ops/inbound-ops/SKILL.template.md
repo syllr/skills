@@ -20,7 +20,8 @@ Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-cont
 
 本 skill 自带资料：
 
-- 产物骨架 [assets/TEMPLATE.md](assets/TEMPLATE.md)——`INBOUND.md` 与 `openapi/` 目录的目标结构
+- 产物骨架 [assets/TEMPLATE.md](assets/TEMPLATE.md)——`INBOUND.md` 的目标结构（`openapi/` 目录结构不在此，见下）
+- 契约资产声明 [references/contract-assets.md](references/contract-assets.md)——`openapi/` 预期资产集的唯一来源，含落盘规则与旧资产检出
 - 引导映射 [references/bootstrap.md](references/bootstrap.md)——各语言框架的导出形态（CLI 一行 / 需脚本）
 - 执行方法论 [references/export-mechanics.md](references/export-mechanics.md)——临时目录策略、门禁落盘、拆分口径、机检清单、失败分诊
 - 参考实现 [assets/reference-impl/](assets/reference-impl/)——导出与拆分脚本模板（按框架分），引导时复制到项目
@@ -33,7 +34,8 @@ Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-cont
 - 扫描后端代码、路由、请求 / 响应 Schema、DTO 与技术栈文件（`package.json`、`go.mod`、`pom.xml`、`pyproject.toml`、
   `requirements.txt`）。
 - 读取现有 `INBOUND.md` 与 `docs/contracts/openapi/`；已有产物只提取仍有效的信息。
-- 导出前先读 `INBOUND.md` §2（导出命令 SSOT）、§1（多文件口径与端点计数）、§4 步骤 5（CI 漂移检测命令）。
+- 导出前先读 `INBOUND.md` §2（导出命令 SSOT）与 §4 步骤 5（CI 漂移检测命令）；产物结构与端点计数口径读
+  [contract-assets.md](references/contract-assets.md) §1，不以 `INBOUND.md` §1 为准。
 - 需要判断跨层漂移时交 `align-docs` skill。
 
 ## 生成
@@ -76,18 +78,22 @@ Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-cont
 
 ### §2 导出（主路径）
 
-1. 读源：`INBOUND.md` §2（导出命令 SSOT）+ §1（多文件口径）+ §4 步骤 5（CI 漂移检测命令，与本地共用同一入口）；确认项目导出与拆分脚本存在——不存在走
+1. 读源：`INBOUND.md` §2（导出命令 SSOT）+ §4 步骤 5（CI
+   漂移检测命令，与本地共用同一入口）+ [contract-assets.md](references/contract-assets.md) §1（多文件口径）；确认项目导出与拆分脚本存在——不存在走
    §1 引导。
 2. 环境确认：导出若依赖 DB / Redis / env，确认其可用；命令缺失或多文件口径未定时问用户（其余不问）。
 3. 导出到临时目录（不直接落 `docs/`）：执行 §2 命令 → 临时文件（如 `/tmp/openapi-export.json`）。
-4. 拆分：按 §1 口径跑拆分脚本 → 临时目录产出 `openapi.yaml + paths/<domain>.yaml + components/*`。
+4. 拆分：按 [contract-assets.md](references/contract-assets.md) §1 口径跑拆分脚本 → 临时目录产出
+   `openapi.yaml + paths/<domain>.yaml + components/*`。
 5. 机检（按 [references/export-mechanics.md](references/export-mechanics.md) 清单）：`$ref`
-   完整性（无悬空）、端点计数三方一致 （`openapi.yaml` 尾注释 = `INBOUND.md` §1 表 = paths 文件）、每个 operation 有
+   完整性（无悬空）、端点计数三方一致（`openapi.yaml` 尾注释 = `INBOUND.md` §1 计数字段 = `paths/` 文件头汇总）、每个
+   operation 有
    `x-action` / `x-capability`、`servers`
    变量化、组织正确（`openapi.yaml` 只承载元信息与 `$ref`）；工具可用时跑 lint / spectral。
 6. 门禁落盘：与现有契约 diff——若检出语义丢失（手写 `x-action`、描述、依据注释）或代码未 instrument 导致缺口，停止并报告，不覆盖；否则落盘到
    `docs/contracts/openapi/`。
-7. 报告：变化摘要 + `INBOUND.md` §1 端点计数差异 + 未通过项。
+7. 报告：变化摘要 + 端点计数差异 + 与 [contract-assets.md](references/contract-assets.md) §1 预期资产集的逐项核对结论（缺失项、待删旧资产）+
+   未通过项。
 
 ### §3 机检（只检不写）
 
@@ -109,12 +115,13 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 资产侧：
 
 - 契约由代码导出，接口定义、字段、校验和错误码与 `openapi/` 产物一致。
-- `openapi/` 无手工编辑痕迹，端点计数三方一致，无悬空 `$ref`、残留 Stub 或删除端点。
+- `openapi/` 无手工编辑痕迹，端点计数三方一致（`INBOUND.md` §1 计数字段 = `paths/` 文件头汇总 = 导出结果），无悬空 `$ref`、残留
+  Stub 或删除端点。
 - 重新导出后产物与代码无差异，删除端点已从代码和产物中移除。
 
 说明书与资产一致性：
 
-- `INBOUND.md` §1 的文件结构与端点计数列，与 `openapi/` 目录实际文件逐项对应。
+- `openapi/` 磁盘内容与 [contract-assets.md](references/contract-assets.md) §1 预期资产集逐项对应：无缺失项，代码中已不存在的域无残留文件。
 - §2 的导出命令与 §4 步骤 5 的漂移检测命令是同一条入口；命令改动后两侧同步。
 - 导出命令在说明书与实际执行环境中都能跑通，任一侧失效即视为未完成。
 

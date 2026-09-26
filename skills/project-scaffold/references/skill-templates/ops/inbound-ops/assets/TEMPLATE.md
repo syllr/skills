@@ -12,17 +12,16 @@
 > L3 Inbound 接口契约说明书。
 ```
 
-### 1. 导出产物文件结构
+### 1. 导出产物与端点计数
 
-本节写 `docs/contracts/openapi/` 目录中的主契约、拆分文件、文件作用与端点计数字段。
+本节只写导出产物的一句话概述与端点计数字段，不列目录结构与文件清单——`openapi/` 的预期资产集由本 skill 的
+[contract-assets.md](../references/contract-assets.md) §1 声明，本文档不作为资产齐全性的判定依据。
 
-| 文件                                       | 作用                                                                 | 端点计数 |
-|--------------------------------------------|----------------------------------------------------------------------|----------|
-| `openapi.yaml`                             | 主契约；默认单文件，多文件时以 `$ref` 聚合拆分文件。                 | —        |
-| `paths/{domain}.yaml`                      | 按业务域拆分的端点定义文件；文件头保留来源、边界与 `x-action` 汇总。 | `{N}`    |
-| `components/schemas/{schema}.yaml`         | Schema 拆分文件。                                                    | —        |
-| `components/responses/{response}.yaml`     | 响应定义拆分文件。                                                   | —        |
-| `components/securitySchemes/{scheme}.yaml` | 鉴权方案拆分文件。                                                   | —        |
+| 字段       | 含义                                                  |
+|------------|-------------------------------------------------------|
+| 端点总数   | `paths/` 下全部端点计数                               |
+| 各域端点数 | 按业务域逐域计数，与 `paths/{域}.yaml` 文件头汇总一致 |
+| 契约文件数 | `paths/` 与 `components/` 的文件数                    |
 
 ### 2. 从代码导出契约
 
@@ -75,21 +74,8 @@
 
 ### 1. 目录结构
 
-本节写 OpenAPI 3.1 导出产物的目录层级与文件命名。
-
-```text
-docs/contracts/openapi/
-├── openapi.yaml
-├── paths/
-│   └── {domain}.yaml
-└── components/
-    ├── schemas/
-    │   └── {schema}.yaml
-    ├── responses/
-    │   └── {response}.yaml
-    └── securitySchemes/
-        └── {scheme}.yaml
-```
+本节不写目录树。`openapi/` 的目录层级、每个文件的作用与落盘规则由本 skill 的
+[contract-assets.md](../references/contract-assets.md) §1 声明；本 skill 按该声明生成与验收，不以本文档为准。
 
 ### 2. `openapi.yaml`
 

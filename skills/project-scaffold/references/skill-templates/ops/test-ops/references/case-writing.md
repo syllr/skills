@@ -3,20 +3,10 @@
 本 skill 是测试用例的唯一入口：任何形式的用例（单元 / 接口 / 流程 / 集成）都只能经本 skill 触发与管理（新增 / 更新 / 删除 /
 执行）——AI 不得自动创建任何用例；新增一律先落 DoD 草稿、经用户认可后晋升（见 SKILL §3）。本文件承载用例卡的结构与写卡规范。
 
-## 1. 测试资产结构
+## 1. 资产位置
 
-```
-docs/test/
-├── test-cases/                  # 测试用例（AI 执行器的直接输入）
-│   ├── api/<领域实体>/           # API 卡按 domain 实体分组
-│   └── flow/<用户故事场景>/      # FLOW 卡按用户故事场景分组
-└── test-records/                # 测试记录（执行发现的问题台账；机制见 SKILL）
-
-docs/tools/                      # 项目工具集（系统访问唯一通道；架构/生成/维护/调用归 tools-ops skill）
-├── tools/*.mjs
-├── .env · .env.example
-└── TOOLS.md（工具用法/退出码/环境变量）
-```
+`docs/test/` 的目录结构、文件命名与旧资产检出由本 skill 的 [test-assets.md](test-assets.md) 声明；本文件只管用例卡的
+内容规范（结构、硬性要求、机检口径），不重复声明目录结构。
 
 ## 2. 用例卡结构
 
@@ -25,8 +15,8 @@ docs/tools/                      # 项目工具集（系统访问唯一通道；
     - API 卡（走工具 api/db 通道）：头 = 接口 + 业务对象；按 domain 实体名分组（kebab，与 domain 文档实体一致）
     - FLOW 卡（走工具 webmcp + 截图）：头 = 用户故事场景 + 主入口 URL；含 Gherkin 场景声明 + mermaid 执行蓝图（AI
       执行器据此编排）；按场景名分组（kebab）
-- 卡模板：`assets/case-templates/{api-case.md,flow-case.md}`——复制骨架（头 + Case N 五段）→ 替换接口/实体/Case 内容 → 落
-  `docs/test/test-cases/api/<实体>/` 或 `flow/<场景>/`
+- 卡模板：`assets/case-templates/{api-case.md,flow-case.md}`——复制骨架（头 + Case N 五段）→ 替换接口/实体/Case 内容 → 按
+  [test-assets.md](test-assets.md) §1 落到 `test-cases/api/<实体>/` 或 `test-cases/flow/<场景>/`
 
 ## 3. 写卡规范（硬性要求）
 
@@ -35,7 +25,7 @@ docs/tools/                      # 项目工具集（系统访问唯一通道；
 - 零教学文字：卡内不写工具语法解释 / 章节职责说明 / 行为解释注释——只留命令 + 步骤间信息流
 - 断言三源（基准为代码导出的契约）：状态码只从 openapi `responses` 取；断言字段从响应 schema 取；具体错误码值实测校准（BAD_REQUEST
   字段级 / RULE_VIOLATION_R\<N\> 规则级）
-- 执行通道：全部走测试工具（api/db/webmcp/ragflow）——不写 curl、不裸 SQL（SQL 包进 db 命令）、不写裸命令
+- 执行通道：全部走 `docs/tools/` 的测试工具（api/db/webmcp/ragflow）——不写 curl、不裸 SQL（SQL 包进 db 命令）、不写裸命令
 - 目录分组：API 卡目录 = domain 实体名；FLOW 卡目录 = 用户故事场景名（不造概念）
 - 清理三态：造数据的 Case 清理节写清各层兜底（正常接口删除 → 数据层级联删 → 外部依赖/中间件残留清理），兜底层以项目实际数据落位为准
 - 环境 host 不写死：前端主入口用 `{WEBMCP_URL}/<path>`（host 走工具 .env）；工具连接参数引用工具 .env 与 DEPLOYMENT

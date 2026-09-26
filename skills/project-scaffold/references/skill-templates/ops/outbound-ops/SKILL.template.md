@@ -9,7 +9,8 @@ description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/contra
 
 本 skill 负责 L3 契约层的 Outbound 半边：`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`。
 `OUTBOUND.md`
-承载外部集成说明书，并以其 §3 契约文件目录承担契约目录的唯一清单；契约目录按外部服务各放一份 kebab-case 命名的
+承载外部集成说明书；契约目录的预期资产集由 [references/contract-assets.md](references/contract-assets.md) §1 声明（说明书
+§3 只是人类可读索引，不作判定依据）；契约目录按外部服务各放一份 kebab-case 命名的
 `{service}.md`，不设索引文件。Inbound 半边（`INBOUND.md` 与 `openapi/`）归 `inbound-ops` skill。
 
 本 skill 只负责本层产物的读取、生成、更新与验收；跨层漂移扫描、分诊与清账由 `align-docs` skill
@@ -39,7 +40,8 @@ description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/contra
 
 1. 读取现有说明书与契约文件，提取仍有效的信息，再按 `assets/TEMPLATE.md` 重建目标结构。
 2. 集成客户端、Adapter 或第三方官方 spec 变化时，更新对应服务契约文件；接口列表、接口定义、错误码和调用方按同一变更同步。
-3. 新增、删除或迁移服务契约文件时，同步 `OUTBOUND.md` 的服务概览、§3 契约文件目录及全仓引用。
+3. 新增、删除或迁移服务契约文件时，同步 `OUTBOUND.md` 的服务概览、§3
+   索引及全仓引用；并按 [contract-assets.md](references/contract-assets.md) §3 核对磁盘，代码中已无集成的服务不留契约文件。
 4. 外部依赖、调用方应用、外部数据资产或领域 Mapper 变化时，联动对应上游文档并重新检查契约术语与归属。
 5. 复杂场景在契约文件内单列小节展开；跨文档漂移交由 `align-docs` skill。
 6. 更新后重新执行完成判定，确认索引与实际文件一一对应，且旧文件路径没有残留引用。
@@ -67,8 +69,10 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 - 契约文件包含集成形态、接入方式、调用面接口列表、逐接口定义、集中错误码与调用方；状态值属于 mock 中、已交付、已上线三态。
 - 每个接口的调用面、方法签名、输入、返回、幂等语义和特殊失败处理相互对应，错误码引用无死链。
 - 时序图使用四参与者结构，接口场景映射保持紧凑；复杂场景已按需单列小节展开。
-- `OUTBOUND.md` §3 契约文件目录与目录内契约文件一一对应，不复制接口、字段或错误码。
-- 迁移或删除后全仓旧名残留为零，Inbound 与 Outbound 方向不混淆，基础设施未被误列为外部集成。
+- `outbound-contracts/` 磁盘内容与 [contract-assets.md](references/contract-assets.md) §1
+  预期资产集逐项对应：无缺失项，代码中已无集成的服务无残留契约文件。
+- `OUTBOUND.md` §3 索引与目录内契约文件一一对应，且不复制接口、字段或错误码正文。
+- 迁移或删除服务后全仓旧名残留为零，Inbound 与 Outbound 方向不混淆，基础设施未被误列为外部集成。
 
 ## 边界
 

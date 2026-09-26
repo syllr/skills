@@ -12,7 +12,8 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 本 skill 自带两份资料（模板，不直接运行）：
 
-- 架构规范 [references/tools.md](references/tools.md)——工具分类/统一契约/命令形态/生成原则/新增 vs 修改决策/多环境
+- 架构规范 [references/tools.md](references/tools.md)——§2 工具分类 / §3 统一契约 / §4 命令形态 / §5 生成原则 / §6
+  资产声明与多环境
 - 参考实现 [assets/reference-impl/](assets/reference-impl/)——完整工具集样板（tools/{_util,api,webmcp,db,ragflow}.mjs +
   package.json + README + .env.example + .gitignore），含项目特定样例值，按被测系统替换
 
@@ -21,6 +22,16 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 - 唯一入口：项目工具集（`docs/tools/`）的生成、维护与调用只经本 skill；AI 访问本系统任何资源也只经它。
 - 不做：用例本身的增删改执行与执行台账归 `test-ops` skill；跨文档对齐与漂移归 `align-docs` skill。
 - 同步：工具集自身的说明（`docs/tools/TOOLS.md`）由本 skill 自持，不交给其它文档 skill。
+
+## 读取
+
+1. 读 [references/tools.md](references/tools.md) 确认工具分类、统一契约、生成原则与 `docs/tools/` 的预期资产集。
+2. 读 `docs/contracts/INBOUND.md` 与 `docs/contracts/openapi/`，确认接口调用面与响应结构——api 工具的契约校验以此为准。
+3. 读 `docs/contracts/OUTBOUND.md`，确认外部服务的集成形态与接入方式。
+4. 读 `docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵与 §6/§7 变量——环境与变量权威在此，`.env.<环境名>` 是其副本。
+5. 读 `docs/tools/TOOLS.md` 与实例 `docs/tools/.env.<环境名>`，确认工具清单、用法、退出码与可用环境。
+6. 读 `assets/reference-impl/` 作样板参照，不作运行实例、不引入其中的项目特定样例值。
+7. 环境与 DEPLOYMENT 不一致时按 §1 对齐副本，不改 `DEPLOYMENT.md` 本体；源缺失先核实，不臆造连接参数。
 
 ## 多环境（连接层核心）
 
@@ -33,7 +44,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 环境与变量的权威来源是 DEPLOYMENT，`.env.<环境名>` 只是其副本：
 
 - 环境清单（有哪些环境、用途）← `docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵
-- 各环境连接参数/取值 ← DEPLOYMENT §6（密钥与配置）/ §7（部署配置文件详解）
+- 各环境连接参数/取值 ← DEPLOYMENT §6（密钥与配置）/ §7（部署资产说明）
 - `.env.<环境名>` 是这些值在 tools 侧的副本；与 DEPLOYMENT 不一致时以 DEPLOYMENT 为准（对齐动作走 §1，由用户确认）
 
 ## 分诊（进入第一件事）
@@ -80,6 +91,24 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 4. 环境异常：调用失败若疑为环境副本问题（连不上/变量过时）→ 不自动修，提示用户走 §1 对齐（读 DEPLOYMENT 更新副本）
 5. 报告：查询结论 + 所用环境 + 原始证据（JSON）
 
+## 完成判定
+
+格式与结构纪律见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
+
+- `docs/tools/` 磁盘内容与 [references/tools.md](references/tools.md) §6 预期资产集逐项对应：`tools/*.mjs`（含
+  `_util.mjs`）·
+  `package.json` · `TOOLS.md` · `.env.<环境名>`（每环境一份）· `.env.example`，无缺失项，无预期外残留。
+- 每个工具可执行且 `--help` 打得通；退出码语义符合 [tools.md](references/tools.md) §统一契约（0 / 1 / 2 / 3 / 4 /
+  10），无自造退出码。
+- stdout 只输出一行 JSON，人类诊断信息走 stderr；JSON 带本次环境字段。
+- 环境选择可用：每条命令带 `--env <环境名>` 能读到对应 `.env.<环境名>`；严格模式不叠加 `.env`；未知环境
+  fail-fast（10）并列出可用环境。
+- fail-fast 契约校验生效：输入键不在被测契约声明内时发送前报错，并提示可用键清单。
+- 只读红线生效：校验/对账类工具拒绝非只读操作；全项目无裸 curl、无裸 SQL。
+- `docs/tools/.env.<环境名>` 与 `docs/deployment/DEPLOYMENT.md` §6/§7 的变量一致；不一致已按 §1 对齐，本 skill 不改
+  DEPLOYMENT.md 本体。
+- `assets/reference-impl/` 只作模板，未被当作运行实例调用。
+
 ## 边界
 
 - 唯一入口（根 AGENTS.md §2.7 系统访问唯一入口）：对系统的任何访问都经本工具集；禁旁路（裸 curl / 裸 SQL /
@@ -90,5 +119,6 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 - 环境权威在 DEPLOYMENT：环境清单读 §2.1、变量读 §6/§7；`.env.<环境名>` 是其副本，不一致以 DEPLOYMENT 为准
 - 只读 DEPLOYMENT：本 skill 不修改 `docs/deployment/DEPLOYMENT.md` 本体（改文档按 `deploy-ops` skill更新）
 - 环境纪律：一次调用绑定一个环境，每条命令必带 `--env`；未知环境会 fail-fast（不回退默认）
-- 用例卡的编排执行与写卡规范归 test-ops skill（测试用例唯一入口；规范见其 references/case-writing.md）
+- 用例卡的编排执行与写卡规范归 test-ops skill（测试用例唯一入口；资产结构见其 references/test-assets.md，写卡规范见其
+  references/case-writing.md）
 - 不生成业务代码、不自动 commit/push

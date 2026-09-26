@@ -1,6 +1,6 @@
 ---
 name: deploy-ops
-description: L3 部署域唯一入口——同时管辖部署说明书 docs/deployment/DEPLOYMENT.md、部署资产目录 docs/deployment/（发布脚本 / compose / 多环境 .env），以及部署执行与校验（环境确认、按发布流程发布、版本核对、回滚、部署配置校验）。触发词：部署文档、DEPLOYMENT、部署说明书、写部署、更新部署文档、部署、发布前端、发布后端、部署 dev、启动 standalone、部署状态、发布版本、回滚部署、新增环境、部署单元、环境矩阵、环境拓扑、发布流程、回滚说明、部署脚本、部署配置、密钥登记、compose 登记。代码改动触发更新：部署方式 / 环境矩阵 / 部署参数变化、发布脚本 / compose / .env 结构调整、应用增减时，更新说明书与资产。
+description: L3 部署域唯一入口——同时管辖部署说明书 docs/deployment/DEPLOYMENT.md、部署资产目录 docs/deployment/（结构由本 skill 的 deploy-assets.md §2 声明：配置模板 / 多环境 .env 与 compose / 发布脚本），以及部署执行与校验（环境确认、按发布流程发布、版本核对、回滚、部署配置校验）。触发词：部署文档、DEPLOYMENT、部署说明书、写部署、更新部署文档、部署、发布前端、发布后端、部署指定环境、启动指定环境、部署状态、发布版本、回滚部署、新增环境、部署单元、环境矩阵、环境拓扑、发布流程、回滚说明、部署脚本、部署配置、密钥登记、compose 登记。代码改动触发更新：部署方式 / 环境矩阵 / 部署参数变化、发布脚本 / compose / .env 结构调整、应用增减时，更新说明书与资产。
 ---
 
 # deploy-ops — L3 部署域（说明书 + 部署资产 + 部署执行）
@@ -15,8 +15,9 @@ description: L3 部署域唯一入口——同时管辖部署说明书 docs/depl
 | 部署资产   | `docs/deployment/`      | 资产 | 本 skill 生成与维护                      |
 | 部署执行   | 按说明书发布 / 启动 / 回滚 | 动作 | `DEPLOYMENT.md` §4 与 §5.3               |
 
-部署知识的 SSOT 是 `DEPLOYMENT.md`（环境矩阵 §2.1 / standalone 启动 §4 / dev 发布流程 §5.3 / 密钥 §6 / 部署配置文件详解
-§7），执行时现场读文档照做，本 skill 不复制任何命令与环境信息。
+部署知识的 SSOT 是 `DEPLOYMENT.md`（环境矩阵 §2.1 / 各环境启动 §4 / 各环境发布流程 §5.3 / 密钥 §6 / 资产逐项说明
+§7），执行时现场读文档照做，本 skill 不复制任何命令与环境信息。资产的预期集 SSOT 是
+[deploy-assets.md](references/deploy-assets.md) §2，`DEPLOYMENT.md` §7 只是人类可读说明。
 
 跨文档编排、生成顺序与漂移处理归 `align-docs` skill；测试期访问系统经 `tools-ops` skill，部署期的健康检查与冒烟验证属于系统访问约束的部署期豁免，由本
 skill 执行。
@@ -37,7 +38,7 @@ skill 执行。
 - 读取应用架构（`docs-application-architecture`）定位部署单元、技术架构（`docs-technology-architecture`）定位运行时与存储方式。
 - 读取接口契约（`inbound-ops`）与外部集成（`outbound-ops`）确认上线入口、外部服务、密钥与回调。
 - 读取目标文档、项目宪法和关联代码或配置，区分已落盘事实、待确认事项与部署资产现状。
-- 执行部署前读 `DEPLOYMENT.md` §2.1 环境矩阵、§4 standalone 启动、§5.3 dev 发布流程、§6 密钥、§7 资产登记。
+- 执行部署前读 `DEPLOYMENT.md` §2.1 环境矩阵、§4 与 §5 中目标环境的小节、§6 密钥、§7 资产说明。
 - 文档按 L1 → L2 → L3 生成，生成下层文档前先读上层产物；跨文档顺序与漂移清账由 `align-docs` skill 编排。
 - 图使用 D2、Mermaid 或 ASCII 代码块直接写入 Markdown；容器式分层图遵循 `c4-container-diagram` skill，D2
   图保留图名、视角、用途与边界等自描述信息，正文和注释使用中文。
@@ -53,13 +54,15 @@ skill 执行。
 
 ### 部署资产（首次落地）
 
-1. 读源：`DEPLOYMENT.md` §2.1 环境矩阵（环境清单）+ §5.3 发布流程（脚本须实现的接口）+ §7 目录结构约定。
+1. 读源：`DEPLOYMENT.md` §2.1 环境矩阵（环境清单）+ §5.3
+   发布流程（脚本须实现的接口）+ [deploy-assets.md](references/deploy-assets.md) §2（资产结构 SSOT）。
 2. 按环境创建目录与配置：逐环境建 `<env>/` 与 `<env>/.env.<env>`（由 `configs/.env.example` 复制，空值 / 占位）；compose 变量用
    `<env>/.env`（由 `configs/compose.env.example` 复制）；编排复制为 `<env>/docker-compose.<env>.yml`
    ；详见 [references/deploy-assets.md](references/deploy-assets.md)。
 3. 复制脚本参考实现：从 `assets/reference-impl/` 复制 `release-backend.sh` / `release-frontend.sh` / `rollback.sh` 与
    `lib/release-common.sh` 到 `docs/deployment/`，替换配置区（主机走 `remote-shell` 别名或 `.env`）。
-4. 回写登记：把新增资产按「生成 §1 说明书」重建 `DEPLOYMENT.md` §7（路径 / 归属 / 生效机制）。
+4. 回写登记：把新增资产按「生成 §1 说明书」重建 `DEPLOYMENT.md` §7（路径 / 归属 /
+   生效机制）；结构变更同时改 [deploy-assets.md](references/deploy-assets.md) §2。
 5. 走「校验」后报告：生成清单 + `.env` 待补项 + API 记录。
 
 ## 更新
@@ -85,7 +88,7 @@ skill 执行。
 
 | 分诊       | 触发                                                | 动作    |
 |------------|-----------------------------------------------------|---------|
-| 1 执行部署 | 部署 / 发布 / 启动 standalone / 回滚 / 部署状态     | §1 执行 |
+| 1 执行部署 | 部署 / 发布 / 启动指定环境 / 回滚 / 部署状态        | §1 执行 |
 | 2 生成资产 | 项目无部署脚本 / compose，或首次落地部署资产        | §2 生成 |
 | 3 维护资产 | 新增环境 / 改发布流程 / 改 compose / 同步 .env 键集 | §3 更新 |
 | 4 校验     | 校验部署配置（只检不写、非破坏）                    | §4 校验 |
@@ -95,7 +98,7 @@ skill 执行。
 1. 环境确认：读 `DEPLOYMENT.md` §2.1 环境矩阵，列出可用环境，问用户部署到哪个环境、范围（前端 / 后端 / 全部）——未确认前不执行任何部署动作。
 2. commit 询问：问用户「先 commit 再部署」还是「不 commit 直接部署当前代码」；选先 commit 时，须用户显式授权后才执行 commit；选不
    commit 直接部署时，版本核对中 `BUILD_COMMIT` 与本地 HEAD 不一致属预期，报告中如实说明。
-3. 执行：按 `DEPLOYMENT.md` 对应章节执行（dev 发布走 §5.3 一条龙脚本，standalone 启动走 §4），AI 不手拼部署命令；回滚用
+3. 执行：按 `DEPLOYMENT.md` 对应章节执行（发布走 §5.3 一条龙脚本，开发启动走 §4，环境名取 §2.1），AI 不手拼部署命令；回滚用
    `rollback.sh`（切 `current` 旧链节）。
 4. 过期提示：部署脚本会检查历史产物（`current` 之外）Age，超 `RELEASE_RETENTION_DAYS`（默认 30
    天）即提示——向用户报告并询问是否清理（不自行删；用户确认才用 `--prune`）。
@@ -119,8 +122,8 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 说明书侧：
 
 - 应用部署单元与 `docs-application-architecture` 的应用划分一致，部署单元数等于应用数。
-- 环境矩阵、环境拓扑、各环境启动与发布说明相互一致，每个应用的参数、配置文件和健康检查入口齐全；环境名称只使用环境矩阵中的名称，standalone
-  与 dev 的运行形态边界保持一致。
+- 环境矩阵、环境拓扑、各环境启动与发布说明相互一致，每个应用的参数、配置文件和健康检查入口齐全；环境名称只使用环境矩阵中的名称，
+  各环境的运行形态边界保持一致。
 - 版本标识机制明确，采用 SemVer 或 `BUILD_COMMIT` 机制并与发布流程一致，发布流程可定位到实际脚本或命令，回滚方式在部署单元与操作说明中完整可追溯。
 
 资产侧：
@@ -131,7 +134,9 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 
 说明书与资产一致性：
 
-- `DEPLOYMENT.md` §7 登记项与磁盘资产一一对应，无缺失登记、无未登记资产。
+- `docs/deployment/` 磁盘内容与 [deploy-assets.md](references/deploy-assets.md) §2
+  预期资产集逐项对应：无缺失项，无预期外残留（残留即旧资产，提示用户确认后删）。
+- `DEPLOYMENT.md` §7 的说明项与磁盘资产一一对应，无缺失说明、无多余说明。
 - §5.3 描述的发布流程与实际脚本实现的接口一致；环境矩阵中的每个环境都有对应目录与 `.env`。
 - 说明书引用的每条命令、每个脚本路径在资产目录中真实存在且可执行。
 - 接口、集成、应用、配置的关联信息已完成一致性检查。
@@ -140,7 +145,7 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 
 - 部署命令 SSOT 在 `DEPLOYMENT.md` §5.3 与 §4，本 skill 不复制命令正文、不手拼部署命令。
 - 部署脚本参考实现含占位值，不得直接运行 `assets/reference-impl/` 副本（非运行实例）。
-- 环境名唯一词表 = `DEPLOYMENT.md` §2.1（standalone / dev / prod），不新建命名；一次操作绑定一个环境。
+- 环境名唯一词表 = `DEPLOYMENT.md` §2.1 的环境矩阵，不新建命名、不预设具体环境名；一次操作绑定一个环境。
 - 环境 host 不写死，前端入口和测试连接参数通过工具配置或已登记的环境配置提供。
 - 只写 `docs/deployment/DEPLOYMENT.md` 与 `docs/deployment/`；不修改应用业务代码。
 - 文档只写项目当前事实；历史与决策原因归 Git 历史，不在正文中保留过期占位。
