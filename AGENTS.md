@@ -18,13 +18,13 @@ skills/
 `skills/project-scaffold/references/skill-templates/` 是安装目标模板，全部不是本仓库的活动 Skill，按产物形态分三类，目录布局与分类一一对应（A
 类在 `docs/`、B 类在 `ops/`、C 类在根）：
 
-- A 类 · 纯文档（10，前缀 `docs-`）：产物只有面向人读的说明书，无资产、无状态机、无门禁。其中 9 个是链内层次文档 （分属 L1 / L2 /
-  L3），1 个是链外过程态（`docs-changes/`）。`docs-business` /
+- A 类 · 纯文档（9，前缀 `docs-`）：产物只有面向人读的说明书，无资产、无状态机、无门禁。其中 7 个是链内层次文档（分属 L1 / L2 /
+  L3），2 个是链外过程态（`docs/changes/` 变更单篇、`docs/drift/` 漂移清单）。`docs-business` /
   `docs-application-architecture` / `docs-data-architecture` / `docs-technology-architecture` / `docs-domain` /
-  `docs-deep-dives` / `docs-research` / `docs-structure` / `docs-code-guide` / `docs-changes`；
+  `docs-structure` / `docs-code-guide` / `docs-changes` / `docs-draft`；
 - B 类 · 文档 + 资产（5，后缀 `-ops`）：一个能力域一个 skill，同时管辖说明书、资产与该域的执行动作；全部链外。`inbound-ops` /
   `outbound-ops` / `deploy-ops` / `test-ops` / `tools-ops`；
-- C · 编排（1）：`align-docs`，只调度 A / B 类，不生产任何层次文档或资产；只自持 `docs/drift/` 过程态清单。
+- C · 编排（1）：`align-docs`，只调度 A / B 类，不生产任何文档正文或资产，连过程态清单也交 `docs-draft` 落盘。
 
 旧的 `skills/doc-arch-rules/` 与其 `meta.json` 已退休，不要恢复或重新引用它们。过程态产物一律落在 `docs/` 内：变更在
 `docs/changes/`、漂移清单在 `docs/drift/`、DoD 草稿在 `docs/test/do-drafts/`；安装器不再做旧布局迁移检测。

@@ -33,11 +33,10 @@ export const SKILL_GROUPS = [
             "docs-data-architecture",
             "docs-technology-architecture",
             "docs-domain",
-            "docs-deep-dives",
-            "docs-research",
             "docs-structure",
             "docs-code-guide",
             "docs-changes",
+            "docs-draft",
         ],
     },
     {

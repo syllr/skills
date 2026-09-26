@@ -32,8 +32,8 @@ description: 管理 docs/L1/BUSINESS.md（业务流程）的读取、生成、�
 ## 读取
 
 - `align-docs` skill 是跨文档编排器；本 skill 属 L1，生成前先读取项目宪法作为 L0 基线。
-- 生成前读取 L2 的领域模型（`docs-domain`）的业务对象与领域操作、应用架构（`docs-application-architecture`）、
-  集成契约（`outbound-ops`）与深潜（`docs-deep-dives`）的关联产物。
+- 生成前读取 L2 的领域模型（`docs-domain`）的业务对象与领域操作、应用架构（`docs-application-architecture`）、 集成契约（
+  `outbound-ops`）的关联产物。
 - 项目文档按 L1 → L2 → L3 的顺序生成；生成下层文档前先读上层产物。
 - 已有 BUSINESS.md 时先提取仍有效的业务事实、角色关系、能力状态、故事与旅程，不沿用已失效的结构或描述。
 
@@ -74,7 +74,7 @@ description: 管理 docs/L1/BUSINESS.md（业务流程）的读取、生成、�
   详情以其为准。
 - `docs-application-architecture` skill：同步能力与模块的关联、应用边界和技术边界。
 - `outbound-ops` skill：业务对象跨系统流向与外部单据必须和接口契约一致。
-- `docs-deep-dives` skill：高复杂度能力可下沉详情，本文档保留业务层摘要。
+- 高复杂度能力在本章节目录内单列小节展开，不外链到其他目录。
 - `docs-technology-architecture` skill：需要解释系统后端技术栈时读取其技术架构。
 - `docs-data-architecture` skill：需要展开后端数据存储时读取其数据架构。
 - 标为待规划的能力不得在 `docs-domain`、`inbound-ops`、`docs-application-architecture`、`docs-structure` 或 openapi

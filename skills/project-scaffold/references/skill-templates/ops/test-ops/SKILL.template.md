@@ -133,7 +133,7 @@ skill 自持（[references/case-writing.md](references/case-writing.md)：资产
 
 - 本 skill 是测试用例的唯一入口：用例卡结构与写卡规范由本 skill 自持（references/case-writing.md）；新增/更新/删除/执行一律经本
   skill，AI 不得自动创建任何用例（新增一律经 DoD 晋升）
-- **DoD 草稿在 `docs/test/do-drafts/`（过程态）**：与 `docs/changes/`、`docs/drift/`
+- DoD 草稿在 `docs/test/do-drafts/`（过程态）：与 `docs/changes/`、`docs/drift/`
   同性质——使命完成后由用户决定删除或保留；不入正式库、不被正式用例体系引用；晋升后才进 `docs/test/test-cases/`
 - 工具实现与调用归 tools-ops skill：本 skill 只做执行编排（环境/顺序/策略/记录），不实现工具、不绕过工具直连被测系统
 - 用例执行的环境权威在 DEPLOYMENT（§2.1 环境矩阵 / §6/§7 变量）；`.env.<环境名>` 是其副本

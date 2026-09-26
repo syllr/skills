@@ -3,7 +3,7 @@ name: project-scaffold
 description: >
   项目文档体系引导器（引导器 skill）——把本仓库持有的两类模板资产安装到目标项目的固定路径：
   ① 项目宪法（references/agents-templates/AGENTS.md，安装到项目根 AGENTS.md）；
-  ② 全部 Skill（references/skill-templates/**，安装到项目级 .opencode/skills/：A 类纯文档 docs-* 10 个 + B 类文档资产 *-ops 5 个 + C 类编排 align-docs 1 个）。
+  ② 全部 Skill（references/skill-templates/**，安装到项目级 .opencode/skills/：A 类纯文档 docs-* 9 个 + B 类文档资产 *-ops 5 个 + C 类编排 align-docs 1 个）。
   提供检查/安装/更新：--check 只报告四态、--apply 安装缺失并刷新受管区块与受管 frontmatter 键（区块外用户内容保留）、--force 覆盖无标记区冲突项；区块外与无标记区绝不覆盖，根 AGENTS.md 冲突必须显式处理。
   本 skill 只安装项目宪法与 Skill 资产，不生成业务文档（docs/** 正文），不负责文档-代码对齐/漂移处理/文档初始化/目录同步（归 align-docs skill）。
   仅用户手动调用时触发，不自动触发。
@@ -52,7 +52,7 @@ Skill + B 类文档资产 Skill + C 类编排器」。产物落在目标项目�
 
 落地到 `.opencode/skills/<name>/`；`SKILL.template.md` → `SKILL.md`，其余条目（`references/`、`assets/`）保持相对目录结构原样复制。
 
-### A 类 · 纯文档（`docs-*`，共 10 个）
+### A 类 · 纯文档（`docs-*`，共 9 个）
 
 产物只有面向人读的说明书，没有资产、状态机与门禁。每个目录含两份资产：`SKILL.template.md`（执行流程：读取 / 生成 / 更新 /
 联动 / 校验）与 `assets/TEMPLATE.md`（目标文档骨架模板）；生成文档时先读模板再写，骨架内容只放模板、不写进 SKILL。
@@ -64,11 +64,10 @@ Skill + B 类文档资产 Skill + C 类编排器」。产物落在目标项目�
 | [docs-data-architecture](references/skill-templates/docs/docs-data-architecture/SKILL.template.md)               | docs/L2/DATA-ARCHITECTURE.md        |
 | [docs-technology-architecture](references/skill-templates/docs/docs-technology-architecture/SKILL.template.md)   | docs/L2/TECHNOLOGY-ARCHITECTURE.md  |
 | [docs-domain](references/skill-templates/docs/docs-domain/SKILL.template.md)                                     | docs/L2/domain/                     |
-| [docs-deep-dives](references/skill-templates/docs/docs-deep-dives/SKILL.template.md)                             | docs/L2/deep-dives/                 |
-| [docs-research](references/skill-templates/docs/docs-research/SKILL.template.md)                                 | docs/L2/research/                   |
 | [docs-structure](references/skill-templates/docs/docs-structure/SKILL.template.md)                               | docs/L3/STRUCTURE.md                |
 | [docs-code-guide](references/skill-templates/docs/docs-code-guide/SKILL.template.md)                             | docs/L3/CODE-GUIDE.md               |
 | [docs-changes](references/skill-templates/docs/docs-changes/SKILL.template.md)                                   | docs/changes/                       |
+| [docs-draft](references/skill-templates/docs/docs-draft/SKILL.template.md)                                       | docs/drift/                         |
 
 ### B 类 · 文档 + 资产（`*-ops`，共 5 个）
 
@@ -118,7 +117,7 @@ node scripts/install.mjs --apply --force --project-root <项目根>     # 覆盖
 ## 固定目标路径
 
 - 项目宪法：`references/agents-templates/AGENTS.md` → `<项目根>/AGENTS.md`（1 个）。
-- Skill 集：`references/skill-templates/<分组>/<name>/` → `<项目根>/.opencode/skills/<name>/`（见「资产二」表，共 16 个：10 个
+- Skill 集：`references/skill-templates/<分组>/<name>/` → `<项目根>/.opencode/skills/<name>/`（见「资产二」表，共 15 个：9 个
   A 类 + 5 个 B 类 + 1 个 C 类）。
 - 一律项目级：写入目标项目树与项目级 `.opencode/skills/`，不写全局目录。
 - 安装器只写上述固定路径，不触碰其他文件。
@@ -158,8 +157,8 @@ node scripts/install.mjs --apply --force --project-root <项目根>     # 覆盖
 
 安装到 `.opencode/skills/` 的 16 个 Skill：
 
-1. A 类 · 纯文档（10，管辖见「资产二」表）：`docs-business` / `docs-application-architecture` / `docs-data-architecture` /
-   `docs-technology-architecture` / `docs-domain` / `docs-deep-dives` / `docs-research` / `docs-structure` /
+1. A 类 · 纯文档（8，管辖见「资产二」表）：`docs-business` / `docs-application-architecture` / `docs-data-architecture` /
+   `docs-technology-architecture` / `docs-domain` / `docs-structure` /
    `docs-code-guide` / `docs-changes`。
 2. B 类 · 文档 + 资产（5）：`inbound-ops`（L3 Inbound 说明书 + openapi 契约 + 导出执行）、`outbound-ops`（L3 Outbound 说明书 +
    外部服务契约）、`deploy-ops`（L3 部署说明书 + 部署资产 + 部署执行）、`test-ops`（用例卡规范 + 用例 + 台账 + 执行）、
@@ -173,7 +172,7 @@ node scripts/install.mjs --apply --force --project-root <项目根>     # 覆盖
 - 文档-代码对齐、漂移处理、文档初始化、旧文档清理与融合，全部归 `align-docs` skill（编排器，按 L1→L2→L3 调用各 `docs-*`
   skill）。
 - 用户需要「对齐文档与代码 / 处理漂移 / 初始化 docs / 同步目录」时直接调 `align-docs`——本 skill 不承载、不路由、不做这些事。
-- 边界一句话：本 skill 只「安装资产」，`align-docs` 才「按资产指引维护文档」。
+- 边界一句话：本 skill 只「安装模板资产」，`align-docs` 才「按文档清单编排维护文档」；链外资产由各自 B 类 skill 校验。
 
 ## 验证命令
 

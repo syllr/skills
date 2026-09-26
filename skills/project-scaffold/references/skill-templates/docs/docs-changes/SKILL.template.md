@@ -40,8 +40,8 @@ description: 维护 docs/changes/ 变更规划目录（过程态）——读取�
 ## 联动
 
 - 目标层文档由对应 skill 维护：L1 业务流程 `docs-business`；L2 应用架构 `docs-application-architecture`、数据架构
-  `docs-data-architecture`、技术架构 `docs-technology-architecture`、领域 `docs-domain`、深潜 `docs-deep-dives`、调研
-  `docs-research`；链外契约接口 `inbound-ops`、集成 `outbound-ops`、部署 `deploy-ops`；L3 目录结构 `docs-structure`、代码规范
+  `docs-data-architecture`、技术架构 `docs-technology-architecture`、领域 `docs-domain`；链外契约接口 `inbound-ops`、集成
+  `outbound-ops`、部署 `deploy-ops`；L3 目录结构 `docs-structure`、代码规范
   `docs-code-guide`。
 - 验收用例经 `test-ops` skill；工具访问经 `tools-ops` skill。
 - 文档与代码漂移交 `align-docs` skill 分诊和修复，文档体系生成与初始化也由其编排。

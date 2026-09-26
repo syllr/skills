@@ -7,7 +7,8 @@ description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/contra
 
 ## 定位与管辖文档
 
-本 skill 负责 L3 契约层的 Outbound 半边：`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`。`OUTBOUND.md`
+本 skill 负责 L3 契约层的 Outbound 半边：`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`。
+`OUTBOUND.md`
 承载外部集成说明书，并以其 §3 契约文件目录承担契约目录的唯一清单；契约目录按外部服务各放一份 kebab-case 命名的
 `{service}.md`，不设索引文件。Inbound 半边（`INBOUND.md` 与 `openapi/`）归 `inbound-ops` skill。
 
@@ -40,7 +41,7 @@ description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/contra
 2. 集成客户端、Adapter 或第三方官方 spec 变化时，更新对应服务契约文件；接口列表、接口定义、错误码和调用方按同一变更同步。
 3. 新增、删除或迁移服务契约文件时，同步 `OUTBOUND.md` 的服务概览、§3 契约文件目录及全仓引用。
 4. 外部依赖、调用方应用、外部数据资产或领域 Mapper 变化时，联动对应上游文档并重新检查契约术语与归属。
-5. 复杂场景需要单独展开时交由 `docs-deep-dives` skill；跨文档漂移交由 `align-docs` skill。
+5. 复杂场景在契约文件内单列小节展开；跨文档漂移交由 `align-docs` skill。
 6. 更新后重新执行完成判定，确认索引与实际文件一一对应，且旧文件路径没有残留引用。
 
 ## 联动
@@ -50,7 +51,7 @@ description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/contra
   skill。
 - 外部数据资产与字段术语变化时，联动 `docs-data-architecture` skill；部署密钥、回调或连接配置变化时，联动 `deploy-ops`
   skill。
-- Inbound 接口变化时与 `inbound-ops` skill 保持方向边界；复杂业务场景下沉 `docs-deep-dives` skill。
+- Inbound 接口变化时与 `inbound-ops` skill 保持方向边界；复杂业务场景在契约文件内单列小节展开。
 - 文件迁移或删除后同步结构文档、上游文档与 `OUTBOUND.md`；跨文档漂移由 `align-docs` skill 编排。
 
 ## 完成判定
@@ -65,7 +66,7 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 - 契约来源为集成客户端或 Adapter 接口定义与第三方官方 spec；无实现时已先在代码中定义客户端接口骨架。
 - 契约文件包含集成形态、接入方式、调用面接口列表、逐接口定义、集中错误码与调用方；状态值属于 mock 中、已交付、已上线三态。
 - 每个接口的调用面、方法签名、输入、返回、幂等语义和特殊失败处理相互对应，错误码引用无死链。
-- 时序图使用四参与者结构，接口场景映射保持紧凑；复杂场景已按需下沉 `docs-deep-dives`。
+- 时序图使用四参与者结构，接口场景映射保持紧凑；复杂场景已按需单列小节展开。
 - `OUTBOUND.md` §3 契约文件目录与目录内契约文件一一对应，不复制接口、字段或错误码。
 - 迁移或删除后全仓旧名残留为零，Inbound 与 Outbound 方向不混淆，基础设施未被误列为外部集成。
 
@@ -75,6 +76,6 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 - `§3` 只列本系统实际调用的接口，不替外部服务维护完整 API；调用面变化时同步接口列表与接口定义。
 - 错误码集中在 `§5`，接入方式和接口定义不重复维护错误码表。
 - 契约状态只使用 mock 中、已交付、已上线三态；已上线时省略 Mock 实现与切换方式字段。
-- 复杂场景的长篇叙述和流程图下沉 `docs-deep-dives` skill，接口级硬性语义保留在契约文件。
+- 复杂场景的长篇叙述和流程图在本文件内单列小节展开，接口级硬性语义保留在契约文件。
 - 数据库、对象存储和缓存属于基础设施，不属于外部集成；无集成时保留说明书的总览与暂无占位。
 - 正文不使用加粗或 emoji，内容条目不设顺序编号，不自动 commit 或 push。

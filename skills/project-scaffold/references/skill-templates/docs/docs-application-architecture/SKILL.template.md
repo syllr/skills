@@ -28,9 +28,8 @@ description: 维护 L2 应用架构文档 docs/L2/APPLICATION-ARCHITECTURE.md �
    c4-container-diagram skill 绘制，D2 图保留图名、视角、用途和边界注释。
 4. 实例正文只写业务内容，不写模板指引、占位符、编码约定、工具说明、SSOT 标签或治理套话，不使用加粗和 emoji；模板未定义的
    frontmatter、状态、影响层等元信息不补写。
-5. 跨模块交互、永久参数、精度分层、坑位四类复杂度中命中两项时，将详情下沉到 docs/L2/deep-dives/，由 docs-deep-dives skill
-   生成或维护；本文档只保留精简正文，不反向引用 deep-dives。
-6. 应用数量、前后端边界或是否单列 deep-dives 确有歧义时，询问用户确认。
+5. 跨模块交互、永久参数、精度分层、坑位四类复杂度中命中两项时，在本文档内单列小节展开并精简正文，不另起目录、不外链。
+6. 应用数量、前后端边界或复杂度是否需单列小节确有歧义时，询问用户确认。
 7. 完成后执行联动更新和完成判定。
 
 ## 更新流程
@@ -39,7 +38,7 @@ description: 维护 L2 应用架构文档 docs/L2/APPLICATION-ARCHITECTURE.md �
 2. 保留有来源支撑的有效信息，但按模板重建结构，不沿用与模板冲突的旧章节。
 3. 重新核对应用、容器、外部系统和用户层的分类，容器判为系统内自行运维管理的资源，外部系统判为边界外由他人提供的服务。
 4. 重新核对应用内模块的知识域归属与命名，使模块命名和应用划分保持一致。
-5. 删除或迁移内容后删净旧节并连续重编号；重新执行 deep-dives 判定与行数收敛。
+5. 删除或迁移内容后删净旧节并连续重编号；重新执行复杂度单列判定与行数收敛。
 6. 读取关联文档判断影响，完成联动后逐项执行完成判定。
 
 ## 联动
@@ -50,7 +49,7 @@ description: 维护 L2 应用架构文档 docs/L2/APPLICATION-ARCHITECTURE.md �
 - docs/L2/domain/ 各域文档承载领域聚合与能力到聚合的映射，由 docs-domain skill 维护，本文档只引用不复制。
 - docs/deployment/DEPLOYMENT.md 的部署单元来自应用划分，应用增减时由 deploy-ops skill 同步部署文档。
 - 接口契约归 docs/contracts/INBOUND.md 与 docs/contracts/OUTBOUND.md，由 inbound-ops 与 outbound-ops skill 维护。
-- 下沉到 docs/L2/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
+- 高复杂度内容在本目录内单列小节展开，不外链到其他目录；跨文档编排与漂移清账归 align-docs skill。
 
 ## 完成判定
 
@@ -63,7 +62,7 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 - 应用内模块按知识域划分，不把能力直接改名为模块；模块命名与应用划分一致，模块表只作索引而不重复建表。
 - 能力到领域聚合的映射没有在本文档重复，「待规划」能力没有对应应用模块或层节点。
 - 两张 C4 图分别标明 Context 图和容器图，图为可检索文本且 D2 图元信息完整。
-- 没有指向 deep-dives 的反向引用，且指向 deep-dives 的引用能定位到具体单篇。
+- 高复杂度内容在本目录内单列小节，没有外链到其他目录。
 
 ## 边界
 
