@@ -51,7 +51,7 @@ skill。
 | 契约 | `docs/contracts/INBOUND.md`                                               | `docs/contracts/openapi/`            | 导出产物结构、导出命令、维护规范、CI 防漂移 pipeline、协议支持表、端点计数                    | inbound-ops  |
 | 契约 | `docs/contracts/OUTBOUND.md`                                              | `docs/contracts/outbound-contracts/` | 外部服务总览、逐服务概览与契约状态、契约文件目录                                              | outbound-ops |
 | 部署 | `docs/deployment/DEPLOYMENT.md`                                           | `docs/deployment/`                   | 概述、环境矩阵、拓扑、部署单元、参数、发布流程、密钥、资产登记                                | deploy-ops   |
-| 测试 | `docs/test/test-cases/`（正式用例卡）+ `docs/test/do-drafts/`（DoD 草稿） | `docs/test/`                         | 测试用例全生命周期：DoD 草稿 ad-hoc 验证 → 经用户认可晋升为正式用例卡；不自动晋升、不自动清理 | test-ops     |
+| 测试 | `docs/test/test-cases/`（正式用例卡）+ `docs/test/do-drafts/`（DoD 草稿） | `docs/test/test-records/`            | 测试用例全生命周期：DoD 草稿 ad-hoc 验证 → 经用户认可晋升为正式用例卡；不自动晋升、不自动清理 | test-ops     |
 | 工具 | `docs/tools/TOOLS.md`                                                     | `docs/tools/`                        | 工具集说明书（命令、退出码、环境变量）                                                        | tools-ops    |
 | 变更 | `docs/changes/`（每变更一单篇 `NNNN-{kebab-case}.md`）                    | —                                    | 变更规划（完成后沉淀进对应层文档并删除）                                                      | docs-changes |
 | 漂移 | `docs/drift/`（每文档一份 `<doc>.md`）                                    | —                                    | 漂移清单：本 skill 分诊后交 `docs-draft` 落盘，处置消费；全部清账后删除该文件与空目录         | docs-draft   |

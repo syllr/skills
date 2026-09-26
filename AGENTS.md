@@ -1,7 +1,6 @@
 # Agent Skills 仓库指令
 
-本仓库维护一组可复用的 Agent Skill。当前可执行入口是各 Skill 目录、验证命令，以及 `project-scaffold` 的 Node
-安装器；仓库根目录没有统一的构建、测试或包管理入口。
+本仓库维护一组可复用的 Agent Skill。当前可执行入口是各 Skill 目录与验证命令；仓库根目录没有统一的构建、测试或包管理入口。
 
 ## 当前结构
 
@@ -27,33 +26,19 @@ skills/
 - C · 编排（1）：`align-docs`，只调度 A / B 类，不生产任何文档正文或资产，连过程态清单也交 `docs-draft` 落盘。
 
 旧的 `skills/doc-arch-rules/` 与其 `meta.json` 已退休，不要恢复或重新引用它们。过程态产物一律落在 `docs/` 内：变更在
-`docs/changes/`、漂移清单在 `docs/drift/`、DoD 草稿在 `docs/test/do-drafts/`；安装器不再做旧布局迁移检测。
+`docs/changes/`、漂移清单在 `docs/drift/`、DoD 草稿在 `docs/test/do-drafts/`；project-scaffold 不再做旧布局迁移检测。
 
 ## 当前初始化入口
 
-`project-scaffold` 目前仍是 Skill，不是 npm 插件。执行安装器时必须从仓库根传入目标项目根：
+`project-scaffold` 是纯指令 Skill，不是 npm 插件，也没有安装脚本或命令行参数。用户手动调用该 Skill，由 AI 读取项目现状并写文件：
 
-```bash
-# 只读检查，不写文件
-node skills/project-scaffold/scripts/install.mjs --check --project-root <path>
-
-# 安装缺失项、更新 AGENTS 管理区块
-node skills/project-scaffold/scripts/install.mjs --apply --project-root <path>
-
-# 显式覆盖冲突项
-node skills/project-scaffold/scripts/install.mjs --apply --force --project-root <path>
-
-```
-
-安装器行为：
-
-- `references/agents-templates/AGENTS.md` 安装到目标项目根 `AGENTS.md`（「项目宪法」章节），当前 1 个文件；
+- `references/agents-templates/AGENTS.md` 并入目标项目根 `AGENTS.md`，即「项目宪法」章节（当前 1 个文件）；
 - `references/skill-templates/<分组>/<name>/` 整目录复制到目标项目 `.opencode/skills/<name>/`；
-- `SKILL.template.md` 在目标项目安装时改名为 `SKILL.md`；
-- AGENTS 管理区块标记为 `<!-- project-scaffold:begin -->` 与 `<!-- project-scaffold:end -->`；
-- 已有管理区块时只替换区块，区块外内容保留；
-- 无管理区块或 Skill 内容冲突时默认不覆盖，只有 `--force` 才覆盖；
-- 安装器只写固定资产路径，不写业务文档正文、业务代码或 Git 状态。
+- `SKILL.template.md` 在目标项目落位时改名为 `SKILL.md`；
+- AGENTS 受管区块标记为 `<!-- project-scaffold:begin -->` 与 `<!-- project-scaffold:end -->`；
+- 已有受管区块时只替换区块内正文，区块外内容保留；无区块时在末尾追加区块，不覆盖既有内容；
+- Skill 目录归该 Skill 所有、整目录覆盖（可重入）；
+- 只写固定资产路径，不写业务文档正文、业务代码或 Git 状态。
 
 ## `project-init` 产品目标
 
@@ -64,7 +49,7 @@ node skills/project-scaffold/scripts/install.mjs --apply --force --project-root 
 → 分析项目
 → 生成项目宪法（根 AGENTS.md）
 → 安装 Skill 集（A 类纯文档 + B 类文档资产 + C 类编排）
-→ 处理冲突、旧布局和迁移
+→ 并入项目宪法受管区块、覆盖 Skill 目录
 ```
 
 设计约束：
@@ -72,7 +57,6 @@ node skills/project-scaffold/scripts/install.mjs --apply --force --project-root 
 - 目标是“项目宪法 + A 类纯文档 Skill + B 类文档资产 Skill + C 类编排器”的完整项目基础架构，不只是文档模板；
 - 如果改成 OpenCode 插件，用 `config` hook 注册内置 Skill/Command，Agent 展开指令后分析项目并生成项目宪法；
 - 当前尚未实现 `/project-init` 或插件入口；不要把设计目标写成当前可用命令；
-- 插件化时保留 `install-core.mjs` 作为确定性文件操作核心，增加打包/Command/工具外壳，不要重写模板和冲突语义；
 - 目标是让 Agent 根据项目事实生成/更新项目宪法与各文档 skill 管辖的文档；不要把固定模板误当成最终项目事实；
 - 命令名、是否覆盖 `/init`、是否与其他初始化命令冲突，在实现前必须明确并做冲突检测。
 
@@ -108,20 +92,9 @@ node skills/project-scaffold/scripts/install.mjs --apply --force --project-root 
 # 单个 Skill 合规校验
 uvx --from skills-ref agentskills validate ./skills/<skill-name>
 
-# project-scaffold 安装器测试（零依赖，测试只使用系统临时目录）
-node --test skills/project-scaffold/scripts/install.test.mjs
-
-# Node 语法检查
-node --check skills/project-scaffold/scripts/install-core.mjs
-node --check skills/project-scaffold/scripts/install-cli.mjs
-node --check skills/project-scaffold/scripts/install.mjs
-
 # 逐个校验所有 Skill
 for d in skills/*/; do uvx --from skills-ref agentskills validate "$d" || exit 1; done
 ```
-
-安装器测试覆盖首次安装、幂等、AGENTS 管理区块、Skill 冲突、敏感信息拒绝和旧布局迁移。临时项目必须使用 `/tmp` 或
-`mktemp -d`，测试后清理。
 
 ## 校验与生效
 
@@ -134,6 +107,7 @@ for d in skills/*/; do uvx --from skills-ref agentskills validate "$d" || exit 1
 - 不修改 `improve/`、`demo/`、`.codegraph/` 等非 Skill 目录；
 - 改动模板时同步更新对应 `SKILL.md` 的文件清单、链接和使用说明；
 - 发现文档与脚本冲突时，以可执行脚本、配置和测试为准，再更新文档；
-- 新增/删除 Skill 模板时同时更新 `references/skill-templates/<分组>/`、`install-core.mjs` 的 `SKILL_GROUPS`、安装器测试与
-  `SKILL.md` 资产表；新增/删除 A 类 skill 还要同步根 `AGENTS.md` 的 Skill 路由表；
-- 任何会改变项目文件的行为都必须先有明确的 check/apply/force 边界，不能静默覆盖。
+- 新增/删除 Skill 模板时同时更新 `references/skill-templates/<分组>/` 与 `SKILL.md` 资产表；新增/删除 A 类 skill 还要同步根
+  `AGENTS.md` 的 Skill 路由表；
+- 任何会改变项目文件的行为都必须边界清晰：`.opencode/skills/**` 归 project-scaffold 所有（整目录覆盖、可重入），根 AGENTS.md
+  只在受管区块内写入、区块外绝不触碰、无区块时追加。
