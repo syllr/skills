@@ -5,9 +5,13 @@
 
 ## 1. 文档体系与目录架构
 
-文档按 L0-L4 + common 分层，依赖方向 L0 → L1 → L2 → L3 → L4 单向向下，common
-贯穿所有层。生成顺序自上而下逐层串行：生成某层文档前先读上一层已落盘产物，本层完成后方可进入下一层，common
-最后。各文档的读取 / 生成 / 更新走对应 `docs-*` skill（见 §3）。
+文档按 L0-L3 + common 分层。是否在链上只有一条判据：产物里有没有资产。纯文档（只有面向人读的
+.md）在链上，有资产（可执行脚本、compose、契约文件、机器可读契约、用例卡）的文档与其资产同处一个链外目录。
+
+链上只有一条 L1 → L2 → L3，两个遍历方向：生成自上而下 L1 → L2 → L3（生成某层前先读上一层已落盘产物，本层完成才进下一层）；变更自下而上
+L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上判定该层事实是否随之变化，要改就调该层 skill 改）。L3 是事实起点，L1
+是抽象结论。`docs/contracts/`、`docs/deployment/`、`docs/test/`、`docs/tools/` 是链外产物域，`docs/changes/`、`docs/drift/`
+是过程态台账。各文档的读取 / 生成 / 更新走对应 skill（见 §3）。
 
 ```
 项目根/
@@ -19,20 +23,18 @@
     │   ├── APPLICATION-ARCHITECTURE.md   应用架构
     │   ├── DATA-ARCHITECTURE.md          数据架构
     │   ├── TECHNOLOGY-ARCHITECTURE.md    技术架构
-    │   ├── domain/          领域模型：DOMAIN-MODEL.md + 一域一文
-    │   ├── deep-dives/      系统级问题深潜：每问题一单篇
-    │   └── research/        选型 / 对比 / 验证调研：每主题一单篇
-    ├── L3/                  契约
-    │   ├── INBOUND.md       对外提供接口（Inbound）+ openapi/
-    │   └── OUTBOUND.md      被调用第三方接口（Outbound）+ outbound-contracts/
-    ├── L4/                  部署与验证
-    │   ├── DEPLOYMENT.md    部署发布 + deployment/
-    │   └── test/            测试用例 test-cases/ + 执行台账 test-records/ + DoD 草稿 do-drafts/
-    ├── tools/               项目工具集（AI 访问系统的唯一通道）
+    │   └── domain/          领域模型：DOMAIN-MODEL.md + 一域一文
+    ├── L3/                  事实层（变更起点）
+    │   └── STRUCTURE.md     目录结构与文档 ↔ 代码映射
+    ├── contracts/          契约：INBOUND.md + openapi/ · OUTBOUND.md + outbound-contracts/
+    ├── deployment/         部署：DEPLOYMENT.md + 部署资产（脚本 / compose / 多环境 .env）
+    ├── test/                测试：test-cases/ 用例卡 + test-records/ 执行台账 + do-drafts/ 草稿
+    ├── tools/               项目工具集：TOOLS.md（说明书）+ Node CLI（AI 访问系统的唯一通道）
     ├── changes/             变更规划：每变更一单篇（过程态，完成后删除）
     ├── drift/               漂移清单：每文档一份（过程态，全部清账后删除）
-    └── common/              贯穿层
-        ├── STRUCTURE.md     目录结构与文档 ↔ 代码映射
+    └── common/              贯穿层（跨层专题，链上各层变化后回看）
+        ├── deep-dives/      系统级问题深潜：每问题一单篇
+        ├── research/        选型 / 对比 / 验证调研：每主题一单篇
         └── CODE-GUIDE.md    代码规范
 ```
 
@@ -44,7 +46,7 @@
 
 - 代码是唯一事实：文档与注释是代码的投影，与代码冲突时改文档 / 注释，不改代码；代码与代码的冲突由 Git 历史裁决。
 - 同一信息只在一个文档维护，其他文档引用不复制；发现重复即归并到唯一源，其余改为引用。
-- 可点击导航链接只允许上层指向下层（L0 / L1 可链 L2 / L3 / L4，下层不链回上层）；下层引用上层内容只做精简文字提及（如「见
+- 可点击导航链接只允许上层指向下层（L0 / L1 可链 L2 / L3，下层不链回上层）；下层引用上层内容只做精简文字提及（如「见
   §X」）。
 - 差异主动修复：执行任何操作（读取 / 变更）时发现文档 / 注释与代码有差异，即主动修复文档 / 注释（不影响运行，无需用户授权）。
 
@@ -90,6 +92,12 @@
 - 图型选型：容器式分层图（多层大容器嵌套）用 D2；流程图 / 状态图 / 时序图 / 类图 / 结构拓扑图用 Mermaid；目录树用
   ASCII；渲染环境不可用时退化为 ASCII。
 - 文档与注释全中文；正文禁用加粗与 emoji。
+- 正文只写当前态，不留模板痕迹：不得出现模板的说明文字、未替换的 `{占位}` 或 `<占位>`、未替换的占位符与待填标记。
+- 正文不写治理套话与固定元信息（不出现「本文档只做…」「与 X 分工」「引用不复制」「固定元信息」「固定画法」这类声明）。
+- 不出现 `SSOT`、单一事实源、唯一事实源字样；事实来源靠文档结构表达，不靠标签声明。
+- 章节编号连续不跳号（3.3 之后不得直接 3.6），删除或迁移章节后重编号并清理旧引用。
+- 跨文档用相对 Markdown 链接，链接目标与 `§章节号` 必须真实存在；删除章节后不留指向它的引用。
+- 标题层级与层级顺序遵循该文档的骨架模板；不补写骨架未定义的 frontmatter 或其他元信息块。
 
 ---
 
@@ -108,16 +116,16 @@ Skill 分三类，命名即类型：
 | docs-data-architecture        | A    | docs/L2/DATA-ARCHITECTURE.md        | —                                                                      |
 | docs-technology-architecture  | A    | docs/L2/TECHNOLOGY-ARCHITECTURE.md  | —                                                                      |
 | docs-domain                   | A    | docs/L2/domain/                     | —                                                                      |
-| docs-deep-dives               | A    | docs/L2/deep-dives/                 | —                                                                      |
-| docs-research                 | A    | docs/L2/research/                   | —                                                                      |
-| docs-structure                | A    | docs/common/STRUCTURE.md            | —                                                                      |
+| docs-deep-dives               | A    | docs/common/deep-dives/             | —                                                                      |
+| docs-research                 | A    | docs/common/research/               | —                                                                      |
+| docs-structure                | A    | docs/L3/STRUCTURE.md                | —                                                                      |
 | docs-code-guide               | A    | docs/common/CODE-GUIDE.md           | —                                                                      |
 | docs-changes                  | A    | docs/changes/                       | —                                                                      |
-| inbound-ops                   | B    | docs/L3/INBOUND.md                  | docs/L3/openapi/                                                       |
-| outbound-ops                  | B    | docs/L3/OUTBOUND.md                 | docs/L3/outbound-contracts/                                            |
-| deploy-ops                    | B    | docs/L4/DEPLOYMENT.md               | docs/L4/deployment/                                                    |
+| inbound-ops                   | B    | docs/contracts/INBOUND.md           | docs/contracts/openapi/                                                |
+| outbound-ops                  | B    | docs/contracts/OUTBOUND.md          | docs/contracts/outbound-contracts/                                     |
+| deploy-ops                    | B    | docs/deployment/DEPLOYMENT.md       | docs/deployment/                                                       |
 | test-ops                      | B    | 用例卡写卡规范（本 skill 自持）     | docs/test/test-cases/ + docs/test/test-records/ + docs/test/do-drafts/ |
-| tools-ops                     | B    | docs/tools/README.md                | docs/tools/（Node CLI）                                                |
+| tools-ops                     | B    | docs/tools/TOOLS.md                 | docs/tools/（Node CLI）                                                |
 | align-docs                    | C    | docs/drift/（过程态清单，自持）     | —                                                                      |
 
 ## 4. 通用纪律

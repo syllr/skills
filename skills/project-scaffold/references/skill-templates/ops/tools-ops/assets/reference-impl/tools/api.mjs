@@ -2,7 +2,7 @@
 // api.mjs —— 后端契约直调工具（入口①：被测系统本身）
 // 形态：swagger-client 运行时直读契约 runner——AI 只需 operationId + 扁平参数值，
 // 参数按 spec 自动归位到 path/query/header，requestBody 单独传；拼错 operationId/缺必填 fail-fast，不发脏请求。
-// 契约源：docs/L3/openapi/（OpenAPI 3.1 多文件）→ 首次调用自动 redocly bundle 并缓存（源文件变更才重 bundle，对 AI 透明）。
+// 契约源：docs/contracts/openapi/（OpenAPI 3.1 多文件）→ 首次调用自动 redocly bundle 并缓存（源文件变更才重 bundle，对 AI 透明）。
 // 环境变量：
 //   API_BASE  （可选）后端 base URL 覆盖，如 http://localhost:8000/api/v1；缺省用契约自带 servers 默认值
 //   API_TOKEN （可选）Bearer token（先 --operation authLogin 获取后注入）
@@ -40,7 +40,7 @@ const USAGE = `用法：
   npm run api -- --operation createProject --body '{...}' --omit 'owner,auditPeriod,startDate,endDate'   # 负路径：删键构造缺字段
 
 参数说明：
-  --operation  必填（或用 --list），契约中的 operationId（与 docs/L3/openapi 一致）
+  --operation  必填（或用 --list），契约中的 operationId（与 docs/contracts/openapi 一致）
   --omit       可选，逗号分隔字段名——从 --body 删除指定顶层键（构造「缺字段」负路径）
   --body       可选，完整请求体 JSON（全字段字面量；键须 ∈ 契约 requestBody schema 属性，见 fail-fast 校验）
   --path       可选，path 参数 JSON（按契约 parameters 的 in: path 归位，如 {"projectCode":"TEST-001"}）
@@ -66,10 +66,10 @@ const CACHE_DIR = join(testToolsDir, '.cache')
 const BUNDLE_FILE = join(CACHE_DIR, 'openapi-bundled.json')
 
 if (!existsSync(SPEC_MAIN)) {
-    done(EXIT.CONFIG, {ok: false, error: `契约主文件不存在：${SPEC_MAIN}（相对仓库根 docs/L3/openapi/openapi.yaml）`})
+    done(EXIT.CONFIG, {ok: false, error: `契约主文件不存在：${SPEC_MAIN}（相对仓库根 docs/contracts/openapi/openapi.yaml）`})
 }
 
-// ---------- 契约 bundle：源 yaml 内容 hash 校验——内容变了必重 bundle，保证执行契约与 docs/L3/openapi 源一致 ----------
+// ---------- 契约 bundle：源 yaml 内容 hash 校验——内容变了必重 bundle，保证执行契约与 docs/contracts/openapi 源一致 ----------
 const HASH_FILE = join(CACHE_DIR, 'openapi-bundled.hash')
 
 // 递归扫源目录全部 .yaml/.json 文件内容，聚合 sha256（内容级指纹：git checkout 同内容不触发重建，内容变必重建）

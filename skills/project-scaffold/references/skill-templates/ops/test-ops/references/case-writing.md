@@ -14,8 +14,8 @@ docs/test/
 
 docs/tools/                      # 项目工具集（系统访问唯一通道；架构/生成/维护/调用归 tools-ops skill）
 ├── tools/*.mjs
-├── .env（不入库）· .env.example
-└── README.md（工具用法/退出码/环境变量）
+├── .env · .env.example
+└── TOOLS.md（工具用法/退出码/环境变量）
 ```
 
 ## 2. 用例卡结构

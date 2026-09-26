@@ -15,7 +15,7 @@ description: 管理 docs/L1/BUSINESS.md（业务流程）的读取、生成、�
 - 业务对象字段、状态机、约束及能力到领域操作 Action 的映射归 `docs-domain` skill，本文档只写跨系统业务流向。
 - 应用与技术边界归 `docs-application-architecture` skill，跨系统接口契约归 `outbound-ops` skill，本文档只写业务级边界、流向与主责。
 - 业务验收标准由本 skill 定义；技术验收、测试用例与 `docs/test/` 测试资产归 `test-ops` skill。
-- 同一信息只维护一次，其他位置只引用。L1 可引用 L2、L3、L4，不链接 L0 路径；同级文档可协作引用。
+- 同一信息只维护一次，其他位置只引用。L1 可引用 L2、L3，不链接 L0 路径；同级文档可协作引用。
 - 图必须以 D2、Mermaid 或 ASCII 代码块写入 Markdown；容器式分层图使用 D2 并遵循 `c4-container-diagram` skill，其余图使用
   Mermaid，无法渲染时退化为 ASCII。图旁只标图名，不复制绘制方法。
 - 图型分工：业务主线图、系统外故事外部流程用 Mermaid flowchart；角色关系图用 Mermaid classDiagram；用户旅程与单故事交互动用
@@ -32,9 +32,9 @@ description: 管理 docs/L1/BUSINESS.md（业务流程）的读取、生成、�
 ## 读取
 
 - `align-docs` skill 是跨文档编排器；本 skill 属 L1，生成前先读取项目宪法作为 L0 基线。
-- 生成前读取 L2 的领域模型（`docs-domain`）的业务对象与领域操作、应用架构（`docs-application-architecture`）、集成契约
-  （`outbound-ops`）与深潜（`docs-deep-dives`）的关联产物。
-- 项目文档按 L0 → L1 → L2 → L3 → L4 → common 的顺序生成；生成下层文档前先读上层产物。
+- 生成前读取 L2 的领域模型（`docs-domain`）的业务对象与领域操作、应用架构（`docs-application-architecture`）、
+  集成契约（`outbound-ops`）与深潜（`docs-deep-dives`）的关联产物。
+- 项目文档按 L1 → L2 → L3 的顺序生成；生成下层文档前先读上层产物。
 - 已有 BUSINESS.md 时先提取仍有效的业务事实、角色关系、能力状态、故事与旅程，不沿用已失效的结构或描述。
 
 ## 生成流程
@@ -85,7 +85,9 @@ description: 管理 docs/L1/BUSINESS.md（业务流程）的读取、生成、�
 
 ## 完成判定
 
-以下全部通过才算完成：
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
 - 实例文档与 [assets/TEMPLATE.md](assets/TEMPLATE.md) 的章节编号、标题层级和固定结构一致，且没有模板未定义的内容。
 - 产品能力架构图的业务能力节点与能力清单中的业务能力行一一对应；共享业务服务层节点与系统内置或横向能力行按类型分别对应；能力图例独立存在，架构图内没有重复图例，入口层不参与状态编码。
@@ -101,7 +103,6 @@ description: 管理 docs/L1/BUSINESS.md（业务流程）的读取、生成、�
 - 所有用户旅程和单故事时序图都满足三角色、完整链路和系统泳道不含 UI 的约束，L1 未展开 L2、L3 术语。
 - 系统内故事与能力、`docs-domain` Action 一一对应；系统外故事明确标注驱动或支撑的系统内环节且无 Action。
 - 内容条目无顺序编号，文档无承载文档索引章或相关文档聚合链接章。
-- 产出文档无「固定元信息」「固定画法」字样，无 SSOT 字样，无加粗与 emoji，无未替换的模板说明或占位符。
 
 ## 边界
 

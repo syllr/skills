@@ -4,11 +4,11 @@
 # 用途：dump FastAPI 应用的 OpenAPI 文档到文件（代码即契约的唯一 SSOT）。
 # 用法：
 #   python backend/scripts/export_openapi.py --out /tmp/openapi-export.json
-#   python backend/scripts/export_openapi.py --out docs/L3/openapi/openapi.yaml --format yaml
+#   python backend/scripts/export_openapi.py --out docs/contracts/openapi/openapi.yaml --format yaml
 # 约定：
 #   - 默认落临时文件（门禁落盘：机检 + diff 通过后才写 docs/）
 #   - 应用须能离线构建（无 DB/Redis 连接副作用）；import 期连接的项目需改为惰性连接
-#   - 产物路径须与 docs/L3/INBOUND.md §2 命令及 §4 step5 diff 目标一致
+#   - 产物路径须与 docs/contracts/INBOUND.md §2 命令及 §4 step5 diff 目标一致
 #
 # 说明：这是模板，非成品——APP_IMPORT 与产线项目实际入口对齐后使用。
 

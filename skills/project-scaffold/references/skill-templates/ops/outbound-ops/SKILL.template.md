@@ -1,13 +1,13 @@
 ---
 name: outbound-ops
-description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/L3/OUTBOUND.md 及外部服务契约目录 docs/L3/outbound-contracts/——维护外部集成说明书（总览/集成详情概览/契约文件目录）与一服务一契约文件（集成形态时序图/接入方式与三态契约状态/调用面接口定义/错误码集中表），覆盖读取上层产物、重建说明书与契约骨架、同步说明书清单、全仓引用同步。触发词：写 OUTBOUND.md、生成集成文档、更新集成文档、外部集成说明、Outbound 集成、第三方接口契约、外部服务契约、集成契约、契约状态、mock 中、已上线、新增外部服务。代码改动触发更新：集成 Adapter 或客户端接口定义变化、第三方官方 spec 变化、外部服务或调用面接口增删、错误码变化、契约状态流转时，更新本文档与对应契约文件。
+description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/contracts/OUTBOUND.md 及外部服务契约目录 docs/contracts/outbound-contracts/——维护外部集成说明书（总览/集成详情概览/契约文件目录）与一服务一契约文件（集成形态时序图/接入方式与三态契约状态/调用面接口定义/错误码集中表），覆盖读取上层产物、重建说明书与契约骨架、同步说明书清单、全仓引用同步。触发词：写 OUTBOUND.md、生成集成文档、更新集成文档、外部集成说明、Outbound 集成、第三方接口契约、外部服务契约、集成契约、契约状态、mock 中、已上线、新增外部服务。代码改动触发更新：集成 Adapter 或客户端接口定义变化、第三方官方 spec 变化、外部服务或调用面接口增删、错误码变化、契约状态流转时，更新本文档与对应契约文件。
 ---
 
 # outbound-ops — L3 Outbound 外部集成文档
 
 ## 定位与管辖文档
 
-本 skill 负责 L3 契约层的 Outbound 半边：`docs/L3/OUTBOUND.md` 与 `docs/L3/outbound-contracts/`。`OUTBOUND.md`
+本 skill 负责 L3 契约层的 Outbound 半边：`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`。`OUTBOUND.md`
 承载外部集成说明书，并以其 §3 契约文件目录承担契约目录的唯一清单；契约目录按外部服务各放一份 kebab-case 命名的
 `{service}.md`，不设索引文件。Inbound 半边（`INBOUND.md` 与 `openapi/`）归 `inbound-ops` skill。
 
@@ -17,7 +17,7 @@ description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/L3/OUT
 
 ## 读取
 
-- 先读项目宪法和已落盘文档，按 `L0 → L1 → L2 → L3` 的顺序确认上下文。
+- 先读项目宪法和已落盘文档，按 `L1 → L2 → L3` 的顺序确认上下文。
 - 读取 L1 业务文档及其能力、Action 与状态，调用 `docs-business`、`docs-domain`。
 - 读取 L2 技术架构中的外部依赖、应用归属、领域操作、数据架构外部数据资产与总文档 Mapper，调用
   `docs-technology-architecture`、`docs-application-architecture`、`docs-domain`、`docs-data-architecture`。
@@ -55,7 +55,9 @@ description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/L3/OUT
 
 ## 完成判定
 
-以 [assets/TEMPLATE.md](assets/TEMPLATE.md) 的结构为基准，全部满足才算完成：
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
 - `OUTBOUND.md` 保持说明书模式，接口、字段、错误码和接入细节不内联复制。
 - 每个外部服务对应一份 kebab-case 契约文件，说明书中的服务概览可以逐个定位该文件。

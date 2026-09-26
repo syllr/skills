@@ -7,7 +7,7 @@
 #   python scripts/split_openapi.py --in /tmp/openapi-export.json --out /tmp/openapi-export/ \
 #       --domain-map '{"auth":["/auth/*"],"audit-project":["/projects*","/audit-*"]}'
 #   （不给 --domain-map 时按 operation 的首个 tag 作为域名）
-# 说明：这是模板，非成品——域映射按项目业务域改写后使用；产物结构以 docs/L3/INBOUND.md §1 为准。
+# 说明：这是模板，非成品——域映射按项目业务域改写后使用；产物结构以 docs/contracts/INBOUND.md §1 为准。
 # 拆分为无损变换：内部 $ref（#/components/...）一律重写为指向 components/ 的外部相对 $ref，
 # 保证拆分后仍可 redocly bundle/lint 通过（悬空 $ref 会报错）。
 
@@ -181,7 +181,7 @@ def main() -> int:
     }
     header = (
         "# 本文件由导出 + 拆分脚本生成，勿手工编辑；修改契约请改代码后重新导出。\n"
-        "# 端点计数（须与 docs/L3/INBOUND.md §1 表一致）：\n"
+        "# 端点计数（须与 docs/contracts/INBOUND.md §1 表一致）：\n"
     )
     tail = (
             "# paths: "

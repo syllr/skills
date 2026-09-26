@@ -1,6 +1,6 @@
 # 部署资产与多环境约定（deploy-assets）
 
-部署资产的目录结构与多环境变量约定——生成/维护部署资产时的基准。命令与流程正文见项目 `docs/L4/DEPLOYMENT.md`（§5.3
+部署资产的目录结构与多环境变量约定——生成/维护部署资产时的基准。命令与流程正文见项目 `docs/deployment/DEPLOYMENT.md`（§5.3
 发布流程 / §7 资产登记），本文件只承载结构约定与维护动作。
 
 ## 1. 环境词表（唯一来源）
@@ -10,7 +10,7 @@
 ## 2. 资产目录结构
 
 ```
-docs/L4/deployment/
+docs/deployment/
 ├── configs/                       # 配置模板（不参与运行）
 │   ├── .env.example               # 后端/应用基础变量模板（键集 SSOT）
 │   └── compose.env.example        # compose 层变量模板（${VAR} 替换）
@@ -47,27 +47,24 @@ docs/L4/deployment/
 |------------|----------------|-------------------|-------------|
 | 读方       | 应用/进程/容器 | docker compose    | 无（模板）  |
 | 是否进应用 | 是             | 否                | 否          |
-| 入库       | 否             | 否                | 是          |
 | 作用       | 应用运行参数   | `${VAR}` 替换     | 键集基准    |
 
 ## 4. 生成动作（分诊 2）
 
-1. 由 `configs/.env.example` 复制出各环境 `<env>/.env.<env>`（空值/占位，凭据不代填）
+1. 由 `configs/.env.example` 复制出各环境 `<env>/.env.<env>`
 2. 由 `configs/compose.env.example` 复制出 `<env>/.env`（部署机用，如端口/版本标识/密钥覆盖）
 3. 从 `assets/reference-impl/` 复制 `release-*.sh`、`rollback.sh`、`lib/release-common.sh`、compose 到
-   `docs/L4/deployment/`
+   `docs/deployment/`
 4. 逐项登记进 DEPLOYMENT §7
 
 ## 5. 维护动作（分诊 3）
 
 - 新增环境：建 `<env>/` + 两份 `.env`（复制模板）+ 同步 §1 环境总览 / §2.1 矩阵 / §3 部署单元（按 `deploy-ops` skill）
-- 新增变量：改 `configs/*.example`（键集）+ 各环境 `.env.<env>` 对齐 + 登记 §6（若涉密钥）
+- 新增变量：改 `configs/*.example`（键集）+ 各环境 `.env.<env>` 对齐 + 登记 §6
 - 脚本与流程一致性：改 DEPLOYMENT §5.3 后同步脚本实现（反之亦然）
 - 回滚与过期：回滚用 `rollback.sh`（切 current 旧链节）；历史产物超 `RELEASE_RETENTION_DAYS`（默认 30）天提示，`--prune` 才清理（豁免
   current 现役版本）
 
 ## 6. 纪律
 
-- `.env` / `.env.*` 不入库；`*.example` 恒占位，不写真值
-- 生成只放空值/占位，凭据取值来源登记 DEPLOYMENT §6，本 skill 不代填
 - 环境名一律来自 §2.1；配置模板是键集 SSOT，真实 `.env` 键集与之对齐

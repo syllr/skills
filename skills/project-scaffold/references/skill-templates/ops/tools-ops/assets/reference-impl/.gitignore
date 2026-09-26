@@ -1,5 +1,5 @@
-# tools 本地文件（一律不入库）
-# 环境变量文件（含凭据）：每个环境一份 .env.<env>，.env 为默认环境
+# tools 本地文件与运行态产物
+# 环境变量文件：每个环境一份 .env.<env>，.env 为默认环境
 .env
 .env.*
 !.env.example

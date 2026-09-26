@@ -28,7 +28,7 @@ tools 是 AI 测试执行的基础设施（一个小型测试项目）——测�
 |--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | stdout             | 只输出一行 JSON（AI 据此判断；人类诊断走 stderr；含 env 字段标注本次环境）                                                                                       |
 | 退出码             | 0=成功 / 1=执行成功但断言/对账失败 / 2=参数错 / 3=网络 / 4=数据层 / 10=配置错                                                                                    |
-| 环境变量           | 连接参数经 `.env.<环境名>`（`.env` 为默认；均不入库）；权威值见 DEPLOYMENT §6/§7，`.env.<环境名>` 为其副本（不一致以 DEPLOYMENT 为准）；命令行注入优先于文件     |
+| 环境变量           | 连接参数经 `.env.<环境名>`（`.env` 为默认）；权威值见 DEPLOYMENT §6/§7，`.env.<环境名>` 为其副本（不一致以 DEPLOYMENT 为准）；命令行注入优先于文件               |
 | 环境选择           | 四工具统一 `--env <环境名>`（选择 `.env.<环境名>`）；无则由 `TEST_ENV` 指定，再无 → `.env`；严格模式不叠加；未知环境 fail-fast（10）并列出可用环境，禁止回退默认 |
 | host               | 一律走环境文件（如 WEBMCP_URL/API_BASE/DB_HOST），工具与文档不写死 host                                                                                          |
 | --help             | 每工具必带用法                                                                                                                                                   |
@@ -85,9 +85,9 @@ docs/tools/
 │   ├── ragflow.mjs           # ③ 校验类（中间件对账，按项目）
 │   ├── ...（新工具按 §5 生成）
 │   └── _util.mjs             # 共享：JSON 输出/退出码/env 加载（含 --env 选择）/参数解析
-├── .env（不入库，默认环境）· .env.<环境名>（不入库，各环境）· .env.example（模板）
+├── .env（默认环境）· .env.<环境名>（各环境）· .env.example（模板）
 ├── .gitignore（忽略 .env/.env.*/.cache/.webmcp-profile*）
-└── README.md（工具清单/用法/退出码/环境变量/多环境）
+└── TOOLS.md（工具清单/用法/退出码/环境变量/多环境）
 ```
 
 - 分发 = 拷贝目录 + 一次依赖安装（无编译产物）
@@ -100,11 +100,10 @@ docs/tools/
 - 每环境一份 `.env.<环境名>`（环境名 = DEPLOYMENT §2.1 环境名，如 standalone/dev/prod）；`.env` 为无 `--env` 时的默认环境
 - 运行时 `--env <环境名>` 选择（四工具统一；ragflow 放子命令之后）；无则由 `TEST_ENV` 指定
 - 严格模式：指定环境时只读该环境文件，不叠加 `.env`（缺键 fail-fast，防默认值污染）；未知环境 fail-fast 并列出可用环境，禁止回退
-- 凭据一律不入库（`.env` / `.env.*` 由 `.gitignore` 忽略，仅 `.env.example` 入库）
 
 ## 7. 参考实现（完整工具集模板）
 
 本 skill 的 `assets/reference-impl/` 为完整参考实现（Node .mjs：api/db/webmcp/ragflow/_util + package.json + README +
 .env.example + .gitignore）——生成/扩展工具时以它为样板：复制到目标项目 `docs/tools/`，按被测系统替换 `.env.<环境名>`
-值（环境名同步 DEPLOYMENT §2.1）；新增校验类工具参照 db.mjs/ragflow.mjs 的只读+清理模式扩展。契约源路径（如 docs/L3/openapi）为
+值（环境名同步 DEPLOYMENT §2.1）；新增校验类工具参照 db.mjs/ragflow.mjs 的只读+清理模式扩展。契约源路径（如 docs/contracts/openapi）为
 doc-arch 通用结构，随项目沿用。

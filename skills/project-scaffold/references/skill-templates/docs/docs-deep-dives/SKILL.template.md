@@ -1,14 +1,14 @@
 ---
 name: docs-deep-dives
-description: 维护系统级问题深潜文档（docs/L2/deep-dives）：每篇 kebab-case 单篇，覆盖读取、生成、更新、校验。每篇 deep-dive 回答一个系统级问题，按 4 章骨架展开（应用级时序图、应用内部流程、领域实体状态流转、涉及接口），内容跨越 L1-L4。触发词：写深潜、更新 deep-dive、deep-dive、系统级问题、端到端流程、全链路时序、状态流转专题、高复杂度详情下沉。代码改动触发更新：跨应用调用链、领域事件或状态流转变化时，更新对应深潜单篇。
+description: 维护系统级问题深潜文档（docs/common/deep-dives）：每篇 kebab-case 单篇，覆盖读取、生成、更新、校验。每篇 deep-dive 回答一个系统级问题，按 4 章骨架展开（应用级时序图、应用内部流程、领域实体状态流转、涉及接口），内容跨越 L1-L3。触发词：写深潜、更新 deep-dive、deep-dive、系统级问题、端到端流程、全链路时序、状态流转专题、高复杂度详情下沉。代码改动触发更新：跨应用调用链、领域事件或状态流转变化时，更新对应深潜单篇。
 ---
 
 # docs-deep-dives — 系统级问题深潜文档
 
 ## 定位与管辖文档
 
-本 skill 负责 docs/L2/deep-dives/ 下的系统级问题单篇。单篇回答一个具体系统级问题，层归属为 L2，内容可跨越
-L1-L4；目录内不设索引文件，单篇清单由引用方文档承担。
+本 skill 负责 docs/common/deep-dives/ 下的系统级问题单篇。单篇回答一个具体系统级问题，层归属为 L2，内容可跨越
+L1-L3；目录内不设索引文件，单篇清单由引用方文档承担。
 
 生成或更新任何产物前，先读取 [assets/TEMPLATE.md](assets/TEMPLATE.md)，按其中对应产物的骨架写入；本文件不重复目标文档的章节结构。跨层文档编排和漂移处理由
 align-docs skill 统一调度。
@@ -45,22 +45,23 @@ align-docs skill 统一调度。
 - 领域实体、领域服务、状态或事件变化时，联动 docs-domain，并更新相关单篇的内部流程与状态流转。
 - 外部服务或契约变化时，联动 outbound-ops；对外接口变化时，联动 inbound-ops。
 - 目录新增、删除或合并单篇时，由 align-docs skill 处理跨文档引用和漂移核对。
-- deep-dive 引用 L1 至 L4 文档，相关文档不反向建立 deep-dive 链接；发现入口由引用方文档的自然引用承担。
+- deep-dive 引用 L1 至 L3 文档，相关文档不反向建立 deep-dive 链接；发现入口由引用方文档的自然引用承担。
 
 ## 完成判定
 
-以下全部通过才算完成：
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
 - 单篇符合 [assets/TEMPLATE.md](assets/TEMPLATE.md) 的结构、标题层级和链接要求。
 - 每篇单篇只回答一个系统级问题，文件命名符合 kebab-case，目录内无残留或同名文件。
 - 应用级时序图、应用内部流程、实体状态流转和接口内容均能追溯到现有代码或关联文档。
 - 图示、参与者、事件、状态和接口没有超出源事实，且没有复制关联文档正文。
 - 与 docs-application-architecture、docs-domain、outbound-ops、inbound-ops 的引用方向和内容一致。
-- 实例正文没有生成提示、方法论、治理套话、加粗或 emoji，所有相对链接可解析。
 
 ## 边界
 
-- 只维护 docs/L2/deep-dives/ 下的单篇；其他文档由对应 docs-* skill 维护，跨文档编排归 align-docs skill。
+- 只维护 docs/common/deep-dives/ 下的单篇；其他文档由对应 docs-* skill 维护，跨文档编排归 align-docs skill。
 - 一篇单篇只回答一个具体系统级问题，不承载整个平台的全量功能说明。
 - 禁止自创应用、实体、事件、状态或接口；代码细节使用 File:Line 引用，外部契约和对外接口分别引用 outbound-ops 与 inbound-ops。
 - 图示与参与者层级遵循模板规定，不越级展开。

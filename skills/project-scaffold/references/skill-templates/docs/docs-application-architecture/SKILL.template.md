@@ -8,7 +8,7 @@ description: 维护 L2 应用架构文档 docs/L2/APPLICATION-ARCHITECTURE.md �
 ## 定位与管辖文档
 
 - 管辖 docs/L2/APPLICATION-ARCHITECTURE.md 的读取、生成、更新与校验，回答系统如何划分应用、应用如何协作以及应用内部有哪些模块。
-- 本文档属于 L2 架构层；整仓文档按 L0 → L1 → L2 → L3 → L4 → common 生成，生成下层前先读上层已落盘产物。
+- 本文档属于 L2 架构层；整仓文档按 L1 → L2 → L3 生成，生成下层前先读上层已落盘产物。
 - 用户要求生成、更新、重建、编辑或校验 APPLICATION-ARCHITECTURE，或上层产物与关联文档变化需要联动时，使用本 skill。
 - 目标文档结构以 [文档模板](assets/TEMPLATE.md) 为准，本 skill 不另行维护章节骨架。
 
@@ -27,7 +27,7 @@ description: 维护 L2 应用架构文档 docs/L2/APPLICATION-ARCHITECTURE.md �
    c4-container-diagram skill 绘制，D2 图保留图名、视角、用途和边界注释。
 4. 实例正文只写业务内容，不写模板指引、占位符、编码约定、工具说明、SSOT 标签或治理套话，不使用加粗和 emoji；模板未定义的
    frontmatter、状态、影响层等元信息不补写。
-5. 跨模块交互、永久参数、精度分层、坑位四类复杂度中命中两项时，将详情下沉到 docs/L2/deep-dives/，由 docs-deep-dives skill
+5. 跨模块交互、永久参数、精度分层、坑位四类复杂度中命中两项时，将详情下沉到 docs/common/deep-dives/，由 docs-deep-dives skill
    生成或维护；本文档只保留精简正文，不反向引用 deep-dives。
 6. 应用数量、前后端边界或是否单列 deep-dives 确有歧义时，询问用户确认。
 7. 完成后执行联动更新和完成判定。
@@ -47,22 +47,22 @@ description: 维护 L2 应用架构文档 docs/L2/APPLICATION-ARCHITECTURE.md �
   docs-business skill 维护。
 - docs/L2/TECHNOLOGY-ARCHITECTURE.md 按应用描述技术栈，应用划分以本文档为准，由 docs-technology-architecture skill 维护。
 - docs/L2/domain/ 各域文档承载领域聚合与能力到聚合的映射，由 docs-domain skill 维护，本文档只引用不复制。
-- docs/L4/DEPLOYMENT.md 的部署单元来自应用划分，应用增减时由 deploy-ops skill 同步部署文档。
-- 接口契约归 docs/L3/INBOUND.md 与 docs/L3/OUTBOUND.md，由 inbound-ops 与 outbound-ops skill 维护。
-- 下沉到 docs/L2/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
+- docs/deployment/DEPLOYMENT.md 的部署单元来自应用划分，应用增减时由 deploy-ops skill 同步部署文档。
+- 接口契约归 docs/contracts/INBOUND.md 与 docs/contracts/OUTBOUND.md，由 inbound-ops 与 outbound-ops skill 维护。
+- 下沉到 docs/common/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
 
 ## 完成判定
 
-以下全部通过才算完成：
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
-- 目标文档的标题、章节编号和层级与文档模板一致，未保留模板说明、占位内容或未定义元信息。
 - 应用划分完整区分应用、容器、外部系统和用户层，没有「依赖」等笼统分类。
 - 容器与外部系统的边界和责任判别正确，用户层角色与系统上下文一致，图例包含用户层。
 - 应用内模块按知识域划分，不把能力直接改名为模块；模块命名与应用划分一致，模块表只作索引而不重复建表。
 - 能力到领域聚合的映射没有在本文档重复，「待规划」能力没有对应应用模块或层节点。
 - 两张 C4 图分别标明 Context 图和容器图，图为可检索文本且 D2 图元信息完整。
 - 没有指向 deep-dives 的反向引用，且指向 deep-dives 的引用能定位到具体单篇。
-- 引用方向、章节重编号、正文纯净度、总行数与排除代码块后的正文行数均符合要求。
 
 ## 边界
 

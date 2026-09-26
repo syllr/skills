@@ -1,18 +1,18 @@
 ---
 name: deploy-ops
-description: L4 部署域唯一入口——同时管辖部署说明书 docs/L4/DEPLOYMENT.md、部署资产目录 docs/L4/deployment/（发布脚本 / compose / 多环境 .env），以及部署执行与校验（环境确认、按发布流程发布、版本核对、回滚、部署配置校验）。触发词：部署文档、DEPLOYMENT、部署说明书、写部署、更新部署文档、部署、发布前端、发布后端、部署 dev、启动 standalone、部署状态、发布版本、回滚部署、新增环境、部署单元、环境矩阵、环境拓扑、发布流程、回滚说明、部署脚本、部署配置、密钥登记、compose 登记。代码改动触发更新：部署方式 / 环境矩阵 / 部署参数变化、发布脚本 / compose / .env 结构调整、应用增减时，更新说明书与资产。
+description: L3 部署域唯一入口——同时管辖部署说明书 docs/deployment/DEPLOYMENT.md、部署资产目录 docs/deployment/（发布脚本 / compose / 多环境 .env），以及部署执行与校验（环境确认、按发布流程发布、版本核对、回滚、部署配置校验）。触发词：部署文档、DEPLOYMENT、部署说明书、写部署、更新部署文档、部署、发布前端、发布后端、部署 dev、启动 standalone、部署状态、发布版本、回滚部署、新增环境、部署单元、环境矩阵、环境拓扑、发布流程、回滚说明、部署脚本、部署配置、密钥登记、compose 登记。代码改动触发更新：部署方式 / 环境矩阵 / 部署参数变化、发布脚本 / compose / .env 结构调整、应用增减时，更新说明书与资产。
 ---
 
-# deploy-ops — L4 部署域（说明书 + 部署资产 + 部署执行）
+# deploy-ops — L3 部署域（说明书 + 部署资产 + 部署执行）
 
 ## 定位与管辖
 
-本 skill 是 L4 部署域的唯一入口，同时管辖三类产物：
+本 skill 是 L3 部署域的唯一入口，同时管辖三类产物：
 
 | 产物       | 路径                       | 性质 | 事实来源                                 |
 |------------|----------------------------|------|------------------------------------------|
-| 部署说明书 | `docs/L4/DEPLOYMENT.md`    | 文档 | 项目事实（应用划分 / 技术栈 / 资产现状） |
-| 部署资产   | `docs/L4/deployment/`      | 资产 | 本 skill 生成与维护                      |
+| 部署说明书 | `docs/deployment/DEPLOYMENT.md`    | 文档 | 项目事实（应用划分 / 技术栈 / 资产现状） |
+| 部署资产   | `docs/deployment/`      | 资产 | 本 skill 生成与维护                      |
 | 部署执行   | 按说明书发布 / 启动 / 回滚 | 动作 | `DEPLOYMENT.md` §4 与 §5.3               |
 
 部署知识的 SSOT 是 `DEPLOYMENT.md`（环境矩阵 §2.1 / standalone 启动 §4 / dev 发布流程 §5.3 / 密钥 §6 / 部署配置文件详解
@@ -32,13 +32,13 @@ skill 执行。
 
 ## 读取
 
-- 编辑、重建说明书或生成资产前，先读本 skill 与 [assets/TEMPLATE.md](assets/TEMPLATE.md)，再列 `docs/L4/deployment/`
+- 编辑、重建说明书或生成资产前，先读本 skill 与 [assets/TEMPLATE.md](assets/TEMPLATE.md)，再列 `docs/deployment/`
   的实际目录树。
 - 读取应用架构（`docs-application-architecture`）定位部署单元、技术架构（`docs-technology-architecture`）定位运行时与存储方式。
 - 读取接口契约（`inbound-ops`）与外部集成（`outbound-ops`）确认上线入口、外部服务、密钥与回调。
 - 读取目标文档、项目宪法和关联代码或配置，区分已落盘事实、待确认事项与部署资产现状。
 - 执行部署前读 `DEPLOYMENT.md` §2.1 环境矩阵、§4 standalone 启动、§5.3 dev 发布流程、§6 密钥、§7 资产登记。
-- 文档按 L0 → L1 → L2 → L3 → L4 → common 生成，生成下层文档前先读上层产物；跨文档顺序与漂移清账由 `align-docs` skill 编排。
+- 文档按 L1 → L2 → L3 生成，生成下层文档前先读上层产物；跨文档顺序与漂移清账由 `align-docs` skill 编排。
 - 图使用 D2、Mermaid 或 ASCII 代码块直接写入 Markdown；容器式分层图遵循 `c4-container-diagram` skill，D2
   图保留图名、视角、用途与边界等自描述信息，正文和注释使用中文。
 
@@ -58,10 +58,9 @@ skill 执行。
    `<env>/.env`（由 `configs/compose.env.example` 复制）；编排复制为 `<env>/docker-compose.<env>.yml`
    ；详见 [references/deploy-assets.md](references/deploy-assets.md)。
 3. 复制脚本参考实现：从 `assets/reference-impl/` 复制 `release-backend.sh` / `release-frontend.sh` / `rollback.sh` 与
-   `lib/release-common.sh` 到 `docs/L4/deployment/`，替换配置区（主机走 `remote-shell` 别名或 `.env`，脚本不硬编码 host /
-   凭据）。
+   `lib/release-common.sh` 到 `docs/deployment/`，替换配置区（主机走 `remote-shell` 别名或 `.env`）。
 4. 回写登记：把新增资产按「生成 §1 说明书」重建 `DEPLOYMENT.md` §7（路径 / 归属 / 生效机制）。
-5. 走「校验」后报告：生成清单 + `.env` 待补凭据项（取值来源见 §6）+ API 记录。
+5. 走「校验」后报告：生成清单 + `.env` 待补项 + API 记录。
 
 ## 更新
 
@@ -109,26 +108,25 @@ skill 执行。
 - 环境一致性：逐环境核对 `.env.<env>` 键集 = `configs/.env.example` 键集。
 - 登记一致性：磁盘资产与 `DEPLOYMENT.md` §7 登记项一一对应（缺失 / 多余即报告）。
 - 说明书一致性：部署单元数等于应用数、环境矩阵与实际 `.env.<env>` 目录一一对应、版本标识机制与发布流程一致。
-- 密钥纪律：真实凭据、口令和 token 未写入说明书或配置模板；`.env.example` 恒为占位值。
 - 报告：通过 / 未通过项 + 修复建议（生成走 §2 / 维护走 §3）；不执行真实发布（真实部署走 §1）。
 
 ## 完成判定
 
-以 [assets/TEMPLATE.md](assets/TEMPLATE.md) 为基准，全部满足才算完成。
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
 说明书侧：
 
-- 目标文档按模板组织，标题与章节编号和层级一致，模板未定义的 frontmatter 或其他元信息不补写。
 - 应用部署单元与 `docs-application-architecture` 的应用划分一致，部署单元数等于应用数。
 - 环境矩阵、环境拓扑、各环境启动与发布说明相互一致，每个应用的参数、配置文件和健康检查入口齐全；环境名称只使用环境矩阵中的名称，standalone
   与 dev 的运行形态边界保持一致。
 - 版本标识机制明确，采用 SemVer 或 `BUILD_COMMIT` 机制并与发布流程一致，发布流程可定位到实际脚本或命令，回滚方式在部署单元与操作说明中完整可追溯。
-- 正文只保留面向读者的业务内容，不写模板指引、构建元信息、占位符、填充说明或治理套话；同一信息只维护一处。
 
 资产侧：
 
-- `docs/L4/deployment/` 的 compose、Dockerfile、nginx、脚本、配置文件和 `.env` 资产齐全，脚本可执行、compose 可解析。
-- `configs/*.example` 与各环境真实 `.env` 键集一致（真实值可空）；`.env` / `.env.*` 不入库，仅 `*.example` 入库。
+- `docs/deployment/` 的 compose、Dockerfile、nginx、脚本、配置文件和 `.env` 资产齐全，脚本可执行、compose 可解析。
+- `configs/*.example` 与各环境真实 `.env` 键集一致（真实值可空）。
 - 参考实现副本未被直接当作运行实例使用；占位值未替换即 fail-fast。
 
 说明书与资产一致性：
@@ -142,11 +140,9 @@ skill 执行。
 
 - 部署命令 SSOT 在 `DEPLOYMENT.md` §5.3 与 §4，本 skill 不复制命令正文、不手拼部署命令。
 - 部署脚本参考实现含占位值，不得直接运行 `assets/reference-impl/` 副本（非运行实例）。
-- 参考实现与文档不写真实主机 / 凭据（主机走 `remote-shell` 别名或 `.env`，凭据取值来源登记 `DEPLOYMENT.md` §6）。
-- 密钥纪律：生成的 `.env` 只放空值 / 占位，不代填凭据；密钥不落日志或前端包。
 - 环境名唯一词表 = `DEPLOYMENT.md` §2.1（standalone / dev / prod），不新建命名；一次操作绑定一个环境。
 - 环境 host 不写死，前端入口和测试连接参数通过工具配置或已登记的环境配置提供。
-- 只写 `docs/L4/DEPLOYMENT.md` 与 `docs/L4/deployment/`；不修改应用业务代码。
+- 只写 `docs/deployment/DEPLOYMENT.md` 与 `docs/deployment/`；不修改应用业务代码。
 - 文档只写项目当前事实；历史与决策原因归 Git 历史，不在正文中保留过期占位。
 - 正文无 `SSOT`、单一事实源或唯一事实源字样，无加粗与 emoji，图均为可编辑文本。
 - 不自动 commit 或 push；commit 只在 §1 执行时经用户显式授权。

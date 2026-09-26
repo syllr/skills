@@ -82,7 +82,7 @@ node skills/project-scaffold/scripts/install.mjs --apply --force --project-root 
 - 引用使用相对 Markdown 链接；禁止 `@path`、硬编码绝对路径和依赖当前工作目录的 `./`；
 - Skill 激活后以 OpenCode 注入的 Base directory 为锚点，调用 `scripts/` 和 `references/` 不自行探测安装路径；
 - 模板正文中的相对链接按复制到目标项目后的文件位置校验；Skill 自身文档按 Skill 目录位置校验；
-- Skill 目录只保留 `SKILL.md` 以及必要的 `references/`、`assets/`、`scripts/`；不把临时产物、截图、构建输出或真实凭据写入仓库。
+- Skill 目录只保留 `SKILL.md` 以及必要的 `references/`、`assets/`、`scripts/`；不把临时产物、截图或构建输出写入仓库。
 
 ### Frontmatter
 
@@ -95,7 +95,7 @@ node skills/project-scaffold/scripts/install.mjs --apply --force --project-root 
 ### 模板内容
 
 - `project-scaffold/references/agents-templates/` 与 `references/skill-templates/` 中的 Markdown 不使用加粗正文或 emoji；
-- 保持模板为通用资产，不写真实项目名、密码、Token、主机或环境专属值；
+- 保持模板为通用资产，不写真实项目名、主机或环境专属值；
 - `SKILL.md` 控制在 500 行以内，核心工作流放在正文，细节下沉到 `references/`；
 - 所有文档、注释和面向用户的说明使用中文，技术术语、命令和路径保留原文。
 

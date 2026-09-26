@@ -11,7 +11,7 @@ description: 维护领域模型文档（docs/L2/domain）：一份总文档 DOMA
 Mapper；域文档负责一个业务域内的聚合、约束、领域操作、状态机和领域事件。
 
 生成或更新任何产物前，先读取 [assets/TEMPLATE.md](assets/TEMPLATE.md)，按其中对应产物的骨架写入；本文件不重复目标文档的章节结构。文档体系按
-L0 → L1 → L2 → L3 → L4 → common 编排，跨层漂移由 align-docs skill 统一调度。
+L1 → L2 → L3 编排，跨层漂移由 align-docs skill 统一调度。
 
 ## 读取
 
@@ -51,7 +51,9 @@ L0 → L1 → L2 → L3 → L4 → common 编排，跨层漂移由 align-docs sk
 
 ## 完成判定
 
-以下全部通过才算完成：
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
 - 总文档与业务域文档均符合 [assets/TEMPLATE.md](assets/TEMPLATE.md) 中对应产物的结构、标题层级和链接要求。
 - 总文档登记的业务域与实际文件一一对应，新增、删除或合并没有漏登记。
@@ -59,7 +61,6 @@ L0 → L1 → L2 → L3 → L4 → common 编排，跨层漂移由 align-docs sk
 - 能力状态为待规划的业务域没有对象、操作、状态机、事件或接口残留。
 - 领域操作、状态变化、事件和图示相互一致，跨域服务与数据设计没有越界内容。
 - 与 docs-business、docs-data-architecture、docs-application-architecture 及 deep-dives 的引用方向和内容一致。
-- 文档中的相对链接可解析，实例正文没有生成提示、方法论、治理套话、加粗或 emoji。
 
 ## 边界
 

@@ -1,6 +1,6 @@
 # 发布流水线方法论（release-mechanics）
 
-发布脚本的执行形态与方法论——本文件承载文档不承载的「怎么实现发布脚本」。发布流程步骤的正文在项目 `docs/L4/DEPLOYMENT.md`
+发布脚本的执行形态与方法论——本文件承载文档不承载的「怎么实现发布脚本」。发布流程步骤的正文在项目 `docs/deployment/DEPLOYMENT.md`
 §5.3（脚本须实现的接口契约），本文件讲实现模式与校验。
 
 ## 1. 发布链机制（挂载式部署）
@@ -52,7 +52,7 @@
     - 起服务/跑迁移/回滚起服务收敛为 `deploy_recreate`/`run_migration` 封装（`release-common.sh`），加 native 分支只改此处
 - 远程路径：compose 文件与部署配置目录用独立绝对路径（`REMOTE_DEPLOY_DIR`/`REMOTE_COMPOSE`），不由 `DEPLOY_ROOT` 拼接推导
 - 路径推算：脚本自行推算仓库根，不依赖 cwd；共享函数在 `lib/release-common.sh`（跨脚本 source）
-- 主机：走 remote-shell 别名或环境变量，不硬编码真实主机；凭据不写进脚本（取值来源登记 DEPLOYMENT §6）
+- 主机：走 remote-shell 别名或环境变量，不硬编码真实主机
 - 原子切换：`switch_current` 用 `ln -sfn` + `mv -T` 原子替换软链
 - 失败即中断：迁移/校验失败不继续 recreate（校验步骤不加管道——管道会吞掉退出码）
 - 自动回滚：健康/冒烟失败 → 切回上一版 + 记审计
@@ -72,13 +72,12 @@
 
 ## 5. 校验清单（非破坏）
 
-| 检查          | 方法                                                   |
-|---------------|--------------------------------------------------------|
-| 脚本语法      | `bash -n <script>`                                     |
-| compose 解析  | `docker compose -f <file> config`（不启动）            |
-| 环境键集一致  | 各环境 `.env.<env>` 键集 = `configs/.env.example` 键集 |
-| 登记一致      | 磁盘资产 = DEPLOYMENT §7 登记项                        |
-| 主机/凭据占位 | 脚本无真实主机/密码（`grep` 硬编码特征）               |
+| 检查         | 方法                                                   |
+|--------------|--------------------------------------------------------|
+| 脚本语法     | `bash -n <script>`                                     |
+| compose 解析 | `docker compose -f <file> config`（不启动）            |
+| 环境键集一致 | 各环境 `.env.<env>` 键集 = `configs/.env.example` 键集 |
+| 登记一致     | 磁盘资产 = DEPLOYMENT §7 登记项                        |
 
 ## 6. 与执行的分工
 

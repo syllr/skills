@@ -14,7 +14,7 @@
 
 ### 1. 导出产物文件结构
 
-本节写 `docs/L3/openapi/` 目录中的主契约、拆分文件、文件作用与端点计数字段。
+本节写 `docs/contracts/openapi/` 目录中的主契约、拆分文件、文件作用与端点计数字段。
 
 | 文件                                       | 作用                                                                 | 端点计数 |
 |--------------------------------------------|----------------------------------------------------------------------|----------|
@@ -34,7 +34,7 @@
 
 - 依赖：`{依赖或插件}`
 - 导出：`{导出命令}`
-- 产物：`docs/L3/openapi/{导出产物路径}`
+- 产物：`docs/contracts/openapi/{导出产物路径}`
 - 官网：`{官方文档链接}`
 
 ### 3. 契约维护规范
@@ -44,7 +44,7 @@
 - 契约来源：代码中的路由、请求/响应 Schema 与 DTO。
 - 变更入口：接口、字段、校验与错误码的变化。
 - 测试断言：状态码、响应字段与错误码的依据。
-- 说明书关系：`INBOUND.md` 与 `docs/L3/openapi/` 的职责边界。
+- 说明书关系：`INBOUND.md` 与 `docs/contracts/openapi/` 的职责边界。
 - Operation 元数据：`x-action`、`x-capability`。
 - 路径参数：参数语义、约束与描述的记录位置。
 
@@ -66,7 +66,7 @@
 
 | 协议      | 规范文件                       | Schema 形态 | 工具链                    | 状态         |
 |-----------|--------------------------------|-------------|---------------------------|--------------|
-| HTTP/REST | `docs/L3/openapi/openapi.yaml` | OpenAPI 3.1 | 代码导出、Redoc、Spectral | 默认，已启用 |
+| HTTP/REST | `docs/contracts/openapi/openapi.yaml` | OpenAPI 3.1 | 代码导出、Redoc、Spectral | 默认，已启用 |
 | gRPC      | `{规范文件或 IDL}`             | protobuf    | `protoc / buf`            | 占位         |
 | WebSocket | `{规范文件或 IDL}`             | 消息契约    | `{工具链}`                | 占位         |
 | 私有协议  | `{规范文件或 IDL}`             | 自定义      | `{工具链}`                | 占位         |
@@ -78,7 +78,7 @@
 本节写 OpenAPI 3.1 导出产物的目录层级与文件命名。
 
 ```text
-docs/L3/openapi/
+docs/contracts/openapi/
 ├── openapi.yaml
 ├── paths/
 │   └── {domain}.yaml

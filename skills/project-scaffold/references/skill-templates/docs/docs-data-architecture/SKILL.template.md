@@ -8,7 +8,7 @@ description: 维护 L2 数据架构文档 docs/L2/DATA-ARCHITECTURE.md 的 skill
 ## 定位与管辖文档
 
 - 管辖 docs/L2/DATA-ARCHITECTURE.md 的读取、生成、更新与校验，回答数据资产如何分类、存储如何组织、数据如何流转以及物理形态如何落地。
-- 本文档属于 L2 架构层；整仓文档按 L0 → L1 → L2 → L3 → L4 → common 生成，生成下层前先读上层已落盘产物。
+- 本文档属于 L2 架构层；整仓文档按 L1 → L2 → L3 生成，生成下层前先读上层已落盘产物。
 - 用户要求生成、更新、重建、编辑或校验 DATA-ARCHITECTURE，或领域、存储、集成产物变化需要联动时，使用本 skill。
 - 目标文档结构以 [文档模板](assets/TEMPLATE.md) 为准，本 skill 不另行维护章节骨架。
 
@@ -27,7 +27,7 @@ description: 维护 L2 数据架构文档 docs/L2/DATA-ARCHITECTURE.md 的 skill
    c4-container-diagram skill 绘制，D2 图保留图名、视角、用途和边界注释。
 4. 实例正文只写业务内容，不写模板指引、占位符、编码约定、工具说明、SSOT 标签或治理套话，不使用加粗和 emoji；模板未定义的
    frontmatter、状态、影响层等元信息不补写。
-5. 跨模块交互、永久参数、精度分层、坑位四类复杂度中命中两项时，将详情下沉到 docs/L2/deep-dives/，由 docs-deep-dives skill
+5. 跨模块交互、永久参数、精度分层、坑位四类复杂度中命中两项时，将详情下沉到 docs/common/deep-dives/，由 docs-deep-dives skill
    生成或维护；本文档只保留精简正文，不反向引用 deep-dives。
 6. 存储选型或业务数据与技术数据的划分确有歧义时，询问用户确认。
 7. 完成后执行联动更新和完成判定。
@@ -46,16 +46,17 @@ description: 维护 L2 数据架构文档 docs/L2/DATA-ARCHITECTURE.md 的 skill
 - docs/L2/domain/ 各域文档承载聚合、实体、状态机和事件等业务语义，由 docs-domain skill 维护；本文档只写物理形态并保持领域到存储的映射可追溯。
 - docs/L2/TECHNOLOGY-ARCHITECTURE.md §3.1 承载存储选型理由与容量性能预期，由 docs-technology-architecture skill
   维护；本文档只写存什么和怎么存。
-- docs/L3/OUTBOUND.md 与集成契约文档中的外部数据资产、字段术语和数据来源须与本文档一致，集成文档由 outbound-ops skill 维护。
+- docs/contracts/OUTBOUND.md 与集成契约文档中的外部数据资产、字段术语和数据来源须与本文档一致，集成文档由 outbound-ops skill 维护。
 - 应用划分归 docs/L2/APPLICATION-ARCHITECTURE.md，由 docs-application-architecture skill 维护；部署单元与环境参数归
-  docs/L4/DEPLOYMENT.md，由 deploy-ops skill 维护；接口契约归 docs/L3/INBOUND.md，由 inbound-ops skill 维护。
-- 下沉到 docs/L2/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
+  docs/deployment/DEPLOYMENT.md，由 deploy-ops skill 维护；接口契约归 docs/contracts/INBOUND.md，由 inbound-ops skill 维护。
+- 下沉到 docs/common/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
 
 ## 完成判定
 
-以下全部通过才算完成：
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
-- 目标文档的标题、章节编号和层级与文档模板一致，未保留模板说明、占位内容或未定义元信息。
 - 数据资产完整区分业务数据与技术数据，没有遗漏或混写。
 - 存储选型与 docs/L2/TECHNOLOGY-ARCHITECTURE.md §3.1 一致，选型理由和容量性能预期没有重复。
 - 血缘主链覆盖同步、采集、生成和归档，支链均从主链分叉或回流并有独立小图。
@@ -63,7 +64,6 @@ description: 维护 L2 数据架构文档 docs/L2/DATA-ARCHITECTURE.md 的 skill
 - 关系型数据同时具备表关系总览与单表清单，单表清单只包含表名、说明和字段来源，没有字段级定义。
 - 表和集合可追溯到领域聚合或实体，没有孤儿表；图均为可检索文本且 D2 图元信息完整。
 - 没有指向 deep-dives 的反向引用，且指向 deep-dives 的引用能定位到具体单篇。
-- 引用方向、章节重编号、正文纯净度、总行数与排除代码块后的正文行数均符合要求。
 
 ## 边界
 

@@ -2,7 +2,7 @@
 #
 # 官方基准镜像 + 产物挂载（不构建自制镜像，按项目形态替换），文件名中的 <env> 取 DEPLOYMENT §2.1 环境名。
 # 发布链挂载：产物经 releases/<时间戳>-<sha>/ + current 软链挂载（发布 = 原子切 current + recreate）。
-# 变量替换：同目录 .env（部署机存在，不入库）供 ${VAR}；应用运行配置经 env_file 注入。
+# 变量替换：同目录 .env 供 ${VAR}；应用运行配置经 env_file 注入。
 # 中间件（如 RAGFlow）不并入本编排——独立 compose 运行，避免两套编排相互重建/牵动。
 
 services:

@@ -16,7 +16,7 @@ DEPLOY_ROOT="${DEPLOY_ROOT:-/data/<app>}"
 FRONTEND_DIR="frontend"
 BUILD_CMD="${BUILD_CMD:-npm run build}"
 # 目标机上 compose 文件与部署配置目录（绝对路径；不由 DEPLOY_ROOT 拼接推导）
-REMOTE_DEPLOY_DIR="${REMOTE_DEPLOY_DIR:-/opt/<app>/docs/L4/deployment/<env>}"
+REMOTE_DEPLOY_DIR="${REMOTE_DEPLOY_DIR:-/opt/<app>/docs/deployment/<env>}"
 REMOTE_COMPOSE="${REMOTE_COMPOSE:-$REMOTE_DEPLOY_DIR/docker-compose.<env>.yml}"
 SERVICE="frontend"
 SMOKE_URL="${SMOKE_URL:-http://localhost:8080/}"
@@ -24,7 +24,7 @@ RETAIN_DAYS="${RELEASE_RETENTION_DAYS:-30}"
 # ----------------------------------------
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-LIB="$REPO/docs/L4/deployment/lib/release-common.sh"
+LIB="$REPO/docs/deployment/lib/release-common.sh"
 [ -f "$LIB" ] && . "$LIB" || { echo "!! 缺少 $LIB" >&2; exit 1; }
 
 DO_PRUNE=0

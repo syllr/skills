@@ -41,18 +41,21 @@ description: 维护 docs/changes/ 变更规划目录（过程态）——读取�
 
 - 目标层文档由对应 skill 维护：L1 业务流程 `docs-business`；L2 应用架构 `docs-application-architecture`、数据架构
   `docs-data-architecture`、技术架构 `docs-technology-architecture`、领域 `docs-domain`、深潜 `docs-deep-dives`、调研
-  `docs-research`；L3 接口 `inbound-ops`、集成 `outbound-ops`；L4 部署 `deploy-ops`；common 结构 `docs-structure`、代码规范
+  `docs-research`；L3 接口 `inbound-ops`、集成 `outbound-ops`；L3 部署 `deploy-ops`；common 结构 `docs-structure`、代码规范
   `docs-code-guide`。
 - 验收用例经 `test-ops` skill；工具访问经 `tools-ops` skill。
 - 文档与代码漂移交 `align-docs` skill 分诊和修复，文档体系生成与初始化也由其编排。
-- 沉淀按 L0 → L1 → L2 → L3 → L4 → common 顺序进行；生成下层前先读上层产物，跨文档只做相对 Markdown 链接或自然引用。
+- 沉淀按 L1 → L2 → L3 顺序进行；生成下层前先读上层产物，跨文档只做相对 Markdown 链接或自然引用。
 
 ## 完成判定
+
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
 - 每篇 change 的文件命名、标题、元信息、正文结构和状态均符合 [assets/TEMPLATE.md](assets/TEMPLATE.md)，状态取值合法。
 - 状态为已实行的 change 已完成目标层文档沉淀并删除对应文件。
 - 相关目标层文档、验收用例和交叉引用已由对应 skill 复核，目录中没有遗留的过程态占位内容。
-- 正文无加粗、无 emoji，不含独立的永久决策记录或重复的治理套话。
 
 ## 边界
 

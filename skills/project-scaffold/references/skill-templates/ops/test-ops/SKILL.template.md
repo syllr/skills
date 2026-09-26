@@ -11,7 +11,7 @@ AI 既是测试执行器，也是用例库的维护者。本 skill 以分诊进�
 执行）——AI 不得自动创建任何用例；新增一律先落 DoD 草稿、经用户认可后晋升（根 AGENTS.md §2.6 用例唯一入口）。用例卡结构与写卡规范由本
 skill 自持（[references/case-writing.md](references/case-writing.md)：资产结构/卡结构五段/写卡规范/机检/关联联动），卡模板在
 [assets/case-templates/](assets/case-templates/)。测试工具用法现场读实例
-`docs/tools/README.md`（工具集生成/维护/调用归 tools-ops skill）。本 skill 另承载：执行编排、测试记录机制、DoD 草稿与晋升机制。
+`docs/tools/TOOLS.md`（工具集生成/维护/调用归 tools-ops skill）。本 skill 另承载：执行编排、测试记录机制、DoD 草稿与晋升机制。
 
 ## 职责边界
 
@@ -35,7 +35,7 @@ skill 自持（[references/case-writing.md](references/case-writing.md)：资产
 ## 1. 执行用例
 
 1. 环境确认：读 DEPLOYMENT §2.1 环境矩阵，列出可用环境，问用户本次在哪个环境跑——确认环境标识 `<env>`（未确认不执行）；校验
-   `docs/tools/.env.<env>` 存在（不存在则按工具 `.env.example` 提示用户补齐，属配置缺失，不代填凭据）——本次执行的所有工具调用统一带
+   `docs/tools/.env.<env>` 存在（不存在则按工具 `.env.example` 补齐，属配置缺失）——本次执行的所有工具调用统一带
    `--env <env>`
 2. 范围确认：扫描 `docs/test/test-cases/` 用例目录（api/<领域实体>/ 与 flow/<用户故事场景>
    /），列出可用用例，问用户执行范围（全部 / 某领域目录 / 指定 <文件> 的 caseN / 某一批用例）——未确认不执行
@@ -80,7 +80,7 @@ skill 自持（[references/case-writing.md](references/case-writing.md)：资产
 
 ### 3.2 落盘与形态
 
-- 位置：`docs/test/do-drafts/<YYYYMMDD-HHmmss>-<短名>.md`（过程态，入库跟踪；不入正式用例库、不被正式用例体系引用）
+- 位置：`docs/test/do-drafts/<YYYYMMDD-HHmmss>-<短名>.md`（过程态；不入正式用例库、不被正式用例体系引用）
 - 轻量形态（不必用完整用例卡结构）：目标（为什么测）/ 操作（怎么做）/ 期望（成功判据）/ 证据（实测输出）
 - 单文件一条 DoD；命名体现验证主题
 
@@ -134,7 +134,7 @@ skill 自持（[references/case-writing.md](references/case-writing.md)：资产
 - 本 skill 是测试用例的唯一入口：用例卡结构与写卡规范由本 skill 自持（references/case-writing.md）；新增/更新/删除/执行一律经本
   skill，AI 不得自动创建任何用例（新增一律经 DoD 晋升）
 - **DoD 草稿在 `docs/test/do-drafts/`（过程态）**：与 `docs/changes/`、`docs/drift/`
-  同性质——入库跟踪、使命完成后由用户决定删除或保留；不入正式库、不被正式用例体系引用；晋升后才进 `docs/test/test-cases/`
+  同性质——使命完成后由用户决定删除或保留；不入正式库、不被正式用例体系引用；晋升后才进 `docs/test/test-cases/`
 - 工具实现与调用归 tools-ops skill：本 skill 只做执行编排（环境/顺序/策略/记录），不实现工具、不绕过工具直连被测系统
 - 用例执行的环境权威在 DEPLOYMENT（§2.1 环境矩阵 / §6/§7 变量）；`.env.<环境名>` 是其副本
 - 不生成业务代码、不自动 commit/push

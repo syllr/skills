@@ -20,7 +20,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 - 唯一入口：项目工具集（`docs/tools/`）的生成、维护与调用只经本 skill；AI 访问本系统任何资源也只经它。
 - 不做：用例本身的增删改执行与执行台账归 `test-ops` skill；跨文档对齐与漂移归 `align-docs` skill。
-- 同步：工具集自身的说明（`docs/tools/README.md`）由本 skill 自持，不交给其它文档 skill。
+- 同步：工具集自身的说明（`docs/tools/TOOLS.md`）由本 skill 自持，不交给其它文档 skill。
 
 ## 多环境（连接层核心）
 
@@ -28,12 +28,11 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 工具集按环境隔离连接参数：每个环境一份 `docs/tools/.env.<环境名>`，运行时用 `--env <环境名>` 选择（四工具统一；ragflow
 放子命令之后）；无 `--env` 时由 `TEST_ENV` 指定，再无则用默认 `.env`。指定环境但文件不存在 → 工具 fail-fast（退出码
-10，不回退默认）；指定环境时只读该文件（不叠加 `.env`）。凭据一律不入库（`.env`/`.env.*` 由 `.gitignore` 忽略，仅 `.env.example`
-入库）。webmcp 登录态按环境隔离（`.webmcp-profile-<环境名>/`）。
+10，不回退默认）；指定环境时只读该文件（不叠加 `.env`）。webmcp 登录态按环境隔离（`.webmcp-profile-<环境名>/`）。
 
 环境与变量的权威来源是 DEPLOYMENT，`.env.<环境名>` 只是其副本：
 
-- 环境清单（有哪些环境、用途）← `docs/L4/DEPLOYMENT.md` §2.1 环境矩阵
+- 环境清单（有哪些环境、用途）← `docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵
 - 各环境连接参数/取值 ← DEPLOYMENT §6（密钥与配置）/ §7（部署配置文件详解）
 - `.env.<环境名>` 是这些值在 tools 侧的副本；与 DEPLOYMENT 不一致时以 DEPLOYMENT 为准（对齐动作走 §1，由用户确认）
 
@@ -49,8 +48,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 1. 询问用户是否要变更：进入本分诊先问「本次要变更什么」（初始化落地 / 新增或修改工具 / 对齐环境副本）——确认后再做，不自动变更
 2. 判当前状态并分流：
     - 实例 `docs/tools/` 不存在 → 初始化落地：读架构规范与参考实现，复制整套到 `docs/tools/`
-      （保持结构：tools/、package.json、.env.example、.gitignore、README.md）；按被测系统裁剪 package.json 依赖并改写 README
-      工具清单
+      （保持结构：tools/、package.json、.env.example、.gitignore、TOOLS.md）；按被测系统裁剪 package.json 依赖并改写 README 工具清单
     - 实例已存在 → 增量演进：读架构规范「何时新增工具、何时修改既有工具」——新职责域新增 `tools/<name>.mjs`；同职责域演进改既有工具
 3. 新增/修改工具时参照同类工具写实现：操作类参照 api/webmcp，校验对账类参照 db/ragflow（只读 + 受控清理）
 4. 遵守统一契约：stdout 单行 JSON、退出码、连接参数走 `.env.<环境名>`、fail-fast 契约校验、只读红线、`--help`；入口调用
@@ -61,7 +59,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
     - 只更新 tools 侧的 `.env.<环境名>` 副本；不修改 DEPLOYMENT.md 本体（那是 docs，按 `deploy-ops` skill更新）
 6. 配套登记：README 工具清单 + package.json scripts 别名 + `.env.example` 新连接参数（各环境 `.env.<环境名>` 同补）
 7. 依赖安装（仅初始化）：`cd docs/tools && npm install`
-8. 验证：契约源 `docs/L3/openapi/` 存在时 `npm run api -- --list --env <环境名>` 能列出 operationId；否则至少
+8. 验证：契约源 `docs/contracts/openapi/` 存在时 `npm run api -- --list --env <环境名>` 能列出 operationId；否则至少
    `npm run <工具> -- --help` 正常；新增/修改的工具对被测系统实跑一次
 9. 报告：变更清单（初始化/新增/修改/环境副本）+ 各环境 `.env` 待补充项（连接参数取值见 DEPLOYMENT §6）
 
@@ -69,7 +67,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 0. 环境确认：读 DEPLOYMENT §2.1 环境矩阵，列出可用环境，问用户本次连哪个环境（未确认不执行）；确认后所有命令统一带
    `--env <环境名>`——禁止漏带（漏带会落到默认 `.env`，可能跑错环境）。用户可指定多个环境分别调用（一次调用绑定一个环境）
-1. 读实例 `docs/tools/README.md`（工具清单/用法/退出码/环境变量）与 `docs/tools/.env.<环境名>`
+1. 读实例 `docs/tools/TOOLS.md`（工具清单/用法/退出码/环境变量）与 `docs/tools/.env.<环境名>`
    （连接参数副本），确认有哪些工具能触达本次目标——目标无可用工具时提示用户走 §1 新增，禁止绕过工具集自行访问（禁裸 curl/裸
    SQL/自行开浏览器/直连中间件/直调第三方）
 2. 按需调工具（统一带 `--env <环境名>`；ragflow 的 `--env` 放子命令之后）：
@@ -90,7 +88,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 - 只读红线：对账/校验类工具非只读操作拒绝；不写裸 curl、不裸 SQL（SQL 包进 db 命令）
 - 调用只跑实例 `docs/tools/`；不得运行本 skill `assets/reference-impl/` 副本（那是含项目特定样例值的模板，非运行实例）
 - 环境权威在 DEPLOYMENT：环境清单读 §2.1、变量读 §6/§7；`.env.<环境名>` 是其副本，不一致以 DEPLOYMENT 为准
-- 只读 DEPLOYMENT：本 skill 不修改 `docs/L4/DEPLOYMENT.md` 本体（改文档按 `deploy-ops` skill更新）
+- 只读 DEPLOYMENT：本 skill 不修改 `docs/deployment/DEPLOYMENT.md` 本体（改文档按 `deploy-ops` skill更新）
 - 环境纪律：一次调用绑定一个环境，每条命令必带 `--env`；未知环境会 fail-fast（不回退默认）
 - 用例卡的编排执行与写卡规范归 test-ops skill（测试用例唯一入口；规范见其 references/case-writing.md）
 - 不生成业务代码、不自动 commit/push

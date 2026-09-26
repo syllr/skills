@@ -8,7 +8,7 @@ description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的
 ## 定位与管辖文档
 
 - 管辖 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的读取、生成、更新与校验，回答使用什么技术、为什么使用以及这些选择受到哪些约束。
-- 本文档属于 L2 架构层；整仓文档按 L0 → L1 → L2 → L3 → L4 → common 生成，生成下层前先读上层已落盘产物。
+- 本文档属于 L2 架构层；整仓文档按 L1 → L2 → L3 生成，生成下层前先读上层已落盘产物。
 - 用户要求生成、更新、重建、编辑或校验 TECHNOLOGY-ARCHITECTURE，或应用、领域、存储、部署与调研产物变化需要联动时，使用本 skill。
 - 目标文档结构以 [文档模板](assets/TEMPLATE.md) 为准，本 skill 不另行维护章节骨架。
 
@@ -29,7 +29,7 @@ description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的
 5. 实例正文只写业务内容，不写模板指引、占位符、编码约定、工具说明、SSOT 标签或治理套话，不使用加粗和 emoji；模板未定义的
    frontmatter、状态、影响层等元信息不补写。
 6. 跨模块交互、永久参数、精度分层、坑位四类复杂度中命中两项，或选型总行数与单节行数同时超限时，将详情下沉到
-   docs/L2/deep-dives/，由 docs-deep-dives skill 生成或维护；本文档只保留精简正文，不反向引用 deep-dives。
+   docs/common/deep-dives/，由 docs-deep-dives skill 生成或维护；本文档只保留精简正文，不反向引用 deep-dives。
 7. 框架、数据库、AI 供应商等关键选型或是否单列 deep-dives 确有歧义时，询问用户确认。
 8. 完成后执行联动更新和完成判定。
 
@@ -50,17 +50,18 @@ description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的
 - docs/L2/domain/ 各域文档的技术约束须与领域模型一致，由 docs-domain skill 维护。
 - docs/L2/DATA-ARCHITECTURE.md 承载领域到存储的映射与表或集合级物理形态，由 docs-data-architecture skill
   维护；本文档承载存储选型理由与容量性能预期。
-- docs/L4/DEPLOYMENT.md 的部署方式须与技术栈一致，由 deploy-ops skill 维护；docs/L3/OUTBOUND.md 的外部系统对接由
+- docs/deployment/DEPLOYMENT.md 的部署方式须与技术栈一致，由 deploy-ops skill 维护；docs/contracts/OUTBOUND.md 的外部系统对接由
   outbound-ops skill 维护。
 - 单元测试清单与写法规范由 test-ops skill 维护，本文档不定义单元测试框架、覆盖率或命名。
-- docs/L2/research/ 各调研文档承载调研详情，选型结论在本文档对应选型章节索引，由 docs-research skill 维护。
-- 下沉到 docs/L2/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
+- docs/common/research/ 各调研文档承载调研详情，选型结论在本文档对应选型章节索引，由 docs-research skill 维护。
+- 下沉到 docs/common/deep-dives/ 的内容由 docs-deep-dives skill 维护；跨文档编排与漂移清账归 align-docs skill。
 
 ## 完成判定
 
-以下全部通过才算完成：
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
-- 目标文档的标题、章节编号和层级与文档模板一致，未保留模板说明、占位内容或未定义元信息。
 - 技术分层图只画技术组件，不含功能模块清单；左主体四层与右侧外部系统边界清楚，并与应用架构图约定一致。
 - 所有容器节点 label 都采用「技术栈 + 职责」两段式，层间只有展现、接入、服务、数据三根调用线，外部系统没有连线。
 - 每项选型都有备选、弃用原因和一句话依据，版本与兼容信息完整。
@@ -69,13 +70,12 @@ description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的
 - research 引用只出现在选型或基础设施章节，每份调研文档至多引用一次；没有指向 deep-dives 的反向引用，且指向 deep-dives
   的引用能定位到具体单篇。
 - 图均为可检索文本且 D2 图元信息完整，引用路径前缀一致。
-- 章节重编号、正文纯净度、总行数与排除代码块后的正文行数均符合要求。
 
 ## 边界
 
 - 容器与外部系统按责任边界区分：自行运维管理的是系统内容器，由他人或第三方提供的是边界外外部系统；外部依赖只放右侧，不混入主分层。
 - 不复制应用清单、应用内模块清单、功能清单、能力归属或状态，不写表或集合级字段定义。
-- 部署单元、环境与部署参数归 docs/L4/DEPLOYMENT.md；单元测试写法归 test-ops skill；调研详情归 docs/L2/research/ 各调研文档。
+- 部署单元、环境与部署参数归 docs/deployment/DEPLOYMENT.md；单元测试写法归 test-ops skill；调研详情归 docs/common/research/ 各调研文档。
 - 同一信息只在一处维护；跨层引用单向向下，同级协作引用允许；删除或迁移章节后不留已迁移或已删除占位正文。
 - 文档不设「相关文档」聚合链接章。
 - 只负责 docs/L2/TECHNOLOGY-ARCHITECTURE.md，不生成业务代码，不自动 commit 或 push，不改动源文档之外的业务文件；发现文档与代码冲突时以代码为准修正文档。

@@ -1,15 +1,15 @@
 # 执行方法论（export-mechanics）
 
 导出/拆分的执行细则——本文件承载文档不承载的「怎么执行」（临时目录、门禁、口径、机检、失败分诊）。命令与产物结构见项目
-`docs/L3/INBOUND.md` §1/§2。
+`docs/contracts/INBOUND.md` §1/§2。
 
 ## 1. 临时目录策略（门禁落盘）
 
-导出产物不直接写入 `docs/L3/openapi/`，先落临时目录，机检 + diff 通过后才落盘：
+导出产物不直接写入 `docs/contracts/openapi/`，先落临时目录，机检 + diff 通过后才落盘：
 
 1. 导出 → 临时单文件（如 `/tmp/openapi-export.json`）
 2. 拆分 → 临时目录（如 `/tmp/openapi-export/`）
-3. 机检（§3）通过后，与现有 `docs/L3/openapi/` diff
+3. 机检（§3）通过后，与现有 `docs/contracts/openapi/` diff
 4. diff 门禁（§4）通过后，整体落盘
 
 理由：现契约若非代码导出，首次导出必然全量差异，直接覆盖会静默抹掉手写语义（x-action/描述/依据注释）。
@@ -27,7 +27,7 @@
 | 检查                  | 方法                                                                       |
 |-----------------------|----------------------------------------------------------------------------|
 | $ref 完整性（无悬空） | `npx @redocly/cli bundle` 通过                                             |
-| 端点计数三方一致      | `openapi.yaml` 尾注释 = `docs/L3/INBOUND.md` §1 表 = `paths/*.yaml` 文件数 |
+| 端点计数三方一致      | `openapi.yaml` 尾注释 = `docs/contracts/INBOUND.md` §1 表 = `paths/*.yaml` 文件数 |
 | operation 元数据      | 每个 operation 含 `x-action` 与 `x-capability`（或豁免映射单值）           |
 | servers 变量化        | servers 不含随环境变化的硬编码 host（应变量化或指向环境配置）              |
 | 组织正确              | `openapi.yaml` 只承载元信息与 `$ref`，不内联 path/schema                   |
@@ -38,7 +38,7 @@
 落盘前与现有契约 diff，命中以下任一即停止并报告，不覆盖：
 
 - 语义丢失：现有手写 `x-action`/`x-capability`/描述/依据注释在导出产物中缺失
-- 代码未 instrument：导出产物缺 `operationId`（会打断 L4 测试工具的 operationId 调用）或 tags
+- 代码未 instrument：导出产物缺 `operationId`（会打断测试工具的 operationId 调用）或 tags
 - $ref 悬空或 lint 失败
 - servers 随环境漂移
 

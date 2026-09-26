@@ -11,7 +11,7 @@
 
 ```bash
 # 登录 → 取 $.data.accessToken 注入 API_TOKEN
-npm run api -- --operation authLogin --body '{"username":"<账号>","password":"<凭据来源>"}'
+npm run api -- --operation authLogin --body '{"username":"<账号>","password":"<凭据>"}'
 ```
 
 ### 执行流程

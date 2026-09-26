@@ -1,6 +1,6 @@
 ---
 name: inbound-ops
-description: L3 Inbound 契约域唯一入口——同时管辖接口契约说明书 docs/L3/INBOUND.md、由代码导出的机器可读契约 docs/L3/openapi/，以及契约导出执行（探测语言框架、落地导出与拆分脚本、导出到临时目录、拆分、机检、门禁落盘）。触发词：写 INBOUND.md、生成接口文档、更新接口文档、接口契约文档、对外接口说明、Inbound 接口、接口变更、接口漂移、导出 openapi、重导出契约、契约校验、openapi 校验、端点计数、契约目录守卫。代码改动触发更新：后端路由 / 端点增删改、请求响应 Schema / DTO 字段变化、状态码 / 错误码 / 校验变化、鉴权或协议变化、x-action 等扩展元数据变化时，先改代码再重导出 openapi 并同步说明书。
+description: L3 Inbound 契约域唯一入口——同时管辖接口契约说明书 docs/contracts/INBOUND.md、由代码导出的机器可读契约 docs/contracts/openapi/，以及契约导出执行（探测语言框架、落地导出与拆分脚本、导出到临时目录、拆分、机检、门禁落盘）。触发词：写 INBOUND.md、生成接口文档、更新接口文档、接口契约文档、对外接口说明、Inbound 接口、接口变更、接口漂移、导出 openapi、重导出契约、契约校验、openapi 校验、端点计数、契约目录守卫。代码改动触发更新：后端路由 / 端点增删改、请求响应 Schema / DTO 字段变化、状态码 / 错误码 / 校验变化、鉴权或协议变化、x-action 等扩展元数据变化时，先改代码再重导出 openapi 并同步说明书。
 ---
 
 # inbound-ops — L3 Inbound 契约域（说明书 + 机器可读契约 + 导出执行）
@@ -11,11 +11,11 @@ description: L3 Inbound 契约域唯一入口——同时管辖接口契约说�
 
 | 产物           | 路径                 | 性质 | 事实来源                      |
 |----------------|----------------------|------|-------------------------------|
-| 接口契约说明书 | `docs/L3/INBOUND.md` | 文档 | 代码事实 + 导出产物的实际结构 |
-| 机器可读契约   | `docs/L3/openapi/`   | 资产 | 代码（导出，禁手写）          |
+| 接口契约说明书 | `docs/contracts/INBOUND.md` | 文档 | 代码事实 + 导出产物的实际结构 |
+| 机器可读契约   | `docs/contracts/openapi/`   | 资产 | 代码（导出，禁手写）          |
 | 契约导出执行   | 临时目录 → 门禁落盘  | 动作 | `INBOUND.md` §2 的导出命令    |
 
-Outbound 半边（`docs/L3/OUTBOUND.md` 与 `docs/L3/outbound-contracts/`）归 `outbound-ops` skill；跨文档编排、漂移清账与旧文档处置归
+Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`）归 `outbound-ops` skill；跨文档编排、漂移清账与旧文档处置归
 `align-docs` skill。
 
 本 skill 自带资料：
@@ -27,12 +27,12 @@ Outbound 半边（`docs/L3/OUTBOUND.md` 与 `docs/L3/outbound-contracts/`）归 
 
 ## 读取
 
-- 先读项目宪法和已落盘文档，按 `L0 → L1 → L2 → L3` 的顺序确认上下文。
-- 读取 L1 业务文档的能力、Action 与状态（`docs-business`），L2 应用架构的接口归属（`docs-application-architecture`）、领域操作与事件
-  （`docs-domain`）、外部数据结论（`docs-data-architecture`）。
+- 先读项目宪法和已落盘文档，按 `L1 → L2 → L3` 的顺序确认上下文。
+- 读取 L1 业务文档的能力、Action 与状态（`docs-business`），L2 应用架构的接口归属（`docs-application-architecture`
+  ）、领域操作与事件 （`docs-domain`）、外部数据结论（`docs-data-architecture`）。
 - 扫描后端代码、路由、请求 / 响应 Schema、DTO 与技术栈文件（`package.json`、`go.mod`、`pom.xml`、`pyproject.toml`、
   `requirements.txt`）。
-- 读取现有 `INBOUND.md` 与 `docs/L3/openapi/`；已有产物只提取仍有效的信息。
+- 读取现有 `INBOUND.md` 与 `docs/contracts/openapi/`；已有产物只提取仍有效的信息。
 - 导出前先读 `INBOUND.md` §2（导出命令 SSOT）、§1（多文件口径与端点计数）、§4 步骤 5（CI 漂移检测命令）。
 - 需要判断跨层漂移时交 `align-docs` skill。
 
@@ -81,11 +81,12 @@ Outbound 半边（`docs/L3/OUTBOUND.md` 与 `docs/L3/outbound-contracts/`）归 
 2. 环境确认：导出若依赖 DB / Redis / env，确认其可用；命令缺失或多文件口径未定时问用户（其余不问）。
 3. 导出到临时目录（不直接落 `docs/`）：执行 §2 命令 → 临时文件（如 `/tmp/openapi-export.json`）。
 4. 拆分：按 §1 口径跑拆分脚本 → 临时目录产出 `openapi.yaml + paths/<domain>.yaml + components/*`。
-5. 机检（按 [references/export-mechanics.md](references/export-mechanics.md) 清单）：`$ref` 完整性（无悬空）、端点计数三方一致
-   （`openapi.yaml` 尾注释 = `INBOUND.md` §1 表 = paths 文件）、每个 operation 有 `x-action` / `x-capability`、`servers`
+5. 机检（按 [references/export-mechanics.md](references/export-mechanics.md) 清单）：`$ref`
+   完整性（无悬空）、端点计数三方一致 （`openapi.yaml` 尾注释 = `INBOUND.md` §1 表 = paths 文件）、每个 operation 有
+   `x-action` / `x-capability`、`servers`
    变量化、组织正确（`openapi.yaml` 只承载元信息与 `$ref`）；工具可用时跑 lint / spectral。
 6. 门禁落盘：与现有契约 diff——若检出语义丢失（手写 `x-action`、描述、依据注释）或代码未 instrument 导致缺口，停止并报告，不覆盖；否则落盘到
-   `docs/L3/openapi/`。
+   `docs/contracts/openapi/`。
 7. 报告：变化摘要 + `INBOUND.md` §1 端点计数差异 + 未通过项。
 
 ### §3 机检（只检不写）
@@ -94,7 +95,9 @@ Outbound 半边（`docs/L3/OUTBOUND.md` 与 `docs/L3/outbound-contracts/`）归 
 
 ## 完成判定
 
-以 [assets/TEMPLATE.md](assets/TEMPLATE.md) 为基准，全部满足才算完成。
+格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
 说明书侧：
 

@@ -37,7 +37,7 @@ AI 作为测试执行器时的连接工具（Node `.mjs`，跨平台零编译）
 
 | 文件            | 含义                                                                                                          |
 |-----------------|---------------------------------------------------------------------------------------------------------------|
-| `.env.<环境名>` | 具名环境（如 `.env.standalone`、`.env.dev`、`.env.prod`）——环境名以 `docs/L4/DEPLOYMENT.md` §2.1 环境矩阵为准 |
+| `.env.<环境名>` | 具名环境（如 `.env.standalone`、`.env.dev`、`.env.prod`）——环境名以 `docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵为准 |
 | `.env`          | 无 `--env` 时的默认环境（建议本地 standalone）                                                                |
 
 - 选择器：`--env <环境名>` 优先；无则读环境变量 `TEST_ENV`；都无 → 加载 `.env`。
@@ -46,7 +46,6 @@ AI 作为测试执行器时的连接工具（Node `.mjs`，跨平台零编译）
 - 未知环境 fail-fast：`--env` 指定的文件不存在 → 直接报错（退出码 10）并列出可用环境，禁止回退默认（防跑错环境）。
 - 优先级：命令行注入的环境变量（shell/CI）> 环境文件。
 - ragflow 位置：`--env` 放在子命令之后，如 `npm run ragflow -- datasets --env dev`。
-- 凭据不入库：`.env` / `.env.*` 已由本目录 `.gitignore` 忽略（仅 `.env.example` 入库）；勿把真值写进 `.env.example`。
 
 ```bash
 cp .env.example .env.standalone        # 建 standalone 环境变量
@@ -72,7 +71,7 @@ npm run db -- "SELECT 1" --env standalone             # 用 standalone 环境跑
 
 ## api 工具：契约直调（operationId 模式）
 
-运行时直读 `docs/L3/openapi/`（OpenAPI 3.1 多文件）：首次调用自动 `redocly bundle` 并缓存到 `.cache/openapi-bundled.json`（源
+运行时直读 `docs/contracts/openapi/`（OpenAPI 3.1 多文件）：首次调用自动 `redocly bundle` 并缓存到 `.cache/openapi-bundled.json`（源
 yaml 变更才重新 bundle，对 AI 透明），swagger-client 解析后按 `operationId` 执行——AI 只需给 operationId + 扁平参数值，参数按契约自动归位
 path/query，`requestBody` 单独传；operationId 拼错或参数非法 JSON 均 fail-fast（退出码 2），不发脏请求。
 
@@ -154,7 +153,7 @@ node tools/api.mjs --operation authLogin --body '{...}'
 
 - 新增工具：`tools/<name>.mjs`，遵守「stdout 单行 JSON + 统一退出码 + `--help`」三约；用到新外部库时 `npm i <pkg>` 并登记到本表；如需
   `npm run <name>` 别名，同步在 `package.json` `scripts` 加一行。
-- 契约变更零操作：`docs/L3/openapi/` 源 yaml 变更后，下次调用 `api` 自动重 bundle（`.cache/` 已 gitignore，勿提交）。
+- 契约变更零操作：`docs/contracts/openapi/` 源 yaml 变更后，下次调用 `api` 自动重 bundle（`.cache/` 已 gitignore，勿提交）。
 - 多环境维护：新增环境时 `cp .env.example .env.<环境名>` 并填写（环境名同步 DEPLOYMENT §2.1）；新增连接参数时更新
   `.env.example` 与本文件环境变量表。
 - 跨平台：Node ≥ 20 即可跑（win/mac/linux × x64/arm64），无编译产物；分发 = 拷贝本目录 + 目标机 `npm ci` 一次（依赖：
