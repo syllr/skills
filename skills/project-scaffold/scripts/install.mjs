@@ -21,14 +21,14 @@
  * 实现拆分为零依赖模块：核心逻辑 install-core.mjs，命令行/展示 install-cli.mjs；本文件仅作入口。
  */
 
-import { fileURLToPath } from "node:url";
+import {fileURLToPath} from "node:url";
 import * as path from "node:path";
 
-import { main } from "./install-cli.mjs";
+import {main} from "./install-cli.mjs";
 
 // 公开核心 API（供测试与其它脚本 import）
 export * from "./install-core.mjs";
-export { parseArgs, printReport, run, USAGE } from "./install-cli.mjs";
+export {parseArgs, printReport, run, USAGE} from "./install-cli.mjs";
 
 const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invokedDirectly) main();
