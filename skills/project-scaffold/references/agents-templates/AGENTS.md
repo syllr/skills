@@ -5,8 +5,9 @@
 
 ## 1. 文档体系与目录架构
 
-文档只有链内与链外两种归属，判据是产物里有没有资产。链内是分层的当前态描述，只有面向人读的 .md，按 L1 → L2 → L3
-编号；链外是有资产的产物域（有资产的文档与其资产同处一个目录）以及过程态台账。
+文档只有链内与链外两种归属，判据是产物是否参与链内 L1 → L2 → L3 的分层描述。链内是分层的当前态描述，只有面向人读的 .md，按
+L1 → L2 → L3
+编号；链外是独立域，含三类：有资产的产物域（文档与其资产同处一个目录）、无资产的独立文档域（如系统级问题深潜与选型调研）、过程态台账。
 
 链内按本体系的分层方法维护；链外各域是独立的域，变更由用户直接调该域的管辖 skill 处理，不由链内方法编排。链上某层变化确实牵连
 到某个链外域时，由该层 skill 在联动里指明，不因此把链外拉进链内流程。
@@ -33,6 +34,8 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
     ├── deployment/         部署：DEPLOYMENT.md + 部署资产（脚本 / compose / 多环境 .env）
     ├── test/                测试：do-drafts/ 草稿 → test-cases/ 正式用例卡（晋级）→ test-records/ 执行台账
     ├── tools/               项目工具集：TOOLS.md（说明书）+ Node CLI（AI 访问系统的唯一通道）
+    ├── deep-dives/          系统级问题深潜：每问题一篇（跨 L1-L3 的独立陈述，不入链）
+    ├── research/            选型与验证调研：每主题一篇（结论交技术架构文档）
     ├── changes/             变更规划：每变更一单篇（过程态，完成后删除）
     ├── drift/               漂移清单：每文档一份（过程态，全部清账后删除）
 ```
@@ -104,7 +107,8 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
 Skill 分三类，命名即类型，类型后标注链内 / 链外归属：
 
 - A 类 · 纯文档（前缀 `docs-`）：产物只有面向人读的说明书，没有资产、状态机与门禁；删掉文档不影响项目行为。 A·链内 7 个分属
-  L1 / L2 / L3，A·链外 2 个是过程态：`docs/changes/` 变更单篇与 `docs/drift/` 漂移清单。
+  L1 / L2 / L3；A·链外 4 个：过程态 `docs/changes/` 变更单篇与 `docs/drift/` 漂移清单，无资产独立域 `docs/deep-dives/`
+  系统级问题深潜与 `docs/research/` 选型调研。
 - B 类 · 文档 + 资产（后缀 `-ops`）：一个能力域一个 skill，同时管辖该域的说明书、资产与执行动作，并保证三者一致；全部 B·链外。
 - C · 编排（`align-docs`）：只调度 A / B 类，不生产任何文档正文或资产，连过程态清单也交 `docs-draft` 落盘；C·链外。
 
@@ -119,6 +123,8 @@ Skill 分三类，命名即类型，类型后标注链内 / 链外归属：
 | docs-code-guide               | A·链内 | docs/L3/CODE-GUIDE.md                                                               | —                                   |
 | docs-changes                  | A·链外 | docs/changes/                                                                       | —                                   |
 | docs-draft                    | A·链外 | docs/drift/（每文档一份 `<doc>.md` 漂移清单）                                       | —                                   |
+| docs-deep-dives               | A·链外 | docs/deep-dives/（每问题一篇 kebab-case 单篇）                                      | —                                   |
+| docs-research                 | A·链外 | docs/research/（每主题一篇 kebab-case 单篇）                                        | —                                   |
 | inbound-ops                   | B·链外 | docs/contracts/INBOUND.md                                                           | docs/contracts/openapi/             |
 | outbound-ops                  | B·链外 | docs/contracts/OUTBOUND.md                                                          | docs/contracts/outbound-contracts/  |
 | deploy-ops                    | B·链外 | docs/deployment/DEPLOYMENT.md                                                       | docs/deployment/                    |

@@ -3,7 +3,7 @@ name: project-scaffold
 description: >
   项目文档体系引导器（引导器 skill）——把本仓库持有的两类模板资产安装到目标项目的固定路径：
   ① 项目宪法（references/agents-templates/AGENTS.md，并入项目根 AGENTS.md 的受管区块）；
-  ② 全部 Skill（references/skill-templates/**，复制到项目级 .opencode/skills/：A 类纯文档 docs-* 9 个 + B 类文档资产 *-ops 5 个 + C 类编排 align-docs 1 个）。
+  ② 全部 Skill（references/skill-templates/**，复制到项目级 .opencode/skills/：A 类纯文档 docs-* 11 个 + B 类文档资产 *-ops 5 个 + C 类编排 align-docs 1 个）。
   执行方式为 AI 读取项目现状与文件写入，无安装脚本、无命令行参数：AGENTS.md 由 AI 读入现有文件后把模板正文并入受管区块（区块外项目内容保留，无区块时追加），skill 目录由 AI 整目录复制覆盖（归本 skill 所有、可重入）。
   本 skill 只安装项目宪法与 Skill 资产，不生成业务文档（docs/** 正文），不负责文档-代码对齐/漂移处理/文档初始化/目录同步（归 align-docs skill）。仅用户手动调用时触发，不自动触发。
 ---
@@ -45,7 +45,7 @@ description: >
 落位到目标项目根的 `.opencode/skills/<name>/`（项目级路径，不写全局目录）；`SKILL.template.md` → `SKILL.md`，其余条目 （
 `references/`、`assets/`）保持相对目录结构原样复制。
 
-### A 类 · 纯文档（`docs-*`，共 9 个）
+### A 类 · 纯文档（`docs-*`，共 11 个）
 
 产物只有面向人读的说明书，没有资产、状态机与门禁。每个目录含两份资产：`SKILL.template.md`（执行流程：读取 / 生成 / 更新 /
 联动 / 校验）与 `assets/TEMPLATE.md`（目标文档骨架模板）；生成文档时先读模板再写，骨架内容只放模板、不写进 SKILL。
@@ -61,18 +61,20 @@ description: >
 | [docs-code-guide](references/skill-templates/docs/docs-code-guide/SKILL.template.md)                             | docs/L3/CODE-GUIDE.md               |
 | [docs-changes](references/skill-templates/docs/docs-changes/SKILL.template.md)                                   | docs/changes/                       |
 | [docs-draft](references/skill-templates/docs/docs-draft/SKILL.template.md)                                       | docs/drift/                         |
+| [docs-deep-dives](references/skill-templates/docs/docs-deep-dives/SKILL.template.md)                             | docs/deep-dives/                    |
+| [docs-research](references/skill-templates/docs/docs-research/SKILL.template.md)                                 | docs/research/                      |
 
 ### B 类 · 文档 + 资产（`*-ops`，共 5 个）
 
 一个能力域一个 skill，同时管辖该域的说明书、资产与执行动作，并在自己的完成判定里保证三者一致。
 
-| Skill 模板                                                                    | 能力域               | 说明书                        | 资产                                            | 形态                                    |
-|-------------------------------------------------------------------------------|----------------------|-------------------------------|-------------------------------------------------|-----------------------------------------|
-| [inbound-ops](references/skill-templates/ops/inbound-ops/SKILL.template.md)   | L3 Inbound 契约      | docs/contracts/INBOUND.md     | docs/contracts/openapi/                         | 多文件（SKILL + references/ + assets/） |
-| [outbound-ops](references/skill-templates/ops/outbound-ops/SKILL.template.md) | L3 Outbound 外部集成 | docs/contracts/OUTBOUND.md    | docs/contracts/outbound-contracts/              | 多文件（SKILL + references/ + assets/） |
-| [deploy-ops](references/skill-templates/ops/deploy-ops/SKILL.template.md)     | L3 部署              | docs/deployment/DEPLOYMENT.md | docs/deployment/                                | 多文件（SKILL + references/ + assets/） |
-| [test-ops](references/skill-templates/ops/test-ops/SKILL.template.md)         | 测试                 | 用例卡写卡规范（skill 自持）  | docs/test/test-cases/ + docs/test/test-records/ | 多文件（SKILL + references/ + assets/） |
-| [tools-ops](references/skill-templates/ops/tools-ops/SKILL.template.md)       | 系统访问通道         | docs/tools/TOOLS.md           | docs/tools/（Node CLI）                         | 多文件（SKILL + references/ + assets/） |
+| Skill 模板                                                                    | 能力域               | 说明书                                       | 资产                                | 形态                                    |
+|-------------------------------------------------------------------------------|----------------------|----------------------------------------------|-------------------------------------|-----------------------------------------|
+| [inbound-ops](references/skill-templates/ops/inbound-ops/SKILL.template.md)   | L3 Inbound 契约      | docs/contracts/INBOUND.md                    | docs/contracts/openapi/             | 多文件（SKILL + references/ + assets/） |
+| [outbound-ops](references/skill-templates/ops/outbound-ops/SKILL.template.md) | L3 Outbound 外部集成 | docs/contracts/OUTBOUND.md                   | docs/contracts/outbound-contracts/  | 多文件（SKILL + references/ + assets/） |
+| [deploy-ops](references/skill-templates/ops/deploy-ops/SKILL.template.md)     | L3 部署              | docs/deployment/DEPLOYMENT.md                | docs/deployment/                    | 多文件（SKILL + references/ + assets/） |
+| [test-ops](references/skill-templates/ops/test-ops/SKILL.template.md)         | 测试                 | docs/test/test-cases/ + docs/test/do-drafts/ | docs/test/test-records/（执行台账） | 多文件（SKILL + references/ + assets/） |
+| [tools-ops](references/skill-templates/ops/tools-ops/SKILL.template.md)       | 系统访问通道         | docs/tools/TOOLS.md                          | docs/tools/（Node CLI）             | 多文件（SKILL + references/ + assets/） |
 
 ### C · 编排（`align-docs`，共 1 个）
 
@@ -116,13 +118,13 @@ description: >
 
 ## Skill 清单
 
-安装到目标项目根 `.opencode/skills/` 的 15 个 Skill：
+安装到目标项目根 `.opencode/skills/` 的 17 个 Skill：
 
-1. A 类 · 纯文档（9，管辖见「资产二」表）：`docs-business` / `docs-application-architecture` / `docs-data-architecture` /
+1. A 类 · 纯文档（11，管辖见「资产二」表）：`docs-business` / `docs-application-architecture` / `docs-data-architecture` /
    `docs-technology-architecture` / `docs-domain` / `docs-structure` / `docs-code-guide` / `docs-changes` /
-   `docs-draft`。
+   `docs-draft` / `docs-deep-dives` / `docs-research`。
 2. B 类 · 文档 + 资产（5）：`inbound-ops`（L3 Inbound 说明书 + openapi 契约 + 导出执行）、`outbound-ops`（L3 Outbound 说明书 +
-   外部服务契约）、`deploy-ops`（L3 部署说明书 + 部署资产 + 部署执行）、`test-ops`（用例卡规范 + 用例 + 台账 + 执行）、
+   外部服务契约）、`deploy-ops`（L3 部署说明书 + 部署资产 + 部署执行）、`test-ops`（写卡规范 + 正式用例卡 + DoD 草稿 + 执行台账）、
    `tools-ops`（工具 README + Node CLI + 调用）。
 3. C · 编排（1）：`align-docs`（对齐 / 漂移 / 初始化 / 旧文档处置）。
 
