@@ -118,4 +118,4 @@ docs/tools/
 本 skill 的 `assets/reference-impl/` 为完整参考实现（Node .mjs：api/db/webmcp/ragflow/_util + package.json + README +
 .env.example + .gitignore）——生成/扩展工具时以它为样板：复制到目标项目 `docs/tools/`，按被测系统替换 `.env.<环境名>`
 值（环境名同步 DEPLOYMENT §2.1）；新增校验类工具参照 db.mjs/ragflow.mjs 的只读+清理模式扩展。契约源路径（如
-docs/contracts/openapi）为 doc-arch 通用结构，随项目沿用。
+docs/contracts/openapi）由 `inbound-ops` 声明，随项目沿用。

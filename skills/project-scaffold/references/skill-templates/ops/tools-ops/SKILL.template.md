@@ -54,7 +54,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 | 1 工具集变更 | 对 `docs/tools/` 本身的改动（工具实现、环境副本 `.env.<环境名>`、初始化落地）——由 skill 询问用户是否变更 | §1   |
 | 2 工具调用   | 用 `--env` 选环境调用工具（AI 直接查数据/对账，ad-hoc）；仅询问用户连哪个环境                            | §2   |
 
-## 1. 工具集变更（初始化 / 新增·修改工具 / 环境副本对齐）
+## §1 工具集变更（初始化 / 新增·修改工具 / 环境副本对齐）
 
 1. 询问用户是否要变更：进入本分诊先问「本次要变更什么」（初始化落地 / 新增或修改工具 / 对齐环境副本）——确认后再做，不自动变更
 2. 判当前状态并分流：
@@ -67,14 +67,14 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 5. 环境副本对齐（用户反馈环境有问题、或环境有更新时）：先读 DEPLOYMENT §2.1 环境矩阵与 §6/§7 变量，与 tools 侧现状比对，判断差异类型——
     - 环境矩阵变化（新增/删除/改名环境）→ 增删对应 `.env.<环境名>` 副本
     - 某环境内某变量变化 → 更新该 `.env.<环境名>` 对应键
-    - 只更新 tools 侧的 `.env.<环境名>` 副本；不修改 DEPLOYMENT.md 本体（那是 docs，按 `deploy-ops` skill更新）
+   - 只更新 tools 侧的 `.env.<环境名>` 副本；不修改 DEPLOYMENT.md 本体（那是 docs，按 `deploy-ops` skill 更新）
 6. 配套登记：README 工具清单 + package.json scripts 别名 + `.env.example` 新连接参数（各环境 `.env.<环境名>` 同补）
 7. 依赖安装（仅初始化）：`cd docs/tools && npm install`
 8. 验证：契约源 `docs/contracts/openapi/` 存在时 `npm run api -- --list --env <环境名>` 能列出 operationId；否则至少
    `npm run <工具> -- --help` 正常；新增/修改的工具对被测系统实跑一次
 9. 报告：变更清单（初始化/新增/修改/环境副本）+ 各环境 `.env` 待补充项（连接参数取值见 DEPLOYMENT §6）
 
-## 2. 工具调用（AI 直接调工具查数据/对账）
+## §2 工具调用（AI 直接调工具查数据/对账）
 
 0. 环境确认：读 DEPLOYMENT §2.1 环境矩阵，列出可用环境，问用户本次连哪个环境（未确认不执行）；确认后所有命令统一带
    `--env <环境名>`——禁止漏带（漏带会落到默认 `.env`，可能跑错环境）。用户可指定多个环境分别调用（一次调用绑定一个环境）
@@ -117,7 +117,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 - 只读红线：对账/校验类工具非只读操作拒绝；不写裸 curl、不裸 SQL（SQL 包进 db 命令）
 - 调用只跑实例 `docs/tools/`；不得运行本 skill `assets/reference-impl/` 副本（那是含项目特定样例值的模板，非运行实例）
 - 环境权威在 DEPLOYMENT：环境清单读 §2.1、变量读 §6/§7；`.env.<环境名>` 是其副本，不一致以 DEPLOYMENT 为准
-- 只读 DEPLOYMENT：本 skill 不修改 `docs/deployment/DEPLOYMENT.md` 本体（改文档按 `deploy-ops` skill更新）
+- 只读 DEPLOYMENT：本 skill 不修改 `docs/deployment/DEPLOYMENT.md` 本体（改文档按 `deploy-ops` skill 更新）
 - 环境纪律：一次调用绑定一个环境，每条命令必带 `--env`；未知环境会 fail-fast（不回退默认）
 - 用例卡的编排执行与写卡规范归 test-ops skill（测试用例唯一入口；资产结构见其 references/test-assets.md，写卡规范见其
   references/case-writing.md）

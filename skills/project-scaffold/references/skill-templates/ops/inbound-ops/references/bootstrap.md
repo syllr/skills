@@ -32,5 +32,5 @@
 
 - 语言框架已探测并记录
 - 需脚本者：脚本已从 assets 复制到项目落点，且 `--help`/试跑不报错
-- INBOUND.md §2 命令与产物路径已确认（缺失则按 `inbound-ops` skill更新）
+- INBOUND.md §2 命令与产物路径已确认（缺失则按 `inbound-ops` skill 更新）
 - 报告：框架 / 脚本落点 / INBOUND.md §2 待回写 / 代码 instrument 缺口（tags、operationId、x-action/x-capability）

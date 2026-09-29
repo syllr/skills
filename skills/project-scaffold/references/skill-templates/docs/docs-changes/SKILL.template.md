@@ -7,7 +7,8 @@ description: 维护 docs/changes/ 变更规划目录（过程态）——读取�
 
 ## 定位与管辖文档
 
-`docs/changes/` 是变更规划目录，只承载进行中的 change 单篇，不设索引文件。本 skill 是该目录文档的读取、生成、更新与校验入口。
+`docs/changes/` 是变更规划目录，只承载进行中的 change 单篇，目录内不出现 change 单篇以外的文件。本 skill
+是该目录文档的读取、生成、更新与校验入口。
 
 生成、重建或更新 change 单篇前，先读 [assets/TEMPLATE.md](assets/TEMPLATE.md)，按其中骨架、文件命名和元信息落盘；本 skill
 不在正文重复模板结构。
