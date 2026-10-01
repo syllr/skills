@@ -23,6 +23,8 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 - 唯一入口：项目工具集（`docs/tools/`）的生成、维护与调用只经本 skill；AI 访问本系统任何资源也只经它。
 - 不做：用例本身的增删改执行与执行台账归 `test-ops` skill；跨文档对齐与漂移归 `align-docs` skill。
 - 同步：工具集自身的说明（`docs/tools/TOOLS.md`）由本 skill 自持，不交给其它文档 skill。
+- 工具集与说明书结构以 [references/tools.md](references/tools.md) 与 [assets/reference-impl/](assets/reference-impl/)
+  为准，本 skill 不另行维护结构。
 
 ## 读取
 
@@ -73,8 +75,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
     - 环境矩阵变化（新增/删除/改名环境）→ 增删对应 `.env.<环境名>` 副本
     - 某环境内某变量变化 → 更新该 `.env.<环境名>` 对应键
    - 只更新 tools 侧的 `.env.<环境名>` 副本；不修改 DEPLOYMENT.md 本体（那是 docs，按 `deploy-ops` skill 更新）
-6. 配套登记：README 工具清单 + package.json scripts 别名 + `.env.example` 新连接参数（各环境 `.env.<环境名>` 同补）；
-   `docs/tools/` 实例与 `TOOLS.md` 写入后删除模板中的 HTML 生成提示注释。
+6. 配套登记：README 工具清单 + package.json scripts 别名 + `.env.example` 新连接参数（各环境 `.env.<环境名>` 同补）。
 7. 验证：契约源 `docs/contracts/openapi/` 存在时 `npm run api -- --list --env <环境名>` 能列出 operationId，否则至少
    `npm run <工具> -- --help` 正常；新增或修改的工具对被测系统实跑一次。
 8. 报告：变更清单（初始化 / 新增 / 修改 / 环境副本）+ 各环境 `.env` 待补充项（连接参数取值见 DEPLOYMENT §6）。
@@ -106,10 +107,6 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 ## 完成判定
 
-格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
-代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架模板一致、不补写
-frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
-
 - `docs/tools/` 磁盘内容与 [references/tools.md](references/tools.md) §6 预期资产集逐项对应：`tools/*.mjs`（含
   `_util.mjs`）·
   `package.json` · `TOOLS.md` · `.env.<环境名>`（每环境一份）· `.env.example`，无缺失项，无预期外残留。
@@ -126,14 +123,8 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 
 ## 边界
 
-- 唯一入口（根 AGENTS.md §2.7 系统访问唯一入口）：对系统的任何访问都经本工具集；禁旁路（裸 curl / 裸 SQL /
-  自行开浏览器操作页面 / 直连中间件 / 直调外部第三方接口）；缺工具走「生成流程」或「更新流程」新增，不自行造通道
-- 断言由 AI 判断，工具不内置断言逻辑
-- 只读红线：对账/校验类工具非只读操作拒绝；不写裸 curl、不裸 SQL（SQL 包进 db 命令）
-- 调用只跑实例 `docs/tools/`；不得运行本 skill `assets/reference-impl/` 副本（那是含项目特定样例值的模板，非运行实例）
-- 环境权威在 DEPLOYMENT：环境清单读 §2.1、变量读 §6/§7；`.env.<环境名>` 是其副本，不一致以 DEPLOYMENT 为准
-- 只读 DEPLOYMENT：本 skill 不修改 `docs/deployment/DEPLOYMENT.md` 本体（改文档按 `deploy-ops` skill 更新）
-- 环境纪律：一次调用绑定一个环境，每条命令必带 `--env`；未知环境会 fail-fast（不回退默认）
-- 用例卡的编排执行与写卡规范归 test-ops skill（测试用例唯一入口；资产结构见其 references/test-assets.md，写卡规范见其
-  references/case-writing.md）
-- 不生成业务代码、不自动 commit/push
+- 系统访问唯一入口（根 `AGENTS.md` §2.7）：对系统的任何访问都经本工具集，禁旁路（裸 curl / 裸 SQL / 自行开浏览器 /
+  直连中间件 / 直调第三方）；缺工具走「生成与更新」新增。
+- 调用只跑实例 `docs/tools/`，不得运行本 skill 的 `assets/reference-impl/` 模板；断言由 AI 判断，工具只取证据。
+- 只读红线：对账 / 校验类工具拒绝非只读操作；本 skill 不修改 `DEPLOYMENT.md` 本体（改文档按 `deploy-ops`）。
+- 用例卡的编排执行与写卡规范归 `test-ops` skill。

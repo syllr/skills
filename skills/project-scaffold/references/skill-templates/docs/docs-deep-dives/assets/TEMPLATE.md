@@ -2,8 +2,6 @@
 
 ## 产物一：{name}.md
 
-<!-- 生成提示：单个系统级问题深潜文档的标题、内容范围与文件头。 -->
-
 ### 文档头
 
 <!-- 生成提示：声明单篇标题与系统级问题范围。 -->
@@ -23,7 +21,7 @@ title: <name> — 系统级问题深潜
 
 ## 1. 总览（应用级时序图）
 
-<!-- 生成提示：用一张 Mermaid sequenceDiagram 展示应用与系统之间的端到端交互。 -->
+<!-- 生成提示：用一张 Mermaid sequenceDiagram 展示应用与系统之间的端到端交互，不用 flowchart 替代。 -->
 
 ~~~mermaid
 sequenceDiagram
@@ -47,8 +45,6 @@ sequenceDiagram
 
 ## 3. 领域实体状态流转
 
-<!-- 生成提示：记录本问题涉及的实体、业务域、角色与状态变化。 -->
-
 ### 3.1 涉及实体
 
 <!-- 生成提示：列出实体或领域服务、业务域及其在本问题中的角色。 -->
@@ -59,7 +55,7 @@ sequenceDiagram
 
 ### 3.2 状态流转
 
-<!-- 生成提示：用 Mermaid sequenceDiagram 展示实体收到领域事件后的状态变化。 -->
+<!-- 生成提示：用 Mermaid sequenceDiagram 展示实体收到领域事件后的状态变化，不用集中式状态机图替代。 -->
 
 ~~~mermaid
 sequenceDiagram

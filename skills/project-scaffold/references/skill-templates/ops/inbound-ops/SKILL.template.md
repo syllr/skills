@@ -18,6 +18,8 @@ description: L3 Inbound 契约域唯一入口——同时管辖接口契约说�
 Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`）归 `outbound-ops` skill；跨文档编排、漂移清账与旧文档处置归
 `align-docs` skill。
 
+- 目标文档结构以 [assets/TEMPLATE.md](assets/TEMPLATE.md) 为准，本 skill 不另行维护章节骨架。
+
 本 skill 自带资料：
 
 - 产物骨架 [assets/TEMPLATE.md](assets/TEMPLATE.md)——`INBOUND.md` 的目标结构（`openapi/` 目录结构不在此，见下）
@@ -48,8 +50,7 @@ Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-cont
    为依据，不能脱离代码凭空手写；无后端代码时先与用户确定接口定义，在代码中建立路由与请求 / 响应 Schema，再导出。
 4. 有既有产物：读现有说明书与导出产物，提取仍有效的信息，再按模板重建目标结构；旧版内联的接口清单、字段表、错误码表移出说明书，字段级内容只保留在
    `openapi/` 产物中。
-5. 按模板写 `INBOUND.md`，只写导出产物结构、导出命令、维护规范、CI pipeline、协议支持表与端点计数，不复制字段、校验与错误码；写入后删除模板中的
-   HTML 生成提示注释。
+5. 按模板写 `INBOUND.md`，只写导出产物结构、导出命令、维护规范、CI pipeline、协议支持表与端点计数，不复制字段、校验与错误码。
 6. 代码中的路由、Schema、校验、错误码或扩展元数据变化时，先改代码，再走「执行
    §2」重新导出、拆分、校验、落盘，最后回写说明书；同步说明书的导出产物结构、导出命令、维护规范、CI pipeline、协议支持表与端点计数；不手工编辑
    `openapi/` 文件。
@@ -109,10 +110,6 @@ Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-cont
 
 ## 完成判定
 
-格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
-代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架模板一致、不补写
-frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
-
 说明书侧：
 
 - 协议支持表包含默认 HTTP / REST，并保留其他协议的占位或已启用规范。
@@ -135,12 +132,8 @@ frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本
 
 ## 边界
 
-- 代码是接口契约的事实来源，禁止先手写 YAML 再由 YAML 生成代码。
-- `openapi/` 一律由导出与拆分脚本产生，禁止手工编辑；一切写入经导出流程。
-- 门禁落盘不可省：它是防止首次导出静默抹掉手写契约语义的唯一机制。
-- `INBOUND.md` 不手抄字段、校验或错误码；字段级契约只查 `openapi/`。
-- 待规划能力不建路由、不留 tag、paths 或 Stub；接口按方法与路径标识，不使用顺序编号。
-- 导出命令 SSOT 在 `INBOUND.md` §2，references 不复制命令文本（跨项目通用）。
-- 契约漂移的检测、分诊与清账归 `align-docs` skill，本 skill 只做「按代码重生成」的执行。
-- 不管理 Outbound 契约（归 `outbound-ops`），不生成客户端代码，不修改业务代码，不自动 commit 或 push。
-- 正文不使用加粗或 emoji。
+- 代码是接口契约的事实来源，禁止先手写 YAML 再由 YAML 生成代码；`openapi/` 一律由导出脚本产生，禁止手工编辑。
+- `INBOUND.md` 不手抄字段、校验或错误码；字段级契约只查 `openapi/`；导出命令 SSOT 在 `INBOUND.md` §2，references 不复制命令文本。
+- 门禁落盘不可省；待规划能力不建路由、不留 tag / paths / Stub。
+- 不管理 Outbound 契约（归 `outbound-ops`）；契约漂移的检测、分诊与清账归 `align-docs` skill。
+- 不生成客户端代码。

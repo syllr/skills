@@ -18,7 +18,8 @@ skill 自持（[references/test-assets.md](references/test-assets.md) 管资产�
 
 - 唯一入口：任何形式的用例（单元 / 接口 / 流程 / 集成）的新增 / 更新 / 删除 / 执行只经本 skill。
 - 不做：项目工具集（`docs/tools/`）的生成与调用归 `tools-ops` skill；跨文档对齐与漂移归 `align-docs` skill。
--
+- 用例卡结构以 [assets/case-templates/](assets/case-templates/)
+  与 [references/case-writing.md](references/case-writing.md) 为准，本 skill 不另行维护卡骨架。
 
 自持：用例卡结构、写卡规范（[references/case-writing.md](references/case-writing.md)、
 [assets/case-templates/](assets/case-templates/)）与执行台账（`docs/test/test-records/`）由本 skill 自持。
@@ -80,7 +81,7 @@ DoD 草稿、验证后晋升，不在正式用例库直写。
    分支，在正式用例库定位归属——已有对应用例则更新（把该分支的测试逻辑合并进既有用例），无对应用例则新增。
 5. 正式用例的更新 / 删除：按 [references/case-writing.md](references/case-writing.md) 修改卡内容（头 + Case N
    五段：前置条件 / 执行流程 / 期望结果 / 数据对账 / 数据清理）或删除卡文件（不留孤儿文件）；新增不在此直写，先落 DoD 草稿。
-6. 写卡与落盘一律遵守 [references/case-writing.md](references/case-writing.md) 与卡模板；写入后删除模板中的 HTML 生成提示注释。
+6. 写卡与落盘一律遵守 [references/case-writing.md](references/case-writing.md) 与卡模板。
 7. 晋升完成后询问用户 DoD 草稿如何处置（删除 / 保留）；不晋升的 DoD 默认保留草稿，清理需用户确认（不主动清理）。
 8. 改完按 [references/case-writing.md](references/case-writing.md) §4 机检（结构机检：头 + Case N 五段齐全 /
    内容机检：无占位参数、无悬空 § 引用 / 目录机检：卡在对应实体/场景目录 / 清理机检：造数据卡含三态清理），汇报改动清单与机检结果。
@@ -125,10 +126,6 @@ DoD 草稿、验证后晋升，不在正式用例库直写。
 
 ## 完成判定
 
-格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 Mermaid 或 ASCII
-代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、不补写 frontmatter）见根
-`AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
-
 - `docs/test/` 磁盘内容与 [references/test-assets.md](references/test-assets.md) §1
   预期资产集逐项对应：无缺失项，已删除的领域实体或用户故事场景无残留用例目录。
 - 每张用例卡为「头 + Case N」结构且五段齐全（前置条件 / 执行流程 / 期望结果 / 数据对账 /
@@ -143,12 +140,7 @@ DoD 草稿、验证后晋升，不在正式用例库直写。
 
 ## 边界
 
-- 本 skill 是测试用例的唯一入口：资产结构与旧资产检出由 references/test-assets.md 自持，用例卡结构与写卡规范由
-  references/case-writing.md 自持；新增/更新/删除/执行一律经本 skill，AI 不得自动创建任何用例（新增一律经 DoD 晋升）
-- 本域的文档产物即 `docs/test/test-cases/` 下的用例卡：面向人读的说明就是这些用例卡本身，资产结构与写卡规范分别由
-  references/test-assets.md 与 references/case-writing.md 声明，`docs/test/` 根下不另设一份总说明
-- DoD 草稿在 `docs/test/do-drafts/`（过程态）：与 `docs/changes/`、`docs/drift/`
-  同性质——使命完成后由用户决定删除或保留；不入正式库、不被正式用例体系引用；晋升后才进 `docs/test/test-cases/`
-- 工具实现与调用归 tools-ops skill：本 skill 只做执行编排（环境/顺序/策略/记录），不实现工具、不绕过工具直连被测系统
-- 用例执行的环境权威在 DEPLOYMENT（§2.1 环境矩阵 / §6/§7 变量）；`.env.<环境名>` 是其副本
-- 不生成业务代码、不自动 commit/push
+- 测试用例唯一入口：用例卡结构与写卡规范自持，新增 / 更新 / 删除 / 执行一律经本 skill，AI 不得自动创建任何用例（新增一律经
+  DoD 晋升）
+- 工具实现与调用归 `tools-ops` skill：本 skill 只做执行编排（环境 / 顺序 / 策略 / 记录），不实现工具、不绕过工具直连被测系统
+- 用例执行的环境权威在 `DEPLOYMENT.md`，`.env.<环境名>` 是其副本；`docs/test/` 根下不另设总说明
