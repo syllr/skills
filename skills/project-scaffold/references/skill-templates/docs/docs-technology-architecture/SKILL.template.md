@@ -58,4 +58,4 @@ description: 维护 L2 技术架构文档 docs/L2/TECHNOLOGY-ARCHITECTURE.md 的
 
 ## 边界
 
-- 部署单元、环境与参数归 `docs/deployment/DEPLOYMENT.md`，功能与能力清单归 `docs-business`，本 skill 不复制。
+- 部署单元、环境与参数归 `docs/deployment/DEPLOYMENT.md`，产品能力归 `docs-business`，本 skill 不复制。

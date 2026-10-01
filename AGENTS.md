@@ -82,7 +82,7 @@ skills/
 
 - `project-scaffold/references/agents-templates/` 与 `references/skill-templates/` 中的 Markdown 不使用加粗正文或 emoji；
 - 保持模板为通用资产，不写真实项目名、主机或环境专属值；
-- 模板每节的生成提示用 `<!-- 生成提示：… -->` 承载，生成产物时删除、不留在产物中；
+- 模板每节的生成提示用 `<!-- 生成提示:begin -->` 与 `<!-- 生成提示:end -->` 包裹，生成产物时连同标记一起删除；
 - `SKILL.md` 控制在 500 行以内，核心工作流放在正文，细节下沉到 `references/`；
 - 所有文档、注释和面向用户的说明使用中文，技术术语、命令和路径保留原文。
 

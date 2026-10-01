@@ -34,15 +34,15 @@ skill 的流程走。链外的产物域与过程态台账是各自独立的域�
 把每份文档交给它的管辖
 skill 跑完成判定（全量对齐）。每份文档读谁由该 skill 自己的「读取」段声明，本表不复制。
 
-| 层 | 文档                                                    | 定位（回答什么）                                                                                  | 管辖 skill                    |
-|----|---------------------------------------------------------|---------------------------------------------------------------------------------------------------|-------------------------------|
-| L1 | `docs/L1/BUSINESS.md`                                   | 业务定位、业务全景（角色 / 主线 / 模式 / 对象流转 / 系统边界 / 关系图）、产品能力、用户故事与旅程 | docs-business                 |
-| L2 | `docs/L2/domain/`（`DOMAIN-MODEL.md` + 每域 `{域}.md`） | 业务域、聚合实体、领域操作、状态机、领域事件                                                      | docs-domain                   |
-| L2 | `docs/L2/TECHNOLOGY-ARCHITECTURE.md`                    | 技术选型与理由、技术分层、基础设施、非功能约束                                                    | docs-technology-architecture  |
-| L2 | `docs/L2/DATA-ARCHITECTURE.md`                          | 数据资产分类、存储拓扑、数据血缘、物理存储形态                                                    | docs-data-architecture        |
-| L2 | `docs/L2/APPLICATION-ARCHITECTURE.md`                   | 应用划分与应用内模块划分                                                                          | docs-application-architecture |
-| L3 | `docs/L3/STRUCTURE.md`                                  | 目录结构与文档 ↔ 代码映射                                                                         | docs-structure                |
-| L3 | `docs/L3/CODE-GUIDE.md`                                 | 代码规范（以实际 lint / 静态检查为准）                                                            | docs-code-guide               |
+| 层 | 文档                                                    | 定位（回答什么）                                                    | 管辖 skill                    |
+|----|---------------------------------------------------------|---------------------------------------------------------------------|-------------------------------|
+| L1 | `docs/L1/BUSINESS.md`                                   | 业务全景（角色 / 主线 / 模式 / 业务规则）、产品能力、用户故事与旅程 | docs-business                 |
+| L2 | `docs/L2/domain/`（`DOMAIN-MODEL.md` + 每域 `{域}.md`） | 业务域、聚合实体、领域操作、状态机、领域事件                        | docs-domain                   |
+| L2 | `docs/L2/TECHNOLOGY-ARCHITECTURE.md`                    | 技术选型与理由、技术分层、基础设施、非功能约束                      | docs-technology-architecture  |
+| L2 | `docs/L2/DATA-ARCHITECTURE.md`                          | 数据资产分类、存储拓扑、数据血缘、物理存储形态                      | docs-data-architecture        |
+| L2 | `docs/L2/APPLICATION-ARCHITECTURE.md`                   | 应用划分与应用内模块划分                                            | docs-application-architecture |
+| L3 | `docs/L3/STRUCTURE.md`                                  | 目录结构与文档 ↔ 代码映射                                           | docs-structure                |
+| L3 | `docs/L3/CODE-GUIDE.md`                                 | 代码规范（以实际 lint / 静态检查为准）                              | docs-code-guide               |
 
 ### 链外
 
