@@ -1,5 +1,7 @@
 # API-<模块>-<序号>
 
+<!-- 生成提示：复制本卡结构与契约（头 + Case N 五段），按被测系统替换 <> 占位与示例值，落到 docs/test/test-cases/api/<实体>/；本注释不进产物。 -->
+
 - 接口：`<METHOD> <path>`（operationId `<xxx>`）
 - 业务对象：<领域实体>（Action/Event，或「查询，无 Action/Event」）
 

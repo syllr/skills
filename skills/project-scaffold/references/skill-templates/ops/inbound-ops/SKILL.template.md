@@ -5,7 +5,7 @@ description: L3 Inbound 契约域唯一入口——同时管辖接口契约说�
 
 # inbound-ops — L3 Inbound 契约域（说明书 + 机器可读契约 + 导出执行）
 
-## 定位与管辖
+## 定位与管辖文档
 
 本 skill 是 L3 Inbound 契约域的唯一入口，同时管辖三类产物：
 
@@ -38,24 +38,25 @@ Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-cont
   [contract-assets.md](references/contract-assets.md) §1，不以 `INBOUND.md` §1 为准。
 - 需要判断跨层漂移时交 `align-docs` skill。
 
-## 生成
+## 生成与更新
+
+生成与更新走同一条流程：先读模板，再扫目标位置判断有无既有文档或同定位的旧产物，有则更新、无则新建。
 
 1. 读 [assets/TEMPLATE.md](assets/TEMPLATE.md)，选择目标产物对应的骨架。
-2. 探测代码与语言框架；契约以代码中的路由、请求 / 响应 Schema 和 DTO 为依据，不能脱离代码凭空手写。
-3. 无后端代码时先与用户确定接口定义，在代码中建立路由与请求 / 响应 Schema，再导出。
-4. 按模板生成 `INBOUND.md`，只写导出产物结构、导出命令、维护规范、CI pipeline、协议支持表与端点计数，不复制字段、校验与错误码。
-5. 项目无导出脚本或 `INBOUND.md` §2 缺命令时走「执行 §1 引导」；`openapi/` 产物由「执行 §2 导出」产出。
-6. 协议超出默认范围、接口定义有歧义或项目无后端代码时询问用户。
-
-## 更新
-
-1. 读现有说明书与导出产物，提取仍有效的信息，再按模板重建目标结构。
-2. 旧版内联的接口清单、字段表、错误码表移出说明书；字段级内容只保留在 `openapi/` 产物中。
-3. 代码中的路由、Schema、校验、错误码或扩展元数据变化时，先改代码，再走「执行 §2」重新导出、拆分、校验、落盘，最后回写说明书。
-4. 同步说明书的导出产物结构、导出命令、维护规范、CI pipeline、协议支持表与端点计数；不手工编辑 `openapi/` 文件。
-5. 删除或迁移接口时同步清理代码、导出产物、引用与计数，检查悬空引用与残留 Stub。
-6. 领域 Action、业务能力与应用边界变化时联动 `docs-domain`、`docs-business`、`docs-application-architecture`；接口上线与部署配置变化时联动
-   `deploy-ops`；跨文档漂移交 `align-docs` skill。
+2. 扫描目标位置（`docs/contracts/INBOUND.md` 与 `docs/contracts/openapi/`），判断有无既有说明书、导出产物或同定位的旧产物。
+3. 无既有产物：探测代码与语言框架；契约以代码中的路由、请求 / 响应 Schema 和 DTO
+   为依据，不能脱离代码凭空手写；无后端代码时先与用户确定接口定义，在代码中建立路由与请求 / 响应 Schema，再导出。
+4. 有既有产物：读现有说明书与导出产物，提取仍有效的信息，再按模板重建目标结构；旧版内联的接口清单、字段表、错误码表移出说明书，字段级内容只保留在
+   `openapi/` 产物中。
+5. 按模板写 `INBOUND.md`，只写导出产物结构、导出命令、维护规范、CI pipeline、协议支持表与端点计数，不复制字段、校验与错误码；写入后删除模板中的
+   HTML 生成提示注释。
+6. 代码中的路由、Schema、校验、错误码或扩展元数据变化时，先改代码，再走「执行
+   §2」重新导出、拆分、校验、落盘，最后回写说明书；同步说明书的导出产物结构、导出命令、维护规范、CI pipeline、协议支持表与端点计数；不手工编辑
+   `openapi/` 文件。
+7. 项目无导出脚本或 `INBOUND.md` §2 缺命令时走「执行 §1 引导」；`openapi/` 产物由「执行 §2 导出」产出。
+8. 删除或迁移接口时同步清理代码、导出产物、引用与计数，检查悬空引用与残留 Stub。
+9. 协议超出默认范围、接口定义有歧义或项目无后端代码时询问用户；领域 Action、业务能力、应用边界、接口上线与部署配置变化时的跨
+   skill 同步见「联动」。
 
 ## 执行
 
@@ -99,10 +100,17 @@ Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-cont
 
 按 §2 步骤 5 的清单执行，输出通过 / 未通过项；检出问题只报告并建议（走 §1 引导 / §2 重导出 / 交 `align-docs` 记录漂移），不修改契约。
 
+## 联动
+
+- 领域 Action、业务能力与应用边界变化时，联动 `docs-domain`、`docs-business`、`docs-application-architecture`。
+- 接口上线、部署配置或环境变化时，联动 `deploy-ops`。
+- Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`）归 `outbound-ops` skill。
+- 跨文档漂移的检测、分诊与清账归 `align-docs` skill，本 skill 只做「按代码重生成」的执行。
+
 ## 完成判定
 
 格式与结构纪律（正文无加粗与 emoji、无 SSOT 或单一事实源字样、无模板说明与未替换元变量、图为 D2 / Mermaid / ASCII
-代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架 模板一致、不补写
+代码块而无位图、无治理套话与固定元信息、章节编号连续不跳号、相对链接可解析、跨文档章节引用无死链、标题层级与骨架模板一致、不补写
 frontmatter）见根 `AGENTS.md` §2.8，各文档不重复列出；以下为本文档专有判定，全部通过才算完成。
 
 说明书侧：

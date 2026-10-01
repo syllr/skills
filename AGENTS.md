@@ -33,11 +33,11 @@ skills/
 
 `project-scaffold` 是纯指令 Skill，不是 npm 插件，也没有安装脚本或命令行参数。用户手动调用该 Skill，由 AI 读取项目现状并写文件：
 
-- `references/agents-templates/AGENTS.md` 并入目标项目根 `AGENTS.md`，即「项目宪法」章节（当前 1 个文件）；
+- `references/agents-templates/AGENTS.md` 并入目标项目根 `AGENTS.md`，即「项目宪法」章节（当前 1 个文件），且必须位于该文件最前面；
 - `references/skill-templates/<分组>/<name>/` 整目录复制到目标项目 `.opencode/skills/<name>/`；
 - `SKILL.template.md` 在目标项目落位时改名为 `SKILL.md`；
 - AGENTS 受管区块标记为 `<!-- project-scaffold:begin -->` 与 `<!-- project-scaffold:end -->`；
-- 已有受管区块时只替换区块内正文，区块外内容保留；无区块时在末尾追加区块，不覆盖既有内容；
+- 受管区块始终置于文件开头；已有区块时替换区块内正文并把区块移到开头，无区块时插到开头，现有章节整体顺延在后并保持编号连续（如原「第一章」→「第二章」）；
 - Skill 目录归该 Skill 所有、整目录覆盖（可重入）；
 - 只写固定资产路径，不写业务文档正文、业务代码或 Git 状态。
 
@@ -82,6 +82,7 @@ skills/
 
 - `project-scaffold/references/agents-templates/` 与 `references/skill-templates/` 中的 Markdown 不使用加粗正文或 emoji；
 - 保持模板为通用资产，不写真实项目名、主机或环境专属值；
+- 模板每节的生成提示用 `<!-- 生成提示：… -->` 承载，生成产物时删除、不留在产物中；
 - `SKILL.md` 控制在 500 行以内，核心工作流放在正文，细节下沉到 `references/`；
 - 所有文档、注释和面向用户的说明使用中文，技术术语、命令和路径保留原文。
 
@@ -111,4 +112,4 @@ for d in skills/*/; do uvx --from skills-ref agentskills validate "$d" || exit 1
 - 新增/删除 Skill 模板时同时更新 `references/skill-templates/<分组>/` 与 `SKILL.md` 资产表；新增/删除 A 类 skill 还要同步根
   `AGENTS.md` 的 Skill 路由表；
 - 任何会改变项目文件的行为都必须边界清晰：`.opencode/skills/**` 归 project-scaffold 所有（整目录覆盖、可重入），根 AGENTS.md
-  只在受管区块内写入、区块外绝不触碰、无区块时追加。
+  只在受管区块内写入；区块置于文件开头，区块外内容仅做整体位移与必要的章节编号顺延。
