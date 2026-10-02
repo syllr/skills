@@ -50,8 +50,10 @@ description: >
 
 产物只有面向人读的说明书，没有资产、状态机与门禁。每个目录含两份资产：`SKILL.template.md`（统一章节骨架：定位与管辖文档 /
 读取 / 生成与更新 / 联动 / 完成判定 / 边界；编排器与 ops 在此骨架上追加自身特有段，如分诊 / 执行 / 产物基线）与
-`assets/TEMPLATE.md`（目标文档骨架模板，每节的生成提示以 `<!-- 生成提示:begin -->` 与 `<!-- 生成提示:end -->`
-包裹）；生成文档时先读模板再写，骨架内容只放模板、不写进
+`assets/` 下的目标文档骨架模板（每节的生成提示以 `<!-- 生成提示:begin -->` 与 `<!-- 生成提示:end -->`
+包裹；一个 skill 出多种产物时按产物拆成多个模板文件，如 `docs-domain` 的 `DOMAIN-MAP.template.md` +
+`DOMAIN.template.md`、`inbound-ops` 的 `INBOUND.template.md` + `OPENAPI.template.md`、`outbound-ops` 的
+`OUTBOUND.template.md` + `CONTRACT.template.md`）；生成文档时先读模板再写，骨架内容只放模板、不写进
 SKILL，写入产物时连同这对标记删除。
 
 | Skill                                                                                                            | 管辖文档                            |

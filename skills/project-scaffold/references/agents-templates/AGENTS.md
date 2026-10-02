@@ -26,7 +26,7 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
     │   ├── APPLICATION-ARCHITECTURE.md   应用架构
     │   ├── DATA-ARCHITECTURE.md          数据架构
     │   ├── TECHNOLOGY-ARCHITECTURE.md    技术架构
-    │   └── domain/          领域模型：DOMAIN-MODEL.md + 一域一文
+    │   └── domain/          领域模型：DOMAIN-MAP.md + 一域一文
     ├── L3/                  事实层（变更起点）
     │   ├── STRUCTURE.md     目录结构与文档 ↔ 代码映射
     │   └── CODE-GUIDE.md    代码规范

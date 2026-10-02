@@ -15,14 +15,15 @@ description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/contra
 
 本 skill 只负责本层产物的读取、生成、更新与验收；跨层漂移扫描、分诊与清账由 `align-docs` skill 编排。
 
-- 目标文档结构以 [assets/TEMPLATE.md](assets/TEMPLATE.md) 为准，本 skill 不另行维护章节骨架；生成或更新任何产物前先读取该模板，按其中
-  `OUTBOUND.md` 与 `outbound-contracts/{service}.md` 的骨架写入。
+- 一个 skill 两种产物、两份模板：[assets/OUTBOUND.template.md](assets/OUTBOUND.template.md) 管
+  `OUTBOUND.md`，[assets/CONTRACT.template.md](assets/CONTRACT.template.md) 管 `outbound-contracts/{service}.md`；本 skill
+  不另行维护章节骨架，生成或更新任何产物前先读取对应模板。
 
 ## 读取
 
 - 先读项目宪法和已落盘文档，按 `L1 → L2 → L3` 的顺序确认上下文。
 - 读取 L1 业务文档及其能力、Action 与状态，调用 `docs-business`、`docs-domain`。
-- 读取 L2 技术架构中的外部依赖、应用归属、领域操作、数据架构外部数据资产与总文档 Mapper，调用
+- 读取 L2 技术架构中的外部依赖、应用归属、领域操作与数据架构外部数据资产，调用
   `docs-technology-architecture`、`docs-application-architecture`、`docs-domain`、`docs-data-architecture`。
 - 读取集成客户端或 Adapter 的接口定义、第三方官方 spec、集成配置与领域调用方信息。
 - 读取现有 `OUTBOUND.md` 与各服务契约文件；已有文档只提取仍有效的信息。
@@ -32,17 +33,18 @@ description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/contra
 
 生成与更新走同一条流程：先读模板，再扫目标位置判断有无既有文档或同定位的旧产物，有则更新、无则新建。
 
-1. 读取 `assets/TEMPLATE.md`，选择目标产物对应的骨架。
+1. 读对应模板：`docs/contracts/OUTBOUND.md` 见 [assets/OUTBOUND.template.md](assets/OUTBOUND.template.md)，
+   `docs/contracts/outbound-contracts/{service}.md` 见 [assets/CONTRACT.template.md](assets/CONTRACT.template.md)。
 2. 扫描目标位置（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`），判断有无既有说明书、契约文件或同定位的旧产物。
 3. 无既有产物：探测集成客户端或 Adapter 的接口定义与第三方官方 spec（二者共同构成外部服务契约来源，不能脱离代码与官方 spec
-   凭空手写），扫描技术架构外部依赖、应用归属、领域操作、数据架构外部数据资产、总文档 Mapper 与调用方信息，按模板新建。
-4. 有既有产物：读现有说明书与契约文件，提取仍有效的信息，按 `assets/TEMPLATE.md` 重建目标结构。
+   凭空手写），扫描技术架构外部依赖、应用归属、领域操作、数据架构外部数据资产与调用方信息，按模板新建。
+4. 有既有产物：读现有说明书与契约文件，提取仍有效的信息，按对应模板重建目标结构。
 5. 按模板写 `OUTBOUND.md`，只写总览、服务概览和契约目录等说明书层信息；每个外部服务生成或更新一份
    `outbound-contracts/{service}.md`，接口、字段、错误码和接入细节写入对应契约文件。
 6. 集成客户端、Adapter 或第三方官方 spec 变化时，更新对应服务契约文件；接口列表、接口定义、错误码和调用方按同一变更同步。
 7. 新增、删除或迁移服务契约文件时，同步 `OUTBOUND.md` 的服务概览、§3
    索引及全仓引用；并按 [contract-assets.md](references/contract-assets.md) §3 核对磁盘，代码中已无集成的服务不留契约文件。
-8. 外部依赖、调用方应用、外部数据资产或领域 Mapper 变化时，联动对应上游文档并重新检查契约术语与归属；复杂场景在契约文件内单列小节展开；跨文档漂移交由
+8. 外部依赖、调用方应用、外部数据资产或领域 Action 变化时，联动对应上游文档并重新检查契约术语与归属；复杂场景在契约文件内单列小节展开；跨文档漂移交由
    `align-docs` skill。
 9. 无客户端实现时先与用户确定接口边界，在代码中定义客户端接口骨架，再生成契约文件；外部服务选择有争议时询问用户。
 10. 更新后重新执行完成判定，确认索引与实际文件一一对应，且旧文件路径没有残留引用。
@@ -50,8 +52,7 @@ description: 生成、更新与验收 L3 Outbound 外部集成文档 docs/contra
 ## 联动
 
 - 技术架构外部依赖变化时，联动 `docs-technology-architecture` skill；数据库、对象存储、缓存等基础设施不进入外部集成清单。
-- 应用归属或调用方变化时，联动 `docs-application-architecture` skill；领域 Action 或 Mapper 变化时，联动 `docs-domain`
-  skill。
+- 应用归属或调用方变化时，联动 `docs-application-architecture` skill；领域 Action 变化时，联动 `docs-domain` skill。
 - 外部数据资产与字段术语变化时，联动 `docs-data-architecture` skill；部署密钥、回调或连接配置变化时，联动 `deploy-ops`
   skill。
 - Inbound 接口变化时与 `inbound-ops` skill 保持方向边界；复杂业务场景在契约文件内单列小节展开。

@@ -1,14 +1,10 @@
-# Inbound 契约产物模板
-
-## 产物一：INBOUND.md
-
-### 文件头
+# INBOUND — 接口契约说明书（Inbound）
 
 <!-- 生成提示:begin -->
-H1 写 `INBOUND — 接口契约说明书（Inbound）`，下一行用引用块写一句话方向说明（L3 Inbound 接口契约说明书）。
+下一行用引用块写一句话方向说明（L3 Inbound 接口契约说明书）。
 <!-- 生成提示:end -->
 
-### 1. 导出产物与端点计数
+## 1. 导出产物与端点计数
 
 <!-- 生成提示:begin -->
 本节只写导出产物的一句话概述与端点计数字段，不列目录结构与文件清单——`openapi/` 的预期资产集由本 skill
@@ -20,19 +16,20 @@ H1 写 `INBOUND — 接口契约说明书（Inbound）`，下一行用引用块�
 | 字段 | 含义 |
 |------|------|
 
-### 2. 从代码导出契约
+## 2. 从代码导出契约
 
-#### 2.1 {语言框架}
+### 2.1 {语言框架}
 
 <!-- 生成提示:begin -->
 写当前项目选定语言框架的导出信息，四行：依赖（依赖或插件）、导出（导出命令）、产物（`docs/contracts/openapi/`
 下的导出产物路径）、官网（官方文档链接）。
 <!-- 生成提示:end -->
 
-### 3. 契约维护规范
+## 3. 契约维护规范
 
 <!-- 生成提示:begin -->
 六条约定，逐条写清：
+
 - 契约来源：代码中的路由、请求/响应 Schema 与 DTO。
 - 变更入口：接口、字段、校验与错误码的变化。
 - 测试断言：状态码、响应字段与错误码的依据。
@@ -42,7 +39,7 @@ H1 写 `INBOUND — 接口契约说明书（Inbound）`，下一行用引用块�
 
 <!-- 生成提示:end -->
 
-### 4. CI 防漂移 pipeline
+## 4. CI 防漂移 pipeline
 
 <!-- 生成提示:begin -->
 写契约检查、拆分、兼容性检查与导出漂移检测组成的五步流水线，逐步列出 步骤 / 工具或命令 / 作用 / 失败动作。默认五步：
@@ -59,7 +56,7 @@ H1 写 `INBOUND — 接口契约说明书（Inbound）`，下一行用引用块�
 | 步骤 | 工具或命令 | 作用 | 失败动作 |
 |------|------------|------|----------|
 
-### 5. 协议支持表
+## 5. 协议支持表
 
 <!-- 生成提示:begin -->
 默认 HTTP/REST 必填，其余协议按项目实际追加或标「占位」。
@@ -76,35 +73,3 @@ H1 写 `INBOUND — 接口契约说明书（Inbound）`，下一行用引用块�
 
 | 协议 | 规范文件 | Schema 形态 | 工具链 | 状态 |
 |------|----------|-------------|--------|------|
-
-## 产物二：openapi/ 目录骨架
-
-### 1. 目录结构
-
-<!-- 生成提示:begin -->
-本节不写目录树。`openapi/` 的目录层级、每个文件的作用与落盘规则由本 skill
-的 [contract-assets.md](../references/contract-assets.md) §1 声明；本 skill 按该声明生成与验收，不以本文档为准。
-<!-- 生成提示:end -->
-
-### 2. `openapi.yaml`
-
-<!-- 生成提示:begin -->
-主契约只承载元信息与 `$ref`，`paths` 与 `components` 的定义都在拆分文件里。字段顺序：文件头注释（声明只承载元信息与引用）、
-`openapi` 版本（3.1.0）、`info`（title / version）、`servers`（url / description）、`tags`（name / description）、`security`、`paths`
-（每个端点用 `$ref` 指向 `./paths/{domain}.yaml` 的对应路径）、`components`（`schemas` / `responses` / `securitySchemes` 各用
-`$ref` 指向对应拆分文件）；文件末尾用注释记录删除留痕与端点计数。
-<!-- 生成提示:end -->
-
-### 3. `paths/{domain}.yaml` 文件头注释块
-
-<!-- 生成提示:begin -->
-paths 拆分文件的文件头注释固定三行：依据来源（`docs/L2/domain/{domain}.md` 的章节与 Action 清单）、边界（本文件覆盖的端点范围）、x-action
-汇总（Action 清单）。正文按 `paths` → `/{path}` → `{method}` 层级写 operationId、x-action、x-capability，响应以 `$ref` 指向
-`components/responses`。
-<!-- 生成提示:end -->
-
-### 4. `components/` 拆分文件
-
-<!-- 生成提示:begin -->
-写 Schema、响应与鉴权方案拆分文件的顶层结构：`components` 下分 `schemas` / `responses` / `securitySchemes`，各自登记本文件承载的定义。
-<!-- 生成提示:end -->

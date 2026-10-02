@@ -18,11 +18,13 @@ description: L3 Inbound 契约域唯一入口——同时管辖接口契约说�
 Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`）归 `outbound-ops` skill；跨文档编排、漂移清账与旧文档处置归
 `align-docs` skill。
 
-- 目标文档结构以 [assets/TEMPLATE.md](assets/TEMPLATE.md) 为准，本 skill 不另行维护章节骨架。
+- 一个 skill 两种产物、两份模板：[assets/INBOUND.template.md](assets/INBOUND.template.md) 管
+  `INBOUND.md`，[assets/OPENAPI.template.md](assets/OPENAPI.template.md) 管 `openapi/` 目录骨架；本 skill 不另行维护章节骨架。
 
 本 skill 自带资料：
 
-- 产物骨架 [assets/TEMPLATE.md](assets/TEMPLATE.md)——`INBOUND.md` 的目标结构（`openapi/` 目录结构不在此，见下）
+- 产物骨架 [assets/INBOUND.template.md](assets/INBOUND.template.md)（`INBOUND.md`
+  的目标结构）与 [assets/OPENAPI.template.md](assets/OPENAPI.template.md)（`openapi/` 目录结构）
 - 契约资产声明 [references/contract-assets.md](references/contract-assets.md)——`openapi/` 预期资产集的唯一来源，含落盘规则与旧资产检出
 - 引导映射 [references/bootstrap.md](references/bootstrap.md)——各语言框架的导出形态（CLI 一行 / 需脚本）
 - 执行方法论 [references/export-mechanics.md](references/export-mechanics.md)——临时目录策略、门禁落盘、拆分口径、机检清单、失败分诊
@@ -44,7 +46,8 @@ Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-cont
 
 生成与更新走同一条流程：先读模板，再扫目标位置判断有无既有文档或同定位的旧产物，有则更新、无则新建。
 
-1. 读 [assets/TEMPLATE.md](assets/TEMPLATE.md)，选择目标产物对应的骨架。
+1. 读对应模板：`docs/contracts/INBOUND.md` 见 [assets/INBOUND.template.md](assets/INBOUND.template.md)，
+   `docs/contracts/openapi/` 见 [assets/OPENAPI.template.md](assets/OPENAPI.template.md)。
 2. 扫描目标位置（`docs/contracts/INBOUND.md` 与 `docs/contracts/openapi/`），判断有无既有说明书、导出产物或同定位的旧产物。
 3. 无既有产物：探测代码与语言框架；契约以代码中的路由、请求 / 响应 Schema 和 DTO
    为依据，不能脱离代码凭空手写；无后端代码时先与用户确定接口定义，在代码中建立路由与请求 / 响应 Schema，再导出。

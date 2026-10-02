@@ -13,7 +13,7 @@
 
 - 目录层级固定一层，不按环境、团队或集成形态再分子目录。
 - 文件名用服务标识的 kebab-case，与 `OUTBOUND.md` §2 集成详情概览里的服务条目一一对应。
-- 每份契约文件的骨架见 [../assets/TEMPLATE.md](../assets/TEMPLATE.md)「产物二」。
+- 每份契约文件的骨架见 [../assets/CONTRACT.template.md](../assets/CONTRACT.template.md)。
 
 ## 2. 落盘规则
 
