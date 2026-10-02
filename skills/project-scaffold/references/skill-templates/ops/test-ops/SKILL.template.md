@@ -1,49 +1,40 @@
 ---
 name: test-ops
-description: 测试用例唯一入口与执行器（testcase ops，分诊）——测试用例的任何操作都只能经本 skill：执行用例（环境确认/范围/依赖排序/失败策略/按需部署/执行/测试记录/汇报）；管理用例（更新/删除/写卡规范自持）；DoD 草稿用例（ad-hoc 验证：新功能/bug fix/调研，使命完成后经用户认可晋升为正式用例）。新增正式用例一律先落 DoD 草稿、验证后晋升，不直接新增；AI 不得自动创建任何用例。触发词：跑用例、执行 case、执行测试、回归测试、测试用例、跑测试、新增用例、删除用例、更新用例、用例管理、用例卡规范、写用例卡、编辑用例、DoD 用例、临时用例、ad-hoc 用例、验证改动、验证新功能
+description: 测试用例唯一入口与执行器（testcase ops，分诊）——用例只有接口与流程两类（项目不写单元测试），任何操作都只能经本 skill：执行用例（环境确认/范围/依赖排序/失败策略/按需部署/执行/测试记录/汇报）；管理用例（更新/删除/写卡规范自持）；DoD 草稿用例（部署后用 docs/tools/ 做一次性验证，使命完成后经用户认可晋升为正式用例）。新增正式用例一律先落 DoD 草稿、验证后晋升，不直接新增；AI 不得自动创建任何用例，用例卡的新增与删除由用户手动配置。触发词：跑用例、执行 case、执行测试、回归测试、测试用例、跑测试、新增用例、删除用例、更新用例、用例管理、用例卡规范、写用例卡、编辑用例、DoD 用例、临时用例、ad-hoc 用例、验证改动、验证新功能
 ---
 
 # test-ops — 测试用例执行与用例管理（testcase ops）
 
-AI 既是测试执行器，也是用例库的维护者。本 skill 以分诊进入：执行用例 / 管理正式用例 / 处理 DoD 草稿用例。
+AI 既是测试执行器，也是用例库的维护者。本 skill
+是测试用例的唯一入口：一进来先看「分诊」，再进入对应章节。用例只有接口与流程两类（项目不写单元测试），新增 / 更新 / 删除 /
+执行都只能经本 skill——AI 不得自动创建任何用例，用例卡的新增与删除由用户手动配置；新增一律先落 DoD 草稿、经用户认可后晋升（根
+AGENTS.md §2.6 用例唯一入口）。
 
-本 skill 是测试用例的唯一入口：任何形式的用例（单元 / 接口 / 流程 / 集成）都只能经本 skill 触发与管理（新增 / 更新 / 删除 /
-执行）——AI 不得自动创建任何用例；新增一律先落 DoD 草稿、经用户认可后晋升（根 AGENTS.md §2.6 用例唯一入口）。用例卡结构与写卡规范由本
-skill 自持（[references/test-assets.md](references/test-assets.md) 管资产结构与旧资产检出，
-[references/case-writing.md](references/case-writing.md)：资产结构/卡结构五段/写卡规范/机检/关联联动），卡模板在
-`assets/case-templates/`。测试工具用法现场读实例
-`docs/tools/TOOLS.md`（工具集生成/维护/调用归 tools-ops skill）。本 skill 另承载：执行编排、测试记录机制、DoD 草稿与晋升机制。
+- 自持：用例卡结构、写卡规范（[references/case-writing.md](references/case-writing.md)、`assets/case-templates/`）与执行台账（
+  `docs/test/test-records/`）；资产结构与旧资产检出见 [references/test-assets.md](references/test-assets.md)。
+- 不做：项目工具集（`docs/tools/`）的生成与调用归 `tools-ops` skill；跨文档对齐归 `align-docs` skill。
 
-## 定位与管辖文档
+## 分诊
 
-- 唯一入口：任何形式的用例（单元 / 接口 / 流程 / 集成）的新增 / 更新 / 删除 / 执行只经本 skill。
-- 不做：项目工具集（`docs/tools/`）的生成与调用归 `tools-ops` skill；跨文档对齐与漂移归 `align-docs` skill。
-- 用例卡结构以 `assets/case-templates/`
-  与 [references/case-writing.md](references/case-writing.md) 为准，本 skill 不另行维护卡骨架。
+| 分诊             | 触发                                                                                                | 进入 |
+|------------------|-----------------------------------------------------------------------------------------------------|------|
+| 1 执行用例       | 跑用例 / 执行 case / 执行测试 / 回归测试                                                            | §1   |
+| 2 用例生成与更新 | 新增 / 更新 / 删除用例；DoD 草稿 / ad-hoc / 临时用例 / 新功能验证 / 改动验证（bug fix）/ 调研性验证 | §2   |
 
-自持：用例卡结构、写卡规范（[references/case-writing.md](references/case-writing.md)、
-`assets/case-templates/`）与执行台账（`docs/test/test-records/`）由本 skill 自持。
+> 新增正式用例不在 §2 中直写正式库：任何新增（新场景 / 新分支）都先落 DoD 草稿，经验证与用户认可后晋升——因为新增的用例本身需要先被测试过。
 
-## 读取
+## §1 执行用例
 
-1. 读 [references/test-assets.md](references/test-assets.md) 确认 `docs/test/` 的预期资产集与本次动作的落点位置。
-2. 读 `docs/L1/BUSINESS.md` 的用户故事与旅程、`docs/L2/domain/` 的领域模型，确认被测场景与领域实体。
-3. 读 `docs/contracts/INBOUND.md` 与 `docs/contracts/openapi/`，确认接口调用面、状态码与响应 schema——断言基准以此为准。
-4. 读 `docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵与 §6/§7 变量，确认本次执行用的环境。
-5. 读 `docs/tools/TOOLS.md` 与 `docs/tools/.env.<环境名>`，确认工具用法、退出码与环境选择。
-6. 读本 skill 与 [references/case-writing.md](references/case-writing.md)，确认写卡规范与机检口径。
-7. 源缺失或冲突时先核实，不臆造接口、实体或环境；缺什么报什么，不自行补默认值。
+### 读取
 
-## 分诊（进入第一件事）
+- 读 [references/test-assets.md](references/test-assets.md) 确认 `docs/test/` 的预期资产集与本次动作的落点位置。
+- 读 `docs/L1/BUSINESS.md` 的用户故事与旅程、`docs/L2/domain/` 的领域模型，确认被测场景与领域实体。
+- 读 `docs/contracts/inbound/`（对外接口的接口 → 代码映射，断言以代码为准）、`docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵与
+  §6/§7 变量、`docs/tools/.env.<环境名>`；工具清单与说明见 `docs/tools/AGENTS.md`。
+- 读本 skill 与 [references/case-writing.md](references/case-writing.md)，确认写卡规范与机检口径。
+- 源缺失或冲突时先核实，不臆造接口、实体或环境；缺什么报什么，不自行补默认值。
 
-| 分诊             | 触发                                                                                                | 动作       |
-|------------------|-----------------------------------------------------------------------------------------------------|------------|
-| 1 执行用例       | 跑用例 / 执行 case / 执行测试 / 回归测试                                                            | 执行       |
-| 2 用例生成与更新 | 新增 / 更新 / 删除用例；DoD 草稿 / ad-hoc / 临时用例 / 新功能验证 / 改动验证（bug fix）/ 调研性验证 | 生成与更新 |
-
-> 新增正式用例不在「生成与更新」中直写正式库：任何新增（新场景 / 新分支）都先落 DoD 草稿，经验证与用户认可后晋升——因为新增的用例本身需要先被测试过。
-
-## 执行（执行用例）
+### 步骤
 
 1. 环境确认：读 DEPLOYMENT §2.1 环境矩阵，列出可用环境，问用户本次在哪个环境跑——确认环境标识 `<env>`（未确认不执行）；校验
    `docs/tools/.env.<env>` 存在（不存在则按工具 `.env.example` 补齐，属配置缺失）——本次执行的所有工具调用统一带
@@ -60,35 +51,19 @@ skill 自持（[references/test-assets.md](references/test-assets.md) 管资产�
    与对账证据），按步骤 4 策略处理失败
 8. 问题记录：执行中发现以下任一问题 → 即时落测试记录（见下）：用例卡问题（断言无契约支撑 / 命令形态错 / 路径过时 / 前置缺失 /
    表述与实测不符）、被测代码问题（接口行为与契约不符 / 数据落位异常 / 边界未处理）、工具问题（tools 缺陷，修工具走 tools-ops
-   skill）、环境问题（部署/网络/服务不稳定）。属文档-代码漂移的转记 `docs/drift/`（由 align-docs 处置）
+   skill）、环境问题（部署/网络/服务不稳定）。
 9. 汇报：pass/fail 清单 + 对账证据 + 测试记录问题清单（按类型分组）+ 失败定位
 
 > 环境纪律：一次执行绑定一个环境（步骤 1 确认），每条工具命令必带 `--env <env>`（漏带会落到默认 `.env`）；需在多环境跑则按环境分别起执行。环境名以
 > DEPLOYMENT §2.1 为准。
 
-## 生成与更新
+完成判据：全部命令走 `docs/tools/` 的工具通道（api / db / webmcp / ragflow），无 curl、无裸
+SQL、无裸命令；断言三源可回溯（状态码 / 字段 / 错误码以接口代码为准，
+经 `inbound-ops` 的接口 → 代码映射定位，实测校准；依据失效交 `inbound-ops` 修映射，不在本 skill
+改代码）；造数据的
+Case 含三态清理，环境 host 不写死（走工具 `.env`）；执行的被测版本已绑定，每条问题有证据与状态枚举，台账只增不删。
 
-生成与更新走同一条流程：先读模板，再扫目标位置判断有无既有文档或同定位的旧产物，有则更新、无则新建。用例卡的生成与更新都走本流程；新增一律先落
-DoD 草稿、验证后晋升，不在正式用例库直写。
-
-1. 先读 `assets/case-templates/` 与 [references/case-writing.md](references/case-writing.md)
-   ，再扫目标位置判断有无既有用例卡或同定位旧产物——正式用例在 `docs/test/test-cases/`（api/<领域实体>/ 与 flow/<
-   用户故事场景> /），DoD 草稿在 `docs/test/do-drafts/<YYYYMMDD-HHmmss>-<短名>.md`。
-2. 无既有用例 → 生成：新功能验证 / 改动验证（bug fix）/ 调研性验证先落 DoD 草稿（轻量形态：目标（为什么测）/ 操作（怎么做）/
-   期望（成功判据）/ 证据（实测输出），单文件一条，命名体现验证主题），走 tools 执行并记录结论（编排原则同「执行」）。
-3. 有既有 DoD 草稿 → 更新：结论写入该 DoD 文件（通过 / 不通过 / 发现的问题）；使命完成后由用户决定是否晋升。
-4. 使命完成且用户确认后晋升（晋升 = 对正式用例做一次变更）：分析该 DoD 覆盖的场景 /
-   分支，在正式用例库定位归属——已有对应用例则更新（把该分支的测试逻辑合并进既有用例），无对应用例则新增。
-5. 正式用例的更新 / 删除：按 [references/case-writing.md](references/case-writing.md) 修改卡内容（头 + Case N
-   五段：前置条件 / 执行流程 / 期望结果 / 数据对账 / 数据清理）或删除卡文件（不留孤儿文件）；新增不在此直写，先落 DoD 草稿。
-6. 写卡与落盘一律遵守 [references/case-writing.md](references/case-writing.md) 与卡模板。
-7. 晋升完成后询问用户 DoD 草稿如何处置（删除 / 保留）；不晋升的 DoD 默认保留草稿，清理需用户确认（不主动清理）。
-8. 改完按 [references/case-writing.md](references/case-writing.md) §4 机检（结构机检：头 + Case N 五段齐全 /
-   内容机检：无占位参数、无悬空 § 引用 / 目录机检：卡在对应实体/场景目录 / 清理机检：造数据卡含三态清理），汇报改动清单与机检结果。
-
-> 多数 DoD 可能永远是草稿——不自动晋升、不主动清理；晋升与否是用户决策。
-
-## 测试记录（执行发现的问题台账）
+### 测试记录（执行发现的问题台账）
 
 位置：`docs/test/test-records/<YYYYMMDD-HHmmss>-<归属对象>.md`——时间戳取写入记录那一刻（命令
 `date +%Y%m%d-%H%M%S`，精确到秒），归属对象 = 卡名（如 `FLOW-PROJ-01`）或 环境/工具名；每次执行独立一份文件（不追加、不复用），时间戳保证唯一不重复。
@@ -116,31 +91,58 @@ DoD 草稿、验证后晋升，不在正式用例库直写。
 - 每条必须有证据（契约位置、实测输出、日志片段）——无证据不记
 - 问题修复后更新状态（不删记录，保留台账）
 
-## 联动
+### 联动
+
+- 工具用法归 `tools-ops` skill，用例访问被测系统一律走 `docs/tools/` 工具通道。
+- 环境权威在 `DEPLOYMENT.md`，按需部署由 `deploy-ops` skill 执行。
+- 断言基准取自 `inbound-ops` 维护的契约。
+
+### 边界
+
+- 工具实现与调用归 `tools-ops` skill：本 skill 只做执行编排（环境 / 顺序 / 策略 / 记录），不实现工具、不绕过工具直连被测系统。
+- 用例执行的环境权威在 `DEPLOYMENT.md`，`.env.<环境名>` 是其副本；`docs/test/` 根下不另设总说明。
+
+## §2 用例生成与更新
+
+### 读取
+
+- 读 `assets/case-templates/` 与 [references/case-writing.md](references/case-writing.md)
+  ；读 [references/test-assets.md](references/test-assets.md) §1 确认落点。
+- 读 `docs/L1/BUSINESS.md` 的用户故事与 `docs/L2/domain/` 的领域模型，确定用例归属目录。
+
+### 步骤
+
+1. 先读 `assets/case-templates/` 与 [references/case-writing.md](references/case-writing.md)
+   ，再扫目标位置判断有无既有用例卡或同定位旧产物——正式用例在 `docs/test/test-cases/`（api/<领域实体>/ 与 flow/<
+   用户故事场景> /），DoD 草稿在 `docs/test/do-drafts/<YYYYMMDD-HHmmss>-<短名>.md`。
+2. 无既有用例 → 生成：新功能验证 / 改动验证（bug fix）/ 调研性验证先落 DoD 草稿（轻量形态：目标（为什么测）/ 操作（怎么做）/
+   期望（成功判据）/ 证据（实测输出），单文件一条，命名体现验证主题），走 tools 执行并记录结论（编排原则同 §1）。
+3. 有既有 DoD 草稿 → 更新：结论写入该 DoD 文件（通过 / 不通过 / 发现的问题）；使命完成后由用户决定是否晋升。
+4. 使命完成且用户确认后晋升（晋升 = 对正式用例做一次变更）：分析该 DoD 覆盖的场景 /
+   分支，在正式用例库定位归属——已有对应用例则更新（把该分支的测试逻辑合并进既有用例），无对应用例则新增。
+5. 正式用例的更新 / 删除：按 [references/case-writing.md](references/case-writing.md) 修改卡内容（头 + Case N
+   五段：前置条件 / 执行流程 / 期望结果 / 数据对账 / 数据清理）或删除卡文件（不留孤儿文件）；新增不在此直写，先落 DoD 草稿。
+6. 写卡与落盘一律遵守 [references/case-writing.md](references/case-writing.md) 与卡模板。
+7. 晋升完成后询问用户 DoD 草稿如何处置（删除 / 保留）；不晋升的 DoD 默认保留草稿，清理需用户确认（不主动清理）。
+8. 改完按 [references/case-writing.md](references/case-writing.md) §4 机检（结构机检：头 + Case N 五段齐全 /
+   内容机检：无占位参数、无悬空 § 引用 / 目录机检：卡在对应实体/场景目录 / 清理机检：造数据卡含三态清理），汇报改动清单与机检结果。
+
+> 多数 DoD 可能永远是草稿——不自动晋升、不主动清理；晋升与否是用户决策。
+
+完成判据：`docs/test/` 磁盘内容与 [references/test-assets.md](references/test-assets.md) §1
+预期资产集逐项对应，无缺失项、已删除的领域实体或用户故事场景无残留目录；每张用例卡为「头 + Case N」结构且五段齐全，卡内无占位参数描述、无指向已删文档的
+§ 引用；卡文件落在对应实体或场景目录，目录名与 `docs/L2/domain/` 的实体名或 `docs/L1/BUSINESS.md` 的场景名一致；
+`do-drafts/`
+中的草稿未被正式用例库引用，晋升后的草稿处置已交用户决定、未被自动清理。
+
+### 联动
 
 - 用例卡的增删改执行与写卡规范由本 skill 自持；`docs/test/`
   资产结构与旧资产检出见 [references/test-assets.md](references/test-assets.md)。
-- 工具用法归 `tools-ops` skill，用例访问被测系统一律走 `docs/tools/` 工具通道。
-- 环境权威在 `DEPLOYMENT.md`，按需部署由 `deploy-ops` skill 执行。
-- 断言基准取自 `inbound-ops` 维护的契约；文档漂移交 `align-docs` skill 处置。
+- 断言基准取自 `inbound-ops` 维护的契约。
 
-## 完成判定
-
-- `docs/test/` 磁盘内容与 [references/test-assets.md](references/test-assets.md) §1
-  预期资产集逐项对应：无缺失项，已删除的领域实体或用户故事场景无残留用例目录。
-- 每张用例卡为「头 + Case N」结构且五段齐全（前置条件 / 执行流程 / 期望结果 / 数据对账 /
-  数据清理），卡内无占位参数描述、无指向已删文档的 § 引用。
-- 卡文件落在对应实体或场景目录，目录名与 `docs/L2/domain/` 的实体名或 `docs/L1/BUSINESS.md` 的场景名一致。
-- 全部命令走 `docs/tools/` 的工具通道（api / db / webmcp / ragflow），无 curl、无裸 SQL、无裸命令。
-- 断言三源可回溯：状态码取自 `docs/contracts/openapi/` 的 `responses`，字段取自 schema，错误码值为实测校准；依据失效时交
-  `inbound-ops` 修契约，不在本 skill 改契约。
-- 造数据的 Case 含三态清理，且环境 host 不写死（走工具 `.env`）。
-- 执行的被测版本已绑定；每条问题有证据（契约位置、实测输出或日志片段）与状态枚举；台账只增不删。
-- `do-drafts/` 中的草稿未被正式用例库引用；晋升后的草稿处置已交用户决定，未被自动清理。
-
-## 边界
+### 边界
 
 - 测试用例唯一入口：用例卡结构与写卡规范自持，新增 / 更新 / 删除 / 执行一律经本 skill，AI 不得自动创建任何用例（新增一律经
-  DoD 晋升）
-- 工具实现与调用归 `tools-ops` skill：本 skill 只做执行编排（环境 / 顺序 / 策略 / 记录），不实现工具、不绕过工具直连被测系统
-- 用例执行的环境权威在 `DEPLOYMENT.md`，`.env.<环境名>` 是其副本；`docs/test/` 根下不另设总说明
+  DoD 晋升）。
+- 本 skill 只由用户显式调起（斜杠命令或明确指令）；用例卡的新增与删除由用户手动配置，AI 不得自行新建或删除用例卡。

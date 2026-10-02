@@ -7,7 +7,7 @@
 
 文档只有链内与链外两种归属，判据是产物是否参与链内 L1 → L2 → L3 的分层描述。链内是分层的当前态描述，只有面向人读的 .md，按
 L1 → L2 → L3
-编号；链外是独立域，含三类：有资产的产物域（文档与其资产同处一个目录）、无资产的独立文档域（如系统级问题深潜与选型调研）、过程态台账。
+编号；链外是独立域，含三类：有资产的产物域（文档与其资产同处一个目录）、无资产的独立文档域（如专项）、过程态台账。
 
 链内按本体系的分层方法维护；链外各域是独立的域，变更由用户直接调该域的管辖 skill 处理，不由链内方法编排。链上某层变化确实牵连
 到某个链外域时，由该层 skill 在联动里指明，不因此把链外拉进链内流程。
@@ -23,22 +23,22 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
     ├── L1/                  业务与需求
     │   └── BUSINESS.md      业务流程（业务全景 + 需求）
     ├── L2/                  架构
-    │   ├── APPLICATION-ARCHITECTURE.md   应用架构
-    │   ├── DATA-ARCHITECTURE.md          数据架构
-    │   ├── TECHNOLOGY-ARCHITECTURE.md    技术架构
+    │   ├── ARCHITECTURE.md               架构
+    │   ├── DATA-MODEL.md                 数据建模
     │   └── domain/          领域模型：DOMAIN-MAP.md + 一域一文
     ├── L3/                  事实层（变更起点）
-    │   ├── STRUCTURE.md     目录结构与文档 ↔ 代码映射
-    │   └── CODE-GUIDE.md    代码规范
-    ├── contracts/          契约：INBOUND.md + openapi/ · OUTBOUND.md + outbound-contracts/
+    │   └── STRUCTURE.md     目录结构与文档 ↔ 代码映射
+    ├── contracts/          契约：inbound/ · outbound/（每应用一份）
     ├── deployment/         部署：DEPLOYMENT.md + 部署资产（脚本 / compose / 多环境 .env）
     ├── test/                测试：do-drafts/ 草稿 → test-cases/ 正式用例卡（晋级）→ test-records/ 执行台账
-    ├── tools/               项目工具集：TOOLS.md（说明书）+ Node CLI（AI 访问系统的唯一通道）
-    ├── deep-dives/          系统级问题深潜：每问题一篇（跨 L1-L3 的独立陈述，不入链）
-    ├── research/            选型与验证调研：每主题一篇（结论交技术架构文档）
+    ├── tools/               项目工具集：AGENTS.md（工具清单 + 使用约定）+ Node CLI（AI 访问系统的唯一通道；`--help` 看用法）
+    ├── topics/              专项：每专项一篇（跨 L1-L3 的独立陈述，不入链）
     ├── changes/             变更规划：每变更一单篇（过程态，完成后删除）
     ├── drift/               漂移清单：每文档一份（过程态，全部清账后删除）
 ```
+
+L2 的架构文档先定应用划分（用户层 / 应用 / 运行支撑 /
+外部系统），再按每个应用写技术选型与版本（应用有几个就写几章，章节随应用划分动态增减），模块划分、存储选型、基础设施与非功能约束依次在后；数据建模另承载领域对象到存储的映射与物理形态。
 
 ---
 
@@ -78,8 +78,8 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
 
 ### 2.6 用例唯一入口
 
-- 任何形式的用例（单元 / 接口 / 流程 / 集成）只能经 `test-ops` skill 触发与管理（新增 / 更新 / 删除 / 执行），AI
-  不得凭自身判断自动创建任何用例。
+- 用例（接口 / 流程）只能经 `test-ops` skill 触发与管理（新增 / 更新 / 删除 / 执行），AI
+  不得凭自身判断自动创建任何用例；项目不写单元测试，用例卡的新增与删除由用户手动配置。
 - 新增用例一律先落 DoD 草稿（过程态），经用户验证认可后晋升为正式用例（`docs/test/test-cases/`）；草稿位置与用例卡写卡规范以
   `test-ops` skill 为准。
 - 禁止绕过 `test-ops` skill 直接创建 / 修改 / 删除 `docs/test/test-cases/` 下的用例文件。
@@ -98,10 +98,12 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
 - 文档与注释全中文；正文禁用加粗与 emoji。
 - 正文只写当前态，不留模板痕迹：不得出现模板的说明文字、未替换的 `{占位}` 或 `<占位>`、未替换的占位符与待填标记；模板中
   `<!-- 生成提示:begin -->` 与 `<!-- 生成提示:end -->` 之间的内容只作生成提示，写入产物时连同这对标记一起删除。
+- 模板骨架的取值只写占位（`{占位}` / `<占位>`，枚举写 `<A | B>`），不出现具体项目名、业务名、域名、主机或示例数据，避免生成时被当成既有事实。
 - 正文不写治理套话与固定元信息（不出现「本文档只做…」「与 X 分工」「引用不复制」「固定元信息」「固定画法」这类声明）。
 - 不出现 `SSOT`、单一事实源、唯一事实源字样；事实来源靠文档结构表达，不靠标签声明。
 - 跨文档用相对 Markdown 链接，链接目标与 `§章节号` 必须真实存在；删除章节后不留指向它的引用。
-- 标题层级与层级顺序遵循该文档的骨架模板；不补写骨架未定义的 frontmatter 或其他元信息块。
+- 标题层级与层级顺序遵循该文档的骨架模板；产物骨架定义的 YAML frontmatter 以 `---` 分隔、裸写在文档第一行（任何标题之前），骨架未定义的
+  frontmatter 或其他元信息块不补写。
 
 ---
 
@@ -109,36 +111,39 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
 
 Skill 分三类，命名即类型，类型后标注链内 / 链外归属：
 
-- A 类 · 纯文档（前缀 `docs-`）：产物只有面向人读的说明书，没有资产、状态机与门禁；删掉文档不影响项目行为。 A·链内 7 个分属
-  L1 / L2 / L3；A·链外 4 个：过程态 `docs/changes/` 变更单篇与 `docs/drift/` 漂移清单，无资产独立域 `docs/deep-dives/`
-  系统级问题深潜与 `docs/research/` 选型调研。
+- A 类 · 纯文档：产物只有面向人读的说明书，没有资产、状态机与门禁；删掉文档不影响项目行为。`docs-*` 写在 `docs/` 下——A·链内 5
+  个分属
+  L1 / L2 / L3；A·链外 3 个：过程态 `docs/changes/` 变更单篇与 `docs/drift/` 漂移清单，无资产独立域 `docs/topics/`
+  专项。`code-guide` 链外，产物是各子项目目录下的 `AGENTS.md`。
 - B 类 · 文档 + 资产（后缀 `-ops`）：一个能力域一个 skill，同时管辖该域的说明书、资产与执行动作，并保证三者一致；全部 B·链外。
-- C · 编排（`align-docs`）：只调度 A / B 类，不生产任何文档正文或资产，连过程态清单也交 `docs-draft` 落盘；C·链外。
+- C · 项目级：面向整个项目、不按链内层次划分；C·链外。`align-docs`（跨文档编排：只调度 A / B 类，不生产文档正文或资产，连过程态清单也交
+  `docs-draft` 落盘）与 `code-guide`（给各子项目目录写 `AGENTS.md`）。
 
-| Skill                         | 类型   | 管辖文档                                                                            | 管辖资产                            |
-|-------------------------------|--------|-------------------------------------------------------------------------------------|-------------------------------------|
-| docs-business                 | A·链内 | docs/L1/BUSINESS.md                                                                 | —                                   |
-| docs-application-architecture | A·链内 | docs/L2/APPLICATION-ARCHITECTURE.md                                                 | —                                   |
-| docs-data-architecture        | A·链内 | docs/L2/DATA-ARCHITECTURE.md                                                        | —                                   |
-| docs-technology-architecture  | A·链内 | docs/L2/TECHNOLOGY-ARCHITECTURE.md                                                  | —                                   |
-| docs-domain                   | A·链内 | docs/L2/domain/                                                                     | —                                   |
-| docs-structure                | A·链内 | docs/L3/STRUCTURE.md                                                                | —                                   |
-| docs-code-guide               | A·链内 | docs/L3/CODE-GUIDE.md                                                               | —                                   |
-| docs-changes                  | A·链外 | docs/changes/                                                                       | —                                   |
-| docs-draft                    | A·链外 | docs/drift/（每文档一份 `<doc>.md` 漂移清单）                                       | —                                   |
-| docs-deep-dives               | A·链外 | docs/deep-dives/（每问题一篇 kebab-case 单篇）                                      | —                                   |
-| docs-research                 | A·链外 | docs/research/（每主题一篇 kebab-case 单篇）                                        | —                                   |
-| inbound-ops                   | B·链外 | docs/contracts/INBOUND.md                                                           | docs/contracts/openapi/             |
-| outbound-ops                  | B·链外 | docs/contracts/OUTBOUND.md                                                          | docs/contracts/outbound-contracts/  |
-| deploy-ops                    | B·链外 | docs/deployment/DEPLOYMENT.md                                                       | docs/deployment/                    |
-| test-ops                      | B·链外 | docs/test/test-cases/（正式用例卡）+ docs/test/do-drafts/（DoD 草稿），写卡规范自持 | docs/test/test-records/（执行台账） |
-| tools-ops                     | B·链外 | docs/tools/TOOLS.md                                                                 | docs/tools/（Node CLI）             |
-| align-docs                    | C·链外 | —（不生产任何文档正文）                                                             | —                                   |
+| Skill             | 类型   | 管辖文档                                                                            | 管辖资产                            |
+|-------------------|--------|-------------------------------------------------------------------------------------|-------------------------------------|
+| docs-business     | A·链内 | docs/L1/BUSINESS.md                                                                 | —                                   |
+| docs-architecture | A·链内 | docs/L2/ARCHITECTURE.md                                                             | —                                   |
+| docs-data-model   | A·链内 | docs/L2/DATA-MODEL.md                                                               | —                                   |
+| docs-domain       | A·链内 | docs/L2/domain/                                                                     | —                                   |
+| docs-structure    | A·链内 | docs/L3/STRUCTURE.md                                                                | —                                   |
+| docs-changes      | A·链外 | docs/changes/                                                                       | —                                   |
+| docs-draft        | A·链外 | docs/drift/（每文档一份 `<doc>.md` 漂移清单）                                       | —                                   |
+| docs-topics       | A·链外 | docs/topics/（每专项一篇 kebab-case 单篇）                                          | —                                   |
+| code-guide        | C·链外 | 各子项目目录下的 `AGENTS.md`                                                        | —                                   |
+| inbound-ops       | B·链外 | docs/contracts/inbound/（每应用一份）                                               | —                                   |
+| outbound-ops      | B·链外 | docs/contracts/outbound/（每应用一份）                                              | —                                   |
+| deploy-ops        | B·链外 | docs/deployment/DEPLOYMENT.md                                                       | docs/deployment/                    |
+| test-ops          | B·链外 | docs/test/test-cases/（正式用例卡）+ docs/test/do-drafts/（DoD 草稿），写卡规范自持 | docs/test/test-records/（执行台账） |
+| tools-ops         | B·链外 | docs/tools/AGENTS.md（工具清单 + 使用约定）                                         | docs/tools/（Node CLI）             |
+| align-docs        | C·链外 | —（不生产任何文档正文）                                                             | —                                   |
 
 ## 4. 通用纪律
 
-- 类型边界：A 类不生成资产；B 类不把本域的说明书或资产交给别的 skill；C 类不直接写任何单份文档正文，只做编排与跨文档核对。
+- 类型边界：A 类不生成资产；B 类不把本域的说明书或资产交给别的 skill；C 类面向整个项目，不直接写链内单份文档正文。
 - 管辖边界：各 skill 只维护其管辖范围内的文档与资产，不改业务代码、其他文档正文或 Git
-  状态；发现文档与代码冲突时以代码为准修正文档；跨文档编排、文档初始化、漂移检测与旧布局迁移一律归 `align-docs`。
+  状态。链内文档以代码为事实源，正常生成与更新时文档跟随代码。漂移只由站在全局视角的 `docs-changes` 与 `align-docs` 发起，其他
+  skill 不发起漂移；记录与修复统一收口在
+  `docs-draft`——经用户授权后逐条问用户怎么改（改文档 / 改代码 / 两个都改）再改代码或改文档，因此清理时可能改业务代码。跨文档编排、文档初始化与旧布局迁移归
+  `align-docs`。
 - 迁移：文档的合并、改名、删除按 `align-docs` 的「旧版本文档清理与融合」执行，需用户逐次认可，不自动执行。
 - 提交：任何 skill 都不自动 commit 或 push；`deploy-ops` 在部署前需要 commit 时，须用户显式授权。

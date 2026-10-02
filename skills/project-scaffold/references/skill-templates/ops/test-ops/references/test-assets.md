@@ -54,5 +54,5 @@ docs/test/
 - 卡文件在对应实体/场景目录，目录名与 domain 实体或用户故事场景一致。
 - 造数据的 Case 含三态清理。
 - 全部命令走 `docs/tools/` 的工具通道（`api` / `db` / `webmcp` / `ragflow`），不写 curl、不裸 SQL。
-- 断言三源可回溯：状态码取自 `docs/contracts/openapi/` 的 `responses`，字段取自 schema，错误码值实测校准。
+- 断言三源可回溯：状态码、响应字段、错误码以接口代码为准（经 `inbound-ops` 的接口 → 代码映射定位），实测校准。
 - `docs/test/` 磁盘内容与第 1 节预期资产集逐项对应：无缺失项，已删除的实体/场景无残留用例目录。

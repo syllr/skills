@@ -1,130 +1,134 @@
 ---
 name: tools-ops
-description: 项目工具集（tools）的变更与调用——为项目落地并演进 Node CLI 工具集（api 契约直调 / webmcp 前端工具序列 / db 业务库只读对账 / ragflow 向量库对账），供 AI 直接调用以了解项目数据与落库对账；是 AI 访问系统资源的唯一通道（test-ops 等 skill 调用它）。触发词：工具、tools、生成工具、新增工具、新增对账工具、调用工具查数据、查库、对账、落库验证、跑接口工具、了解项目数据
+description: 项目工具集（tools）的新增 / 删除 / 更新与调用——为项目落地并演进 Node CLI 工具集（webmcp 页面调用 / inbound 接口直调 / outbound 外部接口直调 / db 业务库只读对账 / ragflow 向量库对账），供 AI 直接调用以了解项目数据与落库对账；是 AI 访问系统资源的唯一通道（test-ops 等 skill 调用它）。触发词：工具、tools、生成工具、新增工具、新增对账工具、调用工具查数据、查库、对账、落库验证、跑接口工具、了解项目数据
 ---
 
 # tools-ops — 项目工具集（变更 / 调用）
 
-定位：tools 是 AI 访问项目系统的基础设施（小型 Node CLI 项目，实例位于 `docs/tools/`），也是访问系统的唯一入口（根 AGENTS.md
+定位：tools 是 AI 访问项目系统的基础设施（实例位于 `docs/tools/`），也是访问系统的唯一入口（根 AGENTS.md
 §2.7 系统访问唯一入口）——AI 对系统任何资源的访问（前端页面 / 后端 API / 数据库 / 中间件 / 依赖的外部第三方接口）都必须经它执行；
 `test-ops` 执行用例时也经它访问被测系统。访问前先查有哪些可用工具能触达目标；目标无可用工具 →
 提醒用户走「生成流程」或「更新流程」新增工具，不得自行旁路（禁裸
 curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三方接口）。工具只取证据/执行操作，断言由 AI 判断。
 
-本 skill 自带两份资料（模板，不直接运行）：
-
-- 架构规范 [references/tools.md](references/tools.md)——§2 工具分类 / §3 统一契约 / §4 命令形态 / §5 生成原则 / §6
-  资产声明与多环境
-- 参考实现 `assets/reference-impl/`——完整工具集样板（tools/{_util,api,webmcp,db,ragflow}.mjs +
-  package.json + README + .env.example + .gitignore），含项目特定样例值，按被测系统替换
-
-## 定位与管辖文档
-
 - 唯一入口：项目工具集（`docs/tools/`）的生成、维护与调用只经本 skill；AI 访问本系统任何资源也只经它。
-- 不做：用例本身的增删改执行与执行台账归 `test-ops` skill；跨文档对齐与漂移归 `align-docs` skill。
-- 同步：工具集自身的说明（`docs/tools/TOOLS.md`）由本 skill 自持，不交给其它文档 skill。
-- 工具集与说明书结构以 [references/tools.md](references/tools.md) 与 `assets/reference-impl/`
-  为准，本 skill 不另行维护结构。
+- 不做：用例本身的增删改执行与执行台账归 `test-ops` skill；跨文档对齐归 `align-docs` skill。
+- 同步：工具集文档分两级——`docs/tools/AGENTS.md`（总览：唯一通道 / 工具清单「工具 → 类 → 目录」/ 通用调用约定）与每类的
+  `docs/tools/tools/<类>/AGENTS.md`（该类工具一节：环境参数 / 工具参数 / 退出码 / 调用方式，同类工具共用一份）——由本 skill
+  生成与更新；
+  新增 / 改名 / 删除工具时同步（V2 会在 AI 读到该类 / 工具目录时按需加载对应 AGENTS.md）。
+- 维护流程（新增 / 演进工具、环境参数表与 DEPLOYMENT 对齐、共享模块与统一契约）写在本 skill，按项目实情落地到 `docs/tools/`。
 
-## 读取
+## 分诊
 
-1. 读 [references/tools.md](references/tools.md) 确认工具分类、统一契约、生成原则与 `docs/tools/` 的预期资产集。
-2. 读 `docs/contracts/INBOUND.md` 与 `docs/contracts/openapi/`，确认接口调用面与响应结构——api 工具的契约校验以此为准。
-3. 读 `docs/contracts/OUTBOUND.md`，确认外部服务的集成形态与接入方式。
-4. 读 `docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵与 §6/§7 变量——环境与变量权威在此，`.env.<环境名>` 是其副本。
-5. 读 `docs/tools/TOOLS.md` 与实例 `docs/tools/.env.<环境名>`，确认工具清单、用法、退出码与可用环境。
-6. 读 `assets/reference-impl/` 作样板参照，不作运行实例、不引入其中的项目特定样例值。
-7. 环境与 DEPLOYMENT 不一致时按「更新流程」对齐副本，不改 `DEPLOYMENT.md` 本体；源缺失先核实，不臆造连接参数。
+本 skill 是项目工具集的唯一入口：一进来先看「分诊」，再进入对应章节。
 
-## 多环境（连接层核心）
+| 分诊                       | 触发                                                                                               | 进入 |
+|----------------------------|----------------------------------------------------------------------------------------------------|------|
+| 1 工具集新增 / 删除 / 更新 | 对 `docs/tools/` 本身的改动（工具实现、环境参数与工具参数、初始化落地）——由 skill 询问用户是否变更 | §1   |
+| 2 工具集调用               | 按「环境参数」表选环境调用工具（AI 直接查数据/对账，ad-hoc）；仅询问用户连哪个环境                 | §2   |
 
-多环境的意义：用同一套工具经 `--env <环境名>` 连接不同环境（如同时连多个环境的 db / mcptools），一次调用绑定一个环境。
+## §1 工具集新增 / 删除 / 更新
 
-工具集按环境隔离连接参数：每个环境一份 `docs/tools/.env.<环境名>`，运行时用 `--env <环境名>` 选择（四工具统一；ragflow
-放子命令之后）；无 `--env` 时由 `TEST_ENV` 指定，再无则用默认 `.env`。指定环境但文件不存在 → 工具 fail-fast（退出码
-10，不回退默认）；指定环境时只读该文件（不叠加 `.env`）。webmcp 登录态按环境隔离（`.webmcp-profile-<环境名>/`）。
+### 读取
 
-环境与变量的权威来源是 DEPLOYMENT，`.env.<环境名>` 只是其副本：
+- 骨架：总览 [assets/AGENTS.template.md](assets/AGENTS.template.md)（实例 `docs/tools/AGENTS.md`）；每类
+  [section-webmcp.md](assets/section-webmcp.md) / [section-api.md](assets/section-api.md) / [section-outbound.md](assets/section-outbound.md) /
+  [section-middleware.md](assets/section-middleware.md)（实例 `docs/tools/tools/<类>/AGENTS.md`，同类工具共用一份）。
+- 读 `docs/tools/AGENTS.md`（工具清单 + 各工具的环境参数表与工具参数表 + 退出码 + 调用方式）；单工具用法见其 `--help`。
+- 工具类型共四类（系统有对应通道时默认都要有）：① 页面调用型 `webmcp`——子工具定义在工程页面代码（如 `frontend/**/webmcp/`
+  ），webmcp
+  只做动态调度（`--list` 枚举子工具含 inputSchema、`--seq '<JSON 数组>'` 按 `{name,args}` 顺序调用、跨步保态）；② inbound
+  接口型——直调本应用对外接口，
+  接口 → 代码映射在 `docs/contracts/inbound/`（inbound-ops）；③ outbound 接口型——调外部系统，接口 → client 代码映射在
+  `docs/contracts/outbound/`（outbound-ops）；④ 数据 / 中间件直连型——直连 DB / Redis / Kafka / ES / 对象存储 / 向量库等（如
+  `db`）。
+  前三类特殊，各有专门来源（新增 / 更新时按来源）；第四类是常规专用工具。
+- 读 `docs/deployment/`（各环境 DEPLOYMENT.md：环境清单与连接参数取值），作为环境与变量的权威——环境参数表的行须与之一一对应。
 
-- 环境清单（有哪些环境、用途）← `docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵
-- 各环境连接参数/取值 ← DEPLOYMENT §6（密钥与配置）/ §7（部署资产说明）
-- `.env.<环境名>` 是这些值在 tools 侧的副本；与 DEPLOYMENT 不一致时以 DEPLOYMENT 为准（对齐动作走「更新流程」，由用户确认）
+### 步骤
 
-## 分诊（进入第一件事）
+生成与更新走同一条流程：先扫 `docs/tools/` 判断有无既有工具集，有则更新、无则新建；进入前先询问用户本次要变更什么，确认后再做，不自动变更。
 
-| 分诊         | 触发                                                                                                     | 动作                |
-|--------------|----------------------------------------------------------------------------------------------------------|---------------------|
-| 1 工具集变更 | 对 `docs/tools/` 本身的改动（工具实现、环境副本 `.env.<环境名>`、初始化落地）——由 skill 询问用户是否变更 | 生成流程 / 更新流程 |
-| 2 工具调用   | 用 `--env` 选环境调用工具（AI 直接查数据/对账，ad-hoc）；仅询问用户连哪个环境                            | 工具调用            |
+1. 扫 `docs/tools/` 判断有无既有工具集或同定位旧产物。
+2. 无既有工具集 → 初始化落地：按被测系统在 `docs/tools/` 建工具集——工具实现落在 `tools/<类>/<工具>/`（`<工具>.mjs`），每类一份
+   `tools/<类>/AGENTS.md`（该类工具的节）；系统有对应通道时优先落地四类工具（页面调用 / inbound 接口 / outbound 接口 /
+   数据·中间件直连），
+   共享模块 `tools/_util.mjs`，另有总览 `AGENTS.md`（按 [assets/AGENTS.template.md](assets/AGENTS.template.md)
+   生成：工具清单 + 通用调用约定）、
+   `package.json`（`scripts` 指向 `tools/<类>/<工具>/<工具>.mjs`）、`.gitignore`；`cd docs/tools && npm install`。
+3. 有既有工具集 → 增量演进：新职责域新增工具文件，同职责域演进改既有工具；操作类与只读对账类分别遵循（只读 + 受控清理）。
+4. 遵守统一契约（每个工具都要满足）：stdout 只输出一行 JSON、人类诊断走 stderr；退出码 0 成功 / 1
+   断言对账失败 /
+   2 参数 / 3 网络 / 4 数据层 / 10 配置；连接信息走命令行参数（每个工具用 flag 接收 host / port / user / pass / …
+   等）、不读任何配置文件；
+   发请求前做 fail-fast 契约校验（输入键不在被测契约声明内即报错并列出可用键）；
+   参数一律不给默认值——任一必填参数缺失即 fail-fast（退出码 2），不得用默认值静默兜底；对账 / 校验类只读、拒绝非只读操作；
+   调度型工具（本工具自己还会调用一组子工具，如 webmcp 调用页面注册的 WebMCP 子工具）不得把子工具 / 流程的入参摊成本工具的工具参数——
+   用通用参数（JSON）携带子工具与入参，子工具各自的名字 / 入参写进 AGENTS.md 的「子工具」一节，预置流程（如 `--flow audio`
+   ）的名字与参数写进
+   「流程」一节；`--help` 可用。统一契约的具体实现由项目自行落地。
+5. 环境参数表与 DEPLOYMENT 对齐（环境有问题或更新时）：读 `docs/deployment/` 各环境 DEPLOYMENT.md，与 AGENTS.md 各工具环境参数表比对——
+   环境清单变化（新增 / 删除 / 改名）增删各工具环境参数表的行（Standalone 恒在最前）；连接参数变化更新对应格；只改 AGENTS.md
+   的环境参数表，
+   不改 `DEPLOYMENT.md` 本体（那按 `deploy-ops`）。
+6. 配套登记：新工具建 `tools/<类>/<工具>/` 目录（`<工具>.mjs`）+ 在 `docs/tools/package.json` 的 `scripts` 加
+   `npm run <工具>`
+   别名（指向 `tools/<类>/<工具>/<工具>.mjs`）+ 在总览 `docs/tools/AGENTS.md` 的清单加一行（工具 / 类 / 说明 / 目录），并在该类
+   `tools/<类>/AGENTS.md` 登记「<工具>」一节（用途 / 环境参数表 / 工具参数表 / 退出码 / 调用方式）。
+   共享模块：以 `_` 开头的文件（如 `tools/_util.mjs`）不是工具，不入清单。
+7. 验证：`npm run <工具> -- --help` 正常；有对外接口时 `npm run api -- --list` 能列出可用接口；新增或修改的工具对被测系统实跑一次。
+8. 报告：变更清单（初始化 / 新增 / 修改 / 环境参数表对齐）；连接参数取值以 `docs/deployment/` 各环境 DEPLOYMENT.md 为准（写进
+   AGENTS.md 环境参数表）。
 
-## 生成与更新
+完成判据：`docs/tools/` 有完整工具集（每个工具一个 `tools/<类>/<工具>/` 目录 + `package.json` + 总览 `AGENTS.md` + 各类
+`AGENTS.md`），无缺失项、无预期外残留；每个工具
+`--help` 打得通且符合统一契约（退出码 0 / 1 / 2 / 3 / 4 / 10，无自造退出码；stdout 单行 JSON；连接信息走命令行参数、无配置文件；
+fail-fast 契约校验与只读红线生效）；各工具在 `AGENTS.md` 的环境参数表与 `docs/deployment/` 各环境 DEPLOYMENT.md
+一一对应、取值一致（Standalone
+在最前）；总览 `docs/tools/AGENTS.md` 的工具清单与 `package.json` 的 `scripts`、`tools/<类>/<工具>/` 目录三者一致（每个工具一个
+script、一节清单）。
 
-生成与更新走同一条流程：先读模板，再扫目标位置判断有无既有文档或同定位的旧产物，有则更新、无则新建。本流程处理 `docs/tools/`
-工具集的初始化、新增、修改与环境副本对齐；进入前先询问用户本次要变更什么，确认后再做，不自动变更。
+### 联动
 
-1. 读 [references/tools.md](references/tools.md) 与 `assets/reference-impl/` 作架构规范与样板参照；扫描
-   `docs/tools/` 判断有无既有工具集或同定位旧产物。
-2. 无既有工具集 → 初始化落地：读架构规范与参考实现，复制整套到 `docs/tools/`
-   （保持结构：tools/、package.json、.env.example、.gitignore、TOOLS.md）；按被测系统裁剪 package.json 依赖并改写 README 工具清单；
-   `cd docs/tools && npm install`。
-3. 有既有工具集 → 增量演进：新职责域新增 `tools/<name>.mjs`，同职责域演进改既有工具；参照同类工具写实现：操作类参照
-   api/webmcp，校验对账类参照 db/ragflow（只读 + 受控清理）。
-4. 遵守统一契约：stdout 单行 JSON、退出码、连接参数走 `.env.<环境名>`、fail-fast 契约校验、只读红线、`--help`；入口调用
-   `_util.mjs` 的 `loadDotEnv`（含 `--env` 选择，不自行实现）。
-5. 环境副本对齐（用户反馈环境有问题、或环境有更新时）：先读 DEPLOYMENT §2.1 环境矩阵与 §6/§7 变量，与 tools 侧现状比对，判断差异类型——
-    - 环境矩阵变化（新增/删除/改名环境）→ 增删对应 `.env.<环境名>` 副本
-    - 某环境内某变量变化 → 更新该 `.env.<环境名>` 对应键
-   - 只更新 tools 侧的 `.env.<环境名>` 副本；不修改 DEPLOYMENT.md 本体（那是 docs，按 `deploy-ops` skill 更新）
-6. 配套登记：README 工具清单 + package.json scripts 别名 + `.env.example` 新连接参数（各环境 `.env.<环境名>` 同补）。
-7. 验证：契约源 `docs/contracts/openapi/` 存在时 `npm run api -- --list --env <环境名>` 能列出 operationId，否则至少
-   `npm run <工具> -- --help` 正常；新增或修改的工具对被测系统实跑一次。
-8. 报告：变更清单（初始化 / 新增 / 修改 / 环境副本）+ 各环境 `.env` 待补充项（连接参数取值见 DEPLOYMENT §6）。
+- 环境与变量的权威在 `docs/deployment/`，环境清单或连接参数变化时由 `deploy-ops` skill 更新文档，本 skill 对齐 `AGENTS.md`
+  的
+  各工具环境参数表。
+- 契约来源由 `inbound-ops` / `outbound-ops` 维护；跨文档对齐归 `align-docs` skill。
 
-## 工具调用（AI 直接调工具查数据/对账）
+### 边界
 
-1. 环境确认：读 DEPLOYMENT §2.1 环境矩阵，列出可用环境，问用户本次连哪个环境（未确认不执行）；确认后所有命令统一带
-   `--env <环境名>`——禁止漏带（漏带会落到默认 `.env`，可能跑错环境）。用户可指定多个环境分别调用（一次调用绑定一个环境）
-2. 读实例 `docs/tools/TOOLS.md`（工具清单/用法/退出码/环境变量）与 `docs/tools/.env.<环境名>`
-   （连接参数副本），确认有哪些工具能触达本次目标——目标无可用工具时提示用户走「生成流程」或「更新流程」新增，禁止绕过工具集自行访问（禁裸
-   curl/裸
-   SQL/自行开浏览器/直连中间件/直调第三方）
-3. 按需调工具（统一带 `--env <环境名>`；ragflow 的 `--env` 放子命令之后）：
-    - `npm run api -- --operation <operationId> [--path/--query/--header/--body/--form ...] --env <环境名>`（后端契约直调）
-    - `npm run db -- "<只读 SQL>" --env <环境名>`（业务库落位对账；非只读被拒）
-    - `npm run ragflow -- datasets --env <环境名>` / `... chunks --name X --doc-id Y --env <环境名>`（向量库对账）
-    - `npm run webmcp -- --list --env <环境名>` / `--seq '[...]' [--headed] --env <环境名>`（前端页面业务能力；登录态按环境隔离）
-4. 判断：读 stdout 单行 JSON（含 `env` 字段核对环境是否正确；工具只取证据，断言由 AI 判断）；按退出码区分失败类型（0 成功 / 1
-   断言对账失败 / 2 参数 / 3 网络 / 4 数据层 / 10 配置）
-5. 环境异常：调用失败若疑为环境副本问题（连不上/变量过时）→ 不自动修，提示用户走「更新流程」对齐（读 DEPLOYMENT 更新副本）
-6. 报告：查询结论 + 所用环境 + 原始证据（JSON）
+- 工具集只落在实例 `docs/tools/`，被测系统的访问一律经它；不预置工具脚本，按项目实情自行落地。
+- 只读红线：对账 / 校验类工具拒绝非只读操作。
 
-## 联动
+## §2 工具集调用
 
-- 用例卡的编排执行与写卡规范归 `test-ops` skill（测试用例唯一入口）；本 skill 只提供工具与调用。
-- 环境与变量的权威在 `DEPLOYMENT.md`，环境清单或变量变化时由 `deploy-ops` skill 更新文档，本 skill 对齐 `.env.<环境名>`
-  副本。
-- 契约来源由 `inbound-ops` / `outbound-ops` 维护；跨文档对齐与漂移归 `align-docs` skill。
+### 读取
 
-## 完成判定
+- 工具集文档分两级：`docs/tools/AGENTS.md`（总览：唯一通道 / 工具清单「工具 → 类 → 目录」/ 通用调用约定）与该工具的
+  `docs/tools/tools/<类>/AGENTS.md`（环境参数 / 工具参数 / 退出码 / 调用方式）——调用所需的一切都在这两级里（连接信息与
+  DEPLOYMENT 解耦）。
+- 单工具的用法 / 子工具 / 序列参数：见其 `--help` 与 AGENTS.md 的对应一节。
 
-- `docs/tools/` 磁盘内容与 [references/tools.md](references/tools.md) §6 预期资产集逐项对应：`tools/*.mjs`（含
-  `_util.mjs`）·
-  `package.json` · `TOOLS.md` · `.env.<环境名>`（每环境一份）· `.env.example`，无缺失项，无预期外残留。
-- 每个工具可执行且 `--help` 打得通；退出码语义符合 [tools.md](references/tools.md) §统一契约（0 / 1 / 2 / 3 / 4 /
-  10），无自造退出码。
-- stdout 只输出一行 JSON，人类诊断信息走 stderr；JSON 带本次环境字段。
-- 环境选择可用：每条命令带 `--env <环境名>` 能读到对应 `.env.<环境名>`；严格模式不叠加 `.env`；未知环境
-  fail-fast（10）并列出可用环境。
-- fail-fast 契约校验生效：输入键不在被测契约声明内时发送前报错，并提示可用键清单。
-- 只读红线生效：校验/对账类工具拒绝非只读操作；全项目无裸 curl、无裸 SQL。
-- `docs/tools/.env.<环境名>` 与 `docs/deployment/DEPLOYMENT.md` §6/§7 的变量一致；不一致已按「更新流程」对齐，本 skill 不改
-  DEPLOYMENT.md 本体。
-- `assets/reference-impl/` 只作模板，未被当作运行实例调用。
+### 步骤
 
-## 边界
+1. 确认环境：问用户连哪个环境（或按上下文确定）。
+2. 选工具与参数：从 AGENTS.md 的工具清单里选能触达目标的工具，按其「环境参数」表选中该环境那一行；要一次跑多个子工具 /
+   步骤时用它自己的
+   序列参数编排（如 webmcp 的 `--seq '<JSON 数组>'`）。目标无可用工具 → 提示用户走「生成流程」或「更新流程」新增，禁止旁路（裸
+   curl / 裸 SQL / 自行开浏览器 / 直连中间件 / 直调第三方）。
+3. 调用：把该行连接参数 + 工具参数拼进命令（具体见 AGENTS.md 与 `--help`）。
+4. 判断：读 stdout 单行 JSON，按退出码区分失败类型（0 成功 / 1 断言失败 / 2 参数 / 3 网络 / 4 数据层 / 10 配置）；断言由 AI
+   判断，工具只取证据。
+5. 报告：结论 + 所用环境 + 原始证据（JSON）。
+
+完成判据：连接参数取自 `docs/tools/AGENTS.md` 的对应环境参数表行；读 stdout 单行 JSON
+并核对退出码；断言由 AI 判断、工具只取证据。
+
+### 联动
+
+### 边界
 
 - 系统访问唯一入口（根 `AGENTS.md` §2.7）：对系统的任何访问都经本工具集，禁旁路（裸 curl / 裸 SQL / 自行开浏览器 /
-  直连中间件 / 直调第三方）；缺工具走「生成与更新」新增。
-- 调用只跑实例 `docs/tools/`，不得运行本 skill 的 `assets/reference-impl/` 模板；断言由 AI 判断，工具只取证据。
-- 只读红线：对账 / 校验类工具拒绝非只读操作；本 skill 不修改 `DEPLOYMENT.md` 本体（改文档按 `deploy-ops`）。
-- 用例卡的编排执行与写卡规范归 `test-ops` skill。
+  直连中间件 / 直调第三方）；缺工具走 §1 新增。
+- 断言由 AI 判断，工具只取证据；只读红线：对账 / 校验类工具拒绝非只读操作。
