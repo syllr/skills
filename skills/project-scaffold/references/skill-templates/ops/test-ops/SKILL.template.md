@@ -11,18 +11,18 @@ AI 既是测试执行器，也是用例库的维护者。本 skill 以分诊进�
 执行）——AI 不得自动创建任何用例；新增一律先落 DoD 草稿、经用户认可后晋升（根 AGENTS.md §2.6 用例唯一入口）。用例卡结构与写卡规范由本
 skill 自持（[references/test-assets.md](references/test-assets.md) 管资产结构与旧资产检出，
 [references/case-writing.md](references/case-writing.md)：资产结构/卡结构五段/写卡规范/机检/关联联动），卡模板在
-[assets/case-templates/](assets/case-templates/)。测试工具用法现场读实例
+`assets/case-templates/`。测试工具用法现场读实例
 `docs/tools/TOOLS.md`（工具集生成/维护/调用归 tools-ops skill）。本 skill 另承载：执行编排、测试记录机制、DoD 草稿与晋升机制。
 
 ## 定位与管辖文档
 
 - 唯一入口：任何形式的用例（单元 / 接口 / 流程 / 集成）的新增 / 更新 / 删除 / 执行只经本 skill。
 - 不做：项目工具集（`docs/tools/`）的生成与调用归 `tools-ops` skill；跨文档对齐与漂移归 `align-docs` skill。
-- 用例卡结构以 [assets/case-templates/](assets/case-templates/)
+- 用例卡结构以 `assets/case-templates/`
   与 [references/case-writing.md](references/case-writing.md) 为准，本 skill 不另行维护卡骨架。
 
 自持：用例卡结构、写卡规范（[references/case-writing.md](references/case-writing.md)、
-[assets/case-templates/](assets/case-templates/)）与执行台账（`docs/test/test-records/`）由本 skill 自持。
+`assets/case-templates/`）与执行台账（`docs/test/test-records/`）由本 skill 自持。
 
 ## 读取
 
@@ -71,7 +71,7 @@ skill 自持（[references/test-assets.md](references/test-assets.md) 管资产�
 生成与更新走同一条流程：先读模板，再扫目标位置判断有无既有文档或同定位的旧产物，有则更新、无则新建。用例卡的生成与更新都走本流程；新增一律先落
 DoD 草稿、验证后晋升，不在正式用例库直写。
 
-1. 先读 [assets/case-templates/](assets/case-templates/) 与 [references/case-writing.md](references/case-writing.md)
+1. 先读 `assets/case-templates/` 与 [references/case-writing.md](references/case-writing.md)
    ，再扫目标位置判断有无既有用例卡或同定位旧产物——正式用例在 `docs/test/test-cases/`（api/<领域实体>/ 与 flow/<
    用户故事场景> /），DoD 草稿在 `docs/test/do-drafts/<YYYYMMDD-HHmmss>-<短名>.md`。
 2. 无既有用例 → 生成：新功能验证 / 改动验证（bug fix）/ 调研性验证先落 DoD 草稿（轻量形态：目标（为什么测）/ 操作（怎么做）/

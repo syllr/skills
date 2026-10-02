@@ -37,10 +37,10 @@ AI 作为测试执行器时的连接工具（Node `.mjs`，跨平台零编译）
 
 每个环境一份变量文件，运行时用 `--env` 选择（四工具统一）：
 
-| 文件            | 含义                                                                                                          |
-|-----------------|---------------------------------------------------------------------------------------------------------------|
+| 文件            | 含义                                                                                                                  |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------|
 | `.env.<环境名>` | 具名环境（如 `.env.standalone`、`.env.dev`、`.env.prod`）——环境名以 `docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵为准 |
-| `.env`          | 无 `--env` 时的默认环境（建议本地 standalone）                                                                |
+| `.env`          | 无 `--env` 时的默认环境（建议本地 standalone）                                                                        |
 
 - 选择器：`--env <环境名>` 优先；无则读环境变量 `TEST_ENV`；都无 → 加载 `.env`。
 - 严格模式（不叠加）：指定 `--env dev` 时只加载 `.env.dev`（不叠加 `.env`）——缺键由工具 fail-fast（退出码 10），避免 `.env`
@@ -73,7 +73,8 @@ npm run db -- "SELECT 1" --env standalone             # 用 standalone 环境跑
 
 ## api 工具：契约直调（operationId 模式）
 
-运行时直读 `docs/contracts/openapi/`（OpenAPI 3.1 多文件）：首次调用自动 `redocly bundle` 并缓存到 `.cache/openapi-bundled.json`（源
+运行时直读 `docs/contracts/openapi/`（OpenAPI 3.1 多文件）：首次调用自动 `redocly bundle` 并缓存到
+`.cache/openapi-bundled.json`（源
 yaml 变更才重新 bundle，对 AI 透明），swagger-client 解析后按 `operationId` 执行——AI 只需给 operationId + 扁平参数值，参数按契约自动归位
 path/query，`requestBody` 单独传；operationId 拼错或参数非法 JSON 均 fail-fast（退出码 2），不发脏请求。
 

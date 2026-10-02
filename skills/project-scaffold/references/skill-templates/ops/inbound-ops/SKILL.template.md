@@ -9,13 +9,14 @@ description: L3 Inbound 契约域唯一入口——同时管辖接口契约说�
 
 本 skill 是 L3 Inbound 契约域的唯一入口，同时管辖三类产物：
 
-| 产物           | 路径                 | 性质 | 事实来源                      |
-|----------------|----------------------|------|-------------------------------|
+| 产物           | 路径                        | 性质 | 事实来源                      |
+|----------------|-----------------------------|------|-------------------------------|
 | 接口契约说明书 | `docs/contracts/INBOUND.md` | 文档 | 代码事实 + 导出产物的实际结构 |
 | 机器可读契约   | `docs/contracts/openapi/`   | 资产 | 代码（导出，禁手写）          |
-| 契约导出执行   | 临时目录 → 门禁落盘  | 动作 | `INBOUND.md` §2 的导出命令    |
+| 契约导出执行   | 临时目录 → 门禁落盘         | 动作 | `INBOUND.md` §2 的导出命令    |
 
-Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`）归 `outbound-ops` skill；跨文档编排、漂移清账与旧文档处置归
+Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-contracts/`）归 `outbound-ops`
+skill；跨文档编排、漂移清账与旧文档处置归
 `align-docs` skill。
 
 - 一个 skill 两种产物、两份模板：[assets/INBOUND.template.md](assets/INBOUND.template.md) 管
@@ -28,7 +29,7 @@ Outbound 半边（`docs/contracts/OUTBOUND.md` 与 `docs/contracts/outbound-cont
 - 契约资产声明 [references/contract-assets.md](references/contract-assets.md)——`openapi/` 预期资产集的唯一来源，含落盘规则与旧资产检出
 - 引导映射 [references/bootstrap.md](references/bootstrap.md)——各语言框架的导出形态（CLI 一行 / 需脚本）
 - 执行方法论 [references/export-mechanics.md](references/export-mechanics.md)——临时目录策略、门禁落盘、拆分口径、机检清单、失败分诊
-- 参考实现 [assets/reference-impl/](assets/reference-impl/)——导出与拆分脚本模板（按框架分），引导时复制到项目
+- 参考实现 `assets/reference-impl/`——导出与拆分脚本模板（按框架分），引导时复制到项目
 
 ## 读取
 

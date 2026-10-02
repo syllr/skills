@@ -24,14 +24,14 @@
 
 ## 3. 机检清单
 
-| 检查                  | 方法                                                                       |
-|-----------------------|----------------------------------------------------------------------------|
-| $ref 完整性（无悬空） | `npx @redocly/cli bundle` 通过                                             |
+| 检查                  | 方法                                                                              |
+|-----------------------|-----------------------------------------------------------------------------------|
+| $ref 完整性（无悬空） | `npx @redocly/cli bundle` 通过                                                    |
 | 端点计数三方一致      | `openapi.yaml` 尾注释 = `docs/contracts/INBOUND.md` §1 表 = `paths/*.yaml` 文件数 |
-| operation 元数据      | 每个 operation 含 `x-action` 与 `x-capability`（或豁免映射单值）           |
-| servers 变量化        | servers 不含随环境变化的硬编码 host（应变量化或指向环境配置）              |
-| 组织正确              | `openapi.yaml` 只承载元信息与 `$ref`，不内联 path/schema                   |
-| 语法/规则             | `npx @redocly/cli lint` / `npx @stoplight/spectral-cli lint`（工具可用时） |
+| operation 元数据      | 每个 operation 含 `x-action` 与 `x-capability`（或豁免映射单值）                  |
+| servers 变量化        | servers 不含随环境变化的硬编码 host（应变量化或指向环境配置）                     |
+| 组织正确              | `openapi.yaml` 只承载元信息与 `$ref`，不内联 path/schema                          |
+| 语法/规则             | `npx @redocly/cli lint` / `npx @stoplight/spectral-cli lint`（工具可用时）        |
 
 ## 4. 门禁落盘（diff 判定）
 

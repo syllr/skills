@@ -15,7 +15,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 - 架构规范 [references/tools.md](references/tools.md)——§2 工具分类 / §3 统一契约 / §4 命令形态 / §5 生成原则 / §6
   资产声明与多环境
-- 参考实现 [assets/reference-impl/](assets/reference-impl/)——完整工具集样板（tools/{_util,api,webmcp,db,ragflow}.mjs +
+- 参考实现 `assets/reference-impl/`——完整工具集样板（tools/{_util,api,webmcp,db,ragflow}.mjs +
   package.json + README + .env.example + .gitignore），含项目特定样例值，按被测系统替换
 
 ## 定位与管辖文档
@@ -23,7 +23,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 - 唯一入口：项目工具集（`docs/tools/`）的生成、维护与调用只经本 skill；AI 访问本系统任何资源也只经它。
 - 不做：用例本身的增删改执行与执行台账归 `test-ops` skill；跨文档对齐与漂移归 `align-docs` skill。
 - 同步：工具集自身的说明（`docs/tools/TOOLS.md`）由本 skill 自持，不交给其它文档 skill。
-- 工具集与说明书结构以 [references/tools.md](references/tools.md) 与 [assets/reference-impl/](assets/reference-impl/)
+- 工具集与说明书结构以 [references/tools.md](references/tools.md) 与 `assets/reference-impl/`
   为准，本 skill 不另行维护结构。
 
 ## 读取
@@ -62,7 +62,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 生成与更新走同一条流程：先读模板，再扫目标位置判断有无既有文档或同定位的旧产物，有则更新、无则新建。本流程处理 `docs/tools/`
 工具集的初始化、新增、修改与环境副本对齐；进入前先询问用户本次要变更什么，确认后再做，不自动变更。
 
-1. 读 [references/tools.md](references/tools.md) 与 [assets/reference-impl/](assets/reference-impl/) 作架构规范与样板参照；扫描
+1. 读 [references/tools.md](references/tools.md) 与 `assets/reference-impl/` 作架构规范与样板参照；扫描
    `docs/tools/` 判断有无既有工具集或同定位旧产物。
 2. 无既有工具集 → 初始化落地：读架构规范与参考实现，复制整套到 `docs/tools/`
    （保持结构：tools/、package.json、.env.example、.gitignore、TOOLS.md）；按被测系统裁剪 package.json 依赖并改写 README 工具清单；
@@ -82,21 +82,21 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 ## 工具调用（AI 直接调工具查数据/对账）
 
-0. 环境确认：读 DEPLOYMENT §2.1 环境矩阵，列出可用环境，问用户本次连哪个环境（未确认不执行）；确认后所有命令统一带
+1. 环境确认：读 DEPLOYMENT §2.1 环境矩阵，列出可用环境，问用户本次连哪个环境（未确认不执行）；确认后所有命令统一带
    `--env <环境名>`——禁止漏带（漏带会落到默认 `.env`，可能跑错环境）。用户可指定多个环境分别调用（一次调用绑定一个环境）
-1. 读实例 `docs/tools/TOOLS.md`（工具清单/用法/退出码/环境变量）与 `docs/tools/.env.<环境名>`
+2. 读实例 `docs/tools/TOOLS.md`（工具清单/用法/退出码/环境变量）与 `docs/tools/.env.<环境名>`
    （连接参数副本），确认有哪些工具能触达本次目标——目标无可用工具时提示用户走「生成流程」或「更新流程」新增，禁止绕过工具集自行访问（禁裸
    curl/裸
    SQL/自行开浏览器/直连中间件/直调第三方）
-2. 按需调工具（统一带 `--env <环境名>`；ragflow 的 `--env` 放子命令之后）：
+3. 按需调工具（统一带 `--env <环境名>`；ragflow 的 `--env` 放子命令之后）：
     - `npm run api -- --operation <operationId> [--path/--query/--header/--body/--form ...] --env <环境名>`（后端契约直调）
     - `npm run db -- "<只读 SQL>" --env <环境名>`（业务库落位对账；非只读被拒）
     - `npm run ragflow -- datasets --env <环境名>` / `... chunks --name X --doc-id Y --env <环境名>`（向量库对账）
     - `npm run webmcp -- --list --env <环境名>` / `--seq '[...]' [--headed] --env <环境名>`（前端页面业务能力；登录态按环境隔离）
-3. 判断：读 stdout 单行 JSON（含 `env` 字段核对环境是否正确；工具只取证据，断言由 AI 判断）；按退出码区分失败类型（0 成功 / 1
+4. 判断：读 stdout 单行 JSON（含 `env` 字段核对环境是否正确；工具只取证据，断言由 AI 判断）；按退出码区分失败类型（0 成功 / 1
    断言对账失败 / 2 参数 / 3 网络 / 4 数据层 / 10 配置）
-4. 环境异常：调用失败若疑为环境副本问题（连不上/变量过时）→ 不自动修，提示用户走「更新流程」对齐（读 DEPLOYMENT 更新副本）
-5. 报告：查询结论 + 所用环境 + 原始证据（JSON）
+5. 环境异常：调用失败若疑为环境副本问题（连不上/变量过时）→ 不自动修，提示用户走「更新流程」对齐（读 DEPLOYMENT 更新副本）
+6. 报告：查询结论 + 所用环境 + 原始证据（JSON）
 
 ## 联动
 
