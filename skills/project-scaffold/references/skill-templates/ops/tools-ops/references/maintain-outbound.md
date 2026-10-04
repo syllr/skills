@@ -1,10 +1,11 @@
 # 维护：outbound 接口型工具
 
-调 **外部系统**。接口来源是 `docs/contracts/outbound/`（应用 → 外部系统 → 接口 → client 代码位置映射，由 outbound-ops 维护）。
+调 **外部系统**。接口来源是 `docs/contracts/outbound/`（outbound-ops 维护；按每个应用对外的 client
+维度、每应用一份：外部系统 → Client 与调用方式 → 接口 → client 代码位置映射）。
 
 ## 读取
 
-- `docs/contracts/outbound/`（接口 → client 代码映射）。
+- `docs/contracts/outbound/`（按每个应用对外的 client 维度、每应用一份：接口 → client 代码映射）。
 - 现有 `docs/tools/tools/outbound/`（若有）与该类 `AGENTS.md`。
 
 ## 步骤

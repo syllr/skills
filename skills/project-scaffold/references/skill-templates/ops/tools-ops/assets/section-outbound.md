@@ -17,8 +17,8 @@ outbound 接口型工具：调 **外部系统**。开头只写两行：`用途�
 ### 接口来源
 
 <!-- 生成提示:begin -->
-写清本工具据以定位接口的代码来源：`docs/contracts/outbound/`（应用 → 外部系统 → 接口 → client 代码位置映射，由 outbound-ops
-维护）；调用前先按它读 client 代码，核对入参。
+写清本工具据以定位接口的代码来源：`docs/contracts/outbound/`（outbound-ops 维护；按每个应用对外的 client
+维度、每应用一份：该应用调用的外部系统 → Client 与调用方式 → 接口 → client 代码位置映射）；调用前先按它读 client 代码，核对入参。
 <!-- 生成提示:end -->
 
 ### 环境参数

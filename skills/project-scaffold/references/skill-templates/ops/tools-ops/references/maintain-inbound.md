@@ -1,10 +1,11 @@
 # 维护：inbound 接口型工具（api）
 
-直调 **本应用对外接口**。接口来源是 `docs/contracts/inbound/`（应用 → 接口 → 代码位置映射，由 inbound-ops 维护）。
+直调 **本应用对外接口**。接口来源是 `docs/contracts/inbound/`（inbound-ops 维护；按应用维度、每应用一份：应用 → 接口 →
+代码位置映射）。
 
 ## 读取
 
-- `docs/contracts/inbound/`（接口 → 代码映射）。
+- `docs/contracts/inbound/`（按应用维度、每应用一份：接口 → 代码映射）。
 - 现有 `docs/tools/tools/inbound/`（若有）与该类 `AGENTS.md`。
 
 ## 步骤
