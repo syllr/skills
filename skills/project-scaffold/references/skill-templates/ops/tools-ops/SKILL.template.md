@@ -50,33 +50,19 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 ## §2 工具集调用
 
-### 读取
+先判断要触达的目标属于哪一类——四类（每类对应一个工具）：① 前端页面 `webmcp`；② 本应用接口 `inbound`；③ 外部系统 `outbound`；④
+数据 / 中间件直连 `middleware`。
 
-- 按目标定位工具类：前端页面 `webmcp` / 本应用接口 `inbound` / 外部系统 `outbound` / 数据·中间件 `middleware`。
-- 读该类的 `docs/tools/tools/<类>/AGENTS.md`——环境参数 / 工具参数 / 退出码 / 调用方式都在这份里（连接信息与 DEPLOYMENT
-  解耦）。
-- 单工具的用法 / 子工具 / 序列参数：见其 `--help` 与该 AGENTS.md 的对应一节。
+判断完就一句：按该类调用流程做（选环境 / 取子工具 / 参数 / 退出码都在里面，并指向该类的 `AGENTS.md`）——
 
-### 步骤
+| 类型                | 工具         | 调用流程                                                       |
+|---------------------|--------------|----------------------------------------------------------------|
+| ① 前端页面          | `webmcp`     | [references/call-webmcp.md](references/call-webmcp.md)         |
+| ② 本应用接口        | `inbound`    | [references/call-inbound.md](references/call-inbound.md)       |
+| ③ 外部系统          | `outbound`   | [references/call-outbound.md](references/call-outbound.md)     |
+| ④ 数据 / 中间件直连 | `middleware` | [references/call-middleware.md](references/call-middleware.md) |
 
-1. 确认环境：问用户连哪个环境（或按上下文确定）。
-2. 选工具与参数：在该类 AGENTS.md 里选能触达目标的工具（`webmcp`：触达 **前端页面**整体，子工具按类文档的页面清单逐页
-   `--list --path` 取），按其「环境参数」表选中该环境那一行；要一次跑多个子工具 /
-   步骤时用它自己的
-   序列参数编排（如 webmcp 的 `--seq '<JSON 数组>'`）。目标无可用工具 → 提示用户走「生成流程」或「更新流程」新增，禁止旁路（裸
-   curl / 裸 SQL / 自行开浏览器 / 直连中间件 / 直调第三方）。
-3. 调用：把该行连接参数 + 工具参数拼进命令（具体见 AGENTS.md 与 `--help`）。
-4. 判断：读 stdout 单行 JSON，按退出码区分失败类型（0 成功 / 1 断言失败 / 2 参数 / 3 网络 / 4 数据层 / 10 配置）；断言由 AI
-   判断，工具只取证据。
-5. 报告：结论 + 所用环境 + 原始证据（JSON）。
-
-完成判据：连接参数取自该类 `docs/tools/tools/<类>/AGENTS.md` 的对应环境参数表行；读 stdout 单行 JSON
-并核对退出码；断言由 AI 判断、工具只取证据。
-
-### 联动
-
-### 边界
-
-- 系统访问唯一入口（根 `AGENTS.md` §2.7）：对系统的任何访问都经本工具集，禁旁路（裸 curl / 裸 SQL / 自行开浏览器 /
-  直连中间件 / 直调第三方）；缺工具走 §1 新增。
-- 断言由 AI 判断，工具只取证据；默认只读，写加 `--write` 才允许（写须用户授权）。
+- 统一契约（退出码 / 默认只读·写开关等）见 [references/contract.md](references/contract.md)。
+- 唯一入口 / 禁旁路：对系统的任何访问都经本工具集（根 `AGENTS.md` §2.7），禁裸 curl / 裸 SQL / 自行开浏览器 / 直连中间件 /
+  直调第三方；目标无可用工具走 §1 新增。
+- 断言由 AI 判断、工具只取证据；结论 + 所用环境 + 原始证据（JSON）回报用户。

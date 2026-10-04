@@ -60,16 +60,27 @@
 - 怎么读入参：读返回的 `inputSchema`——`properties` 键名 / 类型、`required`、`enum`，即调用入参。
 - 怎么调：`{"name":"<子工具>","args":{…}}` 交给 `--seq`；跨页先 `{"goto":"<页>"}`。
 - 页面代码位置 / 启用门控：各页 WebMCP 注册目录（与该页页面组件同工程）+ 启用门控（如 `VITE_WEBMCP=1`）。
-- 先按「环境参数」选 host、再按「子工具」选页面 path，再选子工具 / 编排（`--timeout` 必填）：
+- 先按「环境参数」选 host、再按「子工具」选页面 path，再选子工具 / 编排（`--timeout` 必填；`--list` / `--seq` 二选一）：
 
 ```bash
-# 枚举某页子工具
+# ① 枚举某页子工具：拿到该页真实注册的 name / description / inputSchema / annotations
 npm run webmcp -- --list --path <页面 path> --host <host> --timeout <ms>
 
-# 多子工具端到端：一条 --seq 按序跑完；跨步用 ${i.field} 引用前面结果（i = 已完成步骤下标）
+# ② 单子工具
+npm run webmcp -- --seq '[{"name":"<子工具>","args":{…}}]' --path <页面 path> --host <host> --timeout <ms>
+
+# ③ 多步场景：一条 --seq 按序跑完（顺序 = 数组顺序，同一会话跨步保态）
+#    {goto} 导航 + 重探工具；{wait} 等待；${i.field} 从第 i 步结果插值（i = 已完成步骤下标）
 npm run webmcp -- --seq '[
-  {"name":"<子工具>","args":{…}},
+  {"name":"<子工具A>","args":{…}},
   {"goto":"<页面 path>?x=${0.field}"},
+  {"name":"<子工具B>","args":{"y":"${1.field}"}},
   {"wait":10000}
 ]' --host <host> --timeout <ms>
+
+# ④ 有头（人工旁观 / 实时链路）+ 步间停留
+npm run webmcp -- --seq '[{"name":"<子工具>","args":{…}}]' --headed --step-delay 1500 --host <host> --timeout <ms>
+
+# ⑤ 连接已运行的 Chrome（该实例需自行带 WebMCP flag 启动）
+npm run webmcp -- --list --connect http://127.0.0.1:9333 --host <host> --timeout <ms>
 ```
