@@ -134,7 +134,7 @@ Skill 分三类，命名即类型，类型后标注链内 / 链外归属：
 | outbound-ops      | B·链外 | docs/contracts/outbound/（每应用一份）                                              | —                                   |
 | deploy-ops        | B·链外 | docs/deployment/DEPLOYMENT.md                                                       | docs/deployment/                    |
 | test-ops          | B·链外 | docs/test/test-cases/（正式用例卡）+ docs/test/do-drafts/（DoD 草稿），写卡规范自持 | docs/test/test-records/（执行台账） |
-| tools-ops         | B·链外 | docs/tools/tools/<类>/AGENTS.md（工具清单 + 使用约定）                              | docs/tools/（Node CLI）             |
+| tools-ops         | B·链外 | docs/tools/tools/<类>/<类>.md（工具清单 + 使用约定）                                | docs/tools/（Node CLI）             |
 | align-docs        | C·链外 | —（不生产任何文档正文）                                                             | —                                   |
 
 ## 4. 通用纪律

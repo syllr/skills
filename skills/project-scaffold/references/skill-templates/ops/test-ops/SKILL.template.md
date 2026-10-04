@@ -30,7 +30,7 @@ AGENTS.md §2.6 用例唯一入口）。
 - 读 [references/test-assets.md](references/test-assets.md) 确认 `docs/test/` 的预期资产集与本次动作的落点位置。
 - 读 `docs/L1/BUSINESS.md` 的用户故事与旅程、`docs/L2/domain/` 的领域模型，确认被测场景与领域实体。
 - 读 `docs/contracts/inbound/`（对外接口的接口 → 代码映射，断言以代码为准）、`docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵与
-  §6/§7 变量；工具清单与说明见 `docs/tools/tools/<类>/AGENTS.md`。
+  §6/§7 变量；工具清单与说明见 `docs/tools/tools/<类>/<类>.md`。
 - 读本 skill 与 [references/case-writing.md](references/case-writing.md)，确认写卡规范与机检口径。
 - 源缺失或冲突时先核实，不臆造接口、实体或环境；缺什么报什么，不自行补默认值。
 

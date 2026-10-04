@@ -82,7 +82,7 @@ SKILL，写入产物时连同这对标记删除。
 | [outbound-ops](references/skill-templates/ops/outbound-ops/SKILL.template.md) | L3 Outbound 外部集成 | docs/contracts/outbound/                     | —                                   | 多文件（SKILL + assets/）               |
 | [deploy-ops](references/skill-templates/ops/deploy-ops/SKILL.template.md)     | L3 部署              | docs/deployment/DEPLOYMENT.md                | docs/deployment/                    | 多文件（SKILL + assets/）               |
 | [test-ops](references/skill-templates/ops/test-ops/SKILL.template.md)         | 测试                 | docs/test/test-cases/ + docs/test/do-drafts/ | docs/test/test-records/（执行台账） | 多文件（SKILL + references/ + assets/） |
-| [tools-ops](references/skill-templates/ops/tools-ops/SKILL.template.md)       | 系统访问通道         | docs/tools/tools/<类>/AGENTS.md              | docs/tools/（Node CLI）             | 多文件（SKILL + assets/）               |
+| [tools-ops](references/skill-templates/ops/tools-ops/SKILL.template.md)       | 系统访问通道         | docs/tools/tools/<类>/<类>.md                | docs/tools/（Node CLI）             | 多文件（SKILL + assets/）               |
 
 ### C · 项目级（共 2 个）
 

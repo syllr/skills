@@ -47,16 +47,16 @@ skill 跑完成判定（全量对齐）。每份文档读谁由该 skill 自己�
 本表只列域级目录，不枚举子结构，也不复制各域的资产口径与上游声明。域内的东西该不该存在、缺失怎么补、残留怎么删、读谁，一律问该行的管辖
 skill。
 
-| 域   | 文档                                                                      | 资产                      | 定位（回答什么）                                                                                                  | 管辖 skill   |
-|------|---------------------------------------------------------------------------|---------------------------|-------------------------------------------------------------------------------------------------------------------|--------------|
-| 契约 | `docs/contracts/inbound/`                                                 | —                         | 每应用一份对外接口文档：接口 → 代码映射（按 API 类型 / 框架分章写解析方式，按业务域分节列接口与代码位置）         | inbound-ops  |
-| 契约 | `docs/contracts/outbound/`                                                | —                         | 每应用一份集成文档：接口 → client 代码映射（按该应用调用的外部系统分章，列接口与 client 代码位置）                | outbound-ops |
-| 部署 | `docs/deployment/DEPLOYMENT.md`                                           | `docs/deployment/`        | 概述、环境矩阵、拓扑、部署单元、参数、发布流程、密钥、资产登记                                                    | deploy-ops   |
-| 测试 | `docs/test/test-cases/`（正式用例卡）+ `docs/test/do-drafts/`（DoD 草稿） | `docs/test/test-records/` | 测试用例全生命周期：DoD 草稿 ad-hoc 验证 → 经用户认可晋升为正式用例卡；不自动晋升、不自动清理                     | test-ops     |
-| 工具 | `docs/tools/tools/<类>/AGENTS.md`（工具集使用约定）                       | `docs/tools/`             | 每类工具清单与说明按类写在 `docs/tools/tools/<类>/AGENTS.md`（须与 `package.json` scripts 一致）；用法见 `--help` | tools-ops    |
-| 变更 | `docs/changes/`（每变更一单篇 `{kebab-case}.md`）                         | —                         | 变更规划（完成后沉淀进对应层文档并删除）                                                                          | docs-changes |
-| 漂移 | `docs/drift/`（每文档一份 `<doc>.md`）                                    | —                         | 漂移清单：本 skill 扫出后直接交 `docs-draft` 落盘与收口修复；全部清账后删除该文件与空目录                         | docs-draft   |
-| 专项 | `docs/topics/`（每专项一篇 `{kebab-case}.md`）                            | —                         | 系统级问题、端到端流程、全链路时序、状态流转、涉及接口                                                            | docs-topics  |
+| 域   | 文档                                                                      | 资产                      | 定位（回答什么）                                                                                                | 管辖 skill   |
+|------|---------------------------------------------------------------------------|---------------------------|-----------------------------------------------------------------------------------------------------------------|--------------|
+| 契约 | `docs/contracts/inbound/`                                                 | —                         | 每应用一份对外接口文档：接口 → 代码映射（按 API 类型 / 框架分章写解析方式，按业务域分节列接口与代码位置）       | inbound-ops  |
+| 契约 | `docs/contracts/outbound/`                                                | —                         | 每应用一份集成文档：接口 → client 代码映射（按该应用调用的外部系统分章，列接口与 client 代码位置）              | outbound-ops |
+| 部署 | `docs/deployment/DEPLOYMENT.md`                                           | `docs/deployment/`        | 概述、环境矩阵、拓扑、部署单元、参数、发布流程、密钥、资产登记                                                  | deploy-ops   |
+| 测试 | `docs/test/test-cases/`（正式用例卡）+ `docs/test/do-drafts/`（DoD 草稿） | `docs/test/test-records/` | 测试用例全生命周期：DoD 草稿 ad-hoc 验证 → 经用户认可晋升为正式用例卡；不自动晋升、不自动清理                   | test-ops     |
+| 工具 | `docs/tools/tools/<类>/<类>.md`（工具集使用约定）                         | `docs/tools/`             | 每类工具清单与说明按类写在 `docs/tools/tools/<类>/<类>.md`（须与 `package.json` scripts 一致）；用法见 `--help` | tools-ops    |
+| 变更 | `docs/changes/`（每变更一单篇 `{kebab-case}.md`）                         | —                         | 变更规划（完成后沉淀进对应层文档并删除）                                                                        | docs-changes |
+| 漂移 | `docs/drift/`（每文档一份 `<doc>.md`）                                    | —                         | 漂移清单：本 skill 扫出后直接交 `docs-draft` 落盘与收口修复；全部清账后删除该文件与空目录                       | docs-draft   |
+| 专项 | `docs/topics/`（每专项一篇 `{kebab-case}.md`）                            | —                         | 系统级问题、端到端流程、全链路时序、状态流转、涉及接口                                                          | docs-topics  |
 
 链外不由本 skill 编排，其增删改由用户直接调该行的管辖 skill 处理；资产的维护、门禁与旧资产检出也全部归该 skill。
 

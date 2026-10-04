@@ -13,7 +13,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 - 唯一入口：项目工具集（`docs/tools/`）的生成、维护与调用只经本 skill；AI 访问本系统任何资源也只经它。
 - 不做：用例本身的增删改执行与执行台账归 `test-ops` skill；跨文档对齐归 `align-docs` skill。
-- 同步：工具集文档按类落在 `docs/tools/tools/<类>/AGENTS.md`（固定 4 类、一类一份，同类工具共用：环境参数 / 工具参数 /
+- 同步：工具集文档按类落在 `docs/tools/tools/<类>/<类>.md`（固定 4 类、一类一份，同类工具共用：环境参数 / 工具参数 /
   退出码 / 调用方式）
   ——由本 skill 生成与更新；新增 / 改名 / 删除工具时同步（V2 会在 AI 读到该类 / 工具目录时按需加载对应 AGENTS.md）。
 - 维护流程（新增 / 演进工具、环境参数表与 DEPLOYMENT 对齐、共享模块与统一契约）写在本 skill，按项目实情落地到 `docs/tools/`。
@@ -46,7 +46,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 - 统一契约见 [references/contract.md](references/contract.md)（每个工具都要满足）。
 - 产物骨架：[assets/section-webmcp.md](assets/section-webmcp.md) /
   [section-api.md](assets/section-api.md) / [section-outbound.md](assets/section-outbound.md) / [section-middleware.md](assets/section-middleware.md)
-  （实例 `docs/tools/tools/<类>/AGENTS.md`，同类工具共用一份）。
+  （实例 `docs/tools/tools/<类>/<类>.md`，同类工具共用一份）。
 
 ## §2 工具集调用
 
