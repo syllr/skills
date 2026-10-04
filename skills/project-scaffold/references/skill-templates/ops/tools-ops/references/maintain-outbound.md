@@ -1,0 +1,24 @@
+# 维护：outbound 接口型工具
+
+调 **外部系统**。接口来源是 `docs/contracts/outbound/`（应用 → 外部系统 → 接口 → client 代码位置映射，由 outbound-ops 维护）。
+
+## 读取
+
+- `docs/contracts/outbound/`（接口 → client 代码映射）。
+- 现有 `docs/tools/tools/outbound/`（若有）与该类 `AGENTS.md`。
+
+## 步骤
+
+1. 从 outbound 契约盘出要覆盖的外部系统与接口（接口名 / 方法签名 / client 代码位置 / 入参）。
+2. 落地 / 更新本工具（`tools/outbound/<工具>.mjs`）：按 client 定义调用外部系统、传参与鉴权走命令行 flag；遵守统一契约。
+3. 登记 AGENTS：总览清单加一行；该类 `tools/outbound/AGENTS.md` 写该工具一节（含「接口来源」指向 `docs/contracts/outbound/`）。
+4. 验证：能按接口直调通；失败按退出码归类。
+
+## 边界
+
+- 统一契约（stdout / 退出码 / 不默认 / fail-fast / 只读红线 / `--help`）见 [contract.md](contract.md)。
+- 环境清单 / 连接参数变化时，对齐该类 AGENTS.md 的环境参数表（Standalone 恒在最前；只改 AGENTS.md，不改 `DEPLOYMENT.md`
+  本体——那按 deploy-ops）。
+
+- 接口定义以 `docs/contracts/outbound/` 为准，不在本工具里另立清单。
+- 幂等 / 计费 / 写操作类调用须用户确认。
