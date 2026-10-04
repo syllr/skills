@@ -1,6 +1,6 @@
 ---
 name: tools-ops
-description: 项目工具集（tools）的新增 / 删除 / 更新与调用——为项目落地并演进 Node CLI 工具集（webmcp 页面调用 / inbound 接口直调 / outbound 外部接口直调 / db 业务库只读对账 / ragflow 向量库对账），供 AI 直接调用以了解项目数据与落库对账；是 AI 访问系统资源的唯一通道（test-ops 等 skill 调用它）。触发词：工具、tools、生成工具、新增工具、新增对账工具、调用工具查数据、查库、对账、落库验证、跑接口工具、了解项目数据
+description: 项目工具集（tools）的新增 / 删除 / 更新与调用——为项目落地并演进 Node CLI 工具集（webmcp 页面调用 / inbound 接口直调 / outbound 外部接口直调 / db 业务库只读查询 / ragflow 向量库查询），供 AI 直接调用以了解项目数据与落库情况；是 AI 访问系统资源的唯一通道（test-ops 等 skill 调用它）。触发词：工具、tools、生成工具、新增工具、新增查询工具、调用工具查数据、查库、查数、落库验证、跑接口工具、了解项目数据
 ---
 
 # tools-ops — 项目工具集（变更 / 调用）
@@ -25,7 +25,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 | 分诊                       | 触发                                                                                               | 进入 |
 |----------------------------|----------------------------------------------------------------------------------------------------|------|
 | 1 工具集新增 / 删除 / 更新 | 对 `docs/tools/` 本身的改动（工具实现、环境参数与工具参数、初始化落地）——由 skill 询问用户是否变更 | §1   |
-| 2 工具集调用               | 按「环境参数」表选环境调用工具（AI 直接查数据/对账，ad-hoc）；仅询问用户连哪个环境                 | §2   |
+| 2 工具集调用               | 按「环境参数」表选环境调用工具（AI 直接查数据，ad-hoc）；仅询问用户连哪个环境                      | §2   |
 
 ## §1 工具集新增 / 删除 / 更新
 
@@ -62,7 +62,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 | ③ 外部系统          | `outbound`   | [references/call-outbound.md](references/call-outbound.md)     |
 | ④ 数据 / 中间件直连 | `middleware` | [references/call-middleware.md](references/call-middleware.md) |
 
-- 统一契约（退出码 / 默认只读·写开关等）见 [references/contract.md](references/contract.md)。
+- 统一契约（退出码 / 写授权等）见 [references/contract.md](references/contract.md)。
 - 唯一入口 / 禁旁路：对系统的任何访问都经本工具集（根 `AGENTS.md` §2.7），禁裸 curl / 裸 SQL / 自行开浏览器 / 直连中间件 /
   直调第三方；目标无可用工具走 §1 新增。
 - 断言由 AI 判断、工具只取证据；结论 + 所用环境 + 原始证据（JSON）回报用户。

@@ -32,7 +32,7 @@
 
 ## 边界
 
-- 统一契约（stdout / 退出码 / 不默认 / fail-fast / 默认只读·写开关 / `--help`）见 [contract.md](contract.md)。
+- 统一契约（stdout / 退出码 / 不默认 / fail-fast / 写授权 / `--help`）见 [contract.md](contract.md)。
 - 环境清单 / 连接参数变化时，对齐该类 `webmcp.md` 的环境参数表（Standalone 恒在最前；只改该类文档，不改 `DEPLOYMENT.md`
   本体——那按 deploy-ops）。
 - **可用性以能跑为准**：页面未就绪时 `execute` 明确失败（`not_ready` / `not_on_page`），不假装可用；能注册但跑不了 = 不可用，不算。

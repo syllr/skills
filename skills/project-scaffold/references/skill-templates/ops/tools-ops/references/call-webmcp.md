@@ -44,10 +44,10 @@ host、工具 ↔ 可用页面），在 `docs/tools/tools/webmcp/webmcp.md`。
 | 码 | 含义                                                   |
 |----|--------------------------------------------------------|
 | 0  | 成功                                                   |
-| 1  | 子工具业务失败（`ok:false`）或断言不达标               |
+| 1  | 子工具业务失败（`ok:false`）                           |
 | 2  | 参数 / 序列错误                                        |
 | 3  | 浏览器 / 页面失败                                      |
-| 10 | 配置错误（playwright-core 缺失 / modelContext 不可用） |
+| 4  | 配置错误（playwright-core 缺失 / modelContext 不可用） |
 
 - 输出契约：stdout 只输出一行 JSON，人类诊断信息走 stderr。
 

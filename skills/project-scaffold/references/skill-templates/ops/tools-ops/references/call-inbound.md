@@ -3,7 +3,7 @@
 调 `inbound` 工具直调 **本应用对外接口**。项目相关的只有一张表（环境参数），在 `docs/tools/tools/inbound/inbound.md`。
 
 - 用途：AI 直调本应用 inbound API 取数 / 落库验证。
-- 注意：默认只读，写加 `--write` 且须先得到用户授权；参数一律不给默认值，缺任一必填项即报错（退出码 2）。
+- 注意：写 / 变更类调用须先得到用户授权；参数一律不给默认值，缺任一必填项即报错（退出码 1）。
 
 ## 读取
 
@@ -25,7 +25,6 @@
 | `--operation <operationId>`       | 选接口                | 是   | `--operation <operationId>` |
 | `--path` / `--query` / `--header` | 路径 / query / 请求头 | 否   | `--query page=1`            |
 | `--body` / `--form`               | JSON body / 表单字段  | 否   | `--body '{…}'`              |
-| `--write`                         | 写开关（默认关）      | 否   | `--write`                   |
 
 发请求前做 fail-fast 契约校验：输入键不在被测契约声明内即报错并列出可用键。完整语义以 `--help` 为准。
 
@@ -34,11 +33,10 @@
 | 码 | 含义            |
 |----|-----------------|
 | 0  | 成功            |
-| 1  | 断言 / 对账失败 |
-| 2  | 参数 / 契约错误 |
-| 3  | 网络失败        |
-| 4  | 数据层失败      |
-| 10 | 配置错误        |
+| 1  | 参数 / 契约错误 |
+| 2  | 网络失败        |
+| 3  | 数据层失败      |
+| 4  | 配置错误        |
 
 - 输出契约：stdout 只输出一行 JSON，人类诊断信息走 stderr。
 
@@ -48,8 +46,8 @@
 # 只读：选接口 + 入参 + 环境参数表该行
 npm run api -- --operation <operationId> [--path k=v] [--query k=v] [--header k=v] [--body '{…}' | --form k=v] <环境参数表该行>
 
-# 写（须先得到用户授权）
-npm run api -- --operation <operationId> --write [--body '{…}' | --form k=v] <环境参数表该行>
+# 写 / 变更类（须先得到用户授权）
+npm run api -- --operation <operationId> [--body '{…}' | --form k=v] <环境参数表该行>
 ```
 
 ## 完成判据
@@ -58,4 +56,4 @@ npm run api -- --operation <operationId> --write [--body '{…}' | --form k=v] <
 
 ## 边界
 
-- 默认只读，写接口加 `--write` 且须先得到用户授权；唯一入口 / 禁旁路见 §2；目标无可用工具 → 走 §1 新增。
+- 写 / 变更类调用须先得到用户授权；唯一入口 / 禁旁路见 §2；目标无可用工具 → 走 §1 新增。

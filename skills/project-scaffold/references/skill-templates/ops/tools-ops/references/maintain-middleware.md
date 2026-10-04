@@ -1,6 +1,6 @@
 # 维护：数据 / 中间件直连型工具
 
-直连基础设施取数 / 对账（DB / Redis / Kafka / ES / 对象存储 / 向量库等）。一个中间件一个工具（如 `db`）。
+直连基础设施取数 / 查询（DB / Redis / Kafka / ES / 对象存储 / 向量库等）。一个中间件一个工具（如 `db`）。
 
 ## 读取
 
@@ -22,7 +22,7 @@
 
 ## 边界
 
-- 统一契约（stdout / 退出码 / 不默认 / fail-fast / 默认只读·写开关 / `--help`）见 [contract.md](contract.md)。
+- 统一契约（stdout / 退出码 / 不默认 / fail-fast / 写授权 / `--help`）见 [contract.md](contract.md)。
 - 环境清单 / 连接参数变化时，对齐该类 `middleware.md` 的环境参数表（Standalone 恒在最前；只改该类文档，不改 `DEPLOYMENT.md`
   本体——那按 deploy-ops）。
 

@@ -24,9 +24,9 @@
 
 ## 边界
 
-- 统一契约（stdout / 退出码 / 不默认 / fail-fast / 默认只读·写开关 / `--help`）见 [contract.md](contract.md)。
+- 统一契约（stdout / 退出码 / 不默认 / fail-fast / 写授权 / `--help`）见 [contract.md](contract.md)。
 - 环境清单 / 连接参数变化时，对齐该类 `inbound.md` 的环境参数表（Standalone 恒在最前；只改该类文档，不改 `DEPLOYMENT.md`
   本体——那按 deploy-ops）。
 
 - 接口定义以 `docs/contracts/inbound/` 为准，不在本工具里另立清单。
-- 默认只读；写接口 / 变更类调用加 `--write` 才允许，且须先得到用户授权。
+- 写 / 变更类调用须先得到用户授权。
