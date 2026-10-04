@@ -31,7 +31,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 新增 / 删除 / 更新工具，先判断它属于哪一类——四类：① 页面调用型 `webmcp`（子工具在工程页面代码）；② inbound 接口型（来源
 `docs/contracts/inbound/`，inbound-ops）；③ outbound 接口型（来源 `docs/contracts/outbound/`，outbound-ops）；④ 数据 / 中间件直连型
-（DB / Redis / Kafka / ES / 对象存储 / 向量库等）。`tools/` 下固定这 4 个类目录、每类一份 `AGENTS.md`；某类未落地也保留目录与文件（内容写
+（DB / Redis / Kafka / ES / 对象存储 / 向量库等）。`tools/` 下固定这 4 个类目录、每类一份 `<类>.md`（类文档）；某类未落地也保留目录与文件（内容写
 「本类未落地」）。
 
 判断完就一句：按该类维护流程做（读取 / 步骤 / 完成判据 / 边界都在里面）——
@@ -47,6 +47,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 - 产物骨架：[assets/section-webmcp.md](assets/section-webmcp.md) /
   [section-api.md](assets/section-api.md) / [section-outbound.md](assets/section-outbound.md) / [section-middleware.md](assets/section-middleware.md)
   （实例 `docs/tools/tools/<类>/<类>.md`，同类工具共用一份）。
+- 工具集整体（目录布局 / `package.json` / `.gitignore`，均直接写死）见 [references/toolset.md](references/toolset.md)。
 - 工具代码骨架：[assets/tool-webmcp.mjs](assets/tool-webmcp.mjs) / [tool-inbound.mjs](assets/tool-inbound.mjs) /
   [tool-outbound.mjs](assets/tool-outbound.mjs) / [tool-middleware.mjs](assets/tool-middleware.mjs) + 共享
   [assets/_util.mjs](assets/_util.mjs)——webmcp 是 **冻结件、可直接整份复制**，其余三类是骨架（按 `maintain-*.md` 填动态部分）。
