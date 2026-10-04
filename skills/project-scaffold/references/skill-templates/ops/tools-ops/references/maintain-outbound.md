@@ -11,7 +11,8 @@
 ## 步骤
 
 1. 从 outbound 契约盘出要覆盖的外部系统与接口（接口名 / 方法签名 / client 代码位置 / 入参）。
-2. 落地 / 更新本工具（`tools/outbound/<工具>.mjs`）：按 client 定义调用外部系统、传参与鉴权走命令行 flag；遵守统一契约。
+2. 落地 / 更新本工具（`tools/outbound/<工具>.mjs`，骨架 [assets/tool-outbound.mjs](assets/tool-outbound.mjs)）：按 client
+   定义调用外部系统、传参与鉴权走命令行 flag；遵守统一契约。
 3. 登记 AGENTS：该类 `docs/tools/tools/outbound/outbound.md` 只登记 **环境参数表**
    （其余固定内容在调用子文档 [call-outbound.md](call-outbound.md)）；同类多工具就复制该节，本类未落地就只写一行「本类未落地」。
 4. 验证：能按接口直调通；失败按退出码归类。

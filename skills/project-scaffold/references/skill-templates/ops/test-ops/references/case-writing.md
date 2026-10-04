@@ -29,7 +29,8 @@ SKILL §3）。本文件承载用例卡的结构与写卡规范。
 - 执行通道：全部走 `docs/tools/` 的测试工具（api/db/webmcp/ragflow）——不写 curl、不裸 SQL（SQL 包进 db 命令）、不写裸命令
 - 目录分组：API 卡目录 = domain 实体名；FLOW 卡目录 = 用户故事场景名（不造概念）
 - 清理三态：造数据的 Case 清理节写清各层兜底（正常接口删除 → 数据层级联删 → 外部依赖/中间件残留清理），兜底层以项目实际数据落位为准
-- 环境 host 不写死：前端主入口用 `{WEBMCP_URL}/<path>`（host 走工具 .env）；工具连接参数引用工具 .env 与 DEPLOYMENT
+- 环境 host 不写死：前端主入口用 `{WEBMCP_URL}/<path>`（host 走该类文档「环境参数」表）；工具连接参数引用该类文档「环境参数」表与
+  DEPLOYMENT
 
 ## 4. 完整判定（机检）
 
@@ -46,7 +47,7 @@ SKILL §3）。本文件承载用例卡的结构与写卡规范。
 | domain 各域文档      | API 卡按领域实体分组；实体/约束/状态机变化 → 联动受影响 API 卡                                                     |
 | 接口契约（inbound）  | `docs/contracts/inbound/` 的接口 → 代码映射是用例「接口/期望结果」的信息源；接口或代码位置变化 → 同步受影响 API 卡 |
 | DEPLOYMENT           | 环境矩阵/密钥/种子账号来源                                                                                         |
-| 测试工具             | tools-ops skill——工具命令/退出码/.env；工具语法解释归工具 README，不落卡                                           |
+| 测试工具             | tools-ops skill——工具命令 / 退出码 / 环境参数（类文档）；工具语法解释归工具 `--help`，不落卡                       |
 
 ## 6. 新增 vs 更新判断
 

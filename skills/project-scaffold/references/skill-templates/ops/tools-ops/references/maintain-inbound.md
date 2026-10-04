@@ -11,7 +11,8 @@
 ## 步骤
 
 1. 从 inbound 契约盘出要覆盖的接口（operationId / 方法 / 路径 / 入参键）。
-2. 落地 / 更新本工具（`tools/inbound/api.mjs`）：`--operation <operationId>` + `--path/--query/--header/--body/--form`
+2. 落地 / 更新本工具（`tools/inbound/api.mjs`，骨架 [assets/tool-inbound.mjs](assets/tool-inbound.mjs)）：
+   `--operation <operationId>` + `--path/--query/--header/--body/--form`
    传参；发请求前做 **fail-fast 契约校验**（输入键不在被测契约声明内即报错并列出可用键）；遵守统一契约。
 3. 登记 AGENTS：该类 `docs/tools/tools/inbound/inbound.md` 只登记 **环境参数表**
    （其余固定内容在调用子文档 [call-inbound.md](call-inbound.md)）；同类多工具就复制该节，本类未落地就只写一行「本类未落地」。

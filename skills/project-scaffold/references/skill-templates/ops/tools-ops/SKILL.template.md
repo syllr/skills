@@ -47,6 +47,9 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 - 产物骨架：[assets/section-webmcp.md](assets/section-webmcp.md) /
   [section-api.md](assets/section-api.md) / [section-outbound.md](assets/section-outbound.md) / [section-middleware.md](assets/section-middleware.md)
   （实例 `docs/tools/tools/<类>/<类>.md`，同类工具共用一份）。
+- 工具代码骨架：[assets/tool-webmcp.mjs](assets/tool-webmcp.mjs) / [tool-inbound.mjs](assets/tool-inbound.mjs) /
+  [tool-outbound.mjs](assets/tool-outbound.mjs) / [tool-middleware.mjs](assets/tool-middleware.mjs) + 共享
+  [assets/_util.mjs](assets/_util.mjs)——webmcp 是 **冻结件、可直接整份复制**，其余三类是骨架（按 `maintain-*.md` 填动态部分）。
 
 ## §2 工具集调用
 

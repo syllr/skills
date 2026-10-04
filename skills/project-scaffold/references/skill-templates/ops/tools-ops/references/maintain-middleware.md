@@ -10,7 +10,8 @@
 ## 步骤
 
 1. 明确要连的中间件、要覆盖的只读操作（查询 / 命令），以及要支持的写操作（若有）。
-2. 落地 / 更新本工具（`tools/middleware/<工具>.mjs`）：连接参数走命令行 flag（host / port / 账号 / 口令 /
+2. 落地 / 更新本工具（`tools/middleware/<工具>.mjs`，骨架 [assets/tool-middleware.mjs](assets/tool-middleware.mjs)
+   ）：连接参数走命令行 flag（host / port / 账号 / 口令 /
    库名等），最典型的工具参数就是位置参数＝该中间件的命令 / 查询；默认只读，写加 `--write` 才允许（写须用户授权）；遵守统一契约。
 3. 登记 AGENTS：该类 `docs/tools/tools/middleware/middleware.md` 只登记 **环境参数表**
    （其余固定内容在调用子文档 [call-middleware.md](call-middleware.md)）；同类多工具就复制该节，本类未落地就只写一行「本类未落地」。

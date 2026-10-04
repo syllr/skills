@@ -31,7 +31,7 @@
 ### 前置条件
 
 ```bash
-# 登录建立会话并停在被测页（--path 指定页面路径，host 走工具 .env）
+# 登录建立会话并停在被测页（--path 指定页面路径，host 走该类文档「环境参数」表）
 npm run webmcp -- --path <页面路径> --seq '[{"name":"login","args":{"username":"<账号>","password":"<凭据>"}}]'
 ```
 

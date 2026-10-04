@@ -4,7 +4,8 @@
 到该页、等加载完成，再调。注册只解决两件事（ **防重名** / 让 agent 发现），不改变可用性。
 
 - 类文档 `docs/tools/tools/webmcp/webmcp.md` 只有两张随项目变的表：环境参数（host）、子工具（工具 ↔ 可用页面）。
-- 本工具（`tools/webmcp/webmcp.mjs`）是模板冻结件：首次按模板落地一次，之后不随子工具变——子工具都在页面代码里。
+- 本工具（`tools/webmcp/webmcp.mjs`）是模板冻结件： **骨架 [assets/tool-webmcp.mjs](assets/tool-webmcp.mjs)（+
+  共享 [assets/_util.mjs](assets/_util.mjs)）可整份复制**；首次落地一次，之后不随子工具变——子工具都在页面代码里。
 
 ## 读取
 
