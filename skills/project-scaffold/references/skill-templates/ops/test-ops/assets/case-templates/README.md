@@ -8,4 +8,4 @@
 | `api-case.md`  | API 用例卡模板  | 生成 API 卡：复制结构（头 + Case N 五段）→ 替换接口/实体/Case 内容 → 落到 `docs/test/test-cases/api/<实体>/` |
 | `flow-case.md` | FLOW 用例卡模板 | 生成 FLOW 卡：复制结构 → 按用户故事场景填充 → 落 `docs/test/test-cases/flow/<场景>/`                         |
 
-> 用例的创建/更新/删除/执行一律经 test-ops skill（唯一入口）；新增正式卡经 DoD 草稿晋升，见 SKILL。
+> 用例的创建/更新/删除/执行一律经 test-ops skill（唯一入口）；新增 / 删除由用户显式指定，见 SKILL。

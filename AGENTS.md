@@ -77,6 +77,8 @@ skills/
 - `name` 必填，使用小写 kebab-case，且必须与目录名一致；
 - `description` 必填，包含功能和触发词，长度小于 1024 字符；
 - `license`、`compatibility`、`metadata`、`allowed-tools` 是可选字段；`allowed-tools` 在 OpenCode 不负责权限控制。
+- 仅用户可调用（模型不得自动加载）的 skill，在 `metadata.opencode/autoinvoke` 写 `false`；OpenCode 也认顶层
+  `disable-model-invocation: true`，但 `agentskills validate` 不接受该字段，故统一用前者。
 
 格式细节见 [skill-creator 的格式规范](skills/skill-creator/references/skill-md-format.md)。
 

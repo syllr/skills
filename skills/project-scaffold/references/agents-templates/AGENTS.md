@@ -30,7 +30,7 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
     │   └── STRUCTURE.md     目录结构与文档 ↔ 代码映射
     ├── contracts/          契约：inbound/ · outbound/（每应用一份）
     ├── deployment/         部署：DEPLOYMENT.md + 部署资产（脚本 / compose / 多环境 .env）
-    ├── test/                测试：do-drafts/ 草稿 → test-cases/ 正式用例卡（晋级）→ test-records/ 执行台账
+    ├── test/                测试：test-cases/ 正式用例卡 → test-records/ 执行台账
     ├── tools/               项目工具集：AGENTS.md（工具清单 + 使用约定）+ Node CLI（AI 访问系统的唯一通道；`--help` 看用法）
     ├── topics/              专项：每专项一篇（跨 L1-L3 的独立陈述，不入链）
     ├── changes/             变更规划：每变更一单篇（过程态，完成后删除）
@@ -79,18 +79,27 @@ L2 的架构文档先定应用划分（用户层 / 应用 / 运行支撑 /
 ### 2.6 用例唯一入口
 
 - 用例（接口 / 流程）只能经 `test-ops` skill 触发与管理（新增 / 更新 / 删除 / 执行），AI
-  不得凭自身判断自动创建任何用例；项目不写单元测试，用例卡的新增与删除由用户手动配置。
-- 新增用例一律先落 DoD 草稿（过程态），经用户验证认可后晋升为正式用例（`docs/test/test-cases/`）；草稿位置与用例卡写卡规范以
-  `test-ops` skill 为准。
+  不得凭自身判断自动创建任何用例；用例卡的新增与删除由用户手动配置。
 - 禁止绕过 `test-ops` skill 直接创建 / 修改 / 删除 `docs/test/test-cases/` 下的用例文件。
 
-### 2.7 系统访问唯一入口
+### 2.7 无单元测试与 DoD 验证
+
+- 本体系的项目不写、不维护任何形式的单元测试：不引入单测框架、不写单测断言与 mock、不做组件测试、不设覆盖率门禁；与语言 /
+  框架无关，是硬性约束。
+- 项目内已存在的单元测试（测试文件、单测依赖、单测脚本、CI 中的单测门禁）视为违规产物：随所在变更一并删除，不保留、不迁移。
+- 改动交付前，AI 默认先在 standalone（本机直跑）用 `docs/tools/`（`tools-ops`）的工具对该改动目标做一次 DoD
+  验证——改动声称达成什么就在真实系统里验什么，以实测证据判定；这不是硬卡点，验证方式与强度由 AI 按改动复杂度自行判断，简单改动可不做。
+- DoD 验证由 AI 自持，不落用例卡、不经 `test-ops`、不写 `docs/test/`：走 `docs/changes/` 变更单的变更，把 DoD
+  验证写进该变更单（供用户 review）；随手改动不落任何产物。
+- 需要长期回归时由用户经 `test-ops` 新建正式用例卡（见 §2.6）；AI 不得把 DoD 验证自动升格为用例卡。
+
+### 2.8 系统访问唯一入口
 
 - AI 访问本系统的任何资源（前端页面 / 后端 API / 数据库 / 中间件 / 外部第三方接口）都只能经 `tools-ops`（`docs/tools/`
   ），不允许任何形式的旁路直连。
 - 访问前先经 `tools-ops` 查当前可用工具，再用对应工具访问；目标无可用工具时提醒用户经 `tools-ops` skill 新增，AI 不得自行造旁路。
 
-### 2.8 图示与格式
+### 2.9 图示与格式
 
 - 图即文本：所有图用 D2 / Mermaid / ASCII 代码块直接写入 .md，禁止位图截图或在线工具导出图。
 - 图型选型：容器式分层图（多层大容器嵌套）用 D2；流程图 / 状态图 / 时序图 / 类图 / 结构拓扑图用 Mermaid；目录树用
@@ -119,23 +128,23 @@ Skill 分三类，命名即类型，类型后标注链内 / 链外归属：
 - C · 项目级：面向整个项目、不按链内层次划分；C·链外。`align-docs`（跨文档编排：只调度 A / B 类，不生产文档正文或资产，连过程态清单也交
   `docs-draft` 落盘）与 `code-guide`（给各子项目目录写 `AGENTS.md`）。
 
-| Skill             | 类型   | 管辖文档                                                                            | 管辖资产                            |
-|-------------------|--------|-------------------------------------------------------------------------------------|-------------------------------------|
-| docs-business     | A·链内 | docs/L1/BUSINESS.md                                                                 | —                                   |
-| docs-architecture | A·链内 | docs/L2/ARCHITECTURE.md                                                             | —                                   |
-| docs-data-model   | A·链内 | docs/L2/DATA-MODEL.md                                                               | —                                   |
-| docs-domain       | A·链内 | docs/L2/domain/                                                                     | —                                   |
-| docs-structure    | A·链内 | docs/L3/STRUCTURE.md                                                                | —                                   |
-| docs-changes      | A·链外 | docs/changes/                                                                       | —                                   |
-| docs-draft        | A·链外 | docs/drift/（每文档一份 `<doc>.md` 漂移清单）                                       | —                                   |
-| docs-topics       | A·链外 | docs/topics/（每专项一篇 kebab-case 单篇）                                          | —                                   |
-| code-guide        | C·链外 | 各子项目目录下的 `AGENTS.md`                                                        | —                                   |
-| inbound-ops       | B·链外 | docs/contracts/inbound/（每应用一份）                                               | —                                   |
-| outbound-ops      | B·链外 | docs/contracts/outbound/（每应用一份）                                              | —                                   |
-| deploy-ops        | B·链外 | docs/deployment/DEPLOYMENT.md                                                       | docs/deployment/                    |
-| test-ops          | B·链外 | docs/test/test-cases/（正式用例卡）+ docs/test/do-drafts/（DoD 草稿），写卡规范自持 | docs/test/test-records/（执行台账） |
-| tools-ops         | B·链外 | docs/tools/tools/<类>/<类>.md（工具清单 + 使用约定）                                | docs/tools/（Node CLI）             |
-| align-docs        | C·链外 | —（不生产任何文档正文）                                                             | —                                   |
+| Skill             | 类型   | 管辖文档                                             | 管辖资产                            |
+|-------------------|--------|------------------------------------------------------|-------------------------------------|
+| docs-business     | A·链内 | docs/L1/BUSINESS.md                                  | —                                   |
+| docs-architecture | A·链内 | docs/L2/ARCHITECTURE.md                              | —                                   |
+| docs-data-model   | A·链内 | docs/L2/DATA-MODEL.md                                | —                                   |
+| docs-domain       | A·链内 | docs/L2/domain/                                      | —                                   |
+| docs-structure    | A·链内 | docs/L3/STRUCTURE.md                                 | —                                   |
+| docs-changes      | A·链外 | docs/changes/                                        | —                                   |
+| docs-draft        | A·链外 | docs/drift/（每文档一份 `<doc>.md` 漂移清单）        | —                                   |
+| docs-topics       | A·链外 | docs/topics/（每专项一篇 kebab-case 单篇）           | —                                   |
+| code-guide        | C·链外 | 各子项目目录下的 `AGENTS.md`                         | —                                   |
+| inbound-ops       | B·链外 | docs/contracts/inbound/（每应用一份）                | —                                   |
+| outbound-ops      | B·链外 | docs/contracts/outbound/（每应用一份）               | —                                   |
+| deploy-ops        | B·链外 | docs/deployment/DEPLOYMENT.md                        | docs/deployment/                    |
+| test-ops          | B·链外 | docs/test/test-cases/（正式用例卡），写卡规范自持    | docs/test/test-records/（执行台账） |
+| tools-ops         | B·链外 | docs/tools/tools/<类>/<类>.md（工具清单 + 使用约定） | docs/tools/（Node CLI）             |
+| align-docs        | C·链外 | —（不生产任何文档正文）                              | —                                   |
 
 ## 4. 通用纪律
 

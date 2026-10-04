@@ -59,7 +59,8 @@ DoD 验证通过后置待同步，文档同步完成后置已实行；删除前�
 - 目标层文档由对应 skill 维护：L1 业务流程 `docs-business`；L2 架构 `docs-architecture`、数据建模
   `docs-data-model`、领域 `docs-domain`；链外契约接口 `inbound-ops`、集成
   `outbound-ops`、部署 `deploy-ops`；L3 目录结构 `docs-structure`；各子项目 AGENTS.md 归 `code-guide`。
-- 验收用例经 `test-ops` skill；工具访问经 `tools-ops` skill。
+- 变更的 DoD 验证由 AI 自持（根 AGENTS.md §2.7，standalone 下经工具跑）；工具访问经 `tools-ops` skill；用例卡的增删改经
+  `test-ops` skill、是 DoD 通过后另起的独立流程。
 - 漂移检查、记录与收口修复归 `docs-draft`：本 skill 只划定检查范围（改动的业务域，或偏技术改动从 L3 起的全链路）并在
   frontmatter
   登记清单路径（`docs/drift/{change名}-draft.md`）；清单不存在或清单级状态为 `已清理` 即视为漂移已清，据此放行；文档体系生成与初始化归

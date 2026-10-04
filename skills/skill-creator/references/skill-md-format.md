@@ -29,15 +29,15 @@ allowed-tools: Read Write Edit # 可选，空格分隔
 ### 必填字段
 
 | 字段          | 说明       | 格式要求                                               |
-| ------------- | ---------- | ------------------------------------------------------ |
+|---------------|------------|--------------------------------------------------------|
 | `name`        | 技能标识符 | kebab-case，1-64字符，只能是小写字母、数字、单个连字符 |
 | `description` | 触发描述   | 1-1024字符，必须包含"做什么"和"何时触发"               |
 
 ### 可选字段
 
 | 字段            | 说明                                                                                        |
-| --------------- | ------------------------------------------------------------------------------------------- |
-| `allowed-tools` | 允许的工具列表，空格分隔字符串（实验性）                                                |
+|-----------------|---------------------------------------------------------------------------------------------|
+| `allowed-tools` | 允许的工具列表，空格分隔字符串（实验性）                                                    |
 | `license`       | 许可证名称，或指向随 skill 附带的许可证文件                                                 |
 | `compatibility` | 环境要求（目标产品、系统包、网络访问等），1-500 字符                                        |
 | `metadata`      | 自定义元数据（author、version、category、tags 等；可含 `supportedAgents` 声明兼容的 Agent） |
@@ -66,6 +66,19 @@ allowed-tools: Bash(python3:*) Read Write Grep
 工具名后面括号内列出允许的子命令（如 `Bash(python3:*)` 表示只允许 `python3` 子命令）。
 
 > ⚠️ 实验性字段：不同 Agent 对 `allowed-tools` 的支持程度不一，不写则工具默认全部可用。
+
+### 仅用户可调用（模型不得自动加载）
+
+需要「只能由用户显式调用、模型不得自动加载」的 skill，在 `metadata` 下写：
+
+```yaml
+metadata:
+  opencode/autoinvoke: false
+```
+
+OpenCode 据此把该 skill 从模型的可见列表里拿掉——skill 仍注册，仍可用 ID 显式加载（`@skill-id` 或斜杠命令）。OpenCode
+也接受顶层 `disable-model-invocation: true`（效果相同、且可移植到 Claude Code 等），但 `skills-ref` 的
+`agentskills validate` 不接受该字段，本仓统一用 `metadata.opencode/autoinvoke`，以保持校验通过。
 
 ---
 
@@ -107,8 +120,8 @@ allowed-tools: Bash(python3:*) Read Write Grep
 
 ## 渐进式披露机制
 
-| 阶段     | 加载内容                         | Token 成本        |
-| -------- | -------------------------------- | ----------------- |
+| 阶段 | 加载内容                         | Token 成本        |
+|------|----------------------------------|-------------------|
 | 发现 | 所有 Skill 的 name + description | ~100 tokens/Skill |
 | 激活 | 触发的 Skill 完整 SKILL.md       | ~5k tokens        |
 | 执行 | references 文档 + scripts 脚本   | 按需              |

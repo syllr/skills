@@ -76,13 +76,13 @@ SKILL，写入产物时连同这对标记删除。
 
 一个能力域一个 skill，同时管辖该域的说明书、资产与执行动作，并在自己的完成判定里保证三者一致。
 
-| Skill 模板                                                                    | 能力域               | 说明书                                       | 资产                                | 形态                                    |
-|-------------------------------------------------------------------------------|----------------------|----------------------------------------------|-------------------------------------|-----------------------------------------|
-| [inbound-ops](references/skill-templates/ops/inbound-ops/SKILL.template.md)   | L3 Inbound 契约      | docs/contracts/inbound/                      | —                                   | 多文件（SKILL + assets/）               |
-| [outbound-ops](references/skill-templates/ops/outbound-ops/SKILL.template.md) | L3 Outbound 外部集成 | docs/contracts/outbound/                     | —                                   | 多文件（SKILL + assets/）               |
-| [deploy-ops](references/skill-templates/ops/deploy-ops/SKILL.template.md)     | L3 部署              | docs/deployment/DEPLOYMENT.md                | docs/deployment/                    | 多文件（SKILL + assets/）               |
-| [test-ops](references/skill-templates/ops/test-ops/SKILL.template.md)         | 测试                 | docs/test/test-cases/ + docs/test/do-drafts/ | docs/test/test-records/（执行台账） | 多文件（SKILL + references/ + assets/） |
-| [tools-ops](references/skill-templates/ops/tools-ops/SKILL.template.md)       | 系统访问通道         | docs/tools/tools/<类>/<类>.md                | docs/tools/（Node CLI）             | 多文件（SKILL + assets/）               |
+| Skill 模板                                                                    | 能力域               | 说明书                              | 资产                                | 形态                                    |
+|-------------------------------------------------------------------------------|----------------------|-------------------------------------|-------------------------------------|-----------------------------------------|
+| [inbound-ops](references/skill-templates/ops/inbound-ops/SKILL.template.md)   | L3 Inbound 契约      | docs/contracts/inbound/             | —                                   | 多文件（SKILL + assets/）               |
+| [outbound-ops](references/skill-templates/ops/outbound-ops/SKILL.template.md) | L3 Outbound 外部集成 | docs/contracts/outbound/            | —                                   | 多文件（SKILL + assets/）               |
+| [deploy-ops](references/skill-templates/ops/deploy-ops/SKILL.template.md)     | L3 部署              | docs/deployment/DEPLOYMENT.md       | docs/deployment/                    | 多文件（SKILL + assets/）               |
+| [test-ops](references/skill-templates/ops/test-ops/SKILL.template.md)         | 测试                 | docs/test/test-cases/（正式用例卡） | docs/test/test-records/（执行台账） | 多文件（SKILL + references/ + assets/） |
+| [tools-ops](references/skill-templates/ops/tools-ops/SKILL.template.md)       | 系统访问通道         | docs/tools/tools/<类>/<类>.md       | docs/tools/（Node CLI）             | 多文件（SKILL + assets/）               |
 
 ### C · 项目级（共 2 个）
 
@@ -135,6 +135,6 @@ SKILL，写入产物时连同这对标记删除。
    `docs-domain` / `docs-structure` / `docs-changes` / `docs-draft` /
    `docs-topics`。
 2. B 类 · 文档 + 资产（5）：`inbound-ops`（L3 Inbound 接口 → 代码映射）、`outbound-ops`（L3 Outbound 接口 → client 代码映射）、
-   `deploy-ops`（L3 部署说明书 + 部署资产 + 部署执行）、`test-ops`（写卡规范 + 正式用例卡 + DoD 草稿 + 执行台账）、
+   `deploy-ops`（L3 部署说明书 + 部署资产 + 部署执行）、`test-ops`（写卡规范 + 正式用例卡 + 执行台账）、
    `tools-ops`（工具集 AGENTS.md + Node CLI + 调用）。
 3. C · 项目级（2）：`align-docs`（对齐 / 初始化 / 旧文档处置）、`code-guide`（给各子项目目录写 `AGENTS.md`）。
