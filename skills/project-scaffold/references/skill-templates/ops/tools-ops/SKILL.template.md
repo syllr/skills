@@ -13,10 +13,9 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 - 唯一入口：项目工具集（`docs/tools/`）的生成、维护与调用只经本 skill；AI 访问本系统任何资源也只经它。
 - 不做：用例本身的增删改执行与执行台账归 `test-ops` skill；跨文档对齐归 `align-docs` skill。
-- 同步：工具集文档分两级——`docs/tools/AGENTS.md`（总览：唯一通道 / 工具清单「工具 → 类 → 目录」/ 通用调用约定）与每类的
-  `docs/tools/tools/<类>/AGENTS.md`（该类工具一节：环境参数 / 工具参数 / 退出码 / 调用方式，同类工具共用一份）——由本 skill
-  生成与更新；
-  新增 / 改名 / 删除工具时同步（V2 会在 AI 读到该类 / 工具目录时按需加载对应 AGENTS.md）。
+- 同步：工具集文档按类落在 `docs/tools/tools/<类>/AGENTS.md`（固定 4 类、一类一份，同类工具共用：环境参数 / 工具参数 /
+  退出码 / 调用方式）
+  ——由本 skill 生成与更新；新增 / 改名 / 删除工具时同步（V2 会在 AI 读到该类 / 工具目录时按需加载对应 AGENTS.md）。
 - 维护流程（新增 / 演进工具、环境参数表与 DEPLOYMENT 对齐、共享模块与统一契约）写在本 skill，按项目实情落地到 `docs/tools/`。
 
 ## 分诊
@@ -30,56 +29,37 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 ## §1 工具集新增 / 删除 / 更新
 
-### 读取
+新增 / 删除 / 更新工具，先判断它属于哪一类——四类：① 页面调用型 `webmcp`（子工具在工程页面代码）；② inbound 接口型（来源
+`docs/contracts/inbound/`，inbound-ops）；③ outbound 接口型（来源 `docs/contracts/outbound/`，outbound-ops）；④ 数据 / 中间件直连型
+（DB / Redis / Kafka / ES / 对象存储 / 向量库等）。`tools/` 下固定这 4 个类目录、每类一份 `AGENTS.md`；某类未落地也保留目录与文件（内容写
+「本类未落地」）。
 
-- 先定类型：工具共四类——① 页面调用型 `webmcp`（子工具在工程页面代码）；② inbound 接口型（来源 `docs/contracts/inbound/`
-  ，inbound-ops）；
-  ③ outbound 接口型（来源 `docs/contracts/outbound/`，outbound-ops）；④ 数据 / 中间件直连型（DB / Redis / Kafka / ES /
-  对象存储 / 向量库等）。
-  系统有对应通道时才落地该类。
-- 按类型读该类维护文档——该类怎么读来源、怎么落地、怎么登记、怎么验证都在里面（重复也各自照写）：
-  [maintain-webmcp.md](references/maintain-webmcp.md) / [maintain-inbound.md](references/maintain-inbound.md) /
-  [maintain-outbound.md](references/maintain-outbound.md) / [maintain-middleware.md](references/maintain-middleware.md)。
-- 骨架：总览 [assets/AGENTS.template.md](assets/AGENTS.template.md)（实例 `docs/tools/AGENTS.md`
-  ）；每类 [section-webmcp.md](assets/section-webmcp.md) /
+判断完就一句：按该类维护流程做（读取 / 步骤 / 完成判据 / 边界都在里面）——
+
+| 类型                  | 维护流程                                                               |
+|-----------------------|------------------------------------------------------------------------|
+| ① 页面调用型          | [references/maintain-webmcp.md](references/maintain-webmcp.md)         |
+| ② inbound 接口型      | [references/maintain-inbound.md](references/maintain-inbound.md)       |
+| ③ outbound 接口型     | [references/maintain-outbound.md](references/maintain-outbound.md)     |
+| ④ 数据 / 中间件直连型 | [references/maintain-middleware.md](references/maintain-middleware.md) |
+
+- 统一契约见 [references/contract.md](references/contract.md)（每个工具都要满足）。
+- 产物骨架：[assets/section-webmcp.md](assets/section-webmcp.md) /
   [section-api.md](assets/section-api.md) / [section-outbound.md](assets/section-outbound.md) / [section-middleware.md](assets/section-middleware.md)
   （实例 `docs/tools/tools/<类>/AGENTS.md`，同类工具共用一份）。
-- 统一契约见 [references/contract.md](references/contract.md)（每个工具都要满足）。
-
-### 步骤
-
-先问用户本次要变更什么，确认后再做，不自动变更；然后按该工具类型，照对应的 `references/maintain-*.md` 走完（读来源 → 落地 /
-更新工具 →
-登记 AGENTS → 验证）；完成后报告变更清单（初始化 / 新增 / 修改 / 环境参数表对齐）。
-
-完成判据：按该类维护文档的判据——工具集完整、符合统一契约（[references/contract.md](references/contract.md)）、环境参数表与
-`docs/deployment/` 一一对应、总览清单与 `package.json` 的 `scripts`、`tools/<类>/<工具>/` 目录三者一致。
-
-### 联动
-
-- 环境与变量的权威在 `docs/deployment/`，环境清单或连接参数变化时由 `deploy-ops` skill 更新文档，本 skill 对齐 `AGENTS.md`
-  的
-  各工具环境参数表。
-- 契约来源由 `inbound-ops` / `outbound-ops` 维护；跨文档对齐归 `align-docs` skill。
-
-### 边界
-
-- 工具集只落在实例 `docs/tools/`，被测系统的访问一律经它；不预置工具脚本，按项目实情自行落地。
-- 只读红线：对账 / 校验类工具拒绝非只读操作。
 
 ## §2 工具集调用
 
 ### 读取
 
-- 工具集文档分两级：`docs/tools/AGENTS.md`（总览：唯一通道 / 工具清单「工具 → 类 → 目录」/ 通用调用约定）与该工具的
-  `docs/tools/tools/<类>/AGENTS.md`（环境参数 / 工具参数 / 退出码 / 调用方式）——调用所需的一切都在这两级里（连接信息与
-  DEPLOYMENT 解耦）。
-- 单工具的用法 / 子工具 / 序列参数：见其 `--help` 与 AGENTS.md 的对应一节。
+- 按目标定位工具类（页面 → `webmcp` / 本应用接口 → `inbound` / 外部系统 → `outbound` / 数据·中间件 → `middleware`），读该类的
+  `docs/tools/tools/<类>/AGENTS.md`——环境参数 / 工具参数 / 退出码 / 调用方式都在这份里（连接信息与 DEPLOYMENT 解耦）。
+- 单工具的用法 / 子工具 / 序列参数：见其 `--help` 与该 AGENTS.md 的对应一节。
 
 ### 步骤
 
 1. 确认环境：问用户连哪个环境（或按上下文确定）。
-2. 选工具与参数：从 AGENTS.md 的工具清单里选能触达目标的工具，按其「环境参数」表选中该环境那一行；要一次跑多个子工具 /
+2. 选工具与参数：在该类 AGENTS.md 里选能触达目标的工具，按其「环境参数」表选中该环境那一行；要一次跑多个子工具 /
    步骤时用它自己的
    序列参数编排（如 webmcp 的 `--seq '<JSON 数组>'`）。目标无可用工具 → 提示用户走「生成流程」或「更新流程」新增，禁止旁路（裸
    curl / 裸 SQL / 自行开浏览器 / 直连中间件 / 直调第三方）。
@@ -88,7 +68,7 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
    判断，工具只取证据。
 5. 报告：结论 + 所用环境 + 原始证据（JSON）。
 
-完成判据：连接参数取自 `docs/tools/AGENTS.md` 的对应环境参数表行；读 stdout 单行 JSON
+完成判据：连接参数取自该类 `docs/tools/tools/<类>/AGENTS.md` 的对应环境参数表行；读 stdout 单行 JSON
 并核对退出码；断言由 AI 判断、工具只取证据。
 
 ### 联动
@@ -97,4 +77,4 @@ curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三
 
 - 系统访问唯一入口（根 `AGENTS.md` §2.7）：对系统的任何访问都经本工具集，禁旁路（裸 curl / 裸 SQL / 自行开浏览器 /
   直连中间件 / 直调第三方）；缺工具走 §1 新增。
-- 断言由 AI 判断，工具只取证据；只读红线：对账 / 校验类工具拒绝非只读操作。
+- 断言由 AI 判断，工具只取证据；默认只读，写加 `--write` 才允许（写须用户授权）。
