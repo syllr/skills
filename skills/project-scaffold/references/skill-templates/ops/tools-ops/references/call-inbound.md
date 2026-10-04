@@ -57,4 +57,5 @@ npm run api -- --operation <operationId> [--body '{…}' | --form k=v] <环境�
 
 ## 边界
 
-- 写 / 变更类调用须先得到用户授权；唯一入口 / 禁旁路见 §2；目标无可用工具 → 走 §1 新增（骨架 `assets/tool-inbound.mjs`）。
+- 写 / 变更类调用须先得到用户授权；唯一入口 / 禁旁路见「分诊」；目标无可用工具 → 走「工具集新增 / 删除 / 更新」流程（骨架
+  `assets/tool-inbound.mjs`）。

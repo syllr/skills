@@ -10,7 +10,7 @@ client 代码」的映射——登记本应用调用了哪些外部系统、每�
 client 代码。
 
 - 负责 `docs/contracts/outbound/`（每应用一份）的生成与维护；数据库、对象存储、缓存等基础设施不算外部集成。
-- Inbound 半边（对外接口）归 `inbound-ops` skill；跨文档编排归 `align-docs` skill。
+- Inbound 半边（对外接口）归 `inbound-ops` skill。
 
 ## 读取
 

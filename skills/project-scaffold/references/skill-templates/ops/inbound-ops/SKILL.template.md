@@ -9,7 +9,7 @@ description: L3 Inbound 契约域唯一入口——为每个应用生成 / 维�
 代码」的映射——只登记接口与代码位置，字段 / 校验 / 错误码等细节现读代码。
 
 - 负责 `docs/contracts/inbound/`（每应用一份）的生成与维护。
-- Outbound 半边（外部集成）归 `outbound-ops` skill；跨文档编排归 `align-docs` skill。
+- Outbound 半边（外部集成）归 `outbound-ops` skill。
 
 ## 读取
 
