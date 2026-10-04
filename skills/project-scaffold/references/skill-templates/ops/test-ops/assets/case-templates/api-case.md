@@ -4,6 +4,8 @@
 
 - 接口：`<METHOD> <path>`（operationId `<xxx>`）
 - 业务对象：<领域实体>（Action/Event，或「查询，无 Action/Event」）
+- 工具：全部经 `tools-ops` skill——接口调用走该 skill 的本应用接口类工具，对账与清理走该 skill 的中间件类工具（命令形态
+  `npm run <工具> -- …`；清单与环境参数见 `tools-ops` skill 的类文档，用法见 `--help`）
 
 ---
 
@@ -13,13 +15,13 @@
 
 ```bash
 # 登录 → 取 $.data.accessToken 注入 API_TOKEN
-npm run api -- --operation authLogin --body '{"username":"<账号>","password":"<凭据>"}'
+npm run <接口工具> -- --operation authLogin --body '{"username":"<账号>","password":"<凭据>"}'
 ```
 
 ### 执行流程
 
 ```bash
-npm run api -- --operation <operationId> --path '{"<path参数>":"<值>"}' --body '{"<业务字段>":"<值>", ...}'
+npm run <接口工具> -- --operation <operationId> --path <k>=<v> --body '{"<业务字段>":"<值>", ...}'
 ```
 
 ### 期望结果
@@ -29,12 +31,12 @@ npm run api -- --operation <operationId> --path '{"<path参数>":"<值>"}' --bod
 ### 数据对账
 
 ```bash
-npm run db -- "SELECT <列> FROM <表> WHERE <标识> = '<值>'"
+npm run <中间件工具> -- "<SELECT 查询>"
 # → 期望：<结果>
 ```
 
 ### 数据清理
 
-- 正常（接口可用）：`npm run api -- --operation <删除类> --path '{"<标识>":"<值>"}'`
-- 兜底 1（接口失败/被测不可用）：`npm run db -- --cleanup <标识值>`
+- 正常（接口可用）：`npm run <接口工具> -- --operation <删除类> --path <标识>=<值>`
+- 兜底 1（接口失败/被测不可用）：`npm run <中间件工具> -- "<清理语句>" --write`（写操作；所需授权由执行流程在开跑前一次拿齐）
 - 兜底 2（外部依赖残留）：<以项目实际数据落位为准的清理命令>

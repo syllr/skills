@@ -4,6 +4,8 @@
 
 - 用户故事场景：<场景名>（BUSINESS.md §x）
 - 主入口：`{WEBMCP_URL}/<页面路径>`
+- 工具：全部经 `tools-ops` skill——页面链路走该 skill 的页面调用型工具，对账与清理走该 skill 的中间件类工具（命令形态
+  `npm run <工具> -- …`；清单与环境参数见 `tools-ops` skill 的类文档，用法见 `--help`）
 
 场景声明（Gherkin）：
 
@@ -32,14 +34,14 @@
 
 ```bash
 # 登录建立会话并停在被测页（--path 指定页面路径，host 走该类文档「环境参数」表）
-npm run webmcp -- --path <页面路径> --seq '[{"name":"login","args":{"username":"<账号>","password":"<凭据>"}}]'
+npm run <页面工具> -- --path <页面路径> --seq '[{"name":"login","args":{"username":"<账号>","password":"<凭据>"}}]'
 ```
 
 ### 执行流程
 
 ```bash
 # <被测工具调用>，取返回 <标识> 作 <占位>
-npm run webmcp -- --path <页面路径> --seq '[{"name":"<工具名>","args":{<页面表单参数，唯一后缀>}}]'
+npm run <页面工具> -- --path <页面路径> --seq '[{"name":"<工具名>","args":{<页面表单参数，唯一后缀>}}]'
 ```
 
 （可选）执行蓝图：mermaid 时序图（①前置→②被测→③异步→④对账）
@@ -47,7 +49,7 @@ npm run webmcp -- --path <页面路径> --seq '[{"name":"<工具名>","args":{<�
 ### 期望结果
 
 - <旅程断言>
-- 补充断言：`toHaveScreenshot` 截图基准
+- 补充断言：页面截图基准（由页面调用型工具产出，该项目支持时用）
 
 ### 数据对账
 
@@ -58,5 +60,5 @@ npm run webmcp -- --path <页面路径> --seq '[{"name":"<工具名>","args":{<�
 ### 数据清理
 
 - 正常（接口可用）：<删除类命令>
-- 兜底 1（接口失败/被测不可用）：`npm run db -- --cleanup <标识值>`
+- 兜底 1（接口失败/被测不可用）：`npm run <中间件工具> -- "<清理语句>" --write`（写操作；所需授权由执行流程在开跑前一次拿齐）
 - 兜底 2（外部依赖残留）：<以项目实际数据落位为准>
