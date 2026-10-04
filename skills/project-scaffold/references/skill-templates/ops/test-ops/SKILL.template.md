@@ -13,7 +13,7 @@ AI 既是测试执行器，也是用例库的维护者。本 skill
 执行都只能经本 skill——AI 不得自动创建任何用例，用例卡的新增与删除由用户手动配置（根 AGENTS.md §2.6 用例唯一入口）。
 
 - 自持：用例卡结构、写卡规范（[references/case-writing.md](references/case-writing.md)、`assets/case-templates/`）与执行台账（
-  `docs/test/test-records/`）；资产结构与旧资产检出见 [references/test-assets.md](references/test-assets.md)。
+  `docs/test/test-records/`）；资产布局与旧资产清理见 [references/test-assets.md](references/test-assets.md)。
 - 不做：项目工具集（`docs/tools/`）的生成与调用归 `tools-ops` skill；跨文档对齐归 `align-docs` skill；改动交付前的 DoD
   验证由 AI 自持（根 AGENTS.md §2.7），不经本 skill。
 
@@ -30,19 +30,18 @@ AI 既是测试执行器，也是用例库的维护者。本 skill
 
 ### 读取
 
-- 读 [references/test-assets.md](references/test-assets.md) 确认 `docs/test/` 的预期资产集与本次动作的落点位置。
-- 读 `docs/L1/BUSINESS.md` 的用户故事与旅程、`docs/L2/domain/` 的领域模型，确认被测场景与领域实体。
+- 读 [references/test-assets.md](references/test-assets.md) 确认用例卡与执行台账的落点与命名规则。
+- 按本次执行范围，读范围内用例对应的用户故事（`docs/L1/BUSINESS.md`）与领域实体（`docs/L2/domain/`）口径。
 - 读 `docs/contracts/inbound/`（对外接口的接口 → 代码映射，断言以代码为准）、`docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵与
-  §6/§7 变量；工具清单与说明见 `docs/tools/tools/<类>/<类>.md`。
-- 读本 skill 与 [references/case-writing.md](references/case-writing.md)，确认写卡规范与机检口径。
+  §6/§7 变量；工具清单与说明见 `tools-ops` skill。
 - 源缺失或冲突时先核实，不臆造接口、实体或环境；缺什么报什么，不自行补默认值。
 
 ### 步骤
 
-1. 环境确认：读 DEPLOYMENT §2.1 环境矩阵，列出可用环境，问用户本次在哪个环境跑——确认该环境（未确认不执行）；本次执行的所有
+1. 环境确认：读 `docs/deployment/DEPLOYMENT.md` §2.1 环境矩阵，列出可用环境，问用户本次在哪个环境跑——确认该环境（未确认不执行）；本次执行的所有
    工具调用都按该类文档「环境参数」表选中该环境那一行拼连接参数。
-2. 范围确认：扫描 `docs/test/test-cases/` 用例目录（api/<领域实体>/ 与 flow/<用户故事场景>
-   /），列出可用用例，问用户执行范围（全部 / 某领域目录 / 指定 <文件> 的 caseN / 某一批用例）——未确认不执行
+2. 范围确认：问用户本次执行范围（某场景 / 某领域目录 / 指定 <文件> 的 caseN / 某一批）——用户不确定时列出
+   `docs/test/test-cases/`（api/<领域实体>/ 与 flow/<用户故事场景>/）下的可用用例；未确认不执行
 3. 排序分析：通读范围内用例，按前置条件做依赖分析确定执行顺序——被依赖的用例先行（如查询类用例的前置通常是新建业务对象，新建用例必须先跑）；上游失败是否阻塞下游具体问题具体分析（结构性前置缺失会阻塞，字段级差异一般不阻塞）
 4. 策略确认：问用户失败策略——fail-fast（遇失败即停下定位）或全量跑完再逐个定位
 5. 部署判断：按范围内用例涉及的模块推断需部署的应用（前端/后端），与用户确认
@@ -58,11 +57,10 @@ AI 既是测试执行器，也是用例库的维护者。本 skill
 9. 汇报：pass/fail 清单 + 对账证据 + 测试记录问题清单（按类型分组）+ 失败定位
 
 > 环境纪律：一次执行绑定一个环境（步骤 1 确认），每条工具命令都按该类文档「环境参数」表选中该环境那一行拼连接参数；需在多环境跑则按环境分别起执行。环境名以
-> DEPLOYMENT §2.1 为准。
+> `DEPLOYMENT.md` §2.1 为准。
 
-完成判据：全部命令走 `docs/tools/` 的工具通道（api / db / webmcp / ragflow），无 curl、无裸
-SQL、无裸命令；断言三源可回溯（状态码 / 字段 / 错误码以接口代码为准，
-经 `inbound-ops` 的接口 → 代码映射定位，实测校准；依据失效交 `inbound-ops` 修映射，不在本 skill
+完成判据：全部命令走 `tools-ops` skill 的工具通道，无 curl、无裸命令；断言三源可回溯（状态码 / 字段 / 错误码以接口代码为准，
+经 `docs/contracts/inbound/` 的接口 → 代码映射定位，实测校准；依据失效交 `inbound-ops` 修映射，不在本 skill
 改代码）；造数据的
 Case 含三态清理，环境 host 不写死（走该类文档「环境参数」表）；执行的被测版本已绑定，每条问题有证据与状态枚举，台账只增不删。
 
@@ -96,9 +94,9 @@ Case 含三态清理，环境 host 不写死（走该类文档「环境参数」
 
 ### 联动
 
-- 工具用法归 `tools-ops` skill，用例访问被测系统一律走 `docs/tools/` 工具通道。
+- 工具用法归 `tools-ops` skill，用例访问被测系统一律走该 skill 的工具通道。
 - 环境权威在 `DEPLOYMENT.md`，按需部署由 `deploy-ops` skill 执行。
-- 断言基准取自 `inbound-ops` 维护的契约。
+- 断言基准取自 `docs/contracts/inbound/` 的接口 → 代码映射。
 
 ### 边界
 
@@ -111,15 +109,15 @@ Case 含三态清理，环境 host 不写死（走该类文档「环境参数」
 
 - 读 `assets/case-templates/` 与 [references/case-writing.md](references/case-writing.md)
   ；读 [references/test-assets.md](references/test-assets.md) §1 确认落点。
-- 读 `docs/L1/BUSINESS.md` 的用户故事与 `docs/L2/domain/` 的领域模型，确定用例归属目录。
+- 按用户指定的场景 / 实体，读 `docs/L1/BUSINESS.md` 的对应用户故事或 `docs/L2/domain/` 的对应实体，确定归属目录。
 - 用户要「DoD 持久化」时，读上下文里的 DoD 信息——本会话刚跑的 DoD 验证、`docs/changes/` 变更单的 §4 验收、或用户直接提供；
   三处都没有就问用户，不臆造。
 
 ### 步骤
 
 1. 先读 `assets/case-templates/` 与 [references/case-writing.md](references/case-writing.md)
-   ，再扫目标位置判断有无既有用例卡或同定位旧产物——正式用例在 `docs/test/test-cases/`（api/<领域实体>/ 与 flow/<
-   用户故事场景> /）。
+   ；只在用户指定的实体 / 场景目录内确认是否已有覆盖同一场景或分支的卡（不做全库扫描）——正式用例在
+   `docs/test/test-cases/`（api/<领域实体>/ 与 flow/<用户故事场景>/）。
 2. 判来源：要「DoD 持久化」就按第 1 步读取的 DoD 信息转卡（见下映射），并定位它覆盖的场景 / 分支属哪个实体或用户故事场景；
    其它情况按用户给出的信息写卡。
 3. 增删一律由用户显式指定：无既有用例 → 按卡模板新增（头 + Case N 五段）；有既有用例 → 按
@@ -142,19 +140,21 @@ DoD → 卡映射：
 DoD 只有「目标 / 操作 / 期望 / 证据」四要素，正式卡是五段（前置 / 执行 / 期望 / 数据对账 / 数据清理）；转换时按
 [references/case-writing.md](references/case-writing.md) 补齐 DoD 缺的段，尤其造数据卡必含三态清理。
 
-完成判据：`docs/test/` 磁盘内容与 [references/test-assets.md](references/test-assets.md) §1
-预期资产集逐项对应，无缺失项、已删除的领域实体或用户故事场景无残留目录；每张用例卡为「头 + Case N」结构且五段齐全，卡内无占位参数描述、无指向已删文档的
-§ 引用；卡文件落在对应实体或场景目录，目录名与 `docs/L2/domain/` 的实体名或 `docs/L1/BUSINESS.md` 的场景名一致。
+完成判据：每张用例卡为「头 + Case N」结构且五段齐全，卡内无占位参数描述、无指向已删文档的 §
+引用；卡文件落在对应实体或场景目录，目录名与 `docs/L2/domain/` 的实体名或 `docs/L1/BUSINESS.md`
+的场景名一致；已删除的实体 /
+场景无残留用例目录。
 
 ### 联动
 
 - 用例卡的增删改执行与写卡规范由本 skill 自持；`docs/test/`
-  资产结构与旧资产检出见 [references/test-assets.md](references/test-assets.md)。
-- 断言基准取自 `inbound-ops` 维护的契约。
+  资产布局与旧资产清理见 [references/test-assets.md](references/test-assets.md)。
+- 断言基准取自 `docs/contracts/inbound/` 的接口 → 代码映射。
 
 ### 边界
 
 - 测试用例唯一入口：用例卡结构与写卡规范自持，新增 / 更新 / 删除 / 执行一律经本 skill，AI 不得自动创建任何用例。
+- 用例一个一个新增、由用户指定目标场景或接口；不扫描用例库批量生成，也没有「应当包含哪些用例」的清单与缺失补全。
 - 本 skill 只由用户显式调起（斜杠命令或明确指令）；用例卡的新增与删除由用户手动配置，AI 不得自行新建或删除用例卡。
 - DoD 持久化同样只由用户显式调起——AI 不得因刚跑完 DoD 就自动落卡、也不得自行把 DoD 升格为用例卡（根 AGENTS.md §2.7）。
 - 本体系无单元测试（根 AGENTS.md §2.7）：本 skill 不生成、不维护任何形式的单元测试；发现项目内已有的单元测试随所在变更一并删除。
