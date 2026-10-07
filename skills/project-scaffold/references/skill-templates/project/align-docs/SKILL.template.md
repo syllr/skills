@@ -39,7 +39,7 @@ skill 跑完成判定（全量对齐）。每份文档读谁由该 skill 自己�
 | L1 | `docs/L1/BUSINESS.md`                                         | 业务全景（角色 / 主线 / 模式 / 业务规则）、产品能力、用户故事与旅程                  | docs-business     |
 | L2 | `docs/L2/domain/`（`DOMAIN-MAP.md` + 每域 `{域}.md`）         | 业务域、聚合实体、领域操作、状态机、领域事件                                         | docs-domain       |
 | L2 | `docs/L2/ARCHITECTURE.md`                                     | 应用划分、按应用的技术选型与版本、模块划分、技术分层、存储选型、基础设施、非功能约束 | docs-architecture |
-| L2 | `docs/L2/data-model/`（`DATA-MODEL-MAP.md` + 每域 `{域}.md`） | 数据模型与数据资产（模型 ↔ 域 ↔ 聚合）、存储与拓扑、锚定与关系、数据全景、数据流转   | docs-data-model   |
+| L2 | `docs/L2/data-model/`（`DATA-MODEL-MAP.md` + 每域 `{域}.md`） | 数据模型与数据资产（模型 ↔ 域 ↔ 聚合）、存储与拓扑、数据全景、数据流转               | docs-data-model   |
 | L3 | `docs/L3/STRUCTURE.md`                                        | 目录结构与文档 ↔ 代码映射                                                            | docs-structure    |
 
 ### 链外
