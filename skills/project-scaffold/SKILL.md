@@ -64,7 +64,7 @@ SKILL，写入产物时连同这对标记删除。
 |------------------------------------------------------------------------------------------|-------------------------|
 | [docs-business](references/skill-templates/docs/docs-business/SKILL.template.md)         | docs/L1/BUSINESS.md     |
 | [docs-architecture](references/skill-templates/docs/docs-architecture/SKILL.template.md) | docs/L2/ARCHITECTURE.md |
-| [docs-data-model](references/skill-templates/docs/docs-data-model/SKILL.template.md)     | docs/L2/DATA-MODEL.md   |
+| [docs-data-model](references/skill-templates/docs/docs-data-model/SKILL.template.md)     | docs/L2/data-model/     |
 | [docs-domain](references/skill-templates/docs/docs-domain/SKILL.template.md)             | docs/L2/domain/         |
 | [docs-structure](references/skill-templates/docs/docs-structure/SKILL.template.md)       | docs/L3/STRUCTURE.md    |
 | [docs-changes](references/skill-templates/docs/docs-changes/SKILL.template.md)           | docs/changes/           |

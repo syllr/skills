@@ -24,7 +24,7 @@ L3 → L2 → L1（任何改动都先落 L3 的目录与文件，再逐层向上
     │   └── BUSINESS.md      业务流程（业务全景 + 需求）
     ├── L2/                  架构
     │   ├── ARCHITECTURE.md               架构
-    │   ├── DATA-MODEL.md                 数据建模
+    │   ├── data-model/      数据模型：DATA-MODEL-MAP.md + 一域一文
     │   └── domain/          领域模型：DOMAIN-MAP.md + 一域一文
     ├── L3/                  事实层（变更起点）
     │   └── STRUCTURE.md     目录结构与文档 ↔ 代码映射
@@ -132,7 +132,7 @@ Skill 分三类，命名即类型，类型后标注链内 / 链外归属：
 |-------------------|--------|------------------------------------------------------|-------------------------------------|
 | docs-business     | A·链内 | docs/L1/BUSINESS.md                                  | —                                   |
 | docs-architecture | A·链内 | docs/L2/ARCHITECTURE.md                              | —                                   |
-| docs-data-model   | A·链内 | docs/L2/DATA-MODEL.md                                | —                                   |
+| docs-data-model   | A·链内 | docs/L2/data-model/                                  | —                                   |
 | docs-domain       | A·链内 | docs/L2/domain/                                      | —                                   |
 | docs-structure    | A·链内 | docs/L3/STRUCTURE.md                                 | —                                   |
 | docs-changes      | A·链外 | docs/changes/                                        | —                                   |

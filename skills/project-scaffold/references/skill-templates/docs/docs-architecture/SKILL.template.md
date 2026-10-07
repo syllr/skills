@@ -22,7 +22,7 @@ description: 维护 L2 架构文档 docs/L2/ARCHITECTURE.md 的 skill——读�
 
 1. 读取现有 docs/L2/ARCHITECTURE.md，提取仍然有效且有来源支撑的信息。
 2. 读取 docs/L1/BUSINESS.md 的产品能力图与能力状态、docs/L2/domain/ 各域文档的领域模型，以及
-   docs/L2/DATA-MODEL.md 的存储形态——应用划分须同时满足三者。
+   docs/L2/data-model/ 的存储形态——应用划分须同时满足三者。
 3. 读取技术栈相关代码事实，为每个应用核对选型与版本。
 4. 更新时读取发生变化的部署、集成和代码事实，发现来源缺失或冲突时先核实，不臆造。
 5. 跨文档生成顺序归 `align-docs` skill 编排，本 skill 只处理管辖文档。
@@ -47,7 +47,7 @@ description: 维护 L2 架构文档 docs/L2/ARCHITECTURE.md 的 skill——读�
 - docs/L1/BUSINESS.md 的产品能力与状态以产品能力架构图为准；能力增删时同步应用模块，标为「待规划」的能力不增加应用模块，文档由
   docs-business skill 维护。
 - docs/L2/domain/ 各域文档承载领域聚合与能力到聚合的映射，由 docs-domain skill 维护，本文档只引用不复制。
-- docs/L2/DATA-MODEL.md 承载领域到存储的映射与表或集合级物理形态，由 docs-data-model skill
+- docs/L2/data-model/ 承载领域到存储的映射与表或集合级物理形态，由 docs-data-model skill
   维护；本文档承载存储选型理由与容量性能预期。
 - docs/deployment/DEPLOYMENT.md 的部署单元来自应用划分，应用增减或技术栈变化时由 deploy-ops skill 同步部署文档。
 - 接口契约归 docs/contracts/inbound/ 与 docs/contracts/outbound/，由 inbound-ops 与 outbound-ops skill 维护。
@@ -61,7 +61,7 @@ description: 维护 L2 架构文档 docs/L2/ARCHITECTURE.md 的 skill——读�
   的章节编号、标题层级和固定结构一致，逐节按各节生成提示核对（文档描述、系统上下文、应用划分、技术分层、各应用章、模块划分、基础设施与外部依赖、非功能约束），且没有模板未定义的内容。
 - 应用划分图与技术分层图符合 `c4-container-diagram` skill 的形态与编码要求。
 - 跨节与跨文档一致：应用划分与应用章一一对应（数量与命名一致），模块的归属应用取自应用划分、对应业务域取自 `docs/L2/domain/`
-  ，技术分层图与基础设施表的组件一致，存储类依赖与 `docs/L2/DATA-MODEL.md` 的存储拓扑不冲突，「待规划」能力没有对应应用模块或层节点。
+  ，技术分层图与基础设施表的组件一致，存储类依赖与 `docs/L2/data-model/` 的存储拓扑不冲突，「待规划」能力没有对应应用模块或层节点。
 - 每项技术选型、版本与非功能约束都能追溯到代码或变更记录等来源，无来源缺失或臆造。
 
 ## 边界
