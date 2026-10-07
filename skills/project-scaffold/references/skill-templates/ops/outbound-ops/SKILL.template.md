@@ -10,6 +10,8 @@ client 代码」的映射——登记本应用调用了哪些外部系统、每�
 client 代码。
 
 - 负责 `docs/contracts/outbound/`（每应用一份）的生成与维护；数据库、对象存储、缓存等基础设施不算外部集成。
+- 目标文档结构、各节内容约定与写作规范以 [assets/CONTRACT.template.md](assets/CONTRACT.template.md) 为准，本 skill
+  不另行维护章节骨架或逐节规则；生成或更新前必须先读取该文件，并严格沿用其中的章节编号、标题层级、结构和生成提示。
 - Inbound 半边（对外接口）归 `inbound-ops` skill。
 
 ## 读取
@@ -25,9 +27,8 @@ client 代码。
 
 1. 确定要覆盖的应用：应用清单见 `docs-architecture`。
 2. 每个应用在 `docs/contracts/outbound/<应用>.md`
-   建一份集成文档（按 [assets/CONTRACT.template.md](assets/CONTRACT.template.md)）： **按该应用调用的外部系统分章**
-   ，每章分两个子小节——`Client 与调用方式`（解析方式）与 `接口列表`（每接口给 方法签名 + client 代码位置），让 AI 据此去读
-   client 代码解析。
+   按 [assets/CONTRACT.template.md](assets/CONTRACT.template.md) 建一份集成文档；分章方式、接口列法与各节内容约定以模板的章节编号、标题层级与生成提示为准，本
+   skill 不重复。
 3. 接口或 client 代码位置变化时更新对应应用文档；外部系统 / 接口删除时清理文件与引用，检查悬空引用与残留。
 4. 有既有产物时读现有文档，提取仍有效的信息，按该形态重建。
 5. 报告变更清单。
@@ -40,9 +41,8 @@ client 代码。
 
 ## 完成判定
 
-- 每个被覆盖应用有一份 `docs/contracts/outbound/<应用>.md`；正文是「接口 → client 代码位置」映射，不复述字段 / 接入细节 /
-  错误码（以 client 代码为准）。
-- 按该应用调用的外部系统分章，每章含「Client 与调用方式」「接口列表」两个子小节；接口每行给 方法签名 + client 代码位置。
+- 每个被覆盖应用有一份 `docs/contracts/outbound/<应用>.md`
+  ，逐节按 [assets/CONTRACT.template.md](assets/CONTRACT.template.md) 的生成提示核对，且没有模板未定义的内容。
 - 文档与 client 代码一致，无悬空引用；外部系统 / 接口删除后无残留文档。
 
 ## 边界

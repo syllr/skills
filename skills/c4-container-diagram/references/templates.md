@@ -194,7 +194,7 @@ classes: {
 ```diff
 - 整体架构: { grid-rows: 1; grid-columns: 1 }     # §5.1：单列纵向堆叠
 + 整体: { grid-columns: 2; grid-rows: 1; grid-gap: 16 }   # 左主体 + 右贯穿竖条（3 栏 = 左右双竖条）
-+ 左主体: { grid-rows: 1; grid-columns: 1; grid-gap: 24 } # 内部复用 §5.1 各层结构
++ 左主体: { label: ""; grid-rows: 1; grid-columns: 1; grid-gap: 24 } # 内部复用 §5.1 各层结构；纯布局壳，label 置空
 + 右侧贯穿竖条: { grid-columns: 1 }                # 不设 width，ELK 自动包裹居中（layout-and-grid §6.13 B）
 +   r1: { label: "日志记录"; height: 133 }         # 子容器设 height 不设 width（(600−120−2×40)/3）
 ```
@@ -234,6 +234,10 @@ classes: {
     m2: { width: 200; height: 50; class: module }
   }
 }
+
+classes: {
+  module: { style: { border-radius: 8; font-color: "#1e293b"; stroke-width: 1 } }
+}
 ```
 
 2×2 嵌套（图1）：父容器 `grid-columns: 2` 分 2 个分区，每个分区再 `grid-columns: 2` 放 4 个子容器。各分区子容器 width 一致（layout-and-grid §6.11），父容器 width 按 layout-and-grid §6.13 公式算。
@@ -252,6 +256,7 @@ vars: { d2-config: { layout-engine: elk } }
   grid-rows: 1
   grid-columns: 1
   grid-gap: 24
+  style.border-radius: 16
   入口层: {
     width: 1000; grid-columns: 3; grid-gap: 12; class: module
     h1: { width: 317; height: 60; class: module }
@@ -268,6 +273,10 @@ vars: { d2-config: { layout-engine: elk } }
     s1: { width: 482; height: 60; class: module }
     s2: { width: 482; height: 60; class: module }
   }
+}
+
+classes: {
+  module: { style: { border-radius: 8; font-color: "#1e293b"; stroke-width: 1 } }
 }
 ```
 
@@ -289,7 +298,8 @@ vars: { d2-config: { layout-engine: elk } }
 >
 > 多 class 安全边界（铁律 §4.8 第 5 条的精确化）：多 class 合法当且仅当 `module` 类不携带 fill/stroke 填充类的冲突样式（见 c4-container-spec §4.8）。若多个类的 `fill`/`stroke` 各自独立且叠加（颜色由哪个 class 决定不明确），才触发 int64 溢出。本项目约定：`module` 只带 `border-radius`+`stroke-width`，fill 由热力类（`core`/`support`/`edge`）或节点 `style.fill` 提供，状态类 `planned` 只带 `stroke-dash`。这样多 class 安全。⚠️ 不要给 2 个以上 class 各自写独立的 `fill`（会溢出，见 d2-syntax-cheatsheet §6.16）。
 >
-> 图例：图底部放图例容器（线型表 + 颜色表 + 入口说明），读者一眼读懂状态与优先级。SSOT：状态与优先级是产品层信息，唯一事实源在 BUSINESS §3（架构图 + 能力清单表），其它文档引用不复制。
+> 图例：图底部放图例容器（线型表 + 颜色表 + 入口说明），读者一眼读懂状态与优先级。SSOT：状态与优先级是产品层信息，唯一事实源在
+> BUSINESS §3（架构图），其它文档引用不复制。
 >
 > 布局：符合 [§5.4 左右分栏 + 贯穿竖条](#54-左右分栏--贯穿竖条)——外层 `grid-columns: 2`（左主体 + 右竖条）；左主体 `grid-rows:1; grid-columns:1` 纵向堆叠入口层+业务能力层；右竖条是共享业务服务层（不设 width，ELK 自动包裹居中）。业务能力层内可再分能力域分区（网格嵌套，见 §5.5），各分区内子容器 width 按 layout-and-grid §6.13 公式算。
 
@@ -314,16 +324,19 @@ vars: {
   style.border-radius: 16
 
   左主体: {
+    label: ""    # 纯布局壳（入口层 + 业务能力层纵向堆叠），label 置空以免 key 被当标题画出来
     grid-rows: 1; grid-columns: 1; grid-gap: 24
     style.font-color: "#1e293b"
     style.border-radius: 12
 
     入口层: {
-      # 入口层 · 仅示意触点，非能力，无状态与热力维度，白底实线
+      # 入口层 · 用户触点/终端入口，非能力，无状态与热力维度，白底实线
       label: "① 入口层\n（前台 · 用户触点）"
-      width: 1000; grid-columns: 2; grid-gap: 12; style.fill: "#dbeafe"; style.font-color: "#1e293b"; style.stroke: "#2563eb"; style.border-radius: 12
-      h1: { label: "审计工作台"; width: 482; height: 60; class: module }
-      h2: { label: "审计项目"; width: 482; height: 60; class: module }
+      width: 1000; grid-columns: 4; grid-gap: 12; style.fill: "#dbeafe"; style.font-color: "#1e293b"; style.stroke: "#2563eb"; style.border-radius: 12
+      h1: { label: "PC Web 门户"; width: 235; height: 60; class: module; style.fill: "#ffffff" }
+      h2: { label: "移动端 / 小程序"; width: 235; height: 60; class: module; style.fill: "#ffffff" }
+      h3: { label: "对话助手"; width: 235; height: 60; class: module; style.fill: "#ffffff" }
+      h4: { label: "开放 API"; width: 235; height: 60; class: module; style.fill: "#ffffff" }
     }
 
     业务能力层: {
@@ -359,7 +372,8 @@ vars: {
 
 classes: {
   # 样式类 · 中文注释：状态与热力叠加（各状态类均含 border-radius，保证多 class 组合节点仍有圆角）
-  module: { style: { border-radius: 6; fill: "#ffffff"; stroke: "#1e40af"; font-color: "#1e293b"; stroke-width: 1 } }
+  # module 只带形状（圆角 / 描边宽），不带 fill / stroke / font-color——颜色由热力类或节点 style.fill 提供，多 class 叠加才安全
+  module: { style: { border-radius: 6; stroke-width: 1 } }
   planned: { style: { stroke-dash: 4; stroke: "#94a3b8"; border-radius: 6 } }
   core: { style: { fill: "#dc2626"; font-color: "#ffffff"; border-radius: 6 } }
   support: { style: { fill: "#f59e0b"; font-color: "#ffffff"; border-radius: 6 } }
@@ -367,4 +381,8 @@ classes: {
 }
 ```
 
-> ⚠️ 复制时注意：`审计项目管理` 分区内的 9 个能力（c1~c9）只是示例，替换为项目自己的能力清单；每个能力节点的 `[core; planned]` / `[support; planned]` 类按实际优先级与状态调整（核心=红 core / 支撑=橙 support / 边缘=灰 edge；已实现去掉 `planned`）。节点数要与 BUSINESS §3.2 能力清单表行数一一对应（一个能力一行，一能力多 Action 在表格里顿号并列）。
+> ⚠️ 复制时注意：入口层的 4 个节点（h1~h4）是用户触点 / 终端入口的形态示例（PC Web 门户 / 移动端 / 对话助手 / 开放
+> API），替换为项目实际的入口触点，入口层不填能力、不挂状态与热力类。`审计项目管理` 分区内的 9 个能力（c1~
+> c9）只是示例，替换为项目自己的能力清单；每个能力节点的 `[core; planned]` / `[support; planned]` 类按实际优先级与状态调整（核心=红
+> core / 支撑=橙 support / 边缘=灰 edge；已实现去掉 `planned`）。节点按项目实际能力增删，能力与领域操作 Action 的映射归
+> docs-domain。

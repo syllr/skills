@@ -14,7 +14,8 @@ description: 维护子项目目录下的 AGENTS.md，内容分概览 / 代码地
 - 更新：扫描项目内已有的子项目 `AGENTS.md`（根 `AGENTS.md` 除外），逐个更新。
 - 根目录不算子项目：根 `AGENTS.md` 是项目宪法（归 project-scaffold）。
 - 每个目录的规范不同，每份 AGENTS.md 只写该目录自身的约定。
-- 目标产物结构以 [assets/AGENTS.template.md](assets/AGENTS.template.md) 为准，本 skill 不另行维护章节骨架。
+- 目标产物结构、各节内容约定与写作规范以 [assets/AGENTS.template.md](assets/AGENTS.template.md) 为准，本 skill
+  不另行维护章节骨架或逐节规则；生成或更新前必须先读取该文件，并严格沿用其中的章节编号、标题层级、结构和生成提示。
 - 生成内容用 `<!-- code-guide:begin -->` 与 `<!-- code-guide:end -->` 包裹，标明由本 skill 生成；标记之外是用户自行维护的内容，本
   skill 一律不动。
 - 分流：用户要写的内容属于模板章节（概览 / 代码地图 / 约定 / 红线）就按模板写进标记块；不属于模板覆盖的内容则留在标记外，交用户自行维护。
@@ -43,12 +44,9 @@ description: 维护子项目目录下的 AGENTS.md，内容分概览 / 代码地
 ## 完成判定
 
 - 新增时目标目录下的 AGENTS.md 已生成；更新时项目内每个子项目 AGENTS.md 都已更新。
-- 每份 AGENTS.md 结构符合 [assets/AGENTS.template.md](assets/AGENTS.template.md)，覆盖概览 / 代码地图（目录树 +
-  文件→作用 + 任务→对应文件）/ 约定 /
-  红线；「约定」用表格按类别逐行列出实际启用的规则（类别参考模板的「常用类别」），未涉及的不写。
+- 每份 AGENTS.md 逐节按 [assets/AGENTS.template.md](assets/AGENTS.template.md) 的生成提示核对，结构一致且没有模板未定义的内容。
 - 生成内容都在 `code-guide` 标记之内；标记之外的用户内容未被改动。
-- 概览、技术栈、版本、命令与阈值取自实际配置与代码，无凭空补造；约定只写该目录实际启用的规则，不写理想化规则。
-- 无因果链与占位；正文只表现当前态。
+- 概览、技术栈、版本、命令与阈值取自实际配置与代码，正文只表现当前态，无凭空补造、因果链与占位。
 
 ## 边界
 

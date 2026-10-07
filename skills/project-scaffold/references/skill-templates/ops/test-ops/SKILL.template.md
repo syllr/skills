@@ -7,13 +7,12 @@ metadata:
 
 # test-ops — 测试用例执行与用例管理（testcase ops）
 
-AI 既是测试执行器，也是用例库的维护者。本 skill
-是测试用例的唯一入口：一进来先看「分诊」，再进入对应子流程。用例只有接口与流程两类（无单元测试，见根 AGENTS.md §2.7），新增 /
-更新 / 删除 /
-执行都只能经本 skill——AI 不得自动创建任何用例，用例卡的新增与删除由用户手动配置（根
-AGENTS.md §2.6 用例唯一入口）。
+本 skill 是测试用例的唯一入口：一进来先看「分诊」，再进入对应子流程。
 
-改动交付前在 standalone 做的 DoD 验证由 AI 自持、不经本 skill（根 AGENTS.md §2.7）——本 skill 只管正式用例卡与 DoD 持久化。
+范围与自持：AI 既是测试执行器，也是用例库的维护者。用例只有接口与流程两类（无单元测试，见根 AGENTS.md §2.7），新增 /
+更新 / 删除 / 执行都只能经本 skill——AI 不得自动创建任何用例，用例卡的新增与删除由用户手动配置（根
+AGENTS.md §2.6 用例唯一入口）；改动交付前在 standalone 做的 DoD 验证由 AI 自持、不经本 skill（根
+AGENTS.md §2.7），本 skill 只管正式用例卡与 DoD 持久化。
 
 ## 分诊
 
@@ -23,3 +22,8 @@ AGENTS.md §2.6 用例唯一入口）。
 | 2 用例生成与更新 | 新增 / 更新 / 删除用例；写 / 编辑用例卡；DoD 持久化（把 DoD 验证转成用例卡） | [references/manage-cases.md](references/manage-cases.md) |
 
 > 执行用例、增删用例卡、DoD 持久化，三者一律由用户显式调起后才做；AI 不得因刚跑完 DoD 或判断「这次验证值得留」就自动触发。
+
+- 用例卡骨架：[assets/case-templates/api-case.md](assets/case-templates/api-case.md)（API 卡，走本应用接口类工具）/
+  [flow-case.md](assets/case-templates/flow-case.md)（FLOW 卡，走页面调用型工具 + 截图）——复制骨架后替换实体 / 接口与 Case
+  内容。
+- `docs/test/` 资产布局、落盘与旧资产清理见 [references/test-assets.md](references/test-assets.md)。

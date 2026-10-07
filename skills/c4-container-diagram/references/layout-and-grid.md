@@ -28,10 +28,11 @@ ELK/dagre 不会自动纵向堆叠无连接的独立子容器——实测会横�
   grid-rows: 1        # ← 关键
   grid-columns: 1    # ← 关键
   grid-gap: 24
+  style.border-radius: 16
 
-  层1: { ... }
-  层2: { ... }
-  层3: { ... }
+  层1: { width: 1000; style.border-radius: 12 }    # 各层结构照 §5.1 展开，本块只演示外层 wrapper
+  层2: { width: 1000; style.border-radius: 12 }
+  层3: { width: 1000; style.border-radius: 12 }
 }
 ```
 
@@ -48,9 +49,14 @@ ELK/dagre 不会自动纵向堆叠无连接的独立子容器——实测会横�
 入口层: {
   width: 1000
   grid-columns: 3
+  style.border-radius: 12
   h1: { width: 317; height: 60; class: module }    # ← 固定 width 必须（§6.13: (1000−24−24)/3 = 317）
   h2: { width: 317; height: 60; class: module }
   h3: { width: 317; height: 60; class: module }
+}
+
+classes: {
+  module: { style: { border-radius: 8; font-color: "#1e293b"; stroke-width: 1 } }
 }
 ```
 

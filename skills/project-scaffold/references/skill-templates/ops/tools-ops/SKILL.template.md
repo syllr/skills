@@ -5,37 +5,27 @@ description: 项目工具集（tools）的新增 / 删除 / 更新与调用—�
 
 # tools-ops — 项目工具集（变更 / 调用）
 
-定位：tools 是 AI 访问项目系统的基础设施（实例位于 `docs/tools/`），也是访问系统的唯一入口（根 AGENTS.md
+本 skill 是项目工具集的唯一入口：一进来先看「分诊」，再按类进入对应流程。tools 是 AI 访问项目系统的基础设施（实例位于
+`docs/tools/`），也是访问系统的唯一入口（根 AGENTS.md
 §2.8 系统访问唯一入口）——AI 对系统任何资源的访问（前端页面 / 后端 API / 数据库 / 中间件 / 依赖的外部第三方接口）都必须经它执行；
 `test-ops` 执行用例时也经它访问被测系统。访问前先查有哪些可用工具能触达目标；目标无可用工具 →
-提醒用户走「生成流程」或「更新流程」新增工具，不得自行旁路（禁裸
+提醒用户走「工具集新增 / 删除 / 更新」流程新增工具，不得自行旁路（禁裸
 curl、裸 SQL、自行开浏览器操作页面、直连中间件、直调第三方接口）。工具只取证据/执行操作，断言由 AI 判断。
 
-- 同步：工具集文档按类落在 `docs/tools/tools/<类>/<类>.md`（固定 4 类、一类一份，同类工具共用：环境参数 / 工具参数 /
-  退出码 / 调用方式）
-  ——由本 skill 生成与更新；新增 / 改名 / 删除工具时同步。
-- 维护流程（新增 / 演进工具、环境参数表与 DEPLOYMENT 对齐、共享模块与统一契约）写在本 skill，按项目实情落地到 `docs/tools/`。
+本 skill 负责 `docs/tools/` 工具集的生成与演进（新增 / 改名 / 删除工具时同步）；维护流程（新增 / 演进工具、环境参数表与
+`DEPLOYMENT` 对齐、共享模块与统一契约）写在本 skill，按项目实情落地到 `docs/tools/`。
 
 ## 分诊
 
-本 skill 是项目工具集的唯一入口：一进来先看「分诊」，再按类进入对应流程。
-
-| 分诊                       | 触发                                                            | 进入             |
-|----------------------------|-----------------------------------------------------------------|------------------|
-| 1 工具集新增 / 删除 / 更新 | 对 `docs/tools/` 本身的改动（工具实现 / 环境参数 / 初始化落地） | 见下表「维护」列 |
-| 2 工具集调用               | 按「环境参数」表选环境调用工具（AI 直接查数据，ad-hoc）         | 见下表「调用」列 |
+| 分诊                       | 触发                                                            | 进入                                                                                                                                                                                                                                     |
+|----------------------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1 工具集新增 / 删除 / 更新 | 对 `docs/tools/` 本身的改动（工具实现 / 环境参数 / 初始化落地） | ① [maintain-webmcp.md](references/maintain-webmcp.md)；② [maintain-inbound.md](references/maintain-inbound.md)；③ [maintain-outbound.md](references/maintain-outbound.md)；④ [maintain-middleware.md](references/maintain-middleware.md) |
+| 2 工具集调用               | 按「环境参数」表选环境调用工具（AI 直接查数据，ad-hoc）         | ① [call-webmcp.md](references/call-webmcp.md)；② [call-inbound.md](references/call-inbound.md)；③ [call-outbound.md](references/call-outbound.md)；④ [call-middleware.md](references/call-middleware.md)                                 |
 
 按类（四类）：① 页面调用型 `webmcp`（子工具在工程页面代码）；② inbound 接口型（来源 `docs/contracts/inbound/`，inbound-ops）；③
 outbound 接口型（来源 `docs/contracts/outbound/`，outbound-ops）；④ 数据 / 中间件直连型（DB / Redis / Kafka / ES / 对象存储 /
 向量库等）。
 `tools/` 下固定这 4 个类目录、每类一份 `<类>.md`（类文档）；某类未落地也保留目录与文件（内容写「本类未落地」）。
-
-| 类                    | 维护（新增 / 删除 / 更新）                                             | 调用                                                           |
-|-----------------------|------------------------------------------------------------------------|----------------------------------------------------------------|
-| ① 页面调用型          | [references/maintain-webmcp.md](references/maintain-webmcp.md)         | [references/call-webmcp.md](references/call-webmcp.md)         |
-| ② inbound 接口型      | [references/maintain-inbound.md](references/maintain-inbound.md)       | [references/call-inbound.md](references/call-inbound.md)       |
-| ③ outbound 接口型     | [references/maintain-outbound.md](references/maintain-outbound.md)     | [references/call-outbound.md](references/call-outbound.md)     |
-| ④ 数据 / 中间件直连型 | [references/maintain-middleware.md](references/maintain-middleware.md) | [references/call-middleware.md](references/call-middleware.md) |
 
 - 统一契约（退出码 / 写授权等）见 [references/contract.md](references/contract.md)——每个工具都要满足。
 - 产物骨架：[assets/section-webmcp.md](assets/section-webmcp.md) /

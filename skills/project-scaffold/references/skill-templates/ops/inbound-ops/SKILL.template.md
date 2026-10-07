@@ -9,6 +9,8 @@ description: L3 Inbound 契约域唯一入口——为每个应用生成 / 维�
 代码」的映射——只登记接口与代码位置，字段 / 校验 / 错误码等细节现读代码。
 
 - 负责 `docs/contracts/inbound/`（每应用一份）的生成与维护。
+- 目标文档结构、各节内容约定与写作规范以 [assets/INBOUND-APP.template.md](assets/INBOUND-APP.template.md) 为准，本 skill
+  不另行维护章节骨架或逐节规则；生成或更新前必须先读取该文件，并严格沿用其中的章节编号、标题层级、结构和生成提示。
 - Outbound 半边（外部集成）归 `outbound-ops` skill。
 
 ## 读取
@@ -24,9 +26,8 @@ description: L3 Inbound 契约域唯一入口——为每个应用生成 / 维�
 
 1. 确定要覆盖的应用：应用清单见 `docs-architecture`。
 2. 每个应用在 `docs/contracts/inbound/<应用>.md`
-   建一份接口文档（按 [assets/INBOUND-APP.template.md](assets/INBOUND-APP.template.md)）： **按该应用的 inbound API 类型 /
-   框架分章**，每章写解析方式（什么框架、路由与 HTTP 方法怎么标识、怎么解析）；接口列表 **按业务域分组**（业务域取自
-   `docs/L2/domain/`），每接口给 方法 + 路径 + 代码位置，让 AI 据此去读代码解析。
+   按 [assets/INBOUND-APP.template.md](assets/INBOUND-APP.template.md) 建一份接口文档；分章方式、接口列法与各节内容约定以模板的章节编号、标题层级与生成提示为准，本
+   skill 不重复。
 3. 接口或代码位置变化时更新对应应用文档；应用 / 接口删除时清理文件与引用，检查悬空引用与残留。
 4. 有既有产物时读现有文档，提取仍有效的信息，按该形态重建。
 5. 报告变更清单。
@@ -39,8 +40,9 @@ description: L3 Inbound 契约域唯一入口——为每个应用生成 / 维�
 
 ## 完成判定
 
-- 每个被覆盖应用有一份 `docs/contracts/inbound/<应用>.md`；正文是「接口 → 代码位置」映射，不复述字段 / 校验 / 错误码（以代码为准）。
-- 按 API 类型 / 框架分章，每章含解析方式；接口按业务域分组，且业务域与 `docs-domain` 一致。
+- 每个被覆盖应用有一份 `docs/contracts/inbound/<应用>.md`
+  ，逐节按 [assets/INBOUND-APP.template.md](assets/INBOUND-APP.template.md) 的生成提示核对，且没有模板未定义的内容。
+- 接口按业务域分组，业务域与 `docs-domain` 一致。
 - 文档与代码一致，无悬空引用；应用 / 接口删除后无残留文档。
 
 ## 边界

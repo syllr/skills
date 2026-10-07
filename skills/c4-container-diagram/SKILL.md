@@ -211,6 +211,7 @@ vars: { d2-config: { layout-engine: elk } }
   grid-rows: 1
   grid-columns: 1
   grid-gap: 24
+  style.border-radius: 16
   入口层: {
     width: 1000; grid-columns: 3; grid-gap: 12; class: module
     h1: { width: 317; height: 60; class: module }
@@ -227,5 +228,9 @@ vars: { d2-config: { layout-engine: elk } }
     s1: { width: 482; height: 60; class: module }
     s2: { width: 482; height: 60; class: module }
   }
+}
+
+classes: {
+  module: { style: { border-radius: 8; font-color: "#1e293b"; stroke-width: 1 } }
 }
 ```

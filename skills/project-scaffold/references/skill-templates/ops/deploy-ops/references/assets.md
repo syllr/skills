@@ -2,7 +2,8 @@
 
 ## 读取
 
-- 读本 skill 与 [../assets/TEMPLATE.md](../assets/TEMPLATE.md)（各环境 `DEPLOYMENT.md` 目标结构）；列 `docs/deployment/`
+- 读本 skill 与 [../assets/TEMPLATE.md](../assets/TEMPLATE.md)（各环境 `DEPLOYMENT.md` 目标结构）、
+  [../assets/env.template](../assets/env.template)（`.env.<env>` 键集骨架）；列 `docs/deployment/`
   实际目录树，判断各环境目录里有无既有 `DEPLOYMENT.md` 与配置。
 - 读架构（`docs-architecture`）定位部署单元、运行时与存储方式。
 
@@ -12,11 +13,16 @@
 （该环境配置值）；磁盘有而预期无的即旧资产（如遗留共享配置目录或旧脚本），确认后删。按情况走：首次落地 → 生成；新增环境 /
 改流程 / 改配置 → 维护。
 
+- 环境名 = 目录名 = `.env.<env>` 后缀，三者一律相同。
+- 不设跨环境共享配置目录：键集以各环境 `.env.<env>` 彼此一致为准。
+- 脚本文件不进 `docs/deployment/`，只登记在各环境 `DEPLOYMENT.md` 各应用章的「资产」节。
+
 ### 生成（首次落地）
 
 1. 读 [../assets/TEMPLATE.md](../assets/TEMPLATE.md) 作写作基准；列 `docs/deployment/` 实际目录树，判断各环境目录里有无既有
    `DEPLOYMENT.md` 与配置。
-2. 每环境建 `<env>/`，写 `<env>/.env.<env>`（键集与其他环境一致，值留空由部署机填）；按 TEMPLATE 写 `<env>/DEPLOYMENT.md`。
+2. 每环境建 `<env>/`，写 `<env>/.env.<env>`（骨架见 [../assets/env.template](../assets/env.template)；键集与其他环境一致，值留空由部署机填）；按
+   TEMPLATE 写 `<env>/DEPLOYMENT.md`。
 3. 有既有说明书：读发生变化的关联文档和资产，提取仍有效的业务值，按模板重建章节、表格、图和命令，删除过期结构与旧图，保留仍有效的当前态信息。
 4. 无既有说明书：依据应用划分、技术栈、接口契约和部署资产现状逐节填写真实内容；项目的发布 / 启动 /
    回滚等执行件沿用既有方式，不新建、不套用模板，已有就逐项登记在各应用章「资产」节。
@@ -26,7 +32,8 @@
 
 ### 维护（新增环境 / 改流程 / 改配置）
 
-1. 新增环境：建 `<env>/` + `.env.<env>`（键集对齐其他环境）+ `<env>/DEPLOYMENT.md`（按模板），同步该环境说明书 §3.1 应用清单与部署单元。
+1. 新增环境：建 `<env>/` + `.env.<env>`（键集对齐其他环境，骨架见 [../assets/env.template](../assets/env.template)）+
+   `<env>/DEPLOYMENT.md`（按模板），同步该环境说明书 §3.1 应用清单与部署单元。
 2. 改部署流程：先改对应应用章（接口 SSOT）再改脚本实现匹配，两者必须一致。
 3. 改配置：各环境 `.env.<env>` 同步对齐，键集保持一致；新增变量时同时改全部环境。
 4. 回写登记：把新增或变更的资产按「说明书」的写法重建该应用章的「资产」节（路径 / 生效机制 / 用途）；章节删除或迁移后同步重编号并清理旧引用。

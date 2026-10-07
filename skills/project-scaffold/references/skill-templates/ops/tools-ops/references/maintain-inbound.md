@@ -18,10 +18,8 @@
    （其余固定内容在调用子文档 [call-inbound.md](call-inbound.md)）；同类多工具就复制该节，本类未落地就只写一行「本类未落地」。
 4. 验证：`--operation <id>` 直调通；非法键被 fail-fast 拒绝。
 
-## 完成判据
-
-- 能按 `--operation` 直调通、非法键被 fail-fast 拒绝；该类 `inbound.md` 的环境参数表已登记、且与 `docs/deployment/`
-  一致；符合统一契约。
+完成判据：能按 `--operation` 直调通、非法键被 fail-fast 拒绝；该类 `inbound.md` 的环境参数表已登记、且与 `docs/deployment/`
+一致；符合统一契约。
 
 ## 边界
 

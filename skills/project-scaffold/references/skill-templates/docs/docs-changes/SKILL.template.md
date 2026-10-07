@@ -12,8 +12,8 @@ metadata:
 `docs/changes/` 是变更规划目录，只承载进行中的 change 单篇，目录内不出现 change 单篇以外的文件。本 skill
 是该目录文档的读取、生成、更新与校验入口。
 
-- 目标文档结构以 [assets/TEMPLATE.md](assets/TEMPLATE.md) 为准，本 skill 不另行维护章节骨架；生成、重建或更新 change
-  单篇前先读该模板，按其中骨架、文件命名和元信息落盘。
+- 目标文档结构以 [assets/TEMPLATE.md](assets/TEMPLATE.md) 为准，章节骨架与逐节规则不在本 skill
+  维护；生成、重建或更新 change 单篇前必须先读该模板，并沿用其中的章节编号、标题层级、文件命名、元信息与生成提示。
 - 变更清单由 `scripts/changes.mjs` 机械处理：`list` 盘点与筛选、`check` 校验文件名与 frontmatter、`advance`
   在漂移清单已清时把「待清漂移」推进到「规划中」。状态流转里只有这一步可脚本推进，其余一律由本 skill 推进。
 
@@ -69,10 +69,11 @@ DoD 验证通过后置待同步，文档同步完成后置已实行；删除前�
 
 ## 完成判定
 
-- 每篇 change 的文件命名、标题、frontmatter 字段与正文结构均符合 [assets/TEMPLATE.md](assets/TEMPLATE.md)，状态取值合法。
+- 每篇 change 的文件命名、标题、frontmatter 字段与正文结构均符合 [assets/TEMPLATE.md](assets/TEMPLATE.md)
+  ，逐节按各节生成提示核对，状态取值合法，且没有模板未定义的内容。
 - frontmatter 登记了漂移清单的 change，其漂移清单已解决后才进入规划。
-- 状态为已实行的 change 已完成目标层文档沉淀并删除对应文件。
-- 相关目标层文档与验收用例已由对应 skill 复核，沉淀后文档间引用无死链，目录中没有遗留的过程态占位内容。
+- 状态为已实行的 change 已完成目标层文档沉淀并删除对应文件；相关目标层文档与验收用例已由对应 skill
+  复核，沉淀后引用无死链，目录中没有遗留的过程态占位内容。
 
 ## 边界
 

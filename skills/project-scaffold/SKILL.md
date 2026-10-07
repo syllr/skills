@@ -54,8 +54,7 @@ description: >
 读取 / 生成与更新 / 联动 / 完成判定 / 边界；编排器与 ops 在此骨架上追加自身特有段，如分诊 / 执行 / 产物基线）与
 `assets/` 下的目标文档骨架模板（每节的生成提示以 `<!-- 生成提示:begin -->` 与 `<!-- 生成提示:end -->`
 包裹；一个 skill 出多种产物时按产物拆成多个模板文件，如 `docs-domain` 的 `DOMAIN-MAP.template.md` +
-`DOMAIN.template.md`、`inbound-ops` 的 `INBOUND.template.md` + `OPENAPI.template.md`、`outbound-ops` 的
-`OUTBOUND.template.md` + `CONTRACT.template.md`）；生成文档时先读模板再写，骨架内容只放模板、不写进
+`DOMAIN.template.md`）；生成文档时先读模板再写，骨架内容只放模板、不写进
 SKILL，写入产物时连同这对标记删除。
 
 需要在用户显式调起前不出现在模型可用列表的 skill，frontmatter 用 `metadata.opencode/autoinvoke: false` 声明：AI
@@ -80,9 +79,9 @@ SKILL，写入产物时连同这对标记删除。
 |-------------------------------------------------------------------------------|----------------------|-------------------------------------|-------------------------------------|-----------------------------------------|
 | [inbound-ops](references/skill-templates/ops/inbound-ops/SKILL.template.md)   | L3 Inbound 契约      | docs/contracts/inbound/             | —                                   | 多文件（SKILL + assets/）               |
 | [outbound-ops](references/skill-templates/ops/outbound-ops/SKILL.template.md) | L3 Outbound 外部集成 | docs/contracts/outbound/            | —                                   | 多文件（SKILL + assets/）               |
-| [deploy-ops](references/skill-templates/ops/deploy-ops/SKILL.template.md)     | L3 部署              | docs/deployment/DEPLOYMENT.md       | docs/deployment/                    | 多文件（SKILL + assets/）               |
+| [deploy-ops](references/skill-templates/ops/deploy-ops/SKILL.template.md)     | L3 部署              | docs/deployment/DEPLOYMENT.md       | docs/deployment/                    | 多文件（SKILL + references/ + assets/） |
 | [test-ops](references/skill-templates/ops/test-ops/SKILL.template.md)         | 测试                 | docs/test/test-cases/（正式用例卡） | docs/test/test-records/（执行台账） | 多文件（SKILL + references/ + assets/） |
-| [tools-ops](references/skill-templates/ops/tools-ops/SKILL.template.md)       | 系统访问通道         | docs/tools/tools/<类>/<类>.md       | docs/tools/（Node CLI）             | 多文件（SKILL + assets/）               |
+| [tools-ops](references/skill-templates/ops/tools-ops/SKILL.template.md)       | 系统访问通道         | docs/tools/tools/<类>/<类>.md       | docs/tools/（Node CLI）             | 多文件（SKILL + references/ + assets/） |
 
 ### C · 项目级（共 2 个）
 

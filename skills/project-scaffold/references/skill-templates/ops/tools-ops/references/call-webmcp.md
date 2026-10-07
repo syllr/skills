@@ -25,6 +25,8 @@ host、工具 ↔ 可用页面），在 `docs/tools/tools/webmcp/webmcp.md`。
    `--timeout`）拼进命令。
 6. 报告：结论 + 所用环境 + 原始证据（stdout 单行 JSON），按退出码判断失败类型。
 
+完成判据：参数取自类文档的环境参数表行；先到可用页面、等加载完成再调；读 stdout 单行 JSON 并核对退出码；断言由 AI 判断、工具只取证据。
+
 ## 工具参数（固定）
 
 | 参数                 | 说明                                                                                   | 必填   | 示例                                       |
@@ -75,10 +77,6 @@ npm run webmcp -- --seq '[{"name":"<子工具>","args":{…}}]' --headed --step-
 # ⑤ 连接已运行的 Chrome（该实例需自行带 WebMCP flag 启动）
 npm run webmcp -- --list --path <可用页面> --connect http://127.0.0.1:9333 --host <host> --timeout <ms>
 ```
-
-## 完成判据
-
-- 参数取自类文档的环境参数表行；先到可用页面、等加载完成再调；读 stdout 单行 JSON 并核对退出码；断言由 AI 判断、工具只取证据。
 
 ## 边界
 
