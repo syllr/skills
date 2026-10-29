@@ -9,7 +9,6 @@ skills/
 ├── c4-container-diagram/       # D2/C4 容器图
 ├── gitee-comments/             # Gitee 评审评论
 ├── project-scaffold/           # 项目脚手架（项目宪法 + 三类 Skill 模板）
-├── remote-shell/               # 远程命令执行
 ├── score-prompt/               # Prompt/文档评分
 └── skill-creator/              # 创建和维护 Skill
 ```
